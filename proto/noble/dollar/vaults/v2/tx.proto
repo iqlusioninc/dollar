@@ -10,6 +10,7 @@ import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v1/vaults.proto";
 import "noble/dollar/vaults/v2/cross_chain.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
+import "noble/dollar/vaults/v2/oracle.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
@@ -66,6 +67,20 @@ service Msg {
 
   // Process in-flight position (system operation)
   rpc ProcessInFlightPosition(MsgProcessInFlightPosition) returns (MsgProcessInFlightPositionResponse);
+
+  // Oracle operations
+
+  // Register a new oracle for a position (authority only)
+  rpc RegisterOracle(MsgRegisterOracle) returns (MsgRegisterOracleResponse);
+
+  // Update oracle configuration (authority only)
+  rpc UpdateOracleConfig(MsgUpdateOracleConfig) returns (MsgUpdateOracleConfigResponse);
+
+  // Remove an oracle from the system (authority only)
+  rpc RemoveOracle(MsgRemoveOracle) returns (MsgRemoveOracleResponse);
+
+  // Update global oracle parameters (authority only)
+  rpc UpdateOracleParams(MsgUpdateOracleParams) returns (MsgUpdateOracleParamsResponse);
 }
 
 // MsgDeposit allows users to deposit into a V2 vault

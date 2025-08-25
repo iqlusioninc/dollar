@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"cosmossdk.io/collections"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -47,8 +49,20 @@ type V2VaultCollections struct {
 	// Cross-chain configuration
 	CrossChainConfig collections.Item[vaultsv2.CrossChainConfig] // Global cross-chain configuration
 
+	// Oracle Collections
+	EnrolledOracles       collections.Map[string, vaultsv2.EnrolledOracle]       // oracle_id -> EnrolledOracle
+	OracleMappings        collections.Map[string, string]                        // position_id -> oracle_id
+	OracleConfigs         collections.Map[string, vaultsv2.PositionOracleConfig] // position_id -> PositionOracleConfig
+	RemotePositionOracles collections.Map[string, vaultsv2.RemotePositionOracle] // position_id -> RemotePositionOracle
+	OracleStatuses        collections.Map[string, vaultsv2.OracleStatus]         // position_id -> OracleStatus
+	OracleParams          collections.Item[vaultsv2.OracleGovernanceParams]      // Global oracle parameters
+
 	// Cross-chain keeper
 	CrossChainStore *crosschain.CrossChainKeeper
+
+	// Hyperlane oracle integration for V2 vaults
+	OracleHandler        *V2OracleHandler
+	HyperlaneIntegration *V2HyperlaneIntegration
 }
 
 // InitializeV2Collections initializes all V2 collections in the keeper
@@ -196,7 +210,56 @@ func (k *Keeper) InitializeV2Collections(builder *collections.SchemaBuilder) V2V
 			"v2_cross_chain_config",
 			codec.CollValue[vaultsv2.CrossChainConfig](k.cdc),
 		),
+
+		// Oracle Collections
+		EnrolledOracles: collections.NewMap(
+			builder,
+			collections.NewPrefix(260),
+			"v2_enrolled_oracles",
+			collections.StringKey,
+			codec.CollValue[vaultsv2.EnrolledOracle](k.cdc),
+		),
+		OracleMappings: collections.NewMap(
+			builder,
+			collections.NewPrefix(261),
+			"v2_oracle_mappings",
+			collections.StringKey,
+			collections.StringValue,
+		),
+		OracleConfigs: collections.NewMap(
+			builder,
+			collections.NewPrefix(262),
+			"v2_oracle_configs",
+			collections.StringKey,
+			codec.CollValue[vaultsv2.PositionOracleConfig](k.cdc),
+		),
+		RemotePositionOracles: collections.NewMap(
+			builder,
+			collections.NewPrefix(263),
+			"v2_remote_position_oracles",
+			collections.StringKey,
+			codec.CollValue[vaultsv2.RemotePositionOracle](k.cdc),
+		),
+		OracleStatuses: collections.NewMap(
+			builder,
+			collections.NewPrefix(264),
+			"v2_oracle_statuses",
+			collections.StringKey,
+			codec.CollValue[vaultsv2.OracleStatus](k.cdc),
+		),
+		OracleParams: collections.NewItem(
+			builder,
+			collections.NewPrefix(265),
+			"v2_oracle_params",
+			codec.CollValue[vaultsv2.OracleGovernanceParams](k.cdc),
+		),
 	}
+
+	// Initialize oracle handler for V2 vaults
+	v2Collections.OracleHandler = NewV2OracleHandler(k)
+
+	// Hyperlane integration will be initialized separately when Hyperlane keepers are available
+	// via InitializeV2HyperlaneIntegration method
 
 	// TODO: Initialize cross-chain keeper after updating collection types
 	// v2Collections.CrossChainStore = crosschain.NewCrossChainKeeper(
@@ -210,6 +273,20 @@ func (k *Keeper) InitializeV2Collections(builder *collections.SchemaBuilder) V2V
 	// )
 
 	return v2Collections
+}
+
+// InitializeV2HyperlaneIntegration initializes Hyperlane integration for V2 vaults oracle system
+func (k *Keeper) InitializeV2HyperlaneIntegration(ctx sdk.Context, coreKeeper interface{}, warpKeeper interface{}) error {
+	// Create and initialize the Hyperlane integration for V2 vaults
+	integration := NewV2HyperlaneIntegration(k, coreKeeper, warpKeeper)
+
+	// Initialize the integration
+	if err := integration.Initialize(ctx); err != nil {
+		return fmt.Errorf("failed to initialize V2 Hyperlane integration: %w", err)
+	}
+
+	k.V2Collections.HyperlaneIntegration = integration
+	return nil
 }
 
 // Helper functions for creating composite keys

@@ -35,6 +35,10 @@ const (
 	Msg_RemoteWithdraw_FullMethodName          = "/noble.dollar.vaults.v2.Msg/RemoteWithdraw"
 	Msg_UpdateRemotePosition_FullMethodName    = "/noble.dollar.vaults.v2.Msg/UpdateRemotePosition"
 	Msg_ProcessInFlightPosition_FullMethodName = "/noble.dollar.vaults.v2.Msg/ProcessInFlightPosition"
+	Msg_RegisterOracle_FullMethodName          = "/noble.dollar.vaults.v2.Msg/RegisterOracle"
+	Msg_UpdateOracleConfig_FullMethodName      = "/noble.dollar.vaults.v2.Msg/UpdateOracleConfig"
+	Msg_RemoveOracle_FullMethodName            = "/noble.dollar.vaults.v2.Msg/RemoveOracle"
+	Msg_UpdateOracleParams_FullMethodName      = "/noble.dollar.vaults.v2.Msg/UpdateOracleParams"
 )
 
 // MsgClient is the client API for Msg service.
@@ -75,6 +79,14 @@ type MsgClient interface {
 	UpdateRemotePosition(ctx context.Context, in *MsgUpdateRemotePosition, opts ...grpc.CallOption) (*MsgUpdateRemotePositionResponse, error)
 	// Process in-flight position (system operation)
 	ProcessInFlightPosition(ctx context.Context, in *MsgProcessInFlightPosition, opts ...grpc.CallOption) (*MsgProcessInFlightPositionResponse, error)
+	// Register a new oracle for a position (authority only)
+	RegisterOracle(ctx context.Context, in *MsgRegisterOracle, opts ...grpc.CallOption) (*MsgRegisterOracleResponse, error)
+	// Update oracle configuration (authority only)
+	UpdateOracleConfig(ctx context.Context, in *MsgUpdateOracleConfig, opts ...grpc.CallOption) (*MsgUpdateOracleConfigResponse, error)
+	// Remove an oracle from the system (authority only)
+	RemoveOracle(ctx context.Context, in *MsgRemoveOracle, opts ...grpc.CallOption) (*MsgRemoveOracleResponse, error)
+	// Update global oracle parameters (authority only)
+	UpdateOracleParams(ctx context.Context, in *MsgUpdateOracleParams, opts ...grpc.CallOption) (*MsgUpdateOracleParamsResponse, error)
 }
 
 type msgClient struct {
@@ -245,6 +257,46 @@ func (c *msgClient) ProcessInFlightPosition(ctx context.Context, in *MsgProcessI
 	return out, nil
 }
 
+func (c *msgClient) RegisterOracle(ctx context.Context, in *MsgRegisterOracle, opts ...grpc.CallOption) (*MsgRegisterOracleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgRegisterOracleResponse)
+	err := c.cc.Invoke(ctx, Msg_RegisterOracle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateOracleConfig(ctx context.Context, in *MsgUpdateOracleConfig, opts ...grpc.CallOption) (*MsgUpdateOracleConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgUpdateOracleConfigResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateOracleConfig_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveOracle(ctx context.Context, in *MsgRemoveOracle, opts ...grpc.CallOption) (*MsgRemoveOracleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgRemoveOracleResponse)
+	err := c.cc.Invoke(ctx, Msg_RemoveOracle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateOracleParams(ctx context.Context, in *MsgUpdateOracleParams, opts ...grpc.CallOption) (*MsgUpdateOracleParamsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgUpdateOracleParamsResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateOracleParams_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility.
@@ -283,6 +335,14 @@ type MsgServer interface {
 	UpdateRemotePosition(context.Context, *MsgUpdateRemotePosition) (*MsgUpdateRemotePositionResponse, error)
 	// Process in-flight position (system operation)
 	ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error)
+	// Register a new oracle for a position (authority only)
+	RegisterOracle(context.Context, *MsgRegisterOracle) (*MsgRegisterOracleResponse, error)
+	// Update oracle configuration (authority only)
+	UpdateOracleConfig(context.Context, *MsgUpdateOracleConfig) (*MsgUpdateOracleConfigResponse, error)
+	// Remove an oracle from the system (authority only)
+	RemoveOracle(context.Context, *MsgRemoveOracle) (*MsgRemoveOracleResponse, error)
+	// Update global oracle parameters (authority only)
+	UpdateOracleParams(context.Context, *MsgUpdateOracleParams) (*MsgUpdateOracleParamsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -340,6 +400,18 @@ func (UnimplementedMsgServer) UpdateRemotePosition(context.Context, *MsgUpdateRe
 }
 func (UnimplementedMsgServer) ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProcessInFlightPosition not implemented")
+}
+func (UnimplementedMsgServer) RegisterOracle(context.Context, *MsgRegisterOracle) (*MsgRegisterOracleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterOracle not implemented")
+}
+func (UnimplementedMsgServer) UpdateOracleConfig(context.Context, *MsgUpdateOracleConfig) (*MsgUpdateOracleConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateOracleConfig not implemented")
+}
+func (UnimplementedMsgServer) RemoveOracle(context.Context, *MsgRemoveOracle) (*MsgRemoveOracleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveOracle not implemented")
+}
+func (UnimplementedMsgServer) UpdateOracleParams(context.Context, *MsgUpdateOracleParams) (*MsgUpdateOracleParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateOracleParams not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -650,6 +722,78 @@ func _Msg_ProcessInFlightPosition_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_RegisterOracle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterOracle)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RegisterOracle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_RegisterOracle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RegisterOracle(ctx, req.(*MsgRegisterOracle))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateOracleConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateOracleConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateOracleConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateOracleConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateOracleConfig(ctx, req.(*MsgUpdateOracleConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveOracle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveOracle)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveOracle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_RemoveOracle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveOracle(ctx, req.(*MsgRemoveOracle))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateOracleParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateOracleParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateOracleParams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateOracleParams_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateOracleParams(ctx, req.(*MsgUpdateOracleParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -720,6 +864,22 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProcessInFlightPosition",
 			Handler:    _Msg_ProcessInFlightPosition_Handler,
+		},
+		{
+			MethodName: "RegisterOracle",
+			Handler:    _Msg_RegisterOracle_Handler,
+		},
+		{
+			MethodName: "UpdateOracleConfig",
+			Handler:    _Msg_UpdateOracleConfig_Handler,
+		},
+		{
+			MethodName: "RemoveOracle",
+			Handler:    _Msg_RemoveOracle_Handler,
+		},
+		{
+			MethodName: "UpdateOracleParams",
+			Handler:    _Msg_UpdateOracleParams_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
