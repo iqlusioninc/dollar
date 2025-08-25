@@ -114,7 +114,10 @@ The withdrawal queue provides multiple security benefits:
 - **Orderly Unwinding**: Allows time to close remote positions
 - **Fair Ordering**: FIFO processing prevents preferential treatment
 - **Partial Fulfillment**: Can process withdrawals as liquidity arrives
-- **Emergency Mode**: Can pause new deposits while honoring withdrawals
+
+### Emergency Mode
+
+Emergency mode should be enabled in the event the vault is at risk of a substantial loss of user principal. Deposits should be halted. The strategist will need to utilize vault management operations or potentially upgrade the vaults-v2 module to enable functioning again, whether through socialized losses or a claim process.
 
 ## Remote Position Management
 
