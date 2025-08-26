@@ -1,4 +1,4 @@
-x`# Vaults V2 Overview
+# Managed Vault Overview
 
 ## Introduction
 
