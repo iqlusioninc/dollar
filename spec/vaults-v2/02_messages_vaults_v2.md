@@ -523,7 +523,7 @@ This message deploys capital from the Noble vault to a remote yield-generating p
 
 - `vault_address` — The address of the target ERC-4626 compatible vault.
 - `chain_id` — The Hyperlane Domain ID of the destination (998 for Hyperliquid, 8453 for Base, 4000261 for Noble App Layer).
-- `amount` — The amount of USDN capital to deploy.
+- `amount` — The amount of $USDN capital to deploy.
 - `min_shares_out` — Minimum acceptable Noble vault shares to receive (slippage protection).
 
 ### Requirements
@@ -537,12 +537,12 @@ This message deploys capital from the Noble vault to a remote yield-generating p
 ### State Changes
 
 - Capital is marked as inflight with DEPOSIT_TO_POSITION type.
-- Inflight fund entry created with Hyperlane route ID and expected arrival time (amount in USDN).
+- Inflight fund entry created with Hyperlane route ID and expected arrival time (amount in $USDN).
 - Capital is bridged to the destination chain via specific Hyperlane route.
 - Vault's available liquidity is decreased.
-- NAV continues to include the inflight USDN value during transit, tracked per route.
+- NAV continues to include the inflight $USDN value during transit, tracked per route.
 - Upon Hyperlane confirmation, inflight status transitions to CONFIRMED.
-- USDN is deposited into the target ERC-4626 compatible vault.
+- $USDN is deposited into the target ERC-4626 compatible vault.
 - Remote vault shares are tracked in the remote position.
 - New remote position entry is created with ACTIVE status once shares are confirmed.
 - Inflight fund entry for that Hyperlane route is marked COMPLETED and archived.
@@ -597,9 +597,9 @@ This message initiates the withdrawal of capital from a remote position back to 
 
 - Withdrawal is initiated on the remote chain.
 - Position status updated to WITHDRAWING.
-- Inflight fund entry created with WITHDRAWAL_FROM_POSITION type and Hyperlane route ID (amount in USDN).
+- Inflight fund entry created with WITHDRAWAL_FROM_POSITION type and Hyperlane route ID (amount in $USDN).
 - Expected return amount and arrival time are tracked for the specific route.
-- NAV continues to include the inflight USDN value during transit, tracked per route.
+- NAV continues to include the inflight $USDN value during transit, tracked per route.
 - Funds marked as PENDING_WITHDRAWAL_DISTRIBUTION upon arrival.
 - Withdrawal requests in queue may be marked for processing upon receipt.
 - Upon confirmation via Hyperlane route, inflight status transitions to CONFIRMED.
@@ -712,7 +712,7 @@ This message handles inflight funds that have exceeded their maximum duration wi
 ### State Changes
 
 - Inflight fund status updated based on action.
-- For write-offs: NAV is reduced by the lost USDN amount.
+- For write-offs: NAV is reduced by the lost $USDN amount.
 - For extensions: New expected arrival time is set.
 - For manual recovery: Fund is marked for manual intervention.
 - Incident is logged for tracking purposes.
@@ -779,20 +779,20 @@ This message rebalances capital across the Noble vault's multiple remote positio
 
 ### State Changes
 
-- Capital movements are initiated between positions (all in USDN).
+- Capital movements are initiated between positions (all in $USDN).
 - For position-to-position rebalancing:
   - Example: Hyperliquid vault to Base vault rebalancing
-  - Remote vault shares are redeemed from source vault for USDN.
+  - Remote vault shares are redeemed from source vault for $USDN.
   - Source position withdrawal creates WITHDRAWAL_FROM_POSITION inflight on Hyperliquid→Noble route (e.g., route 998_4000260).
   - Upon arrival at Noble, funds marked as PENDING_DEPLOYMENT.
   - Deployment to target vault creates DEPOSIT_TO_POSITION inflight on Noble→Base route (e.g., route 4000260_8453).
   - Target vault shares are received and tracked.
 - For position-to-Noble rebalancing (for withdrawals):
   - Example: Base vault withdrawal for user redemptions
-  - Remote vault shares are redeemed from the vault for USDN.
+  - Remote vault shares are redeemed from the vault for $USDN.
   - Creates WITHDRAWAL_FROM_POSITION inflight on Base→Noble route (e.g., route 8453_4000260).
   - Upon arrival, funds marked as PENDING_WITHDRAWAL_DISTRIBUTION.
 - Each Hyperlane route tracks its own inflight funds separately.
 - Temporary liquidity constraints may delay withdrawal processing.
 - Rebalancing transactions are tracked per Hyperlane route.
-- NAV remains constant during rebalancing (inflight USDN counted at initiation value per route).
+- NAV remains constant during rebalancing (inflight $USDN counted at initiation value per route).
