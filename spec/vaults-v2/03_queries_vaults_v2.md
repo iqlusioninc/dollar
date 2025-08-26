@@ -1,4 +1,4 @@
-# Vaults V2 Queries
+# Managed Vault Queries
 
 ## NAV
 
