@@ -173,7 +173,7 @@ Inflight funds represent capital that is temporarily in transit between the Nobl
 ### Tracking Mechanism
 
 Each inflight transaction maintains:
-- **Hyperlane Route ID**: Unique route identifier (e.g., 4000260998 for Noble→Hyperliquid)
+- **Hyperlane Route ID**: Unique route identifier
 - **Transaction ID**: Hyperlane message ID for the specific transfer
 - **Source/Destination Domains**: Hyperlane domain IDs for the route endpoints (1313817164 for Noble, 998 for Hyperliquid, 8453 for Base)
 - **Expected Value**: USDN amount sent including estimated bridge fees
