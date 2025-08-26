@@ -8,7 +8,7 @@ This system features a single vault on the Noble chain that enables $USDN holder
 
 ### Single Vault, Multiple Remote Positions
 
-The V2 system features a single vault on the Noble chain that can maintain multiple remote positions simultaneously across different chains. These remote positions are ERC-4626 compatible vaults. This architecture provides:
+Remote positions are [ERC-4626](https://eips.ethereum.org/EIPS/eip-4626) compatible vaults. This architecture provides:
 
 - **Diversification**: Risk is spread across multiple yield sources managed by the single vault
 - **Optimization**: The vault can dynamically allocate capital to the highest-performing strategies
