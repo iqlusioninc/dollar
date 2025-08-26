@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Noble Dollar Vault V2 features a single vault on the Noble chain that enables $USDN holders to participate in diversified yield opportunities by managing multiple remote positions across different protocols and chains through a professionally managed structure.
+This system features a single vault on the Noble chain that enables $USDN holders to participate in diversified yield opportunities by managing multiple remote positions across different protocols and chains through a professionally managed structure.
 
 ## Core Architecture
 
