@@ -18,7 +18,7 @@ Remote positions are [ERC-4626](https://eips.ethereum.org/EIPS/eip-4626) compati
 The Noble vault can configure:
 - Maximum number of remote positions (e.g., 5-10)
 - Allowed protocols (e.g., Hyperliquid, Base lending protocols, Noble AppLayer vaults)
-- Allowed chains (via Hyperlane Domain IDs: 998 for Hyperliquid, 8453 for Base, 1313817164 for Noble Mainnet)
+- Allowed chains (via Hyperlane Domain IDs: 998 for Hyperliquid, 8453 for Base, 1313817164 for Noble)
 - Rebalancing thresholds and strategies
 
 ### Net Asset Value (NAV) System
