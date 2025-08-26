@@ -1,4 +1,4 @@
-# Vaults V2 Messages
+# Managed Vault Messages
 
 ## Deposit
 
