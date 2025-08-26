@@ -1,4 +1,4 @@
-# Vaults V2 Queries
+# Managed Vault Queries
 
 ## NAV
 
@@ -410,10 +410,10 @@ Retrieves all inflight funds for the Noble vault, including funds in transit bet
 
 ### Response
 
-- `inflight_funds` — Array of all inflight fund transactions tracked by Hyperlane route (all amounts in USDN).
-- `total_inflight` — Total value of all funds in transit across all routes (USDN).
-- `pending_deployment` — USDN awaiting deployment to remote positions.
-- `pending_withdrawal_distribution` — USDN awaiting distribution to withdrawal queue.
+- `inflight_funds` — Array of all inflight fund transactions tracked by Hyperlane route (all amounts in $USDN).
+- `total_inflight` — Total value of all funds in transit across all routes ($USDN).
+- `pending_deployment` — $USDN awaiting deployment to remote positions.
+- `pending_withdrawal_distribution` — $USDN awaiting distribution to withdrawal queue.
 - `by_route` — Breakdown by Hyperlane route ID showing inflight value per route.
 - `by_type` — Breakdown by transaction type including pending states.
 - `by_status` — Breakdown by current status.
@@ -449,8 +449,7 @@ Retrieves inflight funds that have exceeded their expected arrival time and may 
 
 ### Response
 
-- `stale_funds` — Array of stale inflight fund entries by Hyperlane route (amounts in USDN).
-- `total_stale_value` — Total value of stale funds across all routes in USDN.
+- `stale_funds` — Array of stale inflight fund entries by Hyperlane route (amounts in $USDN).
+- `total_stale_value` — Total value of stale funds across all routes in $USDN.
 - `total_stale_count` — Number of stale transactions across all routes.
 - `oldest_stale_hours` — Hours since oldest stale transaction on any route.
-

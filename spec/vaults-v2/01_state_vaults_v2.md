@@ -49,7 +49,7 @@ type RemotePosition struct {
     VaultAddress     []byte  // Address of the ERC-4626 compatible vault (Boring Vault or other)
     ChainID          uint32  // Hyperlane Domain ID (e.g., 998 for Hyperliquid, 8453 for Base, 4000261 for Noble App Layer)
     SharesHeld       math.Int // Number of remote vault shares held
-    Principal        math.Int // USDN amount initially deposited
+    Principal        math.Int // $USDN amount initially deposited
     LastUpdatedNAV   math.LegacyDec
     LastUpdateTime   time.Time
     Status           PositionStatus // ACTIVE, WITHDRAWING, CLOSED
@@ -71,7 +71,7 @@ type InflightFund struct {
     HyperlaneRouteID uint32       // Hyperlane route identifier
     TransactionID    string       // Hyperlane message ID
     Type             InflightType // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, REBALANCE_BETWEEN_POSITIONS, PENDING_DEPLOYMENT, PENDING_WITHDRAWAL_DISTRIBUTION
-    Amount           math.Int     // Always in USDN
+    Amount           math.Int     // Always in $USDN
     SourceDomain     uint32       // Hyperlane source domain
     DestDomain       uint32       // Hyperlane destination domain
     SourcePosition   *uint64      // Optional: source position ID if from position
@@ -79,7 +79,7 @@ type InflightFund struct {
     InitiatedAt      time.Time
     ExpectedAt       time.Time
     Status           InflightStatus // PENDING, CONFIRMED, COMPLETED, FAILED
-    ValueAtInitiation math.Int    // USDN value when initiated
+    ValueAtInitiation math.Int    // $USDN value when initiated
 }
 ```
 
@@ -93,7 +93,7 @@ const InflightRoutesKey = []byte("vaults/v2/inflight_routes")
 
 ## TotalInflightValue
 
-The `TotalInflightValue` field is a [`collections.Item`][item] that stores the total value of all inflight funds across all Hyperlane routes (`math.Int`). This is cached for efficient NAV calculations and always denominated in USDN.
+The `TotalInflightValue` field is a [`collections.Item`][item] that stores the total value of all inflight funds across all Hyperlane routes (`math.Int`). This is cached for efficient NAV calculations and always denominated in $USDN.
 
 ```go
 const TotalInflightValueKey = []byte("vaults/v2/total_inflight_value")
@@ -109,7 +109,7 @@ const InflightValueByRoutePrefix = []byte("vaults/v2/inflight_value_by_route/")
 
 ## PendingDeploymentFunds
 
-The `PendingDeploymentFunds` field is a [`collections.Item`][item] that stores the amount of USDN received from deposits but not yet deployed to remote positions (`math.Int`).
+The `PendingDeploymentFunds` field is a [`collections.Item`][item] that stores the amount of $USDN received from deposits but not yet deployed to remote positions (`math.Int`).
 
 ```go
 const PendingDeploymentFundsKey = []byte("vaults/v2/pending_deployment")
@@ -117,7 +117,7 @@ const PendingDeploymentFundsKey = []byte("vaults/v2/pending_deployment")
 
 ## PendingWithdrawalDistribution
 
-The `PendingWithdrawalDistribution` field is a [`collections.Item`][item] that stores the amount of USDN returned from remote positions but not yet distributed to withdrawal claimants (`math.Int`).
+The `PendingWithdrawalDistribution` field is a [`collections.Item`][item] that stores the amount of $USDN returned from remote positions but not yet distributed to withdrawal claimants (`math.Int`).
 
 ```go
 const PendingWithdrawalDistributionKey = []byte("vaults/v2/pending_withdrawal_dist")
