@@ -24,9 +24,6 @@ service Msg {
   // Request withdrawal (queue-based)
   rpc RequestWithdrawal(MsgRequestWithdrawal) returns (MsgRequestWithdrawalResponse);
 
-  // Claim a fulfilled withdrawal
-  rpc ClaimWithdrawal(MsgClaimWithdrawal) returns (MsgClaimWithdrawalResponse);
-
   // Set yield preference for a user's position
   rpc SetYieldPreference(MsgSetYieldPreference) returns (MsgSetYieldPreferenceResponse);
 
@@ -700,43 +697,6 @@ message MsgRequestWithdrawalResponse {
   google.protobuf.Timestamp expected_claimable_at = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
-  ];
-}
-
-// MsgClaimWithdrawal allows users to claim a fulfilled withdrawal
-message MsgClaimWithdrawal {
-  option (cosmos.msg.v1.signer) = "claimer";
-  option (amino.name) = "dollar/vaults/v2/ClaimWithdrawal";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // User claiming the withdrawal
-  string claimer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Request ID to claim
-  string request_id = 2;
-}
-
-// MsgClaimWithdrawalResponse returns claim execution details
-message MsgClaimWithdrawalResponse {
-  // Request ID
-  string request_id = 1;
-
-  // Amount claimed in $USDN
-  string amount_claimed = 2 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Shares burned
-  string shares_burned = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
   ];
 }
 
