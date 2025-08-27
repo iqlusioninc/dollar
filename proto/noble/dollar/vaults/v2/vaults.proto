@@ -10,32 +10,32 @@ import "noble/dollar/vaults/v1/vaults.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
-// NOBLE DOLLAR V2 VAULT SYSTEM - SHARE-BASED ACCOUNTING
+// NOBLE DOLLAR V2 VAULT SYSTEM - YIELD-TRACKING ACCOUNTING
 //
-// This package defines the V2 vault system that uses share-based accounting
-// for implicit yield tracking and improved capital efficiency.
+// This package defines the V2 vault system that uses direct yield tracking
+// for explicit yield accounting and improved transparency.
 //
 // Key features:
-// - Share-based accounting (sharePrice = totalNAV / totalShares)
-// - Automatic yield compounding
+// - Direct yield tracking per user position
+// - Explicit yield accrual accounting
 // - Exit queues for staked vaults
 // - User-controlled yield preferences
 // - Clean separation from legacy V1 system
 //
 // Migration approach: Users must withdraw from V1 and deposit into V2
 
-// UserPosition represents a user's position in the V2 share-based vault system
+// UserPosition represents a user's position in the V2 yield-tracking vault system
 message UserPosition {
-  // Total shares owned by the user
-  string shares = 1 [
+  // Current deposit amount (principal)
+  string deposit_amount = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Original deposit amount (for tracking purposes)
-  string original_deposit = 2 [
+  // Accrued yield on the position
+  string accrued_yield = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -57,8 +57,8 @@ message UserPosition {
   // Whether user wants to receive yield (vs contributing to fee pool)
   bool receive_yield = 5;
 
-  // Shares pending exit (for staked vaults)
-  string shares_pending_exit = 6 [
+  // Amount pending exit (for staked vaults)
+  string amount_pending_exit = 6 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -74,8 +74,8 @@ message ExitRequest {
   // Unique request ID
   string request_id = 1;
 
-  // Shares to be exited
-  string shares = 2 [
+  // Amount to be exited (including yield)
+  string exit_amount = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -127,26 +127,26 @@ enum ExitRequestStatus {
 
 // VaultState represents the current state of a V2 vault
 message VaultState {
-  // Total shares issued
-  string total_shares = 1 [
+  // Total deposits in the vault
+  string total_deposits = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Total Net Asset Value
-  string total_nav = 2 [
+  // Total accrued yield
+  string total_accrued_yield = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Current share price (NAV per share)
-  string share_price = 3 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+  // Total Net Asset Value (deposits + yield)
+  string total_nav = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
@@ -166,8 +166,8 @@ message VaultState {
     (gogoproto.stdtime) = true
   ];
 
-  // Total shares pending exit
-  string total_shares_pending_exit = 8 [
+  // Total amount pending exit
+  string total_amount_pending_exit = 8 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -178,26 +178,26 @@ message VaultState {
   int32 pending_exit_requests = 9;
 }
 
-// ShareCalculation contains details about share price calculations
-message ShareCalculation {
-  // Total NAV used in calculation
-  string total_nav = 1 [
+// YieldCalculation contains details about yield calculations
+message YieldCalculation {
+  // Total deposits used in calculation
+  string total_deposits = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Total shares used in calculation
-  string total_shares = 2 [
+  // Total accrued yield
+  string total_yield = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Resulting share price
-  string share_price = 3 [
+  // Yield rate (APY percentage)
+  string yield_rate = 3 [
     (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
@@ -213,34 +213,10 @@ message ShareCalculation {
 
 // DepositResult contains the outcome of a deposit operation
 message DepositResult {
-  // Amount deposited (after fees)
+  // Amount deposited
   string amount_deposited = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Shares received
-  string shares_received = 2 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Fees paid
-  string fees_paid = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Share price at time of deposit
-  string share_price = 4 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
@@ -248,16 +224,16 @@ message DepositResult {
 
 // WithdrawalResult contains the outcome of a withdrawal operation
 message WithdrawalResult {
-  // Shares redeemed
-  string shares_redeemed = 1 [
+  // Principal withdrawn
+  string principal_withdrawn = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Amount withdrawn (after fees)
-  string amount_withdrawn = 2 [
+  // Yield withdrawn
+  string yield_withdrawn = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -272,10 +248,10 @@ message WithdrawalResult {
     (amino.dont_omitempty) = true
   ];
 
-  // Share price at time of withdrawal
-  string share_price = 4 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+  // Total amount received (principal + yield - fees)
+  string total_amount_received = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
@@ -291,8 +267,8 @@ message YieldDistribution {
     (amino.dont_omitempty) = true
   ];
 
-  // Yield per share
-  string yield_per_share = 2 [
+  // Yield rate applied
+  string yield_rate = 2 [
     (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
@@ -305,8 +281,8 @@ message YieldDistribution {
     (gogoproto.stdtime) = true
   ];
 
-  // Number of eligible shareholders
-  uint64 eligible_shareholders = 4;
+  // Number of eligible depositors
+  uint64 eligible_depositors = 4;
 
   // Source of the yield (e.g., "staking_rewards", "trading_fees")
   string yield_source = 5;

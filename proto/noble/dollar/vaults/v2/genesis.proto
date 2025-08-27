@@ -32,8 +32,8 @@ message GenesisState {
   // Exit queue entries
   repeated ExitRequestEntry exit_queue = 6 [(gogoproto.nullable) = false];
 
-  // Total shares issued per vault type
-  repeated SharesTotalEntry shares_totals = 7 [(gogoproto.nullable) = false];
+  // Total deposits and yield per vault type
+  repeated VaultTotalEntry vault_totals = 7 [(gogoproto.nullable) = false];
 
   // Vault statistics
   repeated VaultStatsEntry vault_stats = 8 [(gogoproto.nullable) = false];
@@ -138,18 +138,26 @@ message ExitRequestEntry {
   ExitRequest exit_request = 2 [(gogoproto.nullable) = false];
 }
 
-// SharesTotalEntry tracks total shares for a vault type
-message SharesTotalEntry {
-  // Total shares issued
-  string total_shares = 1 [
+// VaultTotalEntry tracks total deposits and yield for a vault type
+message VaultTotalEntry {
+  // Total deposits in the vault
+  string total_deposits = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Total NAV (Net Asset Value)
-  string total_nav = 2 [
+  // Total accrued yield
+  string total_accrued_yield = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total NAV (Net Asset Value = deposits + yield)
+  string total_nav = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -196,12 +204,4 @@ message VaultStatsEntry {
 
   // Number of active positions
   uint64 active_positions = 6;
-
-  // Average position size
-  string average_position_size = 7 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }

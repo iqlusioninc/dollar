@@ -97,8 +97,8 @@ message NAVUpdate {
 
 // PricingInfo provides pricing information for deposits/withdrawals
 message PricingInfo {
-  // Current share price (NAV per share)
-  string share_price = 1 [
+  // Current yield rate (APY)
+  string yield_rate = 1 [
     (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
@@ -111,8 +111,16 @@ message PricingInfo {
   // Effective fee rate
   int32 effective_fee_rate = 3;
 
-  // Expected shares for deposit or token amount for withdrawal
+  // Expected amount after fees (for deposits) or to receive (for withdrawals)
   string expected_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Expected yield allocation (for deposits) or yield portion (for withdrawals)
+  string expected_yield = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

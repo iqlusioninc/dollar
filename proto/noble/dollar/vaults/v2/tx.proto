@@ -107,46 +107,14 @@ message MsgDeposit {
 
   // Whether user wants to receive yield
   bool receive_yield = 3;
-
-  // Minimum shares to receive (slippage protection)
-  string min_shares = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }
 
 // MsgDepositResponse returns the results of a deposit
 message MsgDepositResponse {
-  // Shares received
-  string shares_received = 1 [
+  // Amount deposited
+  string amount_deposited = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Amount actually deposited (after fees)
-  string amount_deposited = 2 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Fees paid
-  string fees_paid = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Share price at time of deposit
-  string share_price = 4 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
@@ -609,8 +577,8 @@ message MsgRequestWithdrawal {
   // User requesting withdrawal
   string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  // Shares to redeem (locked immediately)
-  string shares = 2 [
+  // Amount to withdraw (locked immediately)
+  string amount = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -623,18 +591,18 @@ message MsgRequestWithdrawalResponse {
   // Withdrawal request ID
   string request_id = 1;
 
-  // Shares locked for withdrawal
-  string shares_locked = 2 [
+  // Amount locked for withdrawal
+  string amount_locked = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // NAV at time of request
-  string nav_at_request = 3 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+  // Yield portion of withdrawal
+  string yield_portion = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
@@ -666,8 +634,8 @@ message MsgProcessWithdrawalQueueResponse {
   // Number of requests processed
   int32 requests_processed = 1;
 
-  // Total shares processed
-  string total_shares_processed = 2 [
+  // Total amount processed
+  string total_amount_processed = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

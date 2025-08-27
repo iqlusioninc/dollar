@@ -62,36 +62,36 @@ message FeeConfig {
 enum FeeCollectionMethod {
   option (gogoproto.goproto_enum_prefix) = false;
 
-  // Fees collected through share dilution
-  COLLECTION_SHARE_DILUTION = 0;
+  // Fees collected from yield accruals
+  COLLECTION_YIELD_DEDUCTION = 0;
   // Fees collected in tokens directly
   COLLECTION_TOKEN_DIRECT = 1;
   // Fees collected through NAV adjustment
   COLLECTION_NAV_ADJUSTMENT = 2;
 }
 
-// ShareDilutionParams defines parameters for fee collection through share dilution
-message ShareDilutionParams {
-  // Target dilution rate (basis points per year)
-  int32 target_dilution_rate = 1;
-  // Minimum dilution amount per period
-  string min_dilution_amount = 2 [
+// YieldDeductionParams defines parameters for fee collection from yield
+message YieldDeductionParams {
+  // Target fee rate on yield (basis points)
+  int32 yield_fee_rate = 1;
+  // Minimum fee amount per period
+  string min_fee_amount = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Maximum dilution amount per period
-  string max_dilution_amount = 3 [
+  // Maximum fee amount per period
+  string max_fee_amount = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Dilution frequency (seconds)
-  int64 dilution_frequency = 4;
-  // Last dilution timestamp
-  google.protobuf.Timestamp last_dilution = 5 [
+  // Fee collection frequency (seconds)
+  int64 collection_frequency = 4;
+  // Last collection timestamp
+  google.protobuf.Timestamp last_collection = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
@@ -108,8 +108,8 @@ message FeeAccrual {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Shares to be diluted for this fee
-  string shares_to_dilute = 3 [
+  // Yield to be deducted for this fee
+  string yield_to_deduct = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -143,8 +143,8 @@ message FeeCollection {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Shares diluted for collection
-  string shares_diluted = 3 [
+  // Yield deducted for collection
+  string yield_deducted = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -169,8 +169,8 @@ message FeeTypeBreakdown {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Shares diluted for this fee type
-  string shares_diluted = 3 [
+  // Yield deducted for this fee type
+  string yield_deducted = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -189,8 +189,8 @@ message FeeStats {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Total shares diluted for fees
-  string total_shares_diluted = 2 [
+  // Total yield collected for fees
+  string total_yield_collected = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -216,10 +216,10 @@ message FeeStats {
 
 // PerformanceFeeState tracks performance fee calculations
 message PerformanceFeeState {
-  // Current high water mark (share price)
+  // Current high water mark (total NAV)
   string high_water_mark = 1 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
