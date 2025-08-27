@@ -44,8 +44,8 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/price";
   }
 
-  // NAVInfo returns NAV information for a vault type
-  rpc NAVInfo(QueryNAVInfoRequest) returns (QueryNAVInfoResponse) {
+  // NAV returns current NAV with breakdown (spec-aligned)
+  rpc NAV(QueryNAVRequest) returns (QueryNAVResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/nav";
   }
 
@@ -71,6 +71,11 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/positions/{address}";
   }
 
+  // VaultRemotePositions returns all remote positions for the vault (spec-aligned)
+  rpc VaultRemotePositions(QueryVaultRemotePositionsRequest) returns (QueryVaultRemotePositionsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/remote_positions";
+  }
+
   // InFlightPosition returns information about an in-flight operation
   rpc InFlightPosition(QueryInFlightPositionRequest) returns (QueryInFlightPositionResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/{nonce}";
@@ -91,24 +96,44 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/drift";
   }
 
-  // DepositPreview shows what a user would receive for a deposit
-  rpc DepositPreview(QueryDepositPreviewRequest) returns (QueryDepositPreviewResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/preview/deposit/{amount}";
+  // WithdrawalQueue returns the current withdrawal queue (spec-aligned)
+  rpc WithdrawalQueue(QueryWithdrawalQueueRequest) returns (QueryWithdrawalQueueResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/withdrawal_queue";
   }
 
-  // WithdrawalPreview shows what a user would receive for a withdrawal
-  rpc WithdrawalPreview(QueryWithdrawalPreviewRequest) returns (QueryWithdrawalPreviewResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/preview/withdrawal/{shares}";
+  // UserWithdrawals returns all withdrawal requests for a user (spec-aligned)
+  rpc UserWithdrawals(QueryUserWithdrawalsRequest) returns (QueryUserWithdrawalsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/user_withdrawals/{address}";
   }
 
-  // ExitQueue returns pending exit requests for a vault type
-  rpc ExitQueue(QueryExitQueueRequest) returns (QueryExitQueueResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/exit-queue";
+  // UserShares returns share balance and value for a user (spec-aligned)
+  rpc UserShares(QueryUserSharesRequest) returns (QueryUserSharesResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/user_shares/{address}";
   }
 
-  // UserExitRequests returns a user's pending exit requests
-  rpc UserExitRequests(QueryUserExitRequestsRequest) returns (QueryUserExitRequestsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/exit-requests/{address}";
+  // DepositVelocity returns deposit velocity metrics (spec-aligned)
+  rpc DepositVelocity(QueryDepositVelocityRequest) returns (QueryDepositVelocityResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/deposit_velocity/{address}";
+  }
+
+  // SimulateDeposit (spec-aligned)
+  rpc SimulateDeposit(QuerySimulateDepositRequest) returns (QuerySimulateDepositResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/simulate_deposit";
+  }
+
+  // SimulateWithdrawal (spec-aligned)
+  rpc SimulateWithdrawal(QuerySimulateWithdrawalRequest) returns (QuerySimulateWithdrawalResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/simulate_withdrawal";
+  }
+
+  // InflightFunds (spec-aligned aggregate view)
+  rpc InflightFunds(QueryInflightFundsRequest) returns (QueryInflightFundsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/inflight_funds";
+  }
+
+  // StaleInflightFunds (spec-aligned aggregate view)
+  rpc StaleInflightFunds(QueryStaleInflightFundsRequest) returns (QueryStaleInflightFundsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/stale_inflight_funds";
   }
 
   // FeeInfo returns fee configuration for a vault type
@@ -118,11 +143,6 @@ service Query {
 
   // Stats returns statistics for a vault type
   rpc Stats(QueryStatsRequest) returns (QueryStatsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/stats";
-  }
-
-  // AllStats returns statistics for all vault types
-  rpc AllStats(QueryAllStatsRequest) returns (QueryAllStatsResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/stats";
   }
 
@@ -195,75 +215,10 @@ message QuerySharePriceResponse {
   string total_nav = 3;
 }
 
-// QueryNAVInfoRequest requests NAV information
-message QueryNAVInfoRequest {}
 
-// QueryNAVInfoResponse returns NAV information
-message QueryNAVInfoResponse {
-  NAVInfo nav_info = 1 [(gogoproto.nullable) = false];
-}
 
-// QueryDepositPreviewRequest requests a deposit preview
-message QueryDepositPreviewRequest {
-  string amount = 1;
-}
 
-// QueryDepositPreviewResponse returns deposit preview information
-message QueryDepositPreviewResponse {
-  string shares_to_receive = 1;
-  string fees_to_pay = 2;
-  string net_amount = 3;
-  string share_price = 4;
-  int32 fee_rate_bps = 5;
-}
 
-// QueryWithdrawalPreviewRequest requests a withdrawal preview
-message QueryWithdrawalPreviewRequest {
-  string shares = 1;
-}
-
-// QueryWithdrawalPreviewResponse returns withdrawal preview information
-message QueryWithdrawalPreviewResponse {
-  string amount_to_receive = 1;
-  string fees_to_pay = 2;
-  string gross_amount = 3;
-  string share_price = 4;
-  int32 fee_rate_bps = 5;
-}
-
-// QueryExitQueueRequest requests the exit queue for a vault
-message QueryExitQueueRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-// QueryExitQueueResponse returns the exit queue
-message QueryExitQueueResponse {
-  repeated ExitRequestWithUser exit_requests = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// ExitRequestWithUser includes the user address with the exit request
-message ExitRequestWithUser {
-  string user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  ExitRequest exit_request = 2 [(gogoproto.nullable) = false];
-}
-
-// QueryUserExitRequestsRequest requests a user's exit requests
-message QueryUserExitRequestsRequest {
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QueryUserExitRequestsResponse returns a user's exit requests
-message QueryUserExitRequestsResponse {
-  repeated ExitRequestWithVault exit_requests = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// ExitRequestWithVault includes the vault type with the exit request
-message ExitRequestWithVault {
-  ExitRequest exit_request = 1 [(gogoproto.nullable) = false];
-}
 
 // QueryFeeInfoRequest requests fee information
 message QueryFeeInfoRequest {}
@@ -402,4 +357,217 @@ message DriftAlertWithDetails {
   DriftAlert alert = 1 [(gogoproto.nullable) = false];
   CrossChainRoute route = 2 [(gogoproto.nullable) = false];
   RemotePosition position = 3 [(gogoproto.nullable) = false];
+}
+
+// ========== Spec-aligned Query Messages ==========
+
+// NAV (spec-aligned)
+message QueryNAVRequest {}
+
+message NAVBreakdownView {
+  string local = 1;
+  string remote_positions = 2;
+  string inflight = 3;
+  string liabilities = 4;
+  string total = 5;
+}
+
+message QueryNAVResponse {
+  string nav = 1; // Total Net Asset Value ($USDN)
+  string nav_per_share = 2; // Dec string
+  google.protobuf.Timestamp last_update = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string total_shares = 4;
+  string local_assets = 5;
+  string remote_positions_value = 6;
+  string inflight_funds_value = 7;
+  string pending_withdrawals = 8;
+  NAVBreakdownView nav_breakdown = 9;
+}
+
+// Withdrawal queue views
+message QueryWithdrawalQueueRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message WithdrawalQueueItem {
+  string request_id = 1;
+  string user = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string shares = 3;
+  string requested_amount = 4;
+  string nav_at_request = 5;
+  google.protobuf.Timestamp timestamp = 6 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string status = 7; // PENDING, PROCESSING, CLAIMABLE, CLAIMED
+  uint64 position = 8; // queue position (optional)
+}
+
+message QueryWithdrawalQueueResponse {
+  repeated WithdrawalQueueItem pending_requests = 1 [(gogoproto.nullable) = false];
+  string total_pending = 2;
+  string available_liquidity = 3;
+  uint64 queue_length = 4;
+  string estimated_processing_time = 5; // seconds
+  cosmos.base.query.v1beta1.PageResponse pagination = 6;
+}
+
+// User withdrawals
+message QueryUserWithdrawalsRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message WithdrawalStatusItem {
+  string request_id = 1;
+  string shares = 2;
+  string requested_amount = 3;
+  string fulfilled_amount = 4;
+  string status = 5; // CLAIMABLE, CLAIMED, PENDING, etc.
+  google.protobuf.Timestamp timestamp = 6 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp claimable_at = 7 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp claimed_at = 8 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+}
+
+message QueryUserWithdrawalsResponse {
+  repeated WithdrawalStatusItem withdrawals = 1 [(gogoproto.nullable) = false];
+  string total_pending = 2;
+  string total_claimable = 3;
+  string total_claimed = 4;
+  cosmos.base.query.v1beta1.PageResponse pagination = 5;
+}
+
+// User shares
+message QueryUserSharesRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryUserSharesResponse {
+  string shares = 1;
+  string share_value = 2;
+  string nav_per_share = 3;
+  string unrealized_gain = 4;
+  string locked_shares = 5;
+}
+
+// Deposit velocity
+message QueryDepositVelocityRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryDepositVelocityResponse {
+  string user = 1;
+  string last_deposit_block = 2;
+  uint32 recent_deposit_count = 3;
+  string recent_deposit_volume = 4;
+  int64 time_window_blocks = 5;
+  bool suspicious_activity_flag = 6;
+  int64 cooldown_remaining_blocks = 7;
+  string velocity_score = 8; // Dec string
+}
+
+// Simulations
+message QuerySimulateDepositRequest {
+  string amount = 1;
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message CheckResultsView {
+  bool within_user_limit = 1;
+  bool within_block_limit = 2;
+  bool within_total_limit = 3;
+  bool cooldown_passed = 4;
+  bool velocity_check_passed = 5;
+}
+
+message QuerySimulateDepositResponse {
+  string expected_shares = 1;
+  string nav_per_share = 2;
+  CheckResultsView checks = 3;
+  repeated string warnings = 4;
+}
+
+message QuerySimulateWithdrawalRequest {
+  string shares = 1;
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QuerySimulateWithdrawalResponse {
+  string expected_amount = 1;
+  string nav_per_share = 2;
+  uint64 queue_position = 3;
+  string estimated_fulfillment_time = 4; // seconds
+  string available_liquidity = 5;
+  string ahead_in_queue = 6;
+}
+
+// Inflight funds aggregates
+message QueryInflightFundsRequest {}
+
+message InflightFundView {
+  uint64 hyperlane_route_id = 1;
+  string transaction_id = 2;
+  string type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
+  string amount = 4;
+  string current_value = 5;
+  uint32 source_domain = 6;
+  uint32 destination_domain = 7;
+  uint64 source_position_id = 8;
+  uint64 destination_position_id = 9;
+  google.protobuf.Timestamp initiated_at = 10 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp expected_at = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string status = 12; // PENDING, CONFIRMED, COMPLETED, FAILED
+  string time_remaining = 13; // seconds
+}
+
+message QueryInflightFundsResponse {
+  repeated InflightFundView inflight_funds = 1 [(gogoproto.nullable) = false];
+  string total_inflight = 2;
+  string pending_deployment = 3;
+  string pending_withdrawal_distribution = 4;
+  map<string, string> by_route = 5;
+  map<string, string> by_type = 6;
+  map<string, string> by_status = 7;
+}
+
+message QueryStaleInflightFundsRequest {}
+
+message StaleInflightFundView {
+  uint64 hyperlane_route_id = 1;
+  string transaction_id = 2;
+  string amount = 3;
+  string type = 4;
+  uint32 source_domain = 5;
+  uint32 destination_domain = 6;
+  google.protobuf.Timestamp initiated_at = 7 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp expected_at = 8 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string hours_overdue = 9;
+  string last_known_status = 10;
+  string recommended_action = 11;
+}
+
+message QueryStaleInflightFundsResponse {
+  repeated StaleInflightFundView stale_funds = 1 [(gogoproto.nullable) = false];
+  string total_stale_value = 2;
+  uint64 total_stale_count = 3;
+  string oldest_stale_hours = 4;
+}
+
+// Vault-wide remote positions
+message QueryVaultRemotePositionsRequest {}
+
+message VaultRemotePosition {
+  string position_id = 1;
+  string vault_address = 2;
+  uint32 chain_id = 3;
+  string shares_held = 4;
+  string share_price = 5;
+  string principal = 6;
+  string current_value = 7;
+  string apy = 8; // Dec string
+  string status = 9; // ACTIVE, WITHDRAWING, CLOSED
+  google.protobuf.Timestamp last_update = 10 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+}
+
+message QueryVaultRemotePositionsResponse {
+  repeated VaultRemotePosition positions = 1 [(gogoproto.nullable) = false];
+  uint64 total_positions = 2;
+  string total_value = 3;
 }
