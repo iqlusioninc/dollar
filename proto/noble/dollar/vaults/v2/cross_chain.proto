@@ -6,170 +6,185 @@ import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "noble/dollar/v2/dollar.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
 // CrossChainRoute defines a route for cross-chain operations
+// Currently supports Hyperlane, with potential for future IBC support
 message CrossChainRoute {
   // Unique identifier for the route
-  string route_id = 1;
-  // Source chain identifier
+  uint32 route_id = 1;
+  // Source chain identifier (Hyperlane domain ID or IBC chain ID)
   string source_chain = 2;
-  // Destination chain identifier
+  // Destination chain identifier (Hyperlane domain ID or IBC chain ID)
   string destination_chain = 3;
-  // Provider type (IBC or HYPERLANE)
-  noble.dollar.v2.Provider provider = 4;
   // Provider-specific configuration
-  CrossChainProviderConfig provider_config = 5;
+  oneof provider_config {
+    // Hyperlane configuration (currently only supported provider)
+    HyperlaneConfig hyperlane_config = 4;
+    // Future: IBC configuration could be added here
+  }
   // Whether this route is active
-  bool active = 6;
-  // Maximum position value allowed for this route
-  string max_position_value = 7 [
+  bool active = 5;
+  // Maximum value allowed inflight on this route
+  string max_inflight_value = 6 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
   // Risk parameters for this route
-  CrossChainRiskParams risk_params = 8;
-}
-
-// CrossChainProviderConfig defines provider-specific configuration
-message CrossChainProviderConfig {
-  oneof config {
-    // IBC-specific configuration
-    IBCConfig ibc_config = 1;
-    // Hyperlane-specific configuration
-    HyperlaneConfig hyperlane_config = 2;
-  }
-}
-
-// IBCConfig defines IBC-specific configuration
-message IBCConfig {
-  // IBC channel for communication
-  string channel_id = 1;
-  // IBC port (default: "transfer")
-  string port_id = 2;
-  // Connection timeout in seconds
-  uint64 timeout_timestamp = 3;
-  // Packet timeout height
-  uint64 timeout_height = 4;
+  CrossChainRiskParams risk_params = 7;
 }
 
 // HyperlaneConfig defines Hyperlane-specific configuration
 message HyperlaneConfig {
-  // Hyperlane domain identifier
-  uint32 domain_id = 1;
-  // Mailbox contract address on remote chain
-  string mailbox_address = 2;
+  // Source Hyperlane domain ID
+  uint32 source_domain = 1;
+  // Destination Hyperlane domain ID
+  uint32 destination_domain = 2;
+  // Hyperlane mailbox address
+  string mailbox_address = 3;
   // Interchain gas paymaster address
-  string gas_paymaster_address = 3;
+  string gas_paymaster_address = 4;
   // Hook contract address (optional)
-  string hook_address = 4;
+  string hook_address = 5;
   // Gas limit for remote execution
-  uint64 gas_limit = 5;
-  // Gas price for remote execution
-  string gas_price = 6 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
+  uint64 gas_limit = 6;
+  // Expected time for message delivery (seconds)
+  uint64 expected_delivery_time = 7;
 }
 
 // CrossChainRiskParams defines risk management parameters for cross-chain operations
 message CrossChainRiskParams {
-  // Haircut percentage applied to remote positions (basis points)
-  int32 position_haircut = 1;
   // Maximum drift allowed before position revaluation (basis points)
-  int32 max_drift_threshold = 2;
+  int32 max_drift_threshold = 1;
   // Timeout for cross-chain operations (seconds)
-  int64 operation_timeout = 3;
+  int64 operation_timeout = 2;
   // Maximum number of retries for failed operations
-  int32 max_retries = 4;
+  int32 max_retries = 3;
   // Conservative valuation discount (basis points)
-  int32 conservative_discount = 5;
+  int32 conservative_discount = 4;
 }
 
-// RemotePosition represents a position on another chain
+// RemotePosition represents a position in an ERC-4626 compatible vault on another chain
 message RemotePosition {
-  // Route used for this position
-  string route_id = 1;
-  // User address on the remote chain
-  string remote_address = 2;
-  // Local user address (Noble chain)
-  bytes local_address = 3;
-  // Position value on remote chain
-  string remote_value = 4 [
+  // Unique position identifier
+  uint64 position_id = 1;
+  // Address of the ERC-4626 compatible vault
+  bytes vault_address = 2;
+  // Chain identifier (Hyperlane domain ID)
+  uint32 chain_id = 3;
+  // Number of vault shares held
+  string shares_held = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Conservative valuation (with haircut applied)
-  string conservative_value = 5 [
+  // Principal amount initially deposited (in USDN)
+  string principal = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Last update timestamp
-  google.protobuf.Timestamp last_update = 6 [
+  // Current share price from oracle
+  string share_price = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Total value of position (shares * price)
+  string total_value = 7 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Last oracle update timestamp
+  google.protobuf.Timestamp last_update = 8 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  // Current drift from expected value (basis points)
-  int32 current_drift = 7;
   // Position status
-  RemotePositionStatus status = 8;
-  // Shares allocated for this remote position
-  string allocated_shares = 9 [
+  RemotePositionStatus status = 9;
+  // Oracle configuration for this position
+  string oracle_address = 10;
+  // Maximum staleness for oracle data (seconds)
+  int64 max_staleness = 11;
+}
+
+// RemotePositionStatus represents the status of a remote position
+enum RemotePositionStatus {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Position is active and being tracked
+  REMOTE_POSITION_ACTIVE = 0;
+  // Position is being withdrawn from
+  REMOTE_POSITION_WITHDRAWING = 1;
+  // Position has been closed
+  REMOTE_POSITION_CLOSED = 2;
+  // Position is in error state
+  REMOTE_POSITION_ERROR = 3;
+}
+
+// InflightFund represents funds in transit between Noble and remote positions
+message InflightFund {
+  // Cross-chain route identifier
+  uint32 route_id = 1;
+  // Transaction ID (Hyperlane message ID or IBC packet sequence)
+  string transaction_id = 2;
+  // Type of inflight operation
+  InflightType type = 3;
+  // Amount in USDN
+  string amount = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Provider type for this position
-  noble.dollar.v2.Provider provider = 10;
+  // Source chain identifier
+  string source_chain = 5;
+  // Destination chain identifier
+  string destination_chain = 6;
+  // Source position ID (optional)
+  uint64 source_position_id = 7;
+  // Destination position ID (optional)
+  uint64 destination_position_id = 8;
+  // When the operation was initiated
+  google.protobuf.Timestamp initiated_at = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  // Expected completion time
+  google.protobuf.Timestamp expected_at = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  // Current status
+  InflightStatus status = 11;
+  // Value at initiation (for NAV calculation)
+  string value_at_initiation = 12 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Number of retry attempts
+  int32 retry_count = 13;
   // Provider-specific tracking information
-  ProviderTrackingInfo provider_tracking = 11;
-  // Number of confirmations received
-  uint64 confirmations = 12;
-  // Required confirmations for finality
-  uint64 required_confirmations = 13;
+  ProviderTrackingInfo provider_tracking = 14;
 }
 
 // ProviderTrackingInfo contains provider-specific tracking data
 message ProviderTrackingInfo {
   oneof tracking_info {
-    // IBC-specific tracking information
-    IBCTrackingInfo ibc_tracking = 1;
     // Hyperlane-specific tracking information
-    HyperlaneTrackingInfo hyperlane_tracking = 2;
+    HyperlaneTrackingInfo hyperlane_tracking = 1;
+    // Future: IBC tracking could be added here
   }
-}
-
-// IBCTrackingInfo contains IBC-specific tracking data
-message IBCTrackingInfo {
-  // IBC packet sequence number
-  uint64 sequence = 1;
-  // Source channel ID
-  string source_channel = 2;
-  // Source port ID
-  string source_port = 3;
-  // Destination channel ID
-  string destination_channel = 4;
-  // Destination port ID
-  string destination_port = 5;
-  // Packet timeout timestamp
-  uint64 timeout_timestamp = 6;
-  // Packet timeout height
-  uint64 timeout_height = 7;
-  // Acknowledgment received
-  bool ack_received = 8;
-  // Acknowledgment data
-  bytes ack_data = 9;
 }
 
 // HyperlaneTrackingInfo contains Hyperlane-specific tracking data
@@ -186,127 +201,117 @@ message HyperlaneTrackingInfo {
   string origin_tx_hash = 5;
   // Transaction hash on destination chain
   string destination_tx_hash = 6;
-  // Block number on origin chain
-  uint64 origin_block_number = 7;
-  // Block number on destination chain
-  uint64 destination_block_number = 8;
   // Whether message has been processed
-  bool processed = 9;
-  // Gas used for execution
-  uint64 gas_used = 10;
+  bool processed = 7;
 }
 
-// RemotePositionStatus represents the status of a remote position
-enum RemotePositionStatus {
+// InflightType defines the type of inflight funds
+enum InflightType {
   option (gogoproto.goproto_enum_prefix) = false;
 
-  // Position is active and being tracked
-  REMOTE_POSITION_ACTIVE = 0;
-  // Position update is pending
-  REMOTE_POSITION_PENDING_UPDATE = 1;
-  // Position has exceeded drift limits
-  REMOTE_POSITION_DRIFT_EXCEEDED = 2;
-  // Position is being liquidated
-  REMOTE_POSITION_LIQUIDATING = 3;
-  // Position has been closed
-  REMOTE_POSITION_CLOSED = 4;
-  // Position is in error state
-  REMOTE_POSITION_ERROR = 5;
+  // USDN being deployed to a remote position
+  INFLIGHT_DEPOSIT_TO_POSITION = 0;
+  // USDN returning from a remote position
+  INFLIGHT_WITHDRAWAL_FROM_POSITION = 1;
+  // USDN moving between positions (via Noble)
+  INFLIGHT_REBALANCE_BETWEEN_POSITIONS = 2;
+  // USDN awaiting deployment to positions
+  INFLIGHT_PENDING_DEPLOYMENT = 3;
+  // USDN awaiting distribution to withdrawal queue
+  INFLIGHT_PENDING_WITHDRAWAL_DISTRIBUTION = 4;
 }
 
-// InFlightPosition represents a position operation in progress
-message InFlightPosition {
-  // Unique nonce for this operation
-  uint64 nonce = 1;
-  // Route being used
-  string route_id = 2;
-  // Local user address
-  bytes user_address = 3;
-  // Operation type
-  InFlightOperationType operation_type = 4;
-  // Amount involved in the operation
-  string amount = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-  // Shares involved (for withdrawals)
-  string shares = 6 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-  // Operation initiated timestamp
-  google.protobuf.Timestamp initiated_at = 7 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Expected completion timestamp
-  google.protobuf.Timestamp expected_completion = 8 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Current retry count
-  int32 retry_count = 9;
-  // Operation status
-  InFlightStatus status = 10;
-  // Error message if operation failed
-  string error_message = 11;
-  // Provider type for this operation
-  noble.dollar.v2.Provider provider = 12;
-  // Provider-specific tracking information
-  ProviderTrackingInfo provider_tracking = 13;
-  // Number of confirmations received
-  uint64 confirmations = 14;
-  // Required confirmations for completion
-  uint64 required_confirmations = 15;
-}
-
-// InFlightOperationType defines the type of cross-chain operation
-enum InFlightOperationType {
+// InflightStatus represents the status of inflight funds
+enum InflightStatus {
   option (gogoproto.goproto_enum_prefix) = false;
 
-  // Position deposit to remote chain
-  OPERATION_REMOTE_DEPOSIT = 0;
-  // Position withdrawal from remote chain
-  OPERATION_REMOTE_WITHDRAW = 1;
-  // Position rebalancing
-  OPERATION_REBALANCE = 2;
-  // Position liquidation
-  OPERATION_LIQUIDATE = 3;
-}
-
-// InFlightStatus represents the status of an in-flight operation
-enum InFlightStatus {
-  option (gogoproto.goproto_enum_prefix) = false;
-
-  // Operation is pending
+  // Transaction is pending
   INFLIGHT_PENDING = 0;
-  // Operation is being processed
-  INFLIGHT_PROCESSING = 1;
-  // Operation completed successfully
+  // Transaction is confirmed by provider
+  INFLIGHT_CONFIRMED = 1;
+  // Transaction completed successfully
   INFLIGHT_COMPLETED = 2;
-  // Operation failed
+  // Transaction failed
   INFLIGHT_FAILED = 3;
-  // Operation timed out
+  // Transaction timed out
   INFLIGHT_TIMEOUT = 4;
-  // Operation was cancelled
-  INFLIGHT_CANCELLED = 5;
+}
+
+// NAVOracleUpdate represents an oracle price update received via cross-chain messaging
+message NAVOracleUpdate {
+  // Position identifier this update is for
+  string position_id = 1;
+  // Current share price
+  string share_price = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Number of shares held
+  string shares_held = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Timestamp of the update
+  google.protobuf.Timestamp timestamp = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  // Source chain identifier
+  string source_chain = 5;
+  // Message ID (Hyperlane message ID or IBC packet)
+  string message_id = 6;
+  // Update status
+  OracleUpdateStatus status = 7;
+}
+
+// OracleUpdateStatus represents the status of an oracle update
+enum OracleUpdateStatus {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Update has been validated
+  ORACLE_UPDATE_VALIDATED = 0;
+  // Update has been applied to position
+  ORACLE_UPDATE_APPLIED = 1;
+  // Update was rejected (stale, invalid, etc.)
+  ORACLE_UPDATE_REJECTED = 2;
+}
+
+// PositionOracleConfig stores oracle configuration for a position
+message PositionOracleConfig {
+  // Unique position identifier
+  string position_id = 1;
+  // Expected origin mailbox/channel
+  string origin_identifier = 2;
+  // Maximum age before data is considered stale (seconds)
+  int64 max_staleness = 3;
+  // Authorized oracle contract address on remote chain
+  string oracle_contract = 4;
+  // Source chain identifier
+  string source_chain = 5;
+  // Last update timestamp
+  google.protobuf.Timestamp last_update = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  // Provider type (HYPERLANE, future: IBC)
+  string provider_type = 7;
 }
 
 // CrossChainPositionSnapshot provides a snapshot of all cross-chain positions
 message CrossChainPositionSnapshot {
-  // Total remote value (sum of all remote positions)
+  // Total value of all remote positions
   string total_remote_value = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Total conservative value (with haircuts applied)
-  string total_conservative_value = 2 [
+  // Total value of inflight funds
+  string total_inflight_value = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -314,53 +319,71 @@ message CrossChainPositionSnapshot {
   ];
   // Number of active remote positions
   int64 active_positions = 3;
-  // Number of positions with drift issues
-  int64 drift_exceeded_positions = 4;
+  // Number of positions with stale data
+  int64 stale_positions = 4;
   // Snapshot timestamp
   google.protobuf.Timestamp timestamp = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  // Total shares allocated to remote positions
-  string total_remote_shares = 6 [
+  // Total shares across all positions
+  string total_shares = 6 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-}
-
-// DriftAlert represents an alert when a position exceeds drift limits
-message DriftAlert {
-  // Position route ID
-  string route_id = 1;
-  // User address
-  bytes user_address = 2;
-  // Current drift percentage (basis points)
-  int32 current_drift = 3;
-  // Threshold that was exceeded (basis points)
-  int32 threshold_exceeded = 4;
-  // Alert timestamp
-  google.protobuf.Timestamp timestamp = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Recommended action
-  string recommended_action = 6;
+  // Breakdown by route
+  map<uint32, string> value_by_route = 7;
 }
 
 // CrossChainConfig defines global configuration for cross-chain operations
 message CrossChainConfig {
-  // Global position haircut (basis points)
-  int32 global_haircut = 1;
   // Maximum total remote position value as percentage of vault (basis points)
-  int32 max_remote_exposure = 2;
+  int32 max_remote_exposure = 1;
   // Default operation timeout (seconds)
-  int64 default_timeout = 3;
+  int64 default_timeout = 2;
   // Position update frequency (seconds)
-  int64 update_frequency = 4;
-  // Emergency liquidation threshold (basis points)
-  int32 emergency_liquidation_threshold = 5;
+  int64 update_frequency = 3;
+  // Maximum number of remote positions
+  uint32 max_remote_positions = 4;
+  // Allowed chains (can be Hyperlane domains or IBC chain IDs)
+  repeated string allowed_chains = 5;
   // Whether cross-chain operations are enabled
   bool enabled = 6;
+  // Maximum duration funds can be inflight (seconds)
+  int64 max_inflight_duration = 7;
+  // Maximum total value allowed inflight
+  string max_inflight_value = 8 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Supported providers (currently only HYPERLANE)
+  repeated string supported_providers = 9;
+}
+
+// StaleInflightAlert represents an alert for inflight funds exceeding expected duration
+message StaleInflightAlert {
+  // Route ID
+  uint32 route_id = 1;
+  // Transaction ID
+  string transaction_id = 2;
+  // Hours overdue
+  double hours_overdue = 3;
+  // Alert timestamp
+  google.protobuf.Timestamp timestamp = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  // Recommended action
+  string recommended_action = 5;
+  // Amount stuck in transit
+  string amount = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }

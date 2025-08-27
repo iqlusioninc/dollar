@@ -8,6 +8,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
+import "noble/dollar/vaults/v2/cross_chain.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
@@ -62,25 +63,13 @@ message OracleMapping {
   string position_id = 3;
 }
 
-// PositionOracleConfig defines configuration for a position's oracle
-message PositionOracleConfig {
-  // Unique position identifier
-  string position_id = 1;
-
-  // Origin mailbox for Hyperlane messages
-  string origin_mailbox = 2;
-
-  // Maximum staleness allowed (seconds)
-  int64 max_staleness = 3;
-}
-
 // EnrolledOracleRouter represents an enrolled oracle router
 message EnrolledOracleRouter {
   // Position identifier
   string position_id = 1;
 
-  // Origin domain (Hyperlane domain ID)
-  uint32 origin_domain = 2;
+  // Source chain identifier
+  string source_chain = 2;
 
   // Oracle contract address
   string oracle_contract = 3;
@@ -91,8 +80,8 @@ message EnrolledOracle {
   // Position identifier
   string position_id = 1;
 
-  // Origin domain
-  uint32 origin_domain = 2;
+  // Source chain identifier
+  string source_chain = 2;
 
   // Oracle address on remote chain
   string oracle_address = 3;
@@ -219,16 +208,16 @@ message OracleStatus {
   string last_error = 7;
 }
 
-// ========== Hyperlane Integration ==========
+// ========== Cross-Chain Oracle Integration ==========
 
-// HyperlaneOracleMessage represents an oracle update delivered by Hyperlane
-// This is not a Msg type as it's handled internally when Hyperlane delivers messages
-message HyperlaneOracleMessage {
-  // Hyperlane mailbox identifier
+// CrossChainOracleMessage represents an oracle update delivered by cross-chain messaging
+// This is not a Msg type as it's handled internally when messages are delivered
+message CrossChainOracleMessage {
+  // Mailbox/channel identifier
   bytes mailbox_id = 1;
 
-  // Origin domain from Hyperlane
-  uint32 origin_domain = 2;
+  // Source chain identifier
+  string source_chain = 2;
 
   // Sender address on origin chain
   bytes sender = 3;
@@ -244,6 +233,9 @@ message HyperlaneOracleMessage {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // Provider type (HYPERLANE, future: IBC)
+  string provider_type = 7;
 }
 
 // OracleUpdateResult represents the result of processing an oracle update
@@ -325,17 +317,17 @@ message MsgRegisterOracle {
   // Oracle contract address on remote chain
   string oracle_address = 3;
 
-  // Source chain ID
-  uint32 chain_id = 4;
+  // Source chain identifier
+  string source_chain = 4;
 
   // Maximum staleness allowed (seconds)
   int64 max_staleness = 5;
 
-  // Origin domain for Hyperlane
-  uint32 origin_domain = 6;
+  // Provider type (HYPERLANE, future: IBC)
+  string provider_type = 6;
 
-  // Origin mailbox address
-  string origin_mailbox = 7;
+  // Origin identifier (mailbox for Hyperlane, channel for IBC)
+  string origin_identifier = 7;
 }
 
 // MsgRegisterOracleResponse confirms oracle registration

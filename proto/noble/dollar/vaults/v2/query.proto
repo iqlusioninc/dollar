@@ -76,13 +76,13 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/remote_positions";
   }
 
-  // InFlightPosition returns information about an in-flight operation
-  rpc InFlightPosition(QueryInFlightPositionRequest) returns (QueryInFlightPositionResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/{nonce}";
+  // InflightFund returns information about an in-flight operation
+  rpc InflightFund(QueryInflightFundRequest) returns (QueryInflightFundResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/{route_id}";
   }
 
-  // InFlightPositions returns all in-flight operations for a user
-  rpc InFlightPositions(QueryInFlightPositionsRequest) returns (QueryInFlightPositionsResponse) {
+  // InflightFundsUser returns all in-flight operations for a user
+  rpc InflightFundsUser(QueryInflightFundsUserRequest) returns (QueryInflightFundsUserResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/user/{address}";
   }
 
@@ -91,9 +91,9 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/snapshot";
   }
 
-  // DriftAlerts returns drift alerts for a user or route
-  rpc DriftAlerts(QueryDriftAlertsRequest) returns (QueryDriftAlertsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/drift";
+  // StaleInflightAlerts returns stale inflight alerts for a user or route
+  rpc StaleInflightAlerts(QueryStaleInflightAlertsRequest) returns (QueryStaleInflightAlertsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/stale";
   }
 
   // WithdrawalQueue returns the current withdrawal queue (spec-aligned)
@@ -270,7 +270,7 @@ message QueryCrossChainRoutesResponse {
 
 // QueryCrossChainRouteRequest requests a specific cross-chain route
 message QueryCrossChainRouteRequest {
-  string route_id = 1;
+  uint32 route_id = 1;
 }
 
 // QueryCrossChainRouteResponse returns a specific cross-chain route
@@ -280,7 +280,7 @@ message QueryCrossChainRouteResponse {
 
 // QueryRemotePositionRequest requests a user's remote position on a route
 message QueryRemotePositionRequest {
-  string route_id = 1;
+  uint32 route_id = 1;
   string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
@@ -303,29 +303,29 @@ message QueryRemotePositionsResponse {
 
 // RemotePositionWithRoute includes the route ID with the position
 message RemotePositionWithRoute {
-  string route_id = 1;
+  uint32 route_id = 1;
   RemotePosition position = 2 [(gogoproto.nullable) = false];
 }
 
-// QueryInFlightPositionRequest requests an in-flight operation
-message QueryInFlightPositionRequest {
-  uint64 nonce = 1;
+// QueryInflightFundRequest requests an in-flight operation
+message QueryInflightFundRequest {
+  uint32 route_id = 1;
 }
 
-// QueryInFlightPositionResponse returns an in-flight operation
-message QueryInFlightPositionResponse {
-  InFlightPosition position = 1 [(gogoproto.nullable) = false];
+// QueryInflightFundResponse returns an in-flight operation
+message QueryInflightFundResponse {
+  InflightFund fund = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryInFlightPositionsRequest requests all in-flight operations for a user
-message QueryInFlightPositionsRequest {
+// QueryInflightFundsUserRequest requests all in-flight operations for a user
+message QueryInflightFundsUserRequest {
   string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryInFlightPositionsResponse returns all in-flight operations for a user
-message QueryInFlightPositionsResponse {
-  repeated InFlightPosition positions = 1 [(gogoproto.nullable) = false];
+// QueryInflightFundsUserResponse returns all in-flight operations for a user
+message QueryInflightFundsUserResponse {
+  repeated InflightFund funds = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -339,24 +339,24 @@ message QueryCrossChainSnapshotResponse {
   CrossChainPositionSnapshot snapshot = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryDriftAlertsRequest requests drift alerts
-message QueryDriftAlertsRequest {
-  string route_id = 1; // Optional: filter by route
+// QueryStaleInflightAlertsRequest requests stale inflight alerts
+message QueryStaleInflightAlertsRequest {
+  uint32 route_id = 1; // Optional: filter by route
   string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; // Optional: filter by user
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-// QueryDriftAlertsResponse returns drift alerts
-message QueryDriftAlertsResponse {
-  repeated DriftAlertWithDetails alerts = 1 [(gogoproto.nullable) = false];
+// QueryStaleInflightAlertsResponse returns stale inflight alerts
+message QueryStaleInflightAlertsResponse {
+  repeated StaleInflightAlertWithDetails alerts = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// DriftAlertWithDetails includes additional context with the alert
-message DriftAlertWithDetails {
-  DriftAlert alert = 1 [(gogoproto.nullable) = false];
+// StaleInflightAlertWithDetails includes additional context with the alert
+message StaleInflightAlertWithDetails {
+  StaleInflightAlert alert = 1 [(gogoproto.nullable) = false];
   CrossChainRoute route = 2 [(gogoproto.nullable) = false];
-  RemotePosition position = 3 [(gogoproto.nullable) = false];
+  InflightFund fund = 3 [(gogoproto.nullable) = false];
 }
 
 // ========== Spec-aligned Query Messages ==========
@@ -502,13 +502,13 @@ message QuerySimulateWithdrawalResponse {
 message QueryInflightFundsRequest {}
 
 message InflightFundView {
-  uint64 hyperlane_route_id = 1;
+  uint32 route_id = 1;
   string transaction_id = 2;
   string type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
   string amount = 4;
   string current_value = 5;
-  uint32 source_domain = 6;
-  uint32 destination_domain = 7;
+  string source_chain = 6;
+  string destination_chain = 7;
   uint64 source_position_id = 8;
   uint64 destination_position_id = 9;
   google.protobuf.Timestamp initiated_at = 10 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
@@ -530,12 +530,12 @@ message QueryInflightFundsResponse {
 message QueryStaleInflightFundsRequest {}
 
 message StaleInflightFundView {
-  uint64 hyperlane_route_id = 1;
+  uint32 route_id = 1;
   string transaction_id = 2;
   string amount = 3;
   string type = 4;
-  uint32 source_domain = 5;
-  uint32 destination_domain = 6;
+  string source_chain = 5;
+  string destination_chain = 6;
   google.protobuf.Timestamp initiated_at = 7 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   google.protobuf.Timestamp expected_at = 8 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string hours_overdue = 9;
