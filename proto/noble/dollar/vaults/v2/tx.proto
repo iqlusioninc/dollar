@@ -30,9 +30,6 @@ service Msg {
   // Process withdrawal queue (admin only)
   rpc ProcessWithdrawalQueue(MsgProcessWithdrawalQueue) returns (MsgProcessWithdrawalQueueResponse);
 
-  // Update NAV for a vault (authority only)
-  rpc UpdateNAV(MsgUpdateNAV) returns (MsgUpdateNAVResponse);
-
   // Update vault configuration (authority only)
   rpc UpdateVaultConfig(MsgUpdateVaultConfig) returns (MsgUpdateVaultConfigResponse);
 
@@ -183,58 +180,7 @@ message MsgSetYieldPreferenceResponse {
 }
 
 
-// MsgUpdateNAV allows authority to update NAV for a vault
-message MsgUpdateNAV {
-  option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "dollar/vaults/v2/UpdateNAV";
 
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // Authority updating NAV
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // New NAV value
-  string new_nav = 2 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Reason for NAV update
-  string reason = 3;
-}
-
-// MsgUpdateNAVResponse returns NAV update results
-message MsgUpdateNAVResponse {
-  // Previous NAV
-  string previous_nav = 1 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // New NAV
-  string new_nav = 2 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // NAV change percentage (basis points)
-  int32 change_bps = 3;
-
-  // New share price
-  string new_share_price = 4 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}
 
 // MsgUpdateVaultConfig allows authority to update vault configuration
 message MsgUpdateVaultConfig {
