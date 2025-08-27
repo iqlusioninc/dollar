@@ -326,15 +326,8 @@ message CrossChainPositionSnapshot {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  // Total shares across all positions
-  string total_shares = 6 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
   // Breakdown by route
-  map<uint32, string> value_by_route = 7;
+  map<uint32, string> value_by_route = 6;
 }
 
 // CrossChainConfig defines global configuration for cross-chain operations
@@ -377,10 +370,8 @@ message StaleInflightAlert {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  // Recommended action
-  string recommended_action = 5;
   // Amount stuck in transit
-  string amount = 6 [
+  string amount = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

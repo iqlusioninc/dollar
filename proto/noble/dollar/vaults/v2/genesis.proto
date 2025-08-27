@@ -26,17 +26,14 @@ message GenesisState {
   // Current NAV information for each vault type
   repeated NAVEntry nav_entries = 4 [(gogoproto.nullable) = false];
 
-  // Fee configurations
-  repeated FeeConfigEntry fee_configs = 5 [(gogoproto.nullable) = false];
-
   // Exit queue entries
-  repeated ExitRequestEntry exit_queue = 6 [(gogoproto.nullable) = false];
+  repeated ExitRequestEntry exit_queue = 5 [(gogoproto.nullable) = false];
 
   // Total deposits and yield per vault type
-  repeated VaultTotalEntry vault_totals = 7 [(gogoproto.nullable) = false];
+  repeated VaultTotalEntry vault_totals = 6 [(gogoproto.nullable) = false];
 
   // Vault statistics
-  repeated VaultStatsEntry vault_stats = 8 [(gogoproto.nullable) = false];
+  repeated VaultStatsEntry vault_stats = 7 [(gogoproto.nullable) = false];
 }
 
 // Params defines the parameters for the V2 vaults module
@@ -44,14 +41,8 @@ message Params {
   // Authority address that can update parameters
   string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  // Default fee rate for deposits (basis points)
-  int32 default_deposit_fee_rate = 2;
-
-  // Default fee rate for withdrawals (basis points)
-  int32 default_withdrawal_fee_rate = 3;
-
   // Minimum deposit amount
-  string min_deposit_amount = 4 [
+  string min_deposit_amount = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -59,7 +50,7 @@ message Params {
   ];
 
   // Minimum withdrawal amount
-  string min_withdrawal_amount = 5 [
+  string min_withdrawal_amount = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -67,16 +58,16 @@ message Params {
   ];
 
   // Maximum NAV change percentage allowed per update (basis points)
-  int32 max_nav_change_bps = 6;
+  int32 max_nav_change_bps = 4;
 
   // Exit request timeout duration (in seconds)
-  int64 exit_request_timeout = 7;
+  int64 exit_request_timeout = 5;
 
   // Maximum number of exit requests to process per block
-  int32 max_exit_requests_per_block = 8;
+  int32 max_exit_requests_per_block = 6;
 
   // Whether V2 vaults are enabled
-  bool vaults_enabled = 9;
+  bool vaults_enabled = 7;
 }
 
 // VaultConfig stores configuration for a specific vault type
@@ -87,12 +78,8 @@ message VaultConfig {
   // Minimum staking period (for staked vaults)
   int64 min_staking_period = 2;
 
-  // Custom fee rates (overrides default if set)
-  int32 deposit_fee_rate = 3;
-  int32 withdrawal_fee_rate = 4;
-
   // Maximum total deposits allowed
-  string max_total_deposits = 5 [
+  string max_total_deposits = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -100,7 +87,7 @@ message VaultConfig {
   ];
 
   // Target yield rate (informational)
-  string target_yield_rate = 6 [
+  string target_yield_rate = 4 [
     (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
@@ -121,12 +108,6 @@ message UserPositionEntry {
 message NAVEntry {
   // NAV information
   NAVInfo nav_info = 1 [(gogoproto.nullable) = false];
-}
-
-// FeeConfigEntry stores fee configuration for a vault type
-message FeeConfigEntry {
-  // Fee configuration
-  FeeConfig fee_config = 1 [(gogoproto.nullable) = false];
 }
 
 // ExitRequestEntry stores an exit request in the queue

@@ -17,14 +17,10 @@ enum FeeType {
   FEE_TYPE_MANAGEMENT = 0;
   // Performance fee on positive returns
   FEE_TYPE_PERFORMANCE = 1;
-  // Deposit fee charged on entry
-  FEE_TYPE_DEPOSIT = 2;
-  // Withdrawal fee charged on exit
-  FEE_TYPE_WITHDRAWAL = 3;
   // Cross-chain operation fee
-  FEE_TYPE_CROSS_CHAIN = 4;
+  FEE_TYPE_CROSS_CHAIN = 2;
   // Emergency operation fee
-  FEE_TYPE_EMERGENCY = 5;
+  FEE_TYPE_EMERGENCY = 3;
 }
 
 // FeeConfig defines the configuration for various fees
@@ -33,24 +29,18 @@ message FeeConfig {
   int32 management_fee_rate = 1;
   // Performance fee rate (basis points)
   int32 performance_fee_rate = 2;
-  // Deposit fee rate (basis points)
-  int32 deposit_fee_rate = 3;
-  // Withdrawal fee rate (basis points)
-  int32 withdrawal_fee_rate = 4;
   // Cross-chain operation fee rate (basis points)
-  int32 cross_chain_fee_rate = 5;
+  int32 cross_chain_fee_rate = 3;
   // Emergency operation fee rate (basis points)
-  int32 emergency_fee_rate = 6;
+  int32 emergency_fee_rate = 4;
 
-  // Fee collection method
-  FeeCollectionMethod collection_method = 7;
   // Fee recipient address
-  string fee_recipient = 8 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string fee_recipient = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // Whether fees are enabled
-  bool fees_enabled = 9;
+  bool fees_enabled = 6;
 
   // High water mark for performance fees
-  string high_water_mark = 10 [
+  string high_water_mark = 7 [
     (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
@@ -58,17 +48,7 @@ message FeeConfig {
   ];
 }
 
-// FeeCollectionMethod defines how fees are collected
-enum FeeCollectionMethod {
-  option (gogoproto.goproto_enum_prefix) = false;
 
-  // Fees collected from yield accruals
-  COLLECTION_YIELD_DEDUCTION = 0;
-  // Fees collected in tokens directly
-  COLLECTION_TOKEN_DIRECT = 1;
-  // Fees collected through NAV adjustment
-  COLLECTION_NAV_ADJUSTMENT = 2;
-}
 
 // YieldDeductionParams defines parameters for fee collection from yield
 message YieldDeductionParams {
@@ -150,12 +130,10 @@ message FeeCollection {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Collection method used
-  FeeCollectionMethod method = 4;
   // Breakdown by fee type
-  repeated FeeTypeBreakdown breakdown = 5;
+  repeated FeeTypeBreakdown breakdown = 4;
   // Block height when collected
-  int64 block_height = 6;
+  int64 block_height = 5;
 }
 
 // FeeTypeBreakdown provides details for each fee type in a collection

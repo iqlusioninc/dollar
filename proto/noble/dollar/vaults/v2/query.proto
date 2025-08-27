@@ -136,10 +136,7 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/stale_inflight_funds";
   }
 
-  // FeeInfo returns fee configuration for a vault type
-  rpc FeeInfo(QueryFeeInfoRequest) returns (QueryFeeInfoResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/fees";
-  }
+
 
   // Stats returns statistics for a vault type
   rpc Stats(QueryStatsRequest) returns (QueryStatsResponse) {
@@ -221,13 +218,7 @@ message QueryYieldInfoResponse {
 
 
 
-// QueryFeeInfoRequest requests fee information
-message QueryFeeInfoRequest {}
 
-// QueryFeeInfoResponse returns fee information
-message QueryFeeInfoResponse {
-  FeeConfig fee_config = 1 [(gogoproto.nullable) = false];
-}
 
 // QueryStatsRequest requests statistics for a vault
 message QueryStatsRequest {}
