@@ -136,8 +136,6 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/stale_inflight_funds";
   }
 
-
-
   // Stats returns statistics for a vault type
   rpc Stats(QueryStatsRequest) returns (QueryStatsResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/stats";
@@ -207,18 +205,11 @@ message QueryYieldInfoRequest {}
 
 // QueryYieldInfoResponse returns the yield information
 message QueryYieldInfoResponse {
-  string yield_rate = 1;  // APY as decimal
+  string yield_rate = 1; // APY as decimal
   string total_deposits = 2;
   string total_accrued_yield = 3;
   string total_nav = 4;
 }
-
-
-
-
-
-
-
 
 // QueryStatsRequest requests statistics for a vault
 message QueryStatsRequest {}
@@ -367,7 +358,10 @@ message NAVBreakdownView {
 message QueryNAVResponse {
   string nav = 1; // Total Net Asset Value ($USDN)
   string yield_rate = 2; // APY as Dec string
-  google.protobuf.Timestamp last_update = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp last_update = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
   string total_deposits = 4;
   string total_accrued_yield = 5;
   string local_assets = 6;
@@ -385,10 +379,13 @@ message QueryWithdrawalQueueRequest {
 message WithdrawalQueueItem {
   string request_id = 1;
   string user = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string amount = 3;  // principal + yield
+  string amount = 3; // principal + yield
   string principal_amount = 4;
   string yield_amount = 5;
-  google.protobuf.Timestamp timestamp = 6 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
   string status = 7; // PENDING, PROCESSING, CLAIMABLE, CLAIMED
   uint64 position = 8; // queue position (optional)
 }
@@ -410,14 +407,23 @@ message QueryUserWithdrawalsRequest {
 
 message WithdrawalStatusItem {
   string request_id = 1;
-  string amount = 2;  // total amount (principal + yield)
+  string amount = 2; // total amount (principal + yield)
   string principal_amount = 3;
   string yield_amount = 4;
   string fulfilled_amount = 5;
   string status = 6; // CLAIMABLE, CLAIMED, PENDING, etc.
-  google.protobuf.Timestamp timestamp = 7 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp claimable_at = 8 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp claimed_at = 9 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp timestamp = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp claimable_at = 8 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp claimed_at = 9 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 message QueryUserWithdrawalsResponse {
@@ -434,11 +440,11 @@ message QueryUserBalanceRequest {
 }
 
 message QueryUserBalanceResponse {
-  string deposit_amount = 1;  // principal
+  string deposit_amount = 1; // principal
   string accrued_yield = 2;
-  string total_value = 3;  // deposit + yield
+  string total_value = 3; // deposit + yield
   string unrealized_gain = 4;
-  string locked_amount = 5;  // amount in withdrawal queue
+  string locked_amount = 5; // amount in withdrawal queue
 }
 
 // Deposit velocity
@@ -472,19 +478,19 @@ message CheckResultsView {
 }
 
 message QuerySimulateDepositResponse {
-  string expected_deposit = 1;  // amount after fees
-  string yield_rate = 2;  // current APY
+  string expected_deposit = 1; // amount after fees
+  string yield_rate = 2; // current APY
   CheckResultsView checks = 3;
   repeated string warnings = 4;
 }
 
 message QuerySimulateWithdrawalRequest {
-  string amount = 1;  // amount to withdraw
+  string amount = 1; // amount to withdraw
   string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 message QuerySimulateWithdrawalResponse {
-  string expected_amount = 1;  // total to receive after fees
+  string expected_amount = 1; // total to receive after fees
   string principal_portion = 2;
   string yield_portion = 3;
   uint64 queue_position = 4;
@@ -506,8 +512,14 @@ message InflightFundView {
   string destination_chain = 7;
   uint64 source_position_id = 8;
   uint64 destination_position_id = 9;
-  google.protobuf.Timestamp initiated_at = 10 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp expected_at = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp initiated_at = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp expected_at = 11 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
   string status = 12; // PENDING, CONFIRMED, COMPLETED, FAILED
   string time_remaining = 13; // seconds
 }
@@ -531,8 +543,14 @@ message StaleInflightFundView {
   string type = 4;
   string source_chain = 5;
   string destination_chain = 6;
-  google.protobuf.Timestamp initiated_at = 7 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp expected_at = 8 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp initiated_at = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp expected_at = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
   string hours_overdue = 9;
   string last_known_status = 10;
   string recommended_action = 11;
@@ -558,7 +576,10 @@ message VaultRemotePosition {
   string current_value = 7;
   string apy = 8; // Dec string
   string status = 9; // ACTIVE, WITHDRAWING, CLOSED
-  google.protobuf.Timestamp last_update = 10 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp last_update = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 message QueryVaultRemotePositionsResponse {

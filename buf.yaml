@@ -8,6 +8,7 @@ deps:
   - buf.build/cosmos/cosmos-sdk:v0.50.0
   - buf.build/cosmos/gogo-proto:5e5b9fdd01804356895f8f79a6f1ddc1
   - buf.build/googleapis/googleapis:cc916c31859748a68fd229a3c8d7a2e8
+  - github.com/bcp-innovations/hyperlane-cosmos
 lint:
   except:
     - ENUM_VALUE_PREFIX

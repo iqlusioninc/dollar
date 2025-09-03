@@ -48,8 +48,6 @@ message FeeConfig {
   ];
 }
 
-
-
 // YieldDeductionParams defines parameters for fee collection from yield
 message YieldDeductionParams {
   // Target fee rate on yield (basis points)

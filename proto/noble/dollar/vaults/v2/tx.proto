@@ -120,9 +120,6 @@ message MsgDepositResponse {
   ];
 }
 
-
-
-
 // MsgSetYieldPreference allows users to set their yield preference
 message MsgSetYieldPreference {
   option (cosmos.msg.v1.signer) = "user";
@@ -146,9 +143,6 @@ message MsgSetYieldPreferenceResponse {
   // New yield preference
   bool new_preference = 2;
 }
-
-
-
 
 // MsgUpdateVaultConfig allows authority to update vault configuration
 message MsgUpdateVaultConfig {
