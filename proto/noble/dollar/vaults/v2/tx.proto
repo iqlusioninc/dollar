@@ -1,0 +1,688 @@
+syntax = "proto3";
+
+package noble.dollar.vaults.v2;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "noble/dollar/vaults/v1/vaults.proto";
+import "noble/dollar/vaults/v2/cross_chain.proto";
+import "noble/dollar/vaults/v2/genesis.proto";
+import "noble/dollar/vaults/v2/oracle.proto";
+
+option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+
+// Msg defines the V2 vaults transaction service
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // Deposit into a V2 vault
+  rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+
+  // Request withdrawal (queue-based)
+  rpc RequestWithdrawal(MsgRequestWithdrawal) returns (MsgRequestWithdrawalResponse);
+
+  // Set yield preference for a user's position
+  rpc SetYieldPreference(MsgSetYieldPreference) returns (MsgSetYieldPreferenceResponse);
+
+  // Process withdrawal queue (admin only)
+  rpc ProcessWithdrawalQueue(MsgProcessWithdrawalQueue) returns (MsgProcessWithdrawalQueueResponse);
+
+  // Update vault configuration (authority only)
+  rpc UpdateVaultConfig(MsgUpdateVaultConfig) returns (MsgUpdateVaultConfigResponse);
+
+  // Update module parameters (authority only)
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  // Cross-chain operations
+
+  // Create a new cross-chain route (authority only)
+  rpc CreateCrossChainRoute(MsgCreateCrossChainRoute) returns (MsgCreateCrossChainRouteResponse);
+
+  // Update an existing cross-chain route (authority only)
+  rpc UpdateCrossChainRoute(MsgUpdateCrossChainRoute) returns (MsgUpdateCrossChainRouteResponse);
+
+  // Disable a cross-chain route (authority only)
+  rpc DisableCrossChainRoute(MsgDisableCrossChainRoute) returns (MsgDisableCrossChainRouteResponse);
+
+  // Create a remote position (spec-aligned)
+  rpc CreateRemotePosition(MsgCreateRemotePosition) returns (MsgCreateRemotePositionResponse);
+
+  // Close a remote position (spec-aligned)
+  rpc CloseRemotePosition(MsgCloseRemotePosition) returns (MsgCloseRemotePositionResponse);
+
+  // Rebalance across remote positions (spec-aligned)
+  rpc Rebalance(MsgRebalance) returns (MsgRebalanceResponse);
+
+  // Initiate remote deposit to another chain
+  rpc RemoteDeposit(MsgRemoteDeposit) returns (MsgRemoteDepositResponse);
+
+  // Initiate remote withdrawal from another chain
+  rpc RemoteWithdraw(MsgRemoteWithdraw) returns (MsgRemoteWithdrawResponse);
+
+  // Process in-flight position (system operation)
+  rpc ProcessInFlightPosition(MsgProcessInFlightPosition) returns (MsgProcessInFlightPositionResponse);
+
+  // Oracle operations
+
+  // Register a new oracle for a position (authority only)
+  rpc RegisterOracle(MsgRegisterOracle) returns (MsgRegisterOracleResponse);
+
+  // Update oracle configuration (authority only)
+  rpc UpdateOracleConfig(MsgUpdateOracleConfig) returns (MsgUpdateOracleConfigResponse);
+
+  // Remove an oracle from the system (authority only)
+  rpc RemoveOracle(MsgRemoveOracle) returns (MsgRemoveOracleResponse);
+
+  // Update global oracle parameters (authority only)
+  rpc UpdateOracleParams(MsgUpdateOracleParams) returns (MsgUpdateOracleParamsResponse);
+}
+
+// MsgDeposit allows users to deposit into a V2 vault
+message MsgDeposit {
+  option (cosmos.msg.v1.signer) = "depositor";
+  option (amino.name) = "dollar/vaults/v2/Deposit";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // User making the deposit
+  string depositor = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Amount to deposit
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Whether user wants to receive yield
+  bool receive_yield = 3;
+}
+
+// MsgDepositResponse returns the results of a deposit
+message MsgDepositResponse {
+  // Amount deposited
+  string amount_deposited = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgSetYieldPreference allows users to set their yield preference
+message MsgSetYieldPreference {
+  option (cosmos.msg.v1.signer) = "user";
+  option (amino.name) = "dollar/vaults/v2/SetYieldPreference";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // User setting the preference
+  string user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Whether to receive yield
+  bool receive_yield = 2;
+}
+
+// MsgSetYieldPreferenceResponse confirms yield preference update
+message MsgSetYieldPreferenceResponse {
+  // Previous yield preference
+  bool previous_preference = 1;
+
+  // New yield preference
+  bool new_preference = 2;
+}
+
+// MsgUpdateVaultConfig allows authority to update vault configuration
+message MsgUpdateVaultConfig {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateVaultConfig";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority updating the config
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // New vault configuration
+  VaultConfig config = 2 [(gogoproto.nullable) = false];
+
+  // Reason for config update
+  string reason = 3;
+}
+
+// MsgUpdateVaultConfigResponse confirms config update
+message MsgUpdateVaultConfigResponse {
+  // Previous configuration (JSON)
+  string previous_config = 1;
+
+  // New configuration (JSON)
+  string new_config = 2;
+}
+
+// MsgUpdateParams allows authority to update module parameters
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateParams";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority updating the parameters
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // New parameters
+  Params params = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateParamsResponse confirms parameter update
+message MsgUpdateParamsResponse {
+  // Previous parameters (JSON)
+  string previous_params = 1;
+
+  // New parameters (JSON)
+  string new_params = 2;
+}
+
+// Cross-chain operation messages
+
+// MsgCreateCrossChainRoute creates a new cross-chain route
+message MsgCreateCrossChainRoute {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/CreateCrossChainRoute";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority creating the route
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Route configuration
+  noble.dollar.vaults.v2.CrossChainRoute route = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgCreateCrossChainRouteResponse confirms route creation
+message MsgCreateCrossChainRouteResponse {
+  // Created route ID
+  uint32 route_id = 1;
+
+  // Route configuration
+  string route_config = 2;
+}
+
+// MsgUpdateCrossChainRoute updates an existing cross-chain route
+message MsgUpdateCrossChainRoute {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateCrossChainRoute";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority updating the route
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Route ID to update
+  uint32 route_id = 2;
+
+  // Updated route configuration
+  noble.dollar.vaults.v2.CrossChainRoute route = 3 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateCrossChainRouteResponse confirms route update
+message MsgUpdateCrossChainRouteResponse {
+  // Updated route ID
+  uint32 route_id = 1;
+
+  // Previous configuration
+  string previous_config = 2;
+
+  // New configuration
+  string new_config = 3;
+}
+
+// MsgDisableCrossChainRoute disables a cross-chain route
+message MsgDisableCrossChainRoute {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/DisableCrossChainRoute";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority disabling the route
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Route ID to disable
+  uint32 route_id = 2;
+
+  // Reason for disabling
+  string reason = 3;
+}
+
+// MsgDisableCrossChainRouteResponse confirms route disabling
+message MsgDisableCrossChainRouteResponse {
+  // Disabled route ID
+  uint32 route_id = 1;
+
+  // Number of affected positions
+  int64 affected_positions = 2;
+}
+
+// MsgRemoteDeposit initiates a deposit to a remote chain
+message MsgRemoteDeposit {
+  option (cosmos.msg.v1.signer) = "depositor";
+  option (amino.name) = "dollar/vaults/v2/RemoteDeposit";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // User making the remote deposit
+  string depositor = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Route ID for the deposit
+  uint32 route_id = 2;
+
+  // Amount to deposit
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Remote address to receive the position
+  string remote_address = 4;
+
+  // Minimum shares to receive (slippage protection)
+  string min_shares = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Gas limit for remote execution (Hyperlane only)
+  uint64 gas_limit = 6;
+
+  // Gas price for remote execution (Hyperlane only)
+  string gas_price = 7 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgRemoteDepositResponse returns the results of a remote deposit
+message MsgRemoteDepositResponse {
+  // Operation nonce for tracking
+  uint64 nonce = 1;
+
+  // Route ID used
+  uint32 route_id = 2;
+
+  // Local shares allocated
+  string shares_allocated = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Amount sent to remote chain
+  string amount_sent = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Expected completion time
+  google.protobuf.Timestamp expected_completion = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Provider-specific tracking information
+  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
+}
+
+// MsgRemoteWithdraw initiates a withdrawal from a remote chain
+message MsgRemoteWithdraw {
+  option (cosmos.msg.v1.signer) = "withdrawer";
+  option (amino.name) = "dollar/vaults/v2/RemoteWithdraw";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // User making the remote withdrawal
+  string withdrawer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Route ID for the withdrawal
+  uint32 route_id = 2;
+
+  // Shares to withdraw from remote position
+  string shares = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Minimum amount to receive (slippage protection)
+  string min_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Gas limit for remote execution (Hyperlane only)
+  uint64 gas_limit = 5;
+
+  // Gas price for remote execution (Hyperlane only)
+  string gas_price = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgRemoteWithdrawResponse returns the results of a remote withdrawal
+message MsgRemoteWithdrawResponse {
+  // Operation nonce for tracking
+  uint64 nonce = 1;
+
+  // Route ID used
+  uint32 route_id = 2;
+
+  // Shares being withdrawn
+  string shares_withdrawn = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Expected amount to receive
+  string expected_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Expected completion time
+  google.protobuf.Timestamp expected_completion = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Provider-specific tracking information
+  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
+}
+
+// MsgProcessInFlightPosition processes an in-flight position
+message MsgProcessInFlightPosition {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/ProcessInFlightPosition";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority processing the position
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Operation nonce
+  uint64 nonce = 2;
+
+  // Operation result
+  noble.dollar.vaults.v2.InflightStatus result_status = 3;
+
+  // Result amount (for successful operations)
+  string result_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Error message (for failed operations)
+  string error_message = 5;
+
+  // Provider-specific tracking information
+  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
+}
+
+// MsgProcessInFlightPositionResponse confirms processing
+message MsgProcessInFlightPositionResponse {
+  // Operation nonce
+  uint64 nonce = 1;
+
+  // Final status
+  noble.dollar.vaults.v2.InflightStatus final_status = 2;
+
+  // Amount processed
+  string amount_processed = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Shares affected
+  string shares_affected = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// ========== Spec-aligned Withdrawal Queue ==========
+
+// MsgRequestWithdrawal allows users to enter the withdrawal queue
+message MsgRequestWithdrawal {
+  option (cosmos.msg.v1.signer) = "requester";
+  option (amino.name) = "dollar/vaults/v2/RequestWithdrawal";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // User requesting withdrawal
+  string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Amount to withdraw (locked immediately)
+  string amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgRequestWithdrawalResponse returns the created request details
+message MsgRequestWithdrawalResponse {
+  // Withdrawal request ID
+  string request_id = 1;
+
+  // Amount locked for withdrawal
+  string amount_locked = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Yield portion of withdrawal
+  string yield_portion = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Estimated time the request becomes claimable
+  google.protobuf.Timestamp expected_claimable_at = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// MsgProcessWithdrawalQueue allows authority to process withdrawal queue
+message MsgProcessWithdrawalQueue {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/ProcessWithdrawalQueue";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority processing the queue
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Maximum number of requests to process
+  int32 max_requests = 2;
+}
+
+// MsgProcessWithdrawalQueueResponse returns processing results
+message MsgProcessWithdrawalQueueResponse {
+  // Number of requests processed
+  int32 requests_processed = 1;
+
+  // Total amount processed
+  string total_amount_processed = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total amount distributed
+  string total_amount_distributed = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Remaining requests in queue
+  int32 remaining_requests = 4;
+}
+
+// ========== Spec-aligned Managed Vault Operations ==========
+
+// MsgCreateRemotePosition deploys capital to a remote ERC-4626 position
+message MsgCreateRemotePosition {
+  option (cosmos.msg.v1.signer) = "manager";
+  option (amino.name) = "dollar/vaults/v2/CreateRemotePosition";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authorized manager address
+  string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Target ERC-4626 vault address
+  string vault_address = 2;
+
+  // Hyperlane domain ID for destination chain
+  uint32 chain_id = 3;
+
+  // Amount of $USDN to deploy
+  string amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Minimum acceptable Noble vault shares to receive (slippage protection)
+  string min_shares_out = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgCreateRemotePositionResponse {
+  // Assigned position ID
+  string position_id = 1;
+  // Route ID used for cross-chain transfer
+  uint32 route_id = 2;
+  // Expected completion time on remote chain
+  google.protobuf.Timestamp expected_completion = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// MsgCloseRemotePosition withdraws capital from a remote position
+message MsgCloseRemotePosition {
+  option (cosmos.msg.v1.signer) = "manager";
+  option (amino.name) = "dollar/vaults/v2/CloseRemotePosition";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authorized manager address
+  string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Remote position ID to close
+  string position_id = 2;
+
+  // Optional partial withdrawal amount ($USDN). If omitted or zero, close fully
+  string partial_amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgCloseRemotePositionResponse {
+  // Remote position ID
+  string position_id = 1;
+  // Whether a withdrawal was initiated
+  bool initiated = 2;
+  // Expected completion time
+  google.protobuf.Timestamp expected_completion = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// TargetAllocation defines allocation target for a position
+message TargetAllocation {
+  // Remote position ID
+  string position_id = 1;
+  // Target percentage (0-100)
+  uint32 target_percentage = 2;
+}
+
+// MsgRebalance rebalances capital across remote positions
+message MsgRebalance {
+  option (cosmos.msg.v1.signer) = "manager";
+  option (amino.name) = "dollar/vaults/v2/Rebalance";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authorized manager address
+  string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Desired allocation targets
+  repeated TargetAllocation target_allocations = 2;
+}
+
+message MsgRebalanceResponse {
+  // Number of operations initiated
+  int32 operations_initiated = 1;
+  // Informational summary
+  string summary = 2;
+}

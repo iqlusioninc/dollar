@@ -1,0 +1,289 @@
+syntax = "proto3";
+
+package noble.dollar.vaults.v2;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "noble/dollar/vaults/v1/vaults.proto";
+
+option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+
+// NOBLE DOLLAR V2 VAULT SYSTEM - YIELD-TRACKING ACCOUNTING
+//
+// This package defines the V2 vault system that uses direct yield tracking
+// for explicit yield accounting and improved transparency.
+//
+// Key features:
+// - Direct yield tracking per user position
+// - Explicit yield accrual accounting
+// - Exit queues for withdrawals
+// - User-controlled yield preferences
+// - Clean separation from legacy V1 system
+//
+// Migration approach: Users must withdraw from V1 and deposit into V2
+
+// UserPosition represents a user's position in the V2 yield-tracking vault system
+message UserPosition {
+  // Current deposit amount (principal)
+  string deposit_amount = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Accrued yield on the position
+  string accrued_yield = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Timestamp of first deposit
+  google.protobuf.Timestamp first_deposit_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Timestamp of last deposit/withdrawal
+  google.protobuf.Timestamp last_activity_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Whether user wants to receive yield (vs contributing to fee pool)
+  bool receive_yield = 5;
+
+  // Amount pending exit
+  string amount_pending_exit = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Number of active exit requests
+  int32 active_exit_requests = 7;
+}
+
+// ExitRequest represents a pending exit request
+message ExitRequest {
+  // Unique request ID
+  string request_id = 1;
+
+  // Amount to be exited (including yield)
+  string exit_amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // When the exit was requested
+  google.protobuf.Timestamp request_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // When the exit can be processed
+  google.protobuf.Timestamp unlock_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Current status of the exit request
+  ExitRequestStatus status = 5;
+
+  // Estimated amount to receive (calculated at request time)
+  string estimated_amount = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height when request was made
+  int64 request_block_height = 7;
+}
+
+// ExitRequestStatus represents the status of an exit request
+enum ExitRequestStatus {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Request is pending (waiting for unlock time)
+  EXIT_REQUEST_STATUS_PENDING = 0;
+  // Request is ready to be processed
+  EXIT_REQUEST_STATUS_READY = 1;
+  // Request has been processed
+  EXIT_REQUEST_STATUS_PROCESSED = 2;
+  // Request was cancelled by user
+  EXIT_REQUEST_STATUS_CANCELLED = 3;
+  // Request expired without processing
+  EXIT_REQUEST_STATUS_EXPIRED = 4;
+}
+
+// VaultState represents the current state of a V2 vault
+message VaultState {
+  // Total deposits in the vault
+  string total_deposits = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total accrued yield
+  string total_accrued_yield = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total Net Asset Value (deposits + yield)
+  string total_nav = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total number of users with positions
+  uint64 total_users = 4;
+
+  // Whether deposits are currently enabled
+  bool deposits_enabled = 5;
+
+  // Whether withdrawals are currently enabled
+  bool withdrawals_enabled = 6;
+
+  // Last NAV update timestamp
+  google.protobuf.Timestamp last_nav_update = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Total amount pending exit
+  string total_amount_pending_exit = 8 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Number of pending exit requests
+  int32 pending_exit_requests = 9;
+}
+
+// YieldCalculation contains details about yield calculations
+message YieldCalculation {
+  // Total deposits used in calculation
+  string total_deposits = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total accrued yield
+  string total_yield = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Yield rate (APY percentage)
+  string yield_rate = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Calculation timestamp
+  google.protobuf.Timestamp calculation_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// DepositResult contains the outcome of a deposit operation
+message DepositResult {
+  // Amount deposited
+  string amount_deposited = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// WithdrawalResult contains the outcome of a withdrawal operation
+message WithdrawalResult {
+  // Principal withdrawn
+  string principal_withdrawn = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Yield withdrawn
+  string yield_withdrawn = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Fees paid
+  string fees_paid = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total amount received (principal + yield - fees)
+  string total_amount_received = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// YieldDistribution represents yield distribution to shareholders
+message YieldDistribution {
+  // Total yield amount distributed
+  string total_yield = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Yield rate applied
+  string yield_rate = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Distribution timestamp
+  google.protobuf.Timestamp distribution_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Number of eligible depositors
+  uint64 eligible_depositors = 4;
+
+  // Source of the yield (e.g., "trading_fees", "interest_earned")
+  string yield_source = 5;
+}

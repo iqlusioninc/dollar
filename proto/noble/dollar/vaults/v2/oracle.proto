@@ -1,0 +1,411 @@
+syntax = "proto3";
+
+package noble.dollar.vaults.v2;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "noble/dollar/vaults/v2/cross_chain.proto";
+import "noble/dollar/vaults/v2/vaults.proto";
+
+option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+
+// ========== Oracle Types ==========
+
+// RemotePosition represents a position tracked by an oracle
+message RemotePositionOracle {
+  // Unique position identifier
+  string position_id = 1;
+
+  // Chain ID where the position exists
+  uint32 chain_id = 2;
+
+  // Oracle contract address on the remote chain
+  string oracle_address = 3;
+
+  // Vault address holding this position
+  string vault_address = 4;
+
+  // Number of shares held
+  string shares_held = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Current share price
+  string share_price = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Last update timestamp
+  google.protobuf.Timestamp last_update = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// OracleMapping defines the mapping between an oracle and its position
+message OracleMapping {
+  // Oracle contract address
+  string oracle_address = 1;
+
+  // Source chain ID
+  uint32 chain_id = 2;
+
+  // Position identifier this oracle reports for
+  string position_id = 3;
+}
+
+// EnrolledOracleRouter represents an enrolled oracle router
+message EnrolledOracleRouter {
+  // Position identifier
+  string position_id = 1;
+
+  // Source chain identifier
+  string source_chain = 2;
+
+  // Oracle contract address
+  string oracle_contract = 3;
+}
+
+// EnrolledOracle represents a registered oracle
+message EnrolledOracle {
+  // Position identifier
+  string position_id = 1;
+
+  // Source chain identifier
+  string source_chain = 2;
+
+  // Oracle address on remote chain
+  string oracle_address = 3;
+
+  // Maximum staleness (seconds)
+  int64 max_staleness = 4;
+
+  // Registration timestamp
+  google.protobuf.Timestamp registered_at = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Whether the oracle is active
+  bool active = 6;
+}
+
+// StalenessConfig defines staleness thresholds
+message StalenessConfig {
+  // Warning threshold in seconds
+  int64 warning_threshold = 1;
+
+  // Critical threshold in seconds
+  int64 critical_threshold = 2;
+
+  // Maximum allowed staleness before fallback
+  int64 max_staleness = 3;
+}
+
+// NAVPayload represents the oracle update payload (105 bytes when encoded)
+message NAVPayload {
+  // Message type (0x01 for NAV update)
+  uint32 message_type = 1;
+
+  // Position identifier (32 bytes)
+  string position_id = 2;
+
+  // Share price (32 bytes, 1e18 precision)
+  string share_price = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Shares held (32 bytes, 1e18 precision)
+  string shares_held = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Unix timestamp (8 bytes)
+  int64 timestamp = 5;
+}
+
+// FallbackStrategy defines the fallback strategy for stale data
+message FallbackStrategy {
+  // Whether to use last known good value
+  bool use_last_known_good = 1;
+
+  // Maximum cache age allowed (seconds)
+  int64 max_cache_age = 2;
+
+  // Alert threshold for notifications (seconds)
+  int64 alert_threshold = 3;
+}
+
+// OracleGovernanceParams defines governance parameters for oracles
+message OracleGovernanceParams {
+  // Maximum update interval allowed (seconds)
+  int64 max_update_interval = 1;
+
+  // Minimum update interval to prevent spam (seconds)
+  int64 min_update_interval = 2;
+
+  // Maximum price deviation per update (basis points)
+  int32 max_price_deviation_bps = 3;
+
+  // Default staleness config
+  StalenessConfig default_staleness = 4;
+
+  // Default fallback strategy
+  FallbackStrategy default_fallback = 5;
+}
+
+// AlertConfig defines alert configuration
+message AlertConfig {
+  // Stale data threshold (seconds)
+  int64 stale_data_threshold = 1;
+
+  // Price deviation threshold (basis points)
+  int32 price_deviation_threshold = 2;
+
+  // Failed update threshold (count)
+  int32 failed_update_threshold = 3;
+}
+
+// OracleStatus represents the current status of an oracle
+message OracleStatus {
+  // Oracle identifier
+  string oracle_id = 1;
+
+  // Position ID
+  string position_id = 2;
+
+  // Last successful update
+  google.protobuf.Timestamp last_success = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Number of consecutive failures
+  int32 consecutive_failures = 4;
+
+  // Whether oracle is healthy
+  bool is_healthy = 5;
+
+  // Current staleness level
+  string staleness_level = 6; // "fresh", "warning", "critical", "stale"
+
+  // Last error message if any
+  string last_error = 7;
+}
+
+// ========== Cross-Chain Oracle Integration ==========
+
+// CrossChainOracleMessage represents an oracle update delivered by cross-chain messaging
+// This is not a Msg type as it's handled internally when messages are delivered
+message CrossChainOracleMessage {
+  // Mailbox/channel identifier
+  bytes mailbox_id = 1;
+
+  // Source chain identifier
+  string source_chain = 2;
+
+  // Sender address on origin chain
+  bytes sender = 3;
+
+  // Hyperlane metadata for verification
+  bytes metadata = 4;
+
+  // NAV oracle update payload (105 bytes)
+  bytes payload = 5;
+
+  // Timestamp when received
+  google.protobuf.Timestamp received_at = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Provider type (HYPERLANE, future: IBC)
+  string provider_type = 7;
+}
+
+// OracleUpdateResult represents the result of processing an oracle update
+message OracleUpdateResult {
+  // Position ID that was updated
+  string position_id = 1;
+
+  // New share price
+  string new_share_price = 2 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // New shares held
+  string new_shares = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Calculated position value
+  string position_value = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Updated total NAV
+  string updated_nav = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// ========== Messages ==========
+
+// MsgRegisterOracle registers a new oracle for a position
+message MsgRegisterOracle {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/RegisterOracle";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (governance module account)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Position identifier to track
+  string position_id = 2;
+
+  // Oracle contract address on remote chain
+  string oracle_address = 3;
+
+  // Source chain identifier
+  string source_chain = 4;
+
+  // Maximum staleness allowed (seconds)
+  int64 max_staleness = 5;
+
+  // Provider type (HYPERLANE, future: IBC)
+  string provider_type = 6;
+
+  // Origin identifier (mailbox for Hyperlane, channel for IBC)
+  string origin_identifier = 7;
+}
+
+// MsgRegisterOracleResponse confirms oracle registration
+message MsgRegisterOracleResponse {
+  // Oracle ID assigned
+  string oracle_id = 1;
+
+  // Position ID
+  string position_id = 2;
+
+  // Registration timestamp
+  google.protobuf.Timestamp registered_at = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// MsgUpdateOracleConfig updates an oracle's configuration
+message MsgUpdateOracleConfig {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateOracleConfig";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (governance module account)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Oracle ID to update
+  string oracle_id = 2;
+
+  // New maximum staleness (0 to keep current)
+  int64 max_staleness = 3;
+
+  // Whether to activate/deactivate
+  bool active = 4;
+}
+
+// MsgUpdateOracleConfigResponse confirms configuration update
+message MsgUpdateOracleConfigResponse {
+  // Oracle ID
+  string oracle_id = 1;
+
+  // Updated configuration
+  EnrolledOracle updated_config = 2;
+}
+
+// MsgRemoveOracle removes an oracle from the system
+message MsgRemoveOracle {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/RemoveOracle";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (governance module account)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Oracle ID to remove
+  string oracle_id = 2;
+
+  // Reason for removal
+  string reason = 3;
+}
+
+// MsgRemoveOracleResponse confirms oracle removal
+message MsgRemoveOracleResponse {
+  // Oracle ID removed
+  string oracle_id = 1;
+
+  // Position ID affected
+  string position_id = 2;
+
+  // Removal timestamp
+  google.protobuf.Timestamp removed_at = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// MsgUpdateOracleParams updates global oracle parameters
+message MsgUpdateOracleParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateOracleParams";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (governance module account)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Updated governance parameters
+  OracleGovernanceParams params = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateOracleParamsResponse confirms parameter update
+message MsgUpdateOracleParamsResponse {
+  // Previous parameters
+  OracleGovernanceParams previous_params = 1 [(gogoproto.nullable) = false];
+
+  // New parameters
+  OracleGovernanceParams new_params = 2 [(gogoproto.nullable) = false];
+}
