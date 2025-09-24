@@ -613,7 +613,7 @@ message MsgCreateRemotePosition {
 
 message MsgCreateRemotePositionResponse {
   // Assigned position ID
-  string position_id = 1;
+  uint64 position_id = 1;
   // Route ID used for cross-chain transfer
   uint32 route_id = 2;
   // Expected completion time on remote chain
@@ -635,7 +635,7 @@ message MsgCloseRemotePosition {
   string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // Remote position ID to close
-  string position_id = 2;
+  uint64 position_id = 2;
 
   // Optional partial withdrawal amount ($USDN). If omitted or zero, close fully
   string partial_amount = 3 [
@@ -648,7 +648,7 @@ message MsgCloseRemotePosition {
 
 message MsgCloseRemotePositionResponse {
   // Remote position ID
-  string position_id = 1;
+  uint64 position_id = 1;
   // Whether a withdrawal was initiated
   bool initiated = 2;
   // Expected completion time
@@ -661,7 +661,7 @@ message MsgCloseRemotePositionResponse {
 // TargetAllocation defines allocation target for a position
 message TargetAllocation {
   // Remote position ID
-  string position_id = 1;
+  uint64 position_id = 1;
   // Target percentage (0-100)
   uint32 target_percentage = 2;
 }
