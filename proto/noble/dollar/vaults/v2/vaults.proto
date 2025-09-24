@@ -6,7 +6,6 @@ import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "noble/dollar/vaults/v1/vaults.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
@@ -69,36 +68,39 @@ message UserPosition {
   int32 active_exit_requests = 7;
 }
 
-// ExitRequest represents a pending exit request
-message ExitRequest {
+// WithdrawalRequest represents a pending withdrawal request
+message WithdrawalRequest {
   // Unique request ID
   string request_id = 1;
 
-  // Amount to be exited (including yield)
-  string exit_amount = 2 [
+  // Address of the account that created the request
+  string requester = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Amount to withdraw (including yield)
+  string withdraw_amount = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // When the exit was requested
-  google.protobuf.Timestamp request_time = 3 [
+  // When the withdrawal was requested
+  google.protobuf.Timestamp request_time = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
-  // When the exit can be processed
-  google.protobuf.Timestamp unlock_time = 4 [
+  // When the withdrawal can be processed
+  google.protobuf.Timestamp unlock_time = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
-  // Current status of the exit request
-  ExitRequestStatus status = 5;
+  // Current status of the withdrawal request
+  WithdrawalRequestStatus status = 6;
 
   // Estimated amount to receive (calculated at request time)
-  string estimated_amount = 6 [
+  string estimated_amount = 7 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -106,23 +108,23 @@ message ExitRequest {
   ];
 
   // Block height when request was made
-  int64 request_block_height = 7;
+  int64 request_block_height = 8;
 }
 
-// ExitRequestStatus represents the status of an exit request
-enum ExitRequestStatus {
+// WithdrawalRequestStatus represents the status of a withdrawal request
+enum WithdrawalRequestStatus {
   option (gogoproto.goproto_enum_prefix) = false;
 
   // Request is pending (waiting for unlock time)
-  EXIT_REQUEST_STATUS_PENDING = 0;
+  WITHDRAWAL_REQUEST_STATUS_PENDING = 0;
   // Request is ready to be processed
-  EXIT_REQUEST_STATUS_READY = 1;
+  WITHDRAWAL_REQUEST_STATUS_READY = 1;
   // Request has been processed
-  EXIT_REQUEST_STATUS_PROCESSED = 2;
+  WITHDRAWAL_REQUEST_STATUS_PROCESSED = 2;
   // Request was cancelled by user
-  EXIT_REQUEST_STATUS_CANCELLED = 3;
+  WITHDRAWAL_REQUEST_STATUS_CANCELLED = 3;
   // Request expired without processing
-  EXIT_REQUEST_STATUS_EXPIRED = 4;
+  WITHDRAWAL_REQUEST_STATUS_EXPIRED = 4;
 }
 
 // VaultState represents the current state of a V2 vault
@@ -283,7 +285,4 @@ message YieldDistribution {
 
   // Number of eligible depositors
   uint64 eligible_depositors = 4;
-
-  // Source of the yield (e.g., "trading_fees", "interest_earned")
-  string yield_source = 5;
 }

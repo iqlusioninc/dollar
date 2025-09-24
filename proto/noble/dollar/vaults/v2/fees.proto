@@ -27,12 +27,12 @@ message FeeConfig {
   int32 performance_fee_rate = 2;
 
   // Fee recipient address
-  string fee_recipient = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string fee_recipient = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // Whether fees are enabled
-  bool fees_enabled = 5;
+  bool fees_enabled = 4;
 
   // High water mark for performance fees
-  string high_water_mark = 6 [
+  string high_water_mark = 5 [
     (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,

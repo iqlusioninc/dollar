@@ -6,7 +6,7 @@ import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "hyperlane/warp/v1/types.proto";
+import "hyperlane/warp/v1/types.proto"; 
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
@@ -164,10 +164,22 @@ message InflightFund {
   ProviderTrackingInfo provider_tracking = 12;
 }
 
+// OperationType represents the type of cross-chain operation
+enum OperationType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Deposit operation
+  OPERATION_TYPE_DEPOSIT = 0;
+  // Withdrawal operation
+  OPERATION_TYPE_WITHDRAWAL = 1;
+  // Rebalance operation
+  OPERATION_TYPE_REBALANCE = 2;
+}
+
 // NobleEndpoint represents Noble as an origin or destination
 message NobleEndpoint {
-  // Purpose/context of the operation (e.g., "deposit", "withdrawal_distribution", "rebalance")
-  string operation_type = 1;
+  // Purpose/context of the operation (deposit, withdrawal, rebalance)
+  OperationType operation_type = 1;
 }
 
 // ProviderTrackingInfo contains provider-specific tracking data
@@ -289,8 +301,18 @@ message PositionOracleConfig {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  // Provider type (HYPERLANE, future: IBC)
-  string provider_type = 7;
+  // Provider type (HYPERLANE, IBC)
+  ProviderType provider_type = 7;
+}
+
+// ProviderType represents the cross-chain provider type
+enum ProviderType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Hyperlane provider
+  PROVIDER_TYPE_HYPERLANE = 0;
+  // IBC provider
+  PROVIDER_TYPE_IBC = 1;
 }
 
 // CrossChainPositionSnapshot provides a snapshot of all cross-chain positions
@@ -346,7 +368,7 @@ message CrossChainConfig {
     (amino.dont_omitempty) = true
   ];
   // Supported providers (currently only HYPERLANE)
-  repeated string supported_providers = 9;
+  repeated ProviderType supported_providers = 9;
 }
 
 // StaleInflightAlert represents an alert for inflight funds exceeding expected duration

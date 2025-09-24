@@ -8,7 +8,6 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v2/cross_chain.proto";
-import "noble/dollar/vaults/v2/vaults.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
@@ -202,10 +201,24 @@ message OracleStatus {
   bool is_healthy = 5;
 
   // Current staleness level
-  string staleness_level = 6; // "fresh", "warning", "critical", "stale"
+  StalenessLevel staleness_level = 6;
 
   // Last error message if any
   string last_error = 7;
+}
+
+// StalenessLevel represents the freshness of oracle data
+enum StalenessLevel {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Data is fresh
+  STALENESS_LEVEL_FRESH = 0;
+  // Data is stale
+  STALENESS_LEVEL_STALE = 1;
+  // Data is in warning threshold
+  STALENESS_LEVEL_WARNING = 2;
+  // Data is in critical threshold
+  STALENESS_LEVEL_CRITICAL = 3;
 }
 
 // ========== Cross-Chain Oracle Integration ==========
@@ -234,8 +247,8 @@ message CrossChainOracleMessage {
     (gogoproto.stdtime) = true
   ];
 
-  // Provider type (HYPERLANE, future: IBC)
-  string provider_type = 7;
+  // Provider type (HYPERLANE, IBC)
+  ProviderType provider_type = 7;
 }
 
 // OracleUpdateResult represents the result of processing an oracle update
@@ -301,8 +314,8 @@ message MsgRegisterOracle {
   // Maximum staleness allowed (seconds)
   int64 max_staleness = 5;
 
-  // Provider type (HYPERLANE, future: IBC)
-  string provider_type = 6;
+  // Provider type (HYPERLANE, IBC)
+  ProviderType provider_type = 6;
 
   // Origin identifier (mailbox for Hyperlane, channel for IBC)
   string origin_identifier = 7;

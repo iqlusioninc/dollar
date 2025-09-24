@@ -2,23 +2,23 @@ syntax = "proto3";
 
 package noble.dollar.vaults.v2;
 
-import "amino/amino.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "noble/dollar/vaults/v1/vaults.proto";
 import "noble/dollar/vaults/v2/cross_chain.proto";
-import "noble/dollar/vaults/v2/fees.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
-import "noble/dollar/vaults/v2/nav.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
 option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
 
 // Query defines the gRPC querier service for V2 vaults
 service Query {
+  // VaultStats returns statistics for the primary V2 vault
+  rpc VaultStats(QueryVaultStatsRequest) returns (QueryVaultStatsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/vault_stats";
+  }
   // VaultInfo returns configuration and state for a specific vault type
   rpc VaultInfo(QueryVaultInfoRequest) returns (QueryVaultInfoResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/vault";
@@ -170,6 +170,16 @@ message QueryAllVaultsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryVaultRequest requests information about all vaults
+message QueryVaultRequest {}
+
+// QueryVaultResponse returns information about all vaults
+message QueryVaultResponse {
+  repeated QueryVaultInfoResponse vaults = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryUserPositionRequest requests a user's position in the vault
+
 // QueryUserPositionRequest requests a user's position in a specific vault
 message QueryUserPositionRequest {
   string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -200,6 +210,8 @@ message UserPositionWithVault {
   string current_value = 2;
 }
 
+// QueryYieldInfoRequest requests the yield information of the vault
+
 // QueryYieldInfoRequest requests the yield information for a vault
 message QueryYieldInfoRequest {}
 
@@ -209,6 +221,16 @@ message QueryYieldInfoResponse {
   string total_deposits = 2;
   string total_accrued_yield = 3;
   string total_nav = 4;
+}
+
+// QueryStatsRequest requests statistics for the vault
+
+// QueryVaultStatsRequest requests statistics for the primary V2 vault
+message QueryVaultStatsRequest {}
+
+// QueryVaultStatsResponse returns statistics for the primary V2 vault
+message QueryVaultStatsResponse {
+  VaultStatsEntry stats = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryStatsRequest requests statistics for a vault
@@ -224,10 +246,9 @@ message QueryAllStatsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryAllStatsResponse returns statistics for all vaults
+// QueryAllStatsResponse returns statistics for the vault
 message QueryAllStatsResponse {
-  repeated VaultStatsEntry stats = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  VaultStatsEntry stats = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryParamsRequest requests module parameters

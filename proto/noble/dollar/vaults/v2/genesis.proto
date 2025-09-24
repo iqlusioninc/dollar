@@ -5,8 +5,6 @@ package noble.dollar.vaults.v2;
 import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
-import "noble/dollar/vaults/v1/vaults.proto";
-import "noble/dollar/vaults/v2/fees.proto";
 import "noble/dollar/vaults/v2/nav.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
@@ -17,10 +15,10 @@ message GenesisState {
   // Module parameters
   Params params = 1 [(gogoproto.nullable) = false];
 
-  // All V2 vault configurations
-  repeated VaultConfig vault_configs = 2 [(gogoproto.nullable) = false];
+  // V2 vault configurations
+  VaultConfig vault_config = 2 [(gogoproto.nullable) = false];
 
-  // All user positions in V2 vaults
+  // All user positions in V2
   repeated UserPositionEntry user_positions = 3 [(gogoproto.nullable) = false];
 
   // Current NAV information for each vault type
@@ -29,11 +27,11 @@ message GenesisState {
   // Exit queue entries
   repeated ExitRequestEntry exit_queue = 5 [(gogoproto.nullable) = false];
 
-  // Total deposits and yield per vault type
-  repeated VaultTotalEntry vault_totals = 6 [(gogoproto.nullable) = false];
+  // Total deposits and yield
+  VaultTotalEntry vault_totals = 6 [(gogoproto.nullable) = false];
 
   // Vault statistics
-  repeated VaultStatsEntry vault_stats = 7 [(gogoproto.nullable) = false];
+  VaultStatsEntry vault_stats = 7 [(gogoproto.nullable) = false];
 }
 
 // Params defines the parameters for the V2 vaults module
@@ -66,8 +64,8 @@ message Params {
   // Maximum number of exit requests to process per block
   int32 max_exit_requests_per_block = 6;
 
-  // Whether V2 vaults are enabled
-  bool vaults_enabled = 7;
+  // Whether V2 vault are enabled
+  bool vault_enabled = 7;
 }
 
 // VaultConfig stores configuration for a specific vault type
@@ -113,7 +111,7 @@ message ExitRequestEntry {
   bytes address = 1;
 
   // Exit request details
-  ExitRequest exit_request = 2 [(gogoproto.nullable) = false];
+  WithdrawalRequest exit_request = 2 [(gogoproto.nullable) = false];
 }
 
 // VaultTotalEntry tracks total deposits and yield for a vault type
