@@ -22,7 +22,10 @@ message RemotePositionOracle {
   uint32 chain_id = 2;
 
   // Oracle contract address on the remote chain
-  string oracle_address = 3;
+  string oracle_address = 3 [
+    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
+    (gogoproto.nullable) = false
+  ];
 
   // Vault address holding this position
   string vault_address = 4;
@@ -53,7 +56,10 @@ message RemotePositionOracle {
 // OracleMapping defines the mapping between an oracle and its position
 message OracleMapping {
   // Oracle contract address
-  string oracle_address = 1;
+  string oracle_address = 1 [
+    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
+    (gogoproto.nullable) = false
+  ];
 
   // Source chain ID
   uint32 chain_id = 2;
@@ -71,7 +77,10 @@ message EnrolledOracleRouter {
   string source_chain = 2;
 
   // Oracle contract address
-  string oracle_contract = 3;
+  string oracle_address = 3 [
+    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
+    (gogoproto.nullable) = false
+  ];
 }
 
 // EnrolledOracle represents a registered oracle
@@ -83,7 +92,10 @@ message EnrolledOracle {
   string source_chain = 2;
 
   // Oracle address on remote chain
-  string oracle_address = 3;
+  string oracle_address = 3 [
+    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
+    (gogoproto.nullable) = false
+  ];
 
   // Maximum staleness (seconds)
   int64 max_staleness = 4;
@@ -306,7 +318,10 @@ message MsgRegisterOracle {
   uint64 position_id = 2;
 
   // Oracle contract address on remote chain
-  string oracle_address = 3;
+  string oracle_address = 3 [
+    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
+    (gogoproto.nullable) = false
+  ];
 
   // Source chain identifier
   string source_chain = 4;
