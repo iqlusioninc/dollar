@@ -79,8 +79,8 @@ message EventWithdraw {
   ];
 }
 
-// EventWithdrawRequested is emitted when a user requests a withdrawal from the V2 vault
-message EventWithdrawRequested {
+// EventWithdrawlRequested is emitted when a user requests a withdrawal from the V2 vault
+message EventWithdrawlRequested {
   // User address requesting withdrawal
   string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
