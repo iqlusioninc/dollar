@@ -15,8 +15,6 @@ message NAVBand {
   int32 lower_bound = 1;
   // Upper bound of the band (basis points above/below NAV)
   int32 upper_bound = 2;
-  // Fee rate applied within this band (basis points)
-  int32 fee_rate = 3;
 }
 
 // NAVConfig defines the configuration for NAV-based pricing
