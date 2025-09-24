@@ -56,16 +56,16 @@ message UserPosition {
   // Whether user wants to receive yield (vs contributing to fee pool)
   bool receive_yield = 5;
 
-  // Amount pending exit
-  string amount_pending_exit = 6 [
+  // Amount pending withdrawal
+  string amount_pending_withdrawal = 6 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Number of active exit requests
-  int32 active_exit_requests = 7;
+  // Number of active withdrawal requests
+  int32 active_withdrawal_requests = 7;
 }
 
 // WithdrawalRequest represents a pending withdrawal request
@@ -168,16 +168,16 @@ message VaultState {
     (gogoproto.stdtime) = true
   ];
 
-  // Total amount pending exit
-  string total_amount_pending_exit = 8 [
+  // Total amount pending withdrawal
+  string total_amount_pending_withdrawal = 8 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Number of pending exit requests
-  int32 pending_exit_requests = 9;
+  // Number of pending withdrawal requests
+  int32 pending_withdrawal_requests = 9;
 }
 
 // YieldCalculation contains details about yield calculations

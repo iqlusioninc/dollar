@@ -79,21 +79,21 @@ message EventWithdraw {
   ];
 }
 
-// EventExitRequested is emitted when a user requests a withdrawal from the V2 vault
-message EventExitRequested {
-  // User address requesting exit
+// EventWithdrawRequested is emitted when a user requests a withdrawal from the V2 vault
+message EventWithdrawRequested {
+  // User address requesting withdrawal
   string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  // Amount to exit (principal + yield)
-  string amount_to_exit = 2 [
+  // Amount to withdraw (principal + yield)
+  string amount_to_withdraw = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Exit request ID
-  string exit_request_id = 3;
+  // Withdrawal request ID
+  string withdrawal_request_id = 3;
 
   // Expected unlock time
   google.protobuf.Timestamp expected_unlock_time = 4 [
@@ -111,13 +111,13 @@ message EventExitRequested {
   ];
 }
 
-// EventExitCancelled is emitted when a user cancels an exit request
-message EventExitCancelled {
-  // User address cancelling exit
+// EventWithdrawalCancelled is emitted when a user cancels a withdrawal request
+message EventWithdrawalCancelled {
+  // User address cancelling withdrawal
   string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  // Exit request ID that was cancelled
-  string exit_request_id = 2;
+  // Withdrawal request ID that was cancelled
+  string withdrawal_request_id = 2;
 
   // Amount returned to active position
   string amount_returned = 3 [
@@ -137,9 +137,9 @@ message EventExitCancelled {
   ];
 }
 
-// EventExitProcessed is emitted when exit requests are processed
-message EventExitProcessed {
-  // Number of exit requests processed
+// EventWithdrawalProcessed is emitted when withdrawal requests are processed
+message EventWithdrawalProcessed {
+  // Number of withdrawal requests processed
   int32 requests_processed = 1;
 
   // Total amount processed

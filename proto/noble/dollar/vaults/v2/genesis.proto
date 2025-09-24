@@ -24,8 +24,8 @@ message GenesisState {
   // Current NAV information for each vault type
   repeated NAVEntry nav_entries = 4 [(gogoproto.nullable) = false];
 
-  // Exit queue entries
-  repeated ExitRequestEntry exit_queue = 5 [(gogoproto.nullable) = false];
+  // Withdrawal queue entries
+  repeated WithdrawalRequestEntry withdrawal_queue = 5 [(gogoproto.nullable) = false];
 
   // Total deposits and yield
   VaultTotalEntry vault_totals = 6 [(gogoproto.nullable) = false];
@@ -58,11 +58,11 @@ message Params {
   // Maximum NAV change percentage allowed per update (basis points)
   int32 max_nav_change_bps = 4;
 
-  // Exit request timeout duration (in seconds)
-  int64 exit_request_timeout = 5;
+  // Withdrawal request timeout duration (in seconds)
+  int64 withdrawal_request_timeout = 5;
 
-  // Maximum number of exit requests to process per block
-  int32 max_exit_requests_per_block = 6;
+  // Maximum number of withdrawal requests to process per block
+  int32 max_withdrawal_requests_per_block = 6;
 
   // Whether V2 vault are enabled
   bool vault_enabled = 7;
@@ -105,13 +105,13 @@ message NAVEntry {
   NAVInfo nav_info = 1 [(gogoproto.nullable) = false];
 }
 
-// ExitRequestEntry stores an exit request in the queue
-message ExitRequestEntry {
+// WithdrawalRequestEntry stores a withdrawal request in the queue
+message WithdrawalRequestEntry {
   // User address
   bytes address = 1;
 
-  // Exit request details
-  WithdrawalRequest exit_request = 2 [(gogoproto.nullable) = false];
+  // Withdrawal request details
+  WithdrawalRequest withdrawal_request = 2 [(gogoproto.nullable) = false];
 }
 
 // VaultTotalEntry tracks total deposits and yield for a vault type
