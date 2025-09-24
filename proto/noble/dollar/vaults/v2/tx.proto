@@ -108,7 +108,7 @@ message MsgDeposit {
   ];
 
   // Whether user wants to receive yield
-  optional bool receive_yield = 3; // optional for explicit presence (unset = use default policy)
+  optional bool receive_yield = 3; // optional for setting yield in a single message otherwise detaul to the current preference for the user.
 }
 
 // MsgDepositResponse returns the results of a deposit
