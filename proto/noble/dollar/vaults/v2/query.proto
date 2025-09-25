@@ -1,0 +1,610 @@
+syntax = "proto3";
+
+package noble.dollar.vaults.v2;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "noble/dollar/vaults/v2/cross_chain.proto";
+import "noble/dollar/vaults/v2/genesis.proto";
+import "noble/dollar/vaults/v2/vaults.proto";
+
+option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+
+// Query defines the gRPC querier service for V2 vaults
+service Query {
+  // VaultStats returns statistics for the primary V2 vault
+  rpc VaultStats(QueryVaultStatsRequest) returns (QueryVaultStatsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/vault_stats";
+  }
+  // VaultInfo returns configuration and state for a specific vault type
+  rpc VaultInfo(QueryVaultInfoRequest) returns (QueryVaultInfoResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/vault";
+  }
+
+  // AllVaults returns information for all vault types
+  rpc AllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/vaults";
+  }
+
+  // UserPosition returns a user's position in a specific vault
+  rpc UserPosition(QueryUserPositionRequest) returns (QueryUserPositionResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/position/{address}";
+  }
+
+  // UserPositions returns all of a user's positions across vault types
+  rpc UserPositions(QueryUserPositionsRequest) returns (QueryUserPositionsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/positions/{address}";
+  }
+
+  // YieldInfo returns the current yield information for a vault type
+  rpc YieldInfo(QueryYieldInfoRequest) returns (QueryYieldInfoResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/yield";
+  }
+
+  // NAV returns current NAV with breakdown (spec-aligned)
+  rpc NAV(QueryNAVRequest) returns (QueryNAVResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/nav";
+  }
+
+  // Cross-chain queries
+
+  // CrossChainRoutes returns all available cross-chain routes
+  rpc CrossChainRoutes(QueryCrossChainRoutesRequest) returns (QueryCrossChainRoutesResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/routes";
+  }
+
+  // CrossChainRoute returns information for a specific route
+  rpc CrossChainRoute(QueryCrossChainRouteRequest) returns (QueryCrossChainRouteResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/route/{route_id}";
+  }
+
+  // RemotePosition returns a user's remote position on a specific route
+  rpc RemotePosition(QueryRemotePositionRequest) returns (QueryRemotePositionResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/position/{route_id}/{address}";
+  }
+
+  // RemotePositions returns all remote positions for a user
+  rpc RemotePositions(QueryRemotePositionsRequest) returns (QueryRemotePositionsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/positions/{address}";
+  }
+
+  // VaultRemotePositions returns all remote positions for the vault (spec-aligned)
+  rpc VaultRemotePositions(QueryVaultRemotePositionsRequest) returns (QueryVaultRemotePositionsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/remote_positions";
+  }
+
+  // InflightFund returns information about an in-flight operation
+  rpc InflightFund(QueryInflightFundRequest) returns (QueryInflightFundResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/{route_id}";
+  }
+
+  // InflightFundsUser returns all in-flight operations for a user
+  rpc InflightFundsUser(QueryInflightFundsUserRequest) returns (QueryInflightFundsUserResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/user/{address}";
+  }
+
+  // CrossChainSnapshot returns cross-chain position snapshot for a vault
+  rpc CrossChainSnapshot(QueryCrossChainSnapshotRequest) returns (QueryCrossChainSnapshotResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/snapshot";
+  }
+
+  // StaleInflightAlerts returns stale inflight alerts for a user or route
+  rpc StaleInflightAlerts(QueryStaleInflightAlertsRequest) returns (QueryStaleInflightAlertsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/stale";
+  }
+
+  // WithdrawalQueue returns the current withdrawal queue (spec-aligned)
+  rpc WithdrawalQueue(QueryWithdrawalQueueRequest) returns (QueryWithdrawalQueueResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/withdrawal_queue";
+  }
+
+  // UserWithdrawals returns all withdrawal requests for a user (spec-aligned)
+  rpc UserWithdrawals(QueryUserWithdrawalsRequest) returns (QueryUserWithdrawalsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/user_withdrawals/{address}";
+  }
+
+  // UserBalance returns deposit balance and yield for a user (spec-aligned)
+  rpc UserBalance(QueryUserBalanceRequest) returns (QueryUserBalanceResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/user_balance/{address}";
+  }
+
+  // DepositVelocity returns deposit velocity metrics (spec-aligned)
+  rpc DepositVelocity(QueryDepositVelocityRequest) returns (QueryDepositVelocityResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/deposit_velocity/{address}";
+  }
+
+  // SimulateDeposit (spec-aligned)
+  rpc SimulateDeposit(QuerySimulateDepositRequest) returns (QuerySimulateDepositResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/simulate_deposit";
+  }
+
+  // SimulateWithdrawal (spec-aligned)
+  rpc SimulateWithdrawal(QuerySimulateWithdrawalRequest) returns (QuerySimulateWithdrawalResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/simulate_withdrawal";
+  }
+
+  // InflightFunds (spec-aligned aggregate view)
+  rpc InflightFunds(QueryInflightFundsRequest) returns (QueryInflightFundsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/inflight_funds";
+  }
+
+  // StaleInflightFunds (spec-aligned aggregate view)
+  rpc StaleInflightFunds(QueryStaleInflightFundsRequest) returns (QueryStaleInflightFundsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/stale_inflight_funds";
+  }
+
+  // Stats returns statistics for a vault type
+  rpc Stats(QueryStatsRequest) returns (QueryStatsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/stats";
+  }
+
+  // Params returns the module parameters
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/noble/dollar/vaults/v2/params";
+  }
+}
+
+// QueryVaultInfoRequest requests information about a specific vault
+message QueryVaultInfoRequest {}
+
+// QueryVaultInfoResponse returns vault information
+message QueryVaultInfoResponse {
+  VaultConfig config = 1 [(gogoproto.nullable) = false];
+  string total_deposits = 2;
+  string total_accrued_yield = 3;
+  string total_nav = 4;
+  uint64 total_depositors = 5;
+}
+
+// QueryAllVaultsRequest requests information about all vaults
+message QueryAllVaultsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllVaultsResponse returns information about all vaults
+message QueryAllVaultsResponse {
+  repeated QueryVaultInfoResponse vaults = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryVaultRequest requests information about all vaults
+message QueryVaultRequest {}
+
+// QueryVaultResponse returns information about all vaults
+message QueryVaultResponse {
+  repeated QueryVaultInfoResponse vaults = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryUserPositionRequest requests a user's position in the vault
+
+// QueryUserPositionRequest requests a user's position in a specific vault
+message QueryUserPositionRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// QueryUserPositionResponse returns a user's position
+message QueryUserPositionResponse {
+  UserPosition position = 1;
+  string current_value = 2;
+  string unrealized_yield = 3;
+}
+
+// QueryUserPositionsRequest requests all of a user's positions
+message QueryUserPositionsRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryUserPositionsResponse returns all of a user's positions
+message QueryUserPositionsResponse {
+  repeated UserPositionWithVault positions = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// UserPositionWithVault includes the vault type with the position
+message UserPositionWithVault {
+  UserPosition position = 1 [(gogoproto.nullable) = false];
+  string current_value = 2;
+}
+
+// QueryYieldInfoRequest requests the yield information of the vault
+
+// QueryYieldInfoRequest requests the yield information for a vault
+message QueryYieldInfoRequest {}
+
+// QueryYieldInfoResponse returns the yield information
+message QueryYieldInfoResponse {
+  string yield_rate = 1; // APY as decimal
+  string total_deposits = 2;
+  string total_accrued_yield = 3;
+  string total_nav = 4;
+}
+
+// QueryStatsRequest requests statistics for the vault
+
+// QueryVaultStatsRequest requests statistics for the primary V2 vault
+message QueryVaultStatsRequest {}
+
+// QueryVaultStatsResponse returns statistics for the primary V2 vault
+message QueryVaultStatsResponse {
+  VaultStatsEntry stats = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryStatsRequest requests statistics for a vault
+message QueryStatsRequest {}
+
+// QueryStatsResponse returns vault statistics
+message QueryStatsResponse {
+  VaultStatsEntry stats = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllStatsRequest requests statistics for all vaults
+message QueryAllStatsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllStatsResponse returns statistics for the vault
+message QueryAllStatsResponse {
+  VaultStatsEntry stats = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryParamsRequest requests module parameters
+message QueryParamsRequest {}
+
+// QueryParamsResponse returns module parameters
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// Cross-chain query messages
+
+// QueryCrossChainRoutesRequest requests all cross-chain routes
+message QueryCrossChainRoutesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryCrossChainRoutesResponse returns all cross-chain routes
+message QueryCrossChainRoutesResponse {
+  repeated CrossChainRoute routes = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryCrossChainRouteRequest requests a specific cross-chain route
+message QueryCrossChainRouteRequest {
+  uint32 route_id = 1;
+}
+
+// QueryCrossChainRouteResponse returns a specific cross-chain route
+message QueryCrossChainRouteResponse {
+  CrossChainRoute route = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryRemotePositionRequest requests a user's remote position on a route
+message QueryRemotePositionRequest {
+  uint32 route_id = 1;
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// QueryRemotePositionResponse returns a user's remote position
+message QueryRemotePositionResponse {
+  RemotePosition position = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryRemotePositionsRequest requests all remote positions for a user
+message QueryRemotePositionsRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryRemotePositionsResponse returns all remote positions for a user
+message QueryRemotePositionsResponse {
+  repeated RemotePositionWithRoute positions = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// RemotePositionWithRoute includes the route ID with the position
+message RemotePositionWithRoute {
+  uint32 route_id = 1;
+  RemotePosition position = 2 [(gogoproto.nullable) = false];
+}
+
+// QueryInflightFundRequest requests an in-flight operation
+message QueryInflightFundRequest {
+  uint32 route_id = 1;
+}
+
+// QueryInflightFundResponse returns an in-flight operation
+message QueryInflightFundResponse {
+  InflightFund fund = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryInflightFundsUserRequest requests all in-flight operations for a user
+message QueryInflightFundsUserRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryInflightFundsUserResponse returns all in-flight operations for a user
+message QueryInflightFundsUserResponse {
+  repeated InflightFund funds = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryCrossChainSnapshotRequest requests cross-chain snapshot for a vault
+message QueryCrossChainSnapshotRequest {
+  int64 timestamp = 1; // Optional: specific timestamp, 0 for latest
+}
+
+// QueryCrossChainSnapshotResponse returns cross-chain snapshot
+message QueryCrossChainSnapshotResponse {
+  CrossChainPositionSnapshot snapshot = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryStaleInflightAlertsRequest requests stale inflight alerts
+message QueryStaleInflightAlertsRequest {
+  uint32 route_id = 1; // Optional: filter by route
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; // Optional: filter by user
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// QueryStaleInflightAlertsResponse returns stale inflight alerts
+message QueryStaleInflightAlertsResponse {
+  repeated StaleInflightAlertWithDetails alerts = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// StaleInflightAlertWithDetails includes additional context with the alert
+message StaleInflightAlertWithDetails {
+  StaleInflightAlert alert = 1 [(gogoproto.nullable) = false];
+  CrossChainRoute route = 2 [(gogoproto.nullable) = false];
+  InflightFund fund = 3 [(gogoproto.nullable) = false];
+}
+
+// ========== Spec-aligned Query Messages ==========
+
+// NAV (spec-aligned)
+message QueryNAVRequest {}
+
+message NAVBreakdownView {
+  string local = 1;
+  string remote_positions = 2;
+  string inflight = 3;
+  string liabilities = 4;
+  string total = 5;
+}
+
+message QueryNAVResponse {
+  string nav = 1; // Total Net Asset Value ($USDN)
+  string yield_rate = 2; // APY as Dec string
+  google.protobuf.Timestamp last_update = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string total_deposits = 4;
+  string total_accrued_yield = 5;
+  string local_assets = 6;
+  string remote_positions_value = 7;
+  string inflight_funds_value = 8;
+  string pending_withdrawals = 9;
+  NAVBreakdownView nav_breakdown = 10;
+}
+
+// Withdrawal queue views
+message QueryWithdrawalQueueRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message WithdrawalQueueItem {
+  string request_id = 1;
+  string user = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string amount = 3; // principal + yield
+  string principal_amount = 4;
+  string yield_amount = 5;
+  google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string status = 7; // PENDING, PROCESSING, CLAIMABLE, CLAIMED
+  uint64 position = 8; // queue position (optional)
+}
+
+message QueryWithdrawalQueueResponse {
+  repeated WithdrawalQueueItem pending_requests = 1 [(gogoproto.nullable) = false];
+  string total_pending = 2;
+  string available_liquidity = 3;
+  uint64 queue_length = 4;
+  string estimated_processing_time = 5; // seconds
+  cosmos.base.query.v1beta1.PageResponse pagination = 6;
+}
+
+// User withdrawals
+message QueryUserWithdrawalsRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message WithdrawalStatusItem {
+  string request_id = 1;
+  string amount = 2; // total amount (principal + yield)
+  string principal_amount = 3;
+  string yield_amount = 4;
+  string fulfilled_amount = 5;
+  string status = 6; // CLAIMABLE, CLAIMED, PENDING, etc.
+  google.protobuf.Timestamp timestamp = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp claimable_at = 8 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp claimed_at = 9 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+message QueryUserWithdrawalsResponse {
+  repeated WithdrawalStatusItem withdrawals = 1 [(gogoproto.nullable) = false];
+  string total_pending = 2;
+  string total_claimable = 3;
+  string total_claimed = 4;
+  cosmos.base.query.v1beta1.PageResponse pagination = 5;
+}
+
+// User balance
+message QueryUserBalanceRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryUserBalanceResponse {
+  string deposit_amount = 1; // principal
+  string accrued_yield = 2;
+  string total_value = 3; // deposit + yield
+  string unrealized_gain = 4;
+  string locked_amount = 5; // amount in withdrawal queue
+}
+
+// Deposit velocity
+message QueryDepositVelocityRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryDepositVelocityResponse {
+  string user = 1;
+  string last_deposit_block = 2;
+  uint32 recent_deposit_count = 3;
+  string recent_deposit_volume = 4;
+  int64 time_window_blocks = 5;
+  bool suspicious_activity_flag = 6;
+  int64 cooldown_remaining_blocks = 7;
+  string velocity_score = 8; // Dec string
+}
+
+// Simulations
+message QuerySimulateDepositRequest {
+  string amount = 1;
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message CheckResultsView {
+  bool within_user_limit = 1;
+  bool within_block_limit = 2;
+  bool within_total_limit = 3;
+  bool cooldown_passed = 4;
+  bool velocity_check_passed = 5;
+}
+
+message QuerySimulateDepositResponse {
+  string expected_deposit = 1; // amount after fees
+  string yield_rate = 2; // current APY
+  CheckResultsView checks = 3;
+  repeated string warnings = 4;
+}
+
+message QuerySimulateWithdrawalRequest {
+  string amount = 1; // amount to withdraw
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QuerySimulateWithdrawalResponse {
+  string expected_amount = 1; // total to receive after fees
+  string principal_portion = 2;
+  string yield_portion = 3;
+  uint64 queue_position = 4;
+  string estimated_fulfillment_time = 5; // seconds
+  string available_liquidity = 6;
+  string ahead_in_queue = 7;
+}
+
+// Inflight funds aggregates
+message QueryInflightFundsRequest {}
+
+message InflightFundView {
+  uint32 route_id = 1;
+  string transaction_id = 2;
+  string type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
+  string amount = 4;
+  string current_value = 5;
+  string source_chain = 6;
+  string destination_chain = 7;
+  uint64 source_position_id = 8;
+  uint64 destination_position_id = 9;
+  google.protobuf.Timestamp initiated_at = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp expected_at = 11 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string status = 12; // PENDING, CONFIRMED, COMPLETED, FAILED
+  string time_remaining = 13; // seconds
+}
+
+message QueryInflightFundsResponse {
+  repeated InflightFundView inflight_funds = 1 [(gogoproto.nullable) = false];
+  string total_inflight = 2;
+  string pending_deployment = 3;
+  string pending_withdrawal_distribution = 4;
+  map<string, string> by_route = 5;
+  map<string, string> by_type = 6;
+  map<string, string> by_status = 7;
+}
+
+message QueryStaleInflightFundsRequest {}
+
+message StaleInflightFundView {
+  uint32 route_id = 1;
+  string transaction_id = 2;
+  string amount = 3;
+  string type = 4;
+  string source_chain = 5;
+  string destination_chain = 6;
+  google.protobuf.Timestamp initiated_at = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp expected_at = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string hours_overdue = 9;
+  string last_known_status = 10;
+  string recommended_action = 11;
+}
+
+message QueryStaleInflightFundsResponse {
+  repeated StaleInflightFundView stale_funds = 1 [(gogoproto.nullable) = false];
+  string total_stale_value = 2;
+  uint64 total_stale_count = 3;
+  string oldest_stale_hours = 4;
+}
+
+// Vault-wide remote positions
+message QueryVaultRemotePositionsRequest {}
+
+message VaultRemotePosition {
+  uint64 position_id = 1;
+  string vault_address = 2;
+  uint32 chain_id = 3;
+  string shares_held = 4;
+  string share_price = 5;
+  string principal = 6;
+  string current_value = 7;
+  string apy = 8; // Dec string
+  string status = 9; // ACTIVE, WITHDRAWING, CLOSED
+  google.protobuf.Timestamp last_update = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+message QueryVaultRemotePositionsResponse {
+  repeated VaultRemotePosition positions = 1 [(gogoproto.nullable) = false];
+  uint64 total_positions = 2;
+  string total_value = 3;
+}

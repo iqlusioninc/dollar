@@ -1,0 +1,296 @@
+syntax = "proto3";
+
+package noble.dollar.vaults.v2;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+
+// EventDeposit is emitted when a user deposits into the V2 vault
+message EventDeposit {
+  // User address making the deposit
+  string depositor = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Amount deposited
+  string amount_deposited = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height
+  int64 block_height = 3;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventWithdraw is emitted when a user withdraws from the V2 vault
+message EventWithdraw {
+  // User address making the withdrawal
+  string withdrawer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Principal withdrawn
+  string principal_withdrawn = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Yield withdrawn
+  string yield_withdrawn = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total amount received (principal + yield - fees)
+  string total_amount_received = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Fees paid
+  string fees_paid = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height
+  int64 block_height = 6;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventWithdrawlRequested is emitted when a user requests a withdrawal from the V2 vault
+message EventWithdrawlRequested {
+  // User address requesting withdrawal
+  string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Amount to withdraw (principal + yield)
+  string amount_to_withdraw = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Withdrawal request ID
+  string withdrawal_request_id = 3;
+
+  // Expected unlock time
+  google.protobuf.Timestamp expected_unlock_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Block height
+  int64 block_height = 5;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventWithdrawalCancelled is emitted when a user cancels a withdrawal request
+message EventWithdrawalCancelled {
+  // User address cancelling withdrawal
+  string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Withdrawal request ID that was cancelled
+  string withdrawal_request_id = 2;
+
+  // Amount returned to active position
+  string amount_returned = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height
+  int64 block_height = 4;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventWithdrawalProcessed is emitted when withdrawal requests are processed
+message EventWithdrawalProcessed {
+  // Number of withdrawal requests processed
+  int32 requests_processed = 1;
+
+  // Total amount processed
+  string total_amount_processed = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total amount distributed
+  string total_amount_distributed = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height
+  int64 block_height = 4;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventNAVUpdated is emitted when NAV is updated for a vault
+message EventNAVUpdated {
+  // Previous NAV
+  string previous_nav = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // New NAV
+  string new_nav = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // NAV change percentage (basis points)
+  int32 change_bps = 3;
+
+  // Total deposits in vault
+  string total_deposits = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total accrued yield
+  string total_accrued_yield = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Authority that updated NAV
+  string authority = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Update reason
+  string reason = 7;
+
+  // Block height
+  int64 block_height = 8;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventFeeCollected is emitted when fees are collected
+message EventFeeCollected {
+  // Fee type (deposit, withdrawal, etc.)
+  string fee_type = 1;
+
+  // Amount collected
+  string amount_collected = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Fee rate used (basis points)
+  int32 fee_rate_bps = 3;
+
+  // User who triggered the fee
+  string payer = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Block height
+  int64 block_height = 5;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventYieldPreferenceUpdated is emitted when a user updates their yield preference
+message EventYieldPreferenceUpdated {
+  // User address
+  string user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Previous yield preference
+  bool previous_yield_preference = 2;
+
+  // New yield preference
+  bool new_yield_preference = 3;
+
+  // Block height
+  int64 block_height = 4;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventVaultConfigUpdated is emitted when vault configuration is updated
+message EventVaultConfigUpdated {
+  // Previous config (JSON serialized)
+  string previous_config = 1;
+
+  // New config (JSON serialized)
+  string new_config = 2;
+
+  // Authority that made the update
+  string authority = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Update reason
+  string reason = 4;
+
+  // Block height
+  int64 block_height = 5;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
