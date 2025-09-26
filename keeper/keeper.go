@@ -43,8 +43,9 @@ import (
 	"dollar.noble.xyz/v3/types"
 	"dollar.noble.xyz/v3/types/portal"
 	"dollar.noble.xyz/v3/types/portal/ntt"
-	"dollar.noble.xyz/v3/types/v2"
+	modulev2 "dollar.noble.xyz/v3/types/v2"
 	"dollar.noble.xyz/v3/types/vaults"
+	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
 type Keeper struct {
@@ -72,10 +73,22 @@ type Keeper struct {
 	Paused             collections.Item[bool]
 	Index              collections.Item[int64]
 	Principal          collections.Map[[]byte, math.Int]
-	Stats              collections.Item[v2.Stats]
+	Stats              collections.Item[modulev2.Stats]
 	TotalExternalYield collections.Map[collections.Pair[int32, string], math.Int]
 	YieldRecipients    collections.Map[collections.Pair[int32, string], string]
 	RetryAmounts       collections.Map[collections.Pair[int32, string], math.Int]
+
+	VaultsV2Params                   collections.Item[vaultsv2.Params]
+	VaultsV2Config                   collections.Item[vaultsv2.VaultConfig]
+	VaultsV2UserPositions            collections.Map[[]byte, vaultsv2.UserPosition]
+	VaultsV2UserShares               collections.Map[[]byte, math.Int]
+	VaultsV2TotalShares              collections.Item[math.Int]
+	VaultsV2PendingDeploymentFunds   collections.Item[math.Int]
+	VaultsV2PendingWithdrawalsAmount collections.Item[math.Int]
+	VaultsV2WithdrawalQueue          collections.Map[uint64, vaultsv2.WithdrawalRequest]
+	VaultsV2WithdrawalNextID         collections.Item[uint64]
+	VaultsV2NAVInfo                  collections.Item[vaultsv2.NAVInfo]
+	VaultsV2VaultState               collections.Item[vaultsv2.VaultState]
 
 	PortalOwner         collections.Item[string]
 	PortalPaused        collections.Item[bool]
@@ -149,10 +162,22 @@ func NewKeeper(
 		Paused:             collections.NewItem(builder, types.PausedKey, "paused", collections.BoolValue),
 		Index:              collections.NewItem(builder, types.IndexKey, "index", collections.Int64Value),
 		Principal:          collections.NewMap(builder, types.PrincipalPrefix, "principal", collections.BytesKey, sdk.IntValue),
-		Stats:              collections.NewItem(builder, types.StatsKey, "stats", codec.CollValue[v2.Stats](cdc)),
+		Stats:              collections.NewItem(builder, types.StatsKey, "stats", codec.CollValue[modulev2.Stats](cdc)),
 		TotalExternalYield: collections.NewMap(builder, types.TotalExternalYieldPrefix, "total_external_yield", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), sdk.IntValue),
 		YieldRecipients:    collections.NewMap(builder, types.YieldRecipientPrefix, "yield_recipients", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), collections.StringValue),
 		RetryAmounts:       collections.NewMap(builder, types.RetryAmountPrefix, "retry_amounts", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), sdk.IntValue),
+
+		VaultsV2Params:                   collections.NewItem(builder, vaultsv2.ParamsKey, "vaults_v2_params", codec.CollValue[vaultsv2.Params](cdc)),
+		VaultsV2Config:                   collections.NewItem(builder, vaultsv2.VaultConfigurationKey, "vaults_v2_config", codec.CollValue[vaultsv2.VaultConfig](cdc)),
+		VaultsV2UserPositions:            collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
+		VaultsV2UserShares:               collections.NewMap(builder, vaultsv2.UserSharesPrefix, "vaults_v2_user_shares", collections.BytesKey, sdk.IntValue),
+		VaultsV2TotalShares:              collections.NewItem(builder, vaultsv2.TotalSharesKey, "vaults_v2_total_shares", sdk.IntValue),
+		VaultsV2PendingDeploymentFunds:   collections.NewItem(builder, vaultsv2.PendingDeploymentFundsKey, "vaults_v2_pending_deployment", sdk.IntValue),
+		VaultsV2PendingWithdrawalsAmount: collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
+		VaultsV2WithdrawalQueue:          collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),
+		VaultsV2WithdrawalNextID:         collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
+		VaultsV2NAVInfo:                  collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
+		VaultsV2VaultState:               collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
 
 		PortalOwner:         collections.NewItem(builder, portal.OwnerKey, "portal_owner", collections.StringValue),
 		PortalPaused:        collections.NewItem(builder, portal.PausedKey, "portal_paused", collections.BoolValue),

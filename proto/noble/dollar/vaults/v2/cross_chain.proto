@@ -8,7 +8,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "hyperlane/warp/v1/types.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // CrossChainRoute defines a route for cross-chain operations
 // Currently supports Hyperlane, with potential for future IBC support

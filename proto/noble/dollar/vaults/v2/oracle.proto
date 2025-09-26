@@ -9,7 +9,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v2/cross_chain.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // ========== Oracle Types ==========
 

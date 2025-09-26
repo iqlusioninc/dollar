@@ -22,143 +22,76 @@ package keeper
 
 import (
 	"context"
-	"fmt"
-	"strconv"
 
-	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
-	"cosmossdk.io/math"
-	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	solomachine "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
-	tendermint "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
+	sdkmath "cosmossdk.io/math"
 
 	"dollar.noble.xyz/v3/types"
-	"dollar.noble.xyz/v3/types/v2"
+	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
-var _ v2.QueryServer = &queryServerV2{}
+var _ vaultsv2.QueryServer = &queryServerV2{}
 
 type queryServerV2 struct {
+	vaultsv2.UnimplementedQueryServer
 	*Keeper
 }
 
-func NewQueryServerV2(keeper *Keeper) v2.QueryServer {
+func NewQueryServerV2(keeper *Keeper) vaultsv2.QueryServer {
 	return &queryServerV2{Keeper: keeper}
 }
 
-func (k queryServerV2) Stats(ctx context.Context, req *v2.QueryStats) (*v2.QueryStatsResponse, error) {
+func (q queryServerV2) VaultStats(ctx context.Context, req *vaultsv2.QueryVaultStatsRequest) (*vaultsv2.QueryVaultStatsResponse, error) {
 	if req == nil {
-		return nil, types.ErrInvalidRequest
+		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
 	}
 
-	stats, err := k.Keeper.Stats.Get(ctx)
+	stats, err := q.buildVaultStatsEntry(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to get stats from state")
+		return nil, err
 	}
 
-	rawTotalExternalYield, err := k.GetTotalExternalYield(ctx)
+	return &vaultsv2.QueryVaultStatsResponse{Stats: stats}, nil
+}
+
+func (q queryServerV2) Stats(ctx context.Context, req *vaultsv2.QueryStatsRequest) (*vaultsv2.QueryStatsResponse, error) {
+	if req == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
+	}
+
+	stats, err := q.buildVaultStatsEntry(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to get total external yield from state")
+		return nil, err
 	}
 
-	totalExternalYield := make(map[string]v2.QueryStatsResponse_ExternalYield)
-	for key, rawAmount := range rawTotalExternalYield {
-		provider, identifier := v2.ParseYieldRecipientKey(key)
+	return &vaultsv2.QueryStatsResponse{Stats: stats}, nil
+}
 
-		chainId := "UNKNOWN"
-		switch provider {
-		case v2.Provider_IBC:
-			chainId = k.getIBCChainId(ctx, identifier)
-		case v2.Provider_HYPERLANE:
-			chainId = k.getHyperlaneChainId(ctx, identifier)
-		}
-
-		amount, _ := math.NewIntFromString(rawAmount)
-
-		totalExternalYield[key] = v2.QueryStatsResponse_ExternalYield{
-			ChainId: chainId,
-			Amount:  amount,
-		}
+func (q queryServerV2) Params(ctx context.Context, req *vaultsv2.QueryParamsRequest) (*vaultsv2.QueryParamsResponse, error) {
+	if req == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
 	}
 
-	return &v2.QueryStatsResponse{
-		TotalHolders:       stats.TotalHolders,
-		TotalPrincipal:     stats.TotalPrincipal,
-		TotalYieldAccrued:  stats.TotalYieldAccrued,
-		TotalExternalYield: totalExternalYield,
+	params, err := q.GetVaultsV2Params(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch params")
+	}
+
+	return &vaultsv2.QueryParamsResponse{Params: params}, nil
+}
+
+func (q queryServerV2) buildVaultStatsEntry(ctx context.Context) (vaultsv2.VaultStatsEntry, error) {
+	state, err := q.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return vaultsv2.VaultStatsEntry{}, errors.Wrap(err, "unable to fetch vault state")
+	}
+
+	return vaultsv2.VaultStatsEntry{
+		TotalDepositors:       state.TotalUsers,
+		TotalDeposited:        state.TotalDeposits,
+		TotalWithdrawn:        sdkmath.ZeroInt(),
+		TotalFeesCollected:    sdkmath.ZeroInt(),
+		TotalYieldDistributed: state.TotalAccruedYield,
+		ActivePositions:       state.TotalUsers,
 	}, nil
-}
-
-func (k queryServerV2) YieldRecipients(ctx context.Context, req *v2.QueryYieldRecipients) (*v2.QueryYieldRecipientsResponse, error) {
-	if req == nil {
-		return nil, types.ErrInvalidRequest
-	}
-
-	yieldRecipients, err := k.GetYieldRecipients(ctx)
-
-	return &v2.QueryYieldRecipientsResponse{YieldRecipients: yieldRecipients}, err
-}
-
-func (k queryServerV2) YieldRecipient(ctx context.Context, req *v2.QueryYieldRecipient) (*v2.QueryYieldRecipientResponse, error) {
-	if req == nil {
-		return nil, types.ErrInvalidRequest
-	}
-
-	key := collections.Join(int32(req.Provider), req.Identifier)
-	yieldRecipient, err := k.Keeper.YieldRecipients.Get(ctx, key)
-	if err != nil {
-		return nil, fmt.Errorf("unable to find yield recipient for provider %s with identifier %s", req.Provider, req.Identifier)
-	}
-
-	return &v2.QueryYieldRecipientResponse{YieldRecipient: yieldRecipient}, nil
-}
-
-func (k queryServerV2) RetryAmounts(ctx context.Context, req *v2.QueryRetryAmounts) (*v2.QueryRetryAmountsResponse, error) {
-	if req == nil {
-		return nil, types.ErrInvalidRequest
-	}
-
-	retryAmounts, err := k.GetRetryAmounts(ctx)
-
-	return &v2.QueryRetryAmountsResponse{RetryAmounts: retryAmounts}, err
-}
-
-func (k queryServerV2) RetryAmount(ctx context.Context, req *v2.QueryRetryAmount) (*v2.QueryRetryAmountResponse, error) {
-	if req == nil {
-		return nil, types.ErrInvalidRequest
-	}
-
-	retryAmount := k.GetRetryAmount(ctx, req.Provider, req.Identifier)
-
-	return &v2.QueryRetryAmountResponse{RetryAmount: retryAmount}, nil
-}
-
-func (k *Keeper) getIBCChainId(ctx context.Context, channelId string) string {
-	_, rawClientState, _ := k.channel.GetChannelClientState(sdk.UnwrapSDKContext(ctx), transfertypes.PortID, channelId)
-
-	switch clientState := rawClientState.(type) {
-	case *solomachine.ClientState:
-		return clientState.ConsensusState.Diversifier
-	case *tendermint.ClientState:
-		return clientState.ChainId
-	default:
-		return "UNKNOWN"
-	}
-}
-
-func (k *Keeper) getHyperlaneChainId(ctx context.Context, identifier string) string {
-	rawIdentifier, err := hyperlaneutil.DecodeHexAddress(identifier)
-	if err != nil {
-		return "UNKNOWN"
-	}
-	tokenId := rawIdentifier.GetInternalId()
-
-	router, err := k.getHyperlaneRouter(ctx, tokenId)
-	if err != nil {
-		return "UNKNOWN"
-	}
-
-	return strconv.Itoa(int(router.ReceiverDomain))
 }

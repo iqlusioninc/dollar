@@ -7,7 +7,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // NOBLE DOLLAR V2 VAULT SYSTEM - YIELD-TRACKING ACCOUNTING
 //

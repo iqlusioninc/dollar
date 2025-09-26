@@ -8,7 +8,7 @@ import "gogoproto/gogo.proto";
 import "noble/dollar/vaults/v2/nav.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // GenesisState defines the V2 vaults module's genesis state
 message GenesisState {

@@ -11,7 +11,7 @@ import "noble/dollar/vaults/v2/cross_chain.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
 import "noble/dollar/vaults/v2/oracle.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // Msg defines the V2 vaults transaction service
 service Msg {
@@ -107,8 +107,11 @@ message MsgDeposit {
     (amino.dont_omitempty) = true
   ];
 
-  // Whether user wants to receive yield
-  optional bool receive_yield = 3; // optional for setting yield in a single message otherwise detaul to the current preference for the user.
+  // Whether user wants to receive yield for this deposit.
+  bool receive_yield = 3;
+
+  // Set to true when the deposit should override the current preference.
+  bool receive_yield_override = 4;
 }
 
 // MsgDepositResponse returns the results of a deposit
