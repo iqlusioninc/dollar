@@ -1,0 +1,13 @@
+[profile.default]
+src = "."
+out = "out"
+libs = ["lib"]
+remappings = [
+  "@openzeppelin/=lib/openzeppelin-contracts/",
+  "@hyperlane-xyz/=lib/hyperlane-monorepo/solidity/"
+]
+solc_version = "0.8.20"
+
+[dependencies]
+openzeppelin-contracts = { git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git", tag = "v5.0.2" }
+hyperlane-monorepo = { git = "https://github.com/hyperlane-xyz/hyperlane-monorepo.git", tag = "v2.0.0" }
