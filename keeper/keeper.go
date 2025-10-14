@@ -83,6 +83,10 @@ type Keeper struct {
 	VaultsV2UserPositions                 collections.Map[[]byte, vaultsv2.UserPosition]
 	VaultsV2UserShares                    collections.Map[[]byte, math.Int]
 	VaultsV2TotalShares                   collections.Item[math.Int]
+	VaultsV2DepositLimits                 collections.Item[vaultsv2.DepositLimit]
+	VaultsV2UserDepositHistory            collections.Map[collections.Pair[[]byte, int64], math.Int]
+	VaultsV2DepositVelocity               collections.Map[[]byte, vaultsv2.DepositVelocity]
+	VaultsV2BlockDepositVolume            collections.Map[int64, math.Int]
 	VaultsV2PendingDeploymentFunds        collections.Item[math.Int]
 	VaultsV2PendingWithdrawalsAmount      collections.Item[math.Int]
 	VaultsV2WithdrawalQueue               collections.Map[uint64, vaultsv2.WithdrawalRequest]
@@ -184,6 +188,10 @@ func NewKeeper(
 		VaultsV2UserPositions:                 collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
 		VaultsV2UserShares:                    collections.NewMap(builder, vaultsv2.UserSharesPrefix, "vaults_v2_user_shares", collections.BytesKey, sdk.IntValue),
 		VaultsV2TotalShares:                   collections.NewItem(builder, vaultsv2.TotalSharesKey, "vaults_v2_total_shares", sdk.IntValue),
+		VaultsV2DepositLimits:                 collections.NewItem(builder, vaultsv2.DepositLimitsKey, "vaults_v2_deposit_limits", codec.CollValue[vaultsv2.DepositLimit](cdc)),
+		VaultsV2UserDepositHistory:            collections.NewMap(builder, vaultsv2.UserDepositHistoryPrefix, "vaults_v2_user_deposit_history", collections.PairKeyCodec(collections.BytesKey, collections.Int64Key), sdk.IntValue),
+		VaultsV2DepositVelocity:               collections.NewMap(builder, vaultsv2.DepositVelocityPrefix, "vaults_v2_deposit_velocity", collections.BytesKey, codec.CollValue[vaultsv2.DepositVelocity](cdc)),
+		VaultsV2BlockDepositVolume:            collections.NewMap(builder, vaultsv2.BlockDepositVolumePrefix, "vaults_v2_block_deposit_volume", collections.Int64Key, sdk.IntValue),
 		VaultsV2PendingDeploymentFunds:        collections.NewItem(builder, vaultsv2.PendingDeploymentFundsKey, "vaults_v2_pending_deployment", sdk.IntValue),
 		VaultsV2PendingWithdrawalsAmount:      collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
 		VaultsV2WithdrawalQueue:               collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),

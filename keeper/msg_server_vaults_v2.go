@@ -26,7 +26,9 @@ import (
 	"strconv"
 	"time"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -61,6 +63,79 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
+// UpdateDepositLimits updates the deposit limits and risk control configuration.
+func (m msgServerV2) UpdateDepositLimits(ctx context.Context, msg *vaultsv2.MsgUpdateDepositLimits) (*vaultsv2.MsgUpdateDepositLimitsResponse, error) {
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	// Validate the new limits
+	if msg.Limits.MaxUserDepositPerWindow.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "max user deposit per window cannot be negative")
+	}
+	if msg.Limits.MaxBlockDepositVolume.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "max block deposit volume cannot be negative")
+	}
+	if msg.Limits.GlobalDepositCap.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "global deposit cap cannot be negative")
+	}
+	if msg.Limits.DepositCooldownBlocks < 0 {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "deposit cooldown blocks cannot be negative")
+	}
+	if msg.Limits.VelocityWindowBlocks < 0 {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "velocity window blocks cannot be negative")
+	}
+
+	// Get existing limits for comparison
+	existingLimits, hasExisting, err := m.getDepositLimits(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch existing deposit limits")
+	}
+
+	var previousJSON string
+	if hasExisting {
+		prevBytes, err := m.cdc.MarshalJSON(&existingLimits)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to marshal previous limits")
+		}
+		previousJSON = string(prevBytes)
+	} else {
+		previousJSON = "{}"
+	}
+
+	// Persist the new limits
+	if err := m.setDepositLimits(ctx, msg.Limits); err != nil {
+		return nil, errors.Wrap(err, "unable to persist deposit limits")
+	}
+
+	newBytes, err := m.cdc.MarshalJSON(&msg.Limits)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to marshal new limits")
+	}
+	newJSON := string(newBytes)
+
+	// Emit event for audit trail
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventVaultConfigUpdated{
+		PreviousConfig: previousJSON,
+		NewConfig:      newJSON,
+		Authority:      msg.Authority,
+		Reason:         msg.Reason,
+		BlockHeight:    sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:      headerInfo.Time,
+	}); err != nil {
+		return nil, errors.Wrap(err, "unable to emit deposit limits updated event")
+	}
+
+	return &vaultsv2.MsgUpdateDepositLimitsResponse{
+		PreviousLimits: previousJSON,
+		NewLimits:      newJSON,
+	}, nil
+}
+
 func (m msgServerV2) findRemotePositionByAddress(ctx context.Context, address hyperlaneutil.HexAddress) (uint64, vaultsv2.RemotePosition, bool, error) {
 	positions, err := m.GetAllVaultsV2RemotePositions(ctx)
 	if err != nil {
@@ -74,6 +149,39 @@ func (m msgServerV2) findRemotePositionByAddress(ctx context.Context, address hy
 	}
 
 	return 0, vaultsv2.RemotePosition{}, false, nil
+}
+
+func (m msgServerV2) getDepositLimits(ctx context.Context) (vaultsv2.DepositLimit, bool, error) {
+	limits, err := m.GetVaultsV2DepositLimits(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.DepositLimit{}, false, nil
+		}
+		return vaultsv2.DepositLimit{}, false, err
+	}
+	return limits, true, nil
+}
+
+func (m msgServerV2) updateDepositVelocity(ctx context.Context, addr sdk.AccAddress, amount math.Int, block int64, params vaultsv2.DepositLimit) (vaultsv2.DepositVelocity, error) {
+	velocity, found, err := m.getDepositVelocity(ctx, addr)
+	if err != nil {
+		return vaultsv2.DepositVelocity{}, err
+	}
+	if !found {
+		velocity.TimeWindowBlocks = params.DepositCooldownBlocks
+	}
+	velocity.LastDepositBlock = block
+	velocity.RecentDepositCount++
+	if velocity.RecentDepositVolume.IsZero() {
+		velocity.RecentDepositVolume = amount
+	} else {
+		volume, err := velocity.RecentDepositVolume.SafeAdd(amount)
+		if err != nil {
+			return vaultsv2.DepositVelocity{}, err
+		}
+		velocity.RecentDepositVolume = volume
+	}
+	return velocity, nil
 }
 
 func oracleIdentifier(positionID uint64, sourceChain string) string {
@@ -119,6 +227,13 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	}
 	if !config.Enabled {
 		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
+	}
+
+	// Enforce deposit limits and risk controls
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	currentBlock := sdkCtx.BlockHeight()
+	if err := m.enforceDepositLimits(ctx, depositor, msg.Amount, currentBlock); err != nil {
+		return nil, err
 	}
 
 	balance := m.bank.GetBalance(ctx, depositor, m.denom).Amount
@@ -206,6 +321,11 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	if err := m.AddAmountToVaultsV2Totals(ctx, msg.Amount, sdkmath.ZeroInt()); err != nil {
 		return nil, errors.Wrap(err, "unable to update aggregate vault totals")
+	}
+
+	// Update deposit tracking metrics
+	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
+		return nil, errors.Wrap(err, "unable to update deposit tracking")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
@@ -1819,11 +1939,37 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 		}
 	}
 
+	// Circuit breaker: Check if NAV change exceeds maximum allowed threshold
+	params, err := m.GetVaultsV2Params(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault parameters")
+	}
+
+	circuitBreakerTriggered := false
+	if params.MaxNavChangeBps > 0 && previousNav.IsPositive() {
+		// Calculate absolute value of change
+		absChangeBps := changeBps
+		if absChangeBps < 0 {
+			absChangeBps = -absChangeBps
+		}
+
+		if absChangeBps > params.MaxNavChangeBps {
+			circuitBreakerTriggered = true
+
+			// If circuit breaker was not explicitly overridden by authority, reject the update
+			if !msg.CircuitBreakerActive {
+				return nil, errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+					"NAV change of %d bps exceeds maximum allowed %d bps (use CircuitBreakerActive=true to override)",
+					absChangeBps, params.MaxNavChangeBps)
+			}
+		}
+	}
+
 	navInfo.PreviousNav = previousNav
 	navInfo.CurrentNav = msg.NewNav
 	navInfo.LastUpdate = headerInfo.Time
 	navInfo.ChangeBps = changeBps
-	navInfo.CircuitBreakerActive = msg.CircuitBreakerActive
+	navInfo.CircuitBreakerActive = circuitBreakerTriggered || msg.CircuitBreakerActive
 
 	if err := m.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
 		return nil, errors.Wrap(err, "unable to persist nav info")
@@ -1905,4 +2051,186 @@ func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgH
 		FinalStatus: returned.FinalStatus,
 		HandledAt:   headerInfo.Time,
 	}, nil
+}
+
+// enforceDepositLimits validates deposit against all risk control limits.
+// This function enforces:
+// 1. Global deposit cap (vault capacity)
+// 2. Per-block deposit volume limits
+// 3. Per-user deposit limits per time window
+// 4. Cooldown period between deposits
+// 5. Maximum number of deposits per user in time window
+func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.AccAddress, amount sdkmath.Int, currentBlock int64) error {
+	// Get deposit limits configuration
+	limits, hasLimits, err := m.getDepositLimits(ctx)
+	if err != nil {
+		return errors.Wrap(err, "unable to fetch deposit limits")
+	}
+
+	// If no limits configured, allow deposit
+	if !hasLimits {
+		return nil
+	}
+
+	// 1. Check global deposit cap
+	if limits.GlobalDepositCap.IsPositive() {
+		state, err := m.GetVaultsV2VaultState(ctx)
+		if err != nil {
+			return errors.Wrap(err, "unable to fetch vault state")
+		}
+
+		projectedTotal, err := state.TotalDeposits.SafeAdd(amount)
+		if err != nil {
+			return errors.Wrap(err, "deposit amount causes overflow")
+		}
+
+		if projectedTotal.GT(limits.GlobalDepositCap) {
+			return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				"deposit would exceed global cap of %s (current: %s, deposit: %s)",
+				limits.GlobalDepositCap.String(), state.TotalDeposits.String(), amount.String())
+		}
+	}
+
+	// 2. Check per-block deposit volume
+	if limits.MaxBlockDepositVolume.IsPositive() {
+		blockVolume, err := m.getBlockDepositVolume(ctx, currentBlock)
+		if err != nil {
+			return errors.Wrap(err, "unable to fetch block deposit volume")
+		}
+
+		projectedBlockVolume, err := blockVolume.SafeAdd(amount)
+		if err != nil {
+			return errors.Wrap(err, "block volume calculation overflow")
+		}
+
+		if projectedBlockVolume.GT(limits.MaxBlockDepositVolume) {
+			return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				"deposit would exceed per-block limit of %s (current block volume: %s)",
+				limits.MaxBlockDepositVolume.String(), blockVolume.String())
+		}
+	}
+
+	// 3. Check cooldown period
+	if limits.DepositCooldownBlocks > 0 {
+		velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
+		if err != nil {
+			return errors.Wrap(err, "unable to fetch deposit velocity")
+		}
+
+		if hasVelocity && velocity.LastDepositBlock > 0 {
+			blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
+			if blocksSinceLastDeposit < limits.DepositCooldownBlocks {
+				remainingBlocks := limits.DepositCooldownBlocks - blocksSinceLastDeposit
+				return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+					"deposit cooldown active: %d blocks remaining (last deposit at block %d)",
+					remainingBlocks, velocity.LastDepositBlock)
+			}
+		}
+	}
+
+	// 4. Check per-user deposit limits and velocity
+	if limits.MaxUserDepositPerWindow.IsPositive() || limits.MaxDepositsPerWindow > 0 {
+		velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
+		if err != nil {
+			return errors.Wrap(err, "unable to fetch deposit velocity")
+		}
+
+		// Initialize velocity if not exists
+		if !hasVelocity {
+			velocity.TimeWindowBlocks = limits.VelocityWindowBlocks
+			velocity.RecentDepositVolume = sdkmath.ZeroInt()
+		}
+
+		// Check if we need to reset the window
+		if limits.VelocityWindowBlocks > 0 && velocity.LastDepositBlock > 0 {
+			blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
+			if blocksSinceLastDeposit >= limits.VelocityWindowBlocks {
+				// Window expired, reset counters
+				velocity.RecentDepositCount = 0
+				velocity.RecentDepositVolume = sdkmath.ZeroInt()
+			}
+		}
+
+		// Check deposit count limit
+		if limits.MaxDepositsPerWindow > 0 && velocity.RecentDepositCount >= limits.MaxDepositsPerWindow {
+			return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				"user has reached maximum of %d deposits per %d-block window",
+				limits.MaxDepositsPerWindow, limits.VelocityWindowBlocks)
+		}
+
+		// Check deposit volume limit
+		if limits.MaxUserDepositPerWindow.IsPositive() {
+			projectedVolume, err := velocity.RecentDepositVolume.SafeAdd(amount)
+			if err != nil {
+				return errors.Wrap(err, "velocity volume calculation overflow")
+			}
+
+			if projectedVolume.GT(limits.MaxUserDepositPerWindow) {
+				return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+					"deposit would exceed user limit of %s per %d-block window (current: %s)",
+					limits.MaxUserDepositPerWindow.String(), limits.VelocityWindowBlocks,
+					velocity.RecentDepositVolume.String())
+			}
+		}
+	}
+
+	return nil
+}
+
+// updateDepositTracking updates all deposit tracking metrics after a successful deposit.
+// This should be called after the deposit has been processed and coins transferred.
+func (m msgServerV2) updateDepositTracking(ctx context.Context, depositor sdk.AccAddress, amount sdkmath.Int, currentBlock int64) error {
+	limits, hasLimits, err := m.getDepositLimits(ctx)
+	if err != nil {
+		return errors.Wrap(err, "unable to fetch deposit limits")
+	}
+
+	if !hasLimits {
+		return nil
+	}
+
+	// Update block volume
+	if err := m.incrementBlockDeposit(ctx, currentBlock, amount); err != nil {
+		return errors.Wrap(err, "unable to update block deposit volume")
+	}
+
+	// Update user deposit history
+	if err := m.recordUserDeposit(ctx, depositor, currentBlock, amount); err != nil {
+		return errors.Wrap(err, "unable to record user deposit")
+	}
+
+	// Update user velocity
+	velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
+	if err != nil {
+		return errors.Wrap(err, "unable to fetch deposit velocity")
+	}
+
+	if !hasVelocity {
+		velocity.TimeWindowBlocks = limits.VelocityWindowBlocks
+		velocity.RecentDepositVolume = sdkmath.ZeroInt()
+		velocity.RecentDepositCount = 0
+	}
+
+	// Check if we need to reset the window
+	if limits.VelocityWindowBlocks > 0 && velocity.LastDepositBlock > 0 {
+		blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
+		if blocksSinceLastDeposit >= limits.VelocityWindowBlocks {
+			// Window expired, reset counters
+			velocity.RecentDepositCount = 0
+			velocity.RecentDepositVolume = sdkmath.ZeroInt()
+		}
+	}
+
+	velocity.LastDepositBlock = currentBlock
+	velocity.RecentDepositCount++
+	velocity.RecentDepositVolume, err = velocity.RecentDepositVolume.SafeAdd(amount)
+	if err != nil {
+		return errors.Wrap(err, "unable to update velocity volume")
+	}
+
+	if err := m.setDepositVelocity(ctx, depositor, velocity); err != nil {
+		return errors.Wrap(err, "unable to persist deposit velocity")
+	}
+
+	return nil
 }

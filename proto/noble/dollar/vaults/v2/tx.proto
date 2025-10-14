@@ -10,6 +10,7 @@ import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v2/cross_chain.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
 import "noble/dollar/vaults/v2/oracle.proto";
+import "noble/dollar/vaults/v2/vaults.proto";
 
 option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
@@ -86,6 +87,9 @@ service Msg {
 
   // Handle stale inflight fund record (authority only)
   rpc HandleStaleInflight(MsgHandleStaleInflight) returns (MsgHandleStaleInflightResponse);
+
+  // Update deposit limits (authority only)
+  rpc UpdateDepositLimits(MsgUpdateDepositLimits) returns (MsgUpdateDepositLimitsResponse);
 }
 
 // MsgDeposit allows users to deposit into a V2 vault
@@ -818,4 +822,31 @@ message MsgHandleStaleInflightResponse {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+}
+
+// MsgUpdateDepositLimits updates deposit limits and risk controls
+message MsgUpdateDepositLimits {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateDepositLimits";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority performing the update
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // New deposit limits configuration
+  DepositLimit limits = 2 [(gogoproto.nullable) = false];
+
+  // Reason for the update
+  string reason = 3;
+}
+
+// MsgUpdateDepositLimitsResponse confirms the deposit limits update
+message MsgUpdateDepositLimitsResponse {
+  // Previous limits configuration (JSON)
+  string previous_limits = 1;
+
+  // New limits configuration (JSON)
+  string new_limits = 2;
 }

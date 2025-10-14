@@ -286,3 +286,59 @@ message YieldDistribution {
   // Number of eligible depositors
   uint64 eligible_depositors = 4;
 }
+
+// DepositLimit defines deposit limits and risk controls
+message DepositLimit {
+  // Maximum deposit amount per user per time window
+  string max_user_deposit_per_window = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Maximum deposit volume per block
+  string max_block_deposit_volume = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Global maximum total deposits (vault capacity)
+  string global_deposit_cap = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Cooldown period in blocks between deposits
+  int64 deposit_cooldown_blocks = 4;
+
+  // Time window for velocity tracking (in blocks)
+  int64 velocity_window_blocks = 5;
+
+  // Maximum number of deposits per user in time window
+  uint32 max_deposits_per_window = 6;
+}
+
+// DepositVelocity tracks user deposit velocity for risk monitoring
+message DepositVelocity {
+  // Block height of last deposit
+  int64 last_deposit_block = 1;
+
+  // Number of deposits in recent time window
+  uint32 recent_deposit_count = 2;
+
+  // Total volume deposited in recent time window
+  string recent_deposit_volume = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Time window size in blocks
+  int64 time_window_blocks = 4;
+}

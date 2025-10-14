@@ -799,6 +799,128 @@ func (k *Keeper) DecrementVaultsV2TotalUsers(ctx context.Context) error {
 		return err
 	}
 
+func (k *Keeper) getDepositLimits(ctx context.Context) (vaultsv2.DepositLimit, bool, error) {
+	limits, err := k.VaultsV2DepositLimits.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.DepositLimit{}, false, nil
+		}
+		return vaultsv2.DepositLimit{}, false, err
+	}
+	return limits, true, nil
+}
+
+func (k *Keeper) setDepositLimits(ctx context.Context, limits vaultsv2.DepositLimit) error {
+	return k.VaultsV2DepositLimits.Set(ctx, limits)
+}
+
+func (k *Keeper) getDepositVelocity(ctx context.Context, addr sdk.AccAddress) (vaultsv2.DepositVelocity, bool, error) {
+	velocity, err := k.VaultsV2DepositVelocity.Get(ctx, addr)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.DepositVelocity{}, false, nil
+		}
+		return vaultsv2.DepositVelocity{}, false, err
+	}
+	return velocity, true, nil
+}
+
+func (k *Keeper) setDepositVelocity(ctx context.Context, addr sdk.AccAddress, velocity vaultsv2.DepositVelocity) error {
+	return k.VaultsV2DepositVelocity.Set(ctx, addr, velocity)
+}
+
+func (k *Keeper) recordUserDeposit(ctx context.Context, addr sdk.AccAddress, block int64, amount math.Int) error {
+	key := collections.Join(addr.Bytes(), block)
+	return k.VaultsV2UserDepositHistory.Set(ctx, key, amount)
+}
+
+func (k *Keeper) incrementBlockDeposit(ctx context.Context, block int64, amount math.Int) error {
+	current, err := k.VaultsV2BlockDepositVolume.Get(ctx, block)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return k.VaultsV2BlockDepositVolume.Set(ctx, block, amount)
+		}
+		return err
+	}
+	updated, err := current.SafeAdd(amount)
+	if err != nil {
+		return err
+	}
+	return k.VaultsV2BlockDepositVolume.Set(ctx, block, updated)
+}
+
+func (k *Keeper) getBlockDepositVolume(ctx context.Context, block int64) (math.Int, error) {
+	volume, err := k.VaultsV2BlockDepositVolume.Get(ctx, block)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return math.ZeroInt(), nil
+		}
+		return math.ZeroInt(), err
+	}
+	return volume, nil
+}
+
+func (k *Keeper) getDepositLimits(ctx context.Context) (vaultsv2.DepositLimit, bool, error) {
+	limits, err := k.VaultsV2DepositLimits.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.DepositLimit{}, false, nil
+		}
+		return vaultsv2.DepositLimit{}, false, err
+	}
+	return limits, true, nil
+}
+
+func (k *Keeper) setDepositLimits(ctx context.Context, limits vaultsv2.DepositLimit) error {
+	return k.VaultsV2DepositLimits.Set(ctx, limits)
+}
+
+func (k *Keeper) getDepositVelocity(ctx context.Context, addr sdk.AccAddress) (vaultsv2.DepositVelocity, bool, error) {
+	velocity, err := k.VaultsV2DepositVelocity.Get(ctx, addr)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.DepositVelocity{}, false, nil
+		}
+		return vaultsv2.DepositVelocity{}, false, err
+	}
+	return velocity, true, nil
+}
+
+func (k *Keeper) setDepositVelocity(ctx context.Context, addr sdk.AccAddress, velocity vaultsv2.DepositVelocity) error {
+	return k.VaultsV2DepositVelocity.Set(ctx, addr, velocity)
+}
+
+func (k *Keeper) recordUserDeposit(ctx context.Context, addr sdk.AccAddress, block int64, amount math.Int) error {
+	key := collections.Join(addr.Bytes(), block)
+	return k.VaultsV2UserDepositHistory.Set(ctx, key, amount)
+}
+
+func (k *Keeper) incrementBlockDeposit(ctx context.Context, block int64, amount math.Int) error {
+	current, err := k.VaultsV2BlockDepositVolume.Get(ctx, block)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return k.VaultsV2BlockDepositVolume.Set(ctx, block, amount)
+		}
+		return err
+	}
+	updated, err := current.SafeAdd(amount)
+	if err != nil {
+		return err
+	}
+	return k.VaultsV2BlockDepositVolume.Set(ctx, block, updated)
+}
+
+func (k *Keeper) getBlockDepositVolume(ctx context.Context, block int64) (math.Int, error) {
+	volume, err := k.VaultsV2BlockDepositVolume.Get(ctx, block)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return math.ZeroInt(), nil
+		}
+		return math.ZeroInt(), err
+	}
+	return volume, nil
+}
+
 	if state.TotalUsers > 0 {
 		state.TotalUsers--
 	}
