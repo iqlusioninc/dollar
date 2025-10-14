@@ -158,11 +158,32 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, errors.Wrap(err, "unable to store user position")
 	}
 
+	stateForPricing, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+
+	totalShares, err := m.GetVaultsV2TotalShares(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch total share supply")
+	}
+
+	mintedShares := msg.Amount
+	if totalShares.IsPositive() && stateForPricing.TotalNav.IsPositive() {
+		priceNumerator := totalShares
+		priceDenominator := stateForPricing.TotalNav
+		shares := msg.Amount.Mul(priceNumerator).Quo(priceDenominator)
+		if shares.IsZero() {
+			shares = sdkmath.NewInt(1)
+		}
+		mintedShares = shares
+	}
+
 	currentShares, err := m.GetVaultsV2UserShares(ctx, depositor)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user shares")
 	}
-	updatedShares, err := currentShares.SafeAdd(msg.Amount)
+	updatedShares, err := currentShares.SafeAdd(mintedShares)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to update user shares")
 	}
@@ -175,11 +196,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		}
 	}
 
-	totalShares, err := m.GetVaultsV2TotalShares(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch total share supply")
-	}
-	totalShares, err = totalShares.SafeAdd(msg.Amount)
+	totalShares, err = totalShares.SafeAdd(mintedShares)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to update total share supply")
 	}

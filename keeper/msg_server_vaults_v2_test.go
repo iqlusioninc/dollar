@@ -979,6 +979,42 @@ func TestCreateRemotePosition(t *testing.T) {
 	assert.Equal(t, uint32(8453), chainID)
 }
 
+func TestDepositRespectsSharePrice(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(300*ONE_V2), nil))
+
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(100 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	state, err := k.GetVaultsV2VaultState(ctx)
+	require.NoError(t, err)
+	state.TotalNav = math.NewInt(200 * ONE_V2)
+	require.NoError(t, k.SetVaultsV2VaultState(ctx, state))
+
+	navInfo := vaultsv2.NAVInfo{
+		CurrentNav: math.NewInt(200 * ONE_V2),
+		LastUpdate: ctx.HeaderInfo().Time,
+	}
+	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+
+	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC)})
+	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(40 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(120*ONE_V2), shares)
+}
+
 func TestSetYieldPreferenceUpdatesPosition(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
