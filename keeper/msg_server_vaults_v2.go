@@ -1411,16 +1411,9 @@ func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteD
 		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
 	}
 
-	currentInflight, err := m.GetVaultsV2InflightValueByRoute(ctx, msg.RouteId)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch route inflight value")
-	}
-	projected, err := currentInflight.SafeAdd(msg.Amount)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to calculate projected inflight value")
-	}
-	if projected.GT(route.MaxInflightValue) {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "route inflight cap exceeded")
+	// Enforce route capacity before creating inflight fund
+	if err := m.EnforceRouteCapacity(ctx, msg.RouteId, msg.Amount); err != nil {
+		return nil, err
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -1478,6 +1471,19 @@ func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteD
 	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
 		return nil, errors.Wrap(err, "unable to persist inflight fund")
 	}
+
+	// Emit inflight created event
+	_ = m.EmitInflightCreatedEvent(
+		ctx,
+		fund.TransactionId,
+		msg.RouteId,
+		vaultsv2.OPERATION_TYPE_DEPOSIT,
+		msg.Amount,
+		msg.Authority, // or derive from context
+		"noble",
+		strconv.FormatUint(uint64(msg.RouteId), 10),
+		headerInfo.Time,
+	)
 
 	return &vaultsv2.MsgRemoteDepositResponse{
 		Nonce:              inflightID,
@@ -1624,6 +1630,9 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		fund.ProviderTracking = msg.ProviderTracking
 	}
 
+	// Capture previous status for event
+	previousStatus := fund.Status
+
 	fund.Status = msg.ResultStatus
 	fund.ExpectedAt = headerInfo.Time
 
@@ -1721,6 +1730,36 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
 		return nil, errors.Wrap(err, "unable to persist inflight fund update")
+	}
+
+	// Emit status change event
+	if previousStatus != msg.ResultStatus {
+		_ = m.EmitInflightStatusChangeEvent(
+			ctx,
+			inflightID,
+			routeID,
+			previousStatus,
+			msg.ResultStatus,
+			processedAmount,
+			msg.ErrorMessage,
+		)
+	}
+
+	// Emit completion event if completed
+	if msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED {
+		opType := vaultsv2.OPERATION_TYPE_UNSPECIFIED
+		if origin := fund.GetNobleOrigin(); origin != nil {
+			opType = origin.OperationType
+		}
+		_ = m.EmitInflightCompletedEvent(
+			ctx,
+			inflightID,
+			routeID,
+			opType,
+			fund.Amount,
+			processedAmount,
+			fund.InitiatedAt,
+		)
 	}
 
 	return &vaultsv2.MsgProcessInFlightPositionResponse{
@@ -2186,6 +2225,52 @@ func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgH
 		InflightId:  msg.InflightId,
 		FinalStatus: returned.FinalStatus,
 		HandledAt:   headerInfo.Time,
+	}, nil
+}
+
+func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.MsgCleanupStaleInflight) (*vaultsv2.MsgCleanupStaleInflightResponse, error) {
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.TransactionId == "" {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "transaction id must be provided")
+	}
+	if msg.Reason == "" {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "reason must be provided for audit trail")
+	}
+
+	// Get the fund before cleanup to return details
+	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.TransactionId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch inflight fund")
+	}
+	if !found {
+		return nil, errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.TransactionId)
+	}
+
+	// Extract route ID
+	routeID := uint32(0)
+	if tracking := fund.GetProviderTracking(); tracking != nil {
+		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
+			routeID = hyperlane.DestinationDomain
+		}
+	}
+
+	// Perform cleanup
+	if err := m.CleanupStaleInflightFund(ctx, msg.TransactionId, msg.Reason, msg.Authority); err != nil {
+		return nil, err
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	return &vaultsv2.MsgCleanupStaleInflightResponse{
+		TransactionId:  msg.TransactionId,
+		AmountReturned: fund.Amount,
+		RouteId:        routeID,
+		CleanedAt:      headerInfo.Time,
 	}, nil
 }
 

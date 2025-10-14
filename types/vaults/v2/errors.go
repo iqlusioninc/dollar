@@ -32,4 +32,6 @@ var (
 	ErrInvalidVaultState      = errors.Register(SubmoduleName, 7, "invalid vault state")
 	ErrOperationNotPermitted  = errors.Register(SubmoduleName, 8, "operation not permitted")
 	ErrUnimplemented          = errors.Register(SubmoduleName, 9, "feature not yet implemented")
+	ErrRouteNotFound          = errors.Register(SubmoduleName, 10, "cross-chain route not found")
+	ErrRouteCapacityExceeded  = errors.Register(SubmoduleName, 11, "route capacity exceeded")
 )
