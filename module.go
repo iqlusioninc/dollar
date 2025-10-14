@@ -54,6 +54,7 @@ import (
 	"dollar.noble.xyz/v3/types/portal"
 	"dollar.noble.xyz/v3/types/v2"
 	"dollar.noble.xyz/v3/types/vaults"
+	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
 // ConsensusVersion defines the current Noble Dollar module consensus version.
@@ -94,6 +95,9 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 		panic(err)
 	}
 	if err := v2.RegisterQueryHandlerClient(context.Background(), mux, v2.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
+	if err := vaultsv2.RegisterQueryHandlerClient(context.Background(), mux, vaultsv2.NewQueryClient(clientCtx)); err != nil {
 		panic(err)
 	}
 
@@ -155,8 +159,8 @@ func (m AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawM
 func (m AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServer(m.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServer(m.keeper))
-	v2.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerV2(m.keeper))
-	v2.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServerV2(m.keeper))
+	vaultsv2.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerV2(m.keeper))
+	vaultsv2.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServerV2(m.keeper))
 
 	portal.RegisterMsgServer(cfg.MsgServer(), keeper.NewPortalMsgServer(m.keeper))
 	portal.RegisterQueryServer(cfg.QueryServer(), keeper.NewPortalQueryServer(m.keeper))
