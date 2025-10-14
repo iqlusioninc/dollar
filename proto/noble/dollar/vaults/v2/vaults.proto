@@ -7,7 +7,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // NOBLE DOLLAR V2 VAULT SYSTEM - YIELD-TRACKING ACCOUNTING
 //
@@ -285,4 +285,103 @@ message YieldDistribution {
 
   // Number of eligible depositors
   uint64 eligible_depositors = 4;
+}
+
+// DepositLimit defines deposit limits and risk controls
+message DepositLimit {
+  // Maximum deposit amount per user per time window
+  string max_user_deposit_per_window = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Maximum deposit volume per block
+  string max_block_deposit_volume = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Global maximum total deposits (vault capacity)
+  string global_deposit_cap = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Cooldown period in blocks between deposits
+  int64 deposit_cooldown_blocks = 4;
+
+  // Time window for velocity tracking (in blocks)
+  int64 velocity_window_blocks = 5;
+
+  // Maximum number of deposits per user in time window
+  uint32 max_deposits_per_window = 6;
+}
+
+// DepositVelocity tracks user deposit velocity for risk monitoring
+message DepositVelocity {
+  // Block height of last deposit
+  int64 last_deposit_block = 1;
+
+  // Number of deposits in recent time window
+  uint32 recent_deposit_count = 2;
+
+  // Total volume deposited in recent time window
+  string recent_deposit_volume = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Time window size in blocks
+  int64 time_window_blocks = 4;
+}
+
+// TWAPConfig configures Time-Weighted Average Price for share pricing
+message TWAPConfig {
+  // Whether TWAP is enabled for share pricing
+  bool enabled = 1;
+
+  // Number of historical NAV snapshots to include in TWAP calculation
+  uint32 window_size = 2;
+
+  // Minimum time between NAV snapshots (in seconds)
+  int64 min_snapshot_interval = 3;
+
+  // Maximum age of snapshots to include (in seconds)
+  int64 max_snapshot_age = 4;
+}
+
+// NAVSnapshot represents a point-in-time NAV observation for TWAP
+message NAVSnapshot {
+  // NAV value at this snapshot
+  string nav = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Timestamp of this snapshot
+  google.protobuf.Timestamp timestamp = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Block height at this snapshot
+  int64 block_height = 3;
+
+  // Total shares at this snapshot (for reference)
+  string total_shares = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }

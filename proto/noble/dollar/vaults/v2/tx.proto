@@ -10,8 +10,9 @@ import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v2/cross_chain.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
 import "noble/dollar/vaults/v2/oracle.proto";
+import "noble/dollar/vaults/v2/vaults.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // Msg defines the V2 vaults transaction service
 service Msg {
@@ -86,6 +87,12 @@ service Msg {
 
   // Handle stale inflight fund record (authority only)
   rpc HandleStaleInflight(MsgHandleStaleInflight) returns (MsgHandleStaleInflightResponse);
+
+  // Update deposit limits (authority only)
+  rpc UpdateDepositLimits(MsgUpdateDepositLimits) returns (MsgUpdateDepositLimitsResponse);
+
+  // Cleanup stale inflight fund (authority only)
+  rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
 }
 
 // MsgDeposit allows users to deposit into a V2 vault
@@ -107,8 +114,11 @@ message MsgDeposit {
     (amino.dont_omitempty) = true
   ];
 
-  // Whether user wants to receive yield
-  optional bool receive_yield = 3; // optional for setting yield in a single message otherwise detaul to the current preference for the user.
+  // Whether user wants to receive yield for this deposit.
+  bool receive_yield = 3;
+
+  // Set to true when the deposit should override the current preference.
+  bool receive_yield_override = 4;
 }
 
 // MsgDepositResponse returns the results of a deposit
@@ -812,6 +822,71 @@ message MsgHandleStaleInflightResponse {
   noble.dollar.vaults.v2.InflightStatus final_status = 2;
   // Time handled
   google.protobuf.Timestamp handled_at = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// MsgUpdateDepositLimits updates deposit limits and risk controls
+message MsgUpdateDepositLimits {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/UpdateDepositLimits";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority performing the update
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // New deposit limits configuration
+  DepositLimit limits = 2 [(gogoproto.nullable) = false];
+
+  // Reason for the update
+  string reason = 3;
+}
+
+// MsgUpdateDepositLimitsResponse confirms the deposit limits update
+message MsgUpdateDepositLimitsResponse {
+  // Previous limits configuration (JSON)
+  string previous_limits = 1;
+
+  // New limits configuration (JSON)
+  string new_limits = 2;
+}
+
+// MsgCleanupStaleInflight removes a stale inflight fund and returns value to vault
+message MsgCleanupStaleInflight {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "noble/dollar/vaults/v2/CleanupStaleInflight";
+
+  // Authority address (must match module authority)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Transaction ID of the stale inflight fund
+  string transaction_id = 2;
+
+  // Reason for cleanup (for audit trail)
+  string reason = 3;
+}
+
+// MsgCleanupStaleInflightResponse returns details of the cleanup
+message MsgCleanupStaleInflightResponse {
+  // Transaction ID that was cleaned up
+  string transaction_id = 1;
+
+  // Amount returned to vault
+  string amount_returned = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Route ID
+  uint32 route_id = 3;
+
+  // Timestamp of cleanup
+  google.protobuf.Timestamp cleaned_at = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];

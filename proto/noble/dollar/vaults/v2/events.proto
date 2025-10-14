@@ -7,7 +7,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // EventDeposit is emitted when a user deposits into the V2 vault
 message EventDeposit {
@@ -284,6 +284,245 @@ message EventVaultConfigUpdated {
 
   // Update reason
   string reason = 4;
+
+  // Block height
+  int64 block_height = 5;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventInflightFundCreated is emitted when an inflight fund operation is initiated
+message EventInflightFundCreated {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Operation type (DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.)
+  string operation_type = 3;
+
+  // Amount
+  string amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Value at initiation
+  string value_at_initiation = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Initiator address
+  string initiator = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Source chain
+  string source_chain = 7;
+
+  // Destination chain
+  string destination_chain = 8;
+
+  // Expected completion time
+  google.protobuf.Timestamp expected_at = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Block height
+  int64 block_height = 10;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 11 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventInflightFundStatusChanged is emitted when an inflight fund's status changes
+message EventInflightFundStatusChanged {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Previous status
+  string previous_status = 3;
+
+  // New status
+  string new_status = 4;
+
+  // Amount
+  string amount = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Status change reason
+  string reason = 6;
+
+  // Block height
+  int64 block_height = 7;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventInflightFundCompleted is emitted when an inflight fund operation completes
+message EventInflightFundCompleted {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Operation type
+  string operation_type = 3;
+
+  // Final amount
+  string final_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Initial amount
+  string initial_amount = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Time taken (seconds)
+  int64 duration_seconds = 6;
+
+  // Block height
+  int64 block_height = 7;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventInflightFundStale is emitted when an inflight fund is detected as stale
+message EventInflightFundStale {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Amount
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Hours overdue
+  int64 hours_overdue = 4;
+
+  // Expected completion time
+  google.protobuf.Timestamp expected_at = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Current status
+  string current_status = 6;
+
+  // Recommended action
+  string recommended_action = 7;
+
+  // Block height
+  int64 block_height = 8;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventInflightFundCleaned is emitted when a stale inflight fund is cleaned up
+message EventInflightFundCleaned {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Amount returned to vault
+  string amount_returned = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Reason for cleanup
+  string reason = 4;
+
+  // Authority that triggered cleanup
+  string authority = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Block height
+  int64 block_height = 6;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventRouteCapacityExceeded is emitted when a route's capacity limit is reached
+message EventRouteCapacityExceeded {
+  // Route ID
+  uint32 route_id = 1;
+
+  // Current inflight value
+  string current_inflight_value = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Route capacity limit
+  string capacity_limit = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Attempted operation amount
+  string attempted_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 
   // Block height
   int64 block_height = 5;

@@ -11,7 +11,7 @@ import "noble/dollar/vaults/v2/cross_chain.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // Query defines the gRPC querier service for V2 vaults
 service Query {
