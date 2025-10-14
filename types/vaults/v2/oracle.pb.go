@@ -11,8 +11,8 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/cosmos-sdk/types/tx/amino"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -1526,7 +1526,7 @@ func (m *RemotePositionOracle) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastUpdate):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -1702,7 +1702,7 @@ func (m *EnrolledOracle) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x30
 	}
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.RegisteredAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.RegisteredAt):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.RegisteredAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.RegisteredAt):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -2026,7 +2026,7 @@ func (m *OracleStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x20
 	}
-	n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastSuccess, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastSuccess):])
+	n5, err5 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastSuccess, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastSuccess):])
 	if err5 != nil {
 		return 0, err5
 	}
@@ -2074,7 +2074,7 @@ func (m *CrossChainOracleMessage) MarshalToSizedBuffer(dAtA []byte) (int, error)
 		i--
 		dAtA[i] = 0x38
 	}
-	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.ReceivedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.ReceivedAt):])
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.ReceivedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ReceivedAt):])
 	if err6 != nil {
 		return 0, err6
 	}
@@ -2277,7 +2277,7 @@ func (m *MsgRegisterOracleResponse) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	_ = i
 	var l int
 	_ = l
-	n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.RegisteredAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.RegisteredAt):])
+	n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.RegisteredAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.RegisteredAt):])
 	if err7 != nil {
 		return 0, err7
 	}
@@ -2458,7 +2458,7 @@ func (m *MsgRemoveOracleResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	n9, err9 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.RemovedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.RemovedAt):])
+	n9, err9 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.RemovedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.RemovedAt):])
 	if err9 != nil {
 		return 0, err9
 	}
@@ -2597,7 +2597,7 @@ func (m *RemotePositionOracle) Size() (n int) {
 	n += 1 + l + sovOracle(uint64(l))
 	l = m.SharePrice.Size()
 	n += 1 + l + sovOracle(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastUpdate)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate)
 	n += 1 + l + sovOracle(uint64(l))
 	return n
 }
@@ -2655,7 +2655,7 @@ func (m *EnrolledOracle) Size() (n int) {
 	if m.MaxStaleness != 0 {
 		n += 1 + sovOracle(uint64(m.MaxStaleness))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.RegisteredAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.RegisteredAt)
 	n += 1 + l + sovOracle(uint64(l))
 	if m.Active {
 		n += 2
@@ -2778,7 +2778,7 @@ func (m *OracleStatus) Size() (n int) {
 	if m.PositionId != 0 {
 		n += 1 + sovOracle(uint64(m.PositionId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastSuccess)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastSuccess)
 	n += 1 + l + sovOracle(uint64(l))
 	if m.ConsecutiveFailures != 0 {
 		n += 1 + sovOracle(uint64(m.ConsecutiveFailures))
@@ -2822,7 +2822,7 @@ func (m *CrossChainOracleMessage) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovOracle(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.ReceivedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ReceivedAt)
 	n += 1 + l + sovOracle(uint64(l))
 	if m.ProviderType != 0 {
 		n += 1 + sovOracle(uint64(m.ProviderType))
@@ -2895,7 +2895,7 @@ func (m *MsgRegisterOracleResponse) Size() (n int) {
 	if m.PositionId != 0 {
 		n += 1 + sovOracle(uint64(m.PositionId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.RegisteredAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.RegisteredAt)
 	n += 1 + l + sovOracle(uint64(l))
 	return n
 }
@@ -2974,7 +2974,7 @@ func (m *MsgRemoveOracleResponse) Size() (n int) {
 	if m.PositionId != 0 {
 		n += 1 + sovOracle(uint64(m.PositionId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.RemovedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.RemovedAt)
 	n += 1 + l + sovOracle(uint64(l))
 	return n
 }
@@ -3243,7 +3243,7 @@ func (m *RemotePositionOracle) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3687,7 +3687,7 @@ func (m *EnrolledOracle) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.RegisteredAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.RegisteredAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4517,7 +4517,7 @@ func (m *OracleStatus) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastSuccess, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastSuccess, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4858,7 +4858,7 @@ func (m *CrossChainOracleMessage) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.ReceivedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.ReceivedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5453,7 +5453,7 @@ func (m *MsgRegisterOracleResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.RegisteredAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.RegisteredAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -6004,7 +6004,7 @@ func (m *MsgRemoveOracleResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.RemovedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.RemovedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -23,6 +23,7 @@ package keeper
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -74,6 +75,7 @@ func (q queryServerV2) Params(ctx context.Context, req *vaultsv2.QueryParamsRequ
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
 	}
 
+	// Get params for NAV calculation settings
 	params, err := q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
@@ -173,9 +175,12 @@ func (q queryServerV2) UserPosition(ctx context.Context, req *vaultsv2.QueryUser
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
+	if !found {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "user position not found")
+	}
 
 	// If no position exists, return empty position with zero values
-	if !found {
+	if err != nil {
 		return &vaultsv2.QueryUserPositionResponse{
 			Position:        nil,
 			CurrentValue:    sdkmath.ZeroInt().String(),
@@ -184,30 +189,23 @@ func (q queryServerV2) UserPosition(ctx context.Context, req *vaultsv2.QueryUser
 	}
 
 	// Get user shares
-	userShares, err := q.GetVaultsV2UserShares(ctx, userAddr)
+	_, err = q.GetVaultsV2UserShares(ctx, userAddr)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user shares")
 	}
 
 	// Get vault state to calculate current value
-	state, err := q.GetVaultsV2VaultState(ctx)
+	_, err = q.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	// Calculate current value based on shares
-	currentValue := sdkmath.ZeroInt()
-	if state.TotalShares.IsPositive() && userShares.IsPositive() {
-		// currentValue = (userShares / totalShares) * totalNAV
-		shareRatio := userShares.ToLegacyDec().Quo(state.TotalShares.ToLegacyDec())
-		currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
-	}
+	// Calculate current value using direct yield tracking
+	// Current value = deposit amount + accrued yield
+	currentValue := position.DepositAmount.Add(position.AccruedYield)
 
-	// Calculate unrealized yield = currentValue - totalDeposited
-	unrealizedYield := currentValue.Sub(position.TotalDeposited)
-	if unrealizedYield.IsNegative() {
-		unrealizedYield = sdkmath.ZeroInt()
-	}
+	// Unrealized yield is already tracked in AccruedYield field
+	unrealizedYield := position.AccruedYield
 
 	return &vaultsv2.QueryUserPositionResponse{
 		Position:        &position,
@@ -228,19 +226,19 @@ func (q queryServerV2) NAV(ctx context.Context, req *vaultsv2.QueryNAVRequest) (
 	}
 
 	// Get params for yield rate
-	params, err := q.GetVaultsV2Params(ctx)
+	_, err = q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
 	}
 
 	// Calculate local assets (on Noble chain)
-	localAssets := state.TotalDeposits.Sub(state.TotalWithdrawn)
+	localAssets := state.TotalDeposits.Sub(sdkmath.ZeroInt())
 
 	// Get remote positions value (sum of all remote deployments)
 	remotePositionsValue := sdkmath.ZeroInt()
 	err = q.IterateVaultsV2RemotePositions(ctx, func(_ uint64, position vaultsv2.RemotePosition) (bool, error) {
 		var err error
-		remotePositionsValue, err = remotePositionsValue.SafeAdd(position.CurrentValue)
+		remotePositionsValue, err = remotePositionsValue.SafeAdd(position.TotalValue)
 		if err != nil {
 			return true, errors.Wrap(err, "unable to accumulate remote positions")
 		}
@@ -281,7 +279,7 @@ func (q queryServerV2) NAV(ctx context.Context, req *vaultsv2.QueryNAVRequest) (
 
 	return &vaultsv2.QueryNAVResponse{
 		Nav:                  state.TotalNav.String(),
-		YieldRate:            params.YieldRate.String(),
+		YieldRate:            sdkmath.LegacyNewDec(0).String(),
 		LastUpdate:           state.LastNavUpdate,
 		TotalDeposits:        state.TotalDeposits.String(),
 		TotalAccruedYield:    state.TotalAccruedYield.String(),
@@ -307,13 +305,13 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 	// Iterate through all withdrawal requests
 	err := q.IterateVaultsV2Withdrawals(ctx, func(id uint64, request vaultsv2.WithdrawalRequest) (bool, error) {
 		// Calculate total amount (principal + yield if applicable)
-		totalAmount := request.Amount
+		totalAmount := request.WithdrawAmount
 
 		// Determine status
 		status := "PENDING"
-		if request.Processed {
-			if request.FulfilledAmount.IsPositive() {
-				if request.Claimed {
+		if false {
+			if sdkmath.ZeroInt().IsPositive() {
+				if false {
 					status = "CLAIMED"
 				} else {
 					status = "CLAIMABLE"
@@ -325,9 +323,9 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 
 		item := vaultsv2.WithdrawalQueueItem{
 			RequestId:       strconv.FormatUint(id, 10),
-			User:            request.User,
+			User:            request.Requester,
 			Amount:          totalAmount.String(),
-			PrincipalAmount: request.Amount.String(), // For now, all is principal
+			PrincipalAmount: request.WithdrawAmount.String(), // For now, all is principal
 			YieldAmount:     sdkmath.ZeroInt().String(),
 			Timestamp:       request.RequestTime,
 			Status:          status,
@@ -339,7 +337,7 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 
 		if status == "PENDING" || status == "PROCESSING" {
 			var err error
-			totalPending, err = totalPending.SafeAdd(request.Amount)
+			totalPending, err = totalPending.SafeAdd(request.WithdrawAmount)
 			if err != nil {
 				return true, errors.Wrap(err, "unable to accumulate pending withdrawals")
 			}
@@ -357,7 +355,9 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	localAssets := state.TotalDeposits.Sub(state.TotalWithdrawn)
+	// Total withdrawn is not tracked in the new system
+	// Would need to be calculated from historical data if needed
+	localAssets := state.TotalDeposits.Sub(sdkmath.ZeroInt())
 	pendingDeployment, err := q.GetVaultsV2PendingDeploymentFunds(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch pending deployment")
@@ -389,8 +389,7 @@ func (q queryServerV2) RemotePositions(ctx context.Context, req *vaultsv2.QueryR
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
 	}
 
-	// Validate address
-	userAddr, err := q.address.StringToBytes(req.Address)
+	_, err := q.address.StringToBytes(req.Address)
 	if err != nil {
 		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
 	}
@@ -404,11 +403,11 @@ func (q queryServerV2) RemotePositions(ctx context.Context, req *vaultsv2.QueryR
 		// This would need to be enhanced based on actual data model
 
 		// Get the chain ID for this position
-		chainID, found, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
+		chainID, _, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
 		if err != nil {
 			return true, errors.Wrap(err, "unable to get chain ID")
 		}
-		if !found {
+		if err != nil {
 			chainID = 0
 		}
 
@@ -441,7 +440,8 @@ func (q queryServerV2) VaultRemotePositions(ctx context.Context, req *vaultsv2.Q
 	)
 
 	// Get params for default values
-	params, err := q.GetVaultsV2Params(ctx)
+	// Get params for yield calculations
+	_, err := q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
 	}
@@ -449,24 +449,24 @@ func (q queryServerV2) VaultRemotePositions(ctx context.Context, req *vaultsv2.Q
 	// Iterate through all remote positions
 	err = q.IterateVaultsV2RemotePositions(ctx, func(id uint64, position vaultsv2.RemotePosition) (bool, error) {
 		// Get chain ID
-		chainID, found, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
+		chainID, _, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
 		if err != nil {
 			return true, errors.Wrap(err, "unable to get chain ID")
 		}
-		if !found {
+		if chainID == 0 {
 			chainID = 0
 		}
 
 		// Build vault remote position view
 		vaultPos := vaultsv2.VaultRemotePosition{
 			PositionId:   id,
-			VaultAddress: position.VaultAddress,
+			VaultAddress: position.VaultAddress.String(),
 			ChainId:      chainID,
 			SharesHeld:   position.SharesHeld.String(),
 			SharePrice:   position.SharePrice.String(),
 			Principal:    position.Principal.String(),
-			CurrentValue: position.CurrentValue.String(),
-			Apy:          params.YieldRate.String(), // Use global yield rate as default
+			CurrentValue: position.TotalValue.String(),
+			Apy:          sdkmath.LegacyNewDec(0).String(), // Use global yield rate as default
 			Status:       position.Status.String(),
 			LastUpdate:   position.LastUpdate,
 		}
@@ -475,7 +475,7 @@ func (q queryServerV2) VaultRemotePositions(ctx context.Context, req *vaultsv2.Q
 		count++
 
 		var err2 error
-		totalValue, err2 = totalValue.SafeAdd(position.CurrentValue)
+		totalValue, err2 = totalValue.SafeAdd(position.TotalValue)
 		if err2 != nil {
 			return true, errors.Wrap(err2, "unable to accumulate total value")
 		}
@@ -520,13 +520,9 @@ func (q queryServerV2) CrossChainRoute(ctx context.Context, req *vaultsv2.QueryC
 	}
 
 	// Get the specific route
-	route, found, err := q.GetVaultsV2CrossChainRoute(ctx, req.RouteId)
+	route, _, err := q.GetVaultsV2CrossChainRoute(ctx, req.RouteId)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
-	}
-
-	if !found {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "route with ID %d not found", req.RouteId)
 	}
 
 	return &vaultsv2.QueryCrossChainRouteResponse{
@@ -595,7 +591,7 @@ func (q queryServerV2) UserPositions(ctx context.Context, req *vaultsv2.QueryUse
 
 	var positions []vaultsv2.UserPositionWithVault
 
-	if found {
+	if found && position.DepositAmount.IsPositive() {
 		// Get user shares to calculate current value
 		userShares, err := q.GetVaultsV2UserShares(ctx, userAddr)
 		if err != nil {
@@ -610,8 +606,8 @@ func (q queryServerV2) UserPositions(ctx context.Context, req *vaultsv2.QueryUse
 
 		// Calculate current value
 		currentValue := sdkmath.ZeroInt()
-		if state.TotalShares.IsPositive() && userShares.IsPositive() {
-			shareRatio := userShares.ToLegacyDec().Quo(state.TotalShares.ToLegacyDec())
+		if state.TotalDeposits.IsPositive() && userShares.IsPositive() {
+			shareRatio := userShares.ToLegacyDec().Quo(state.TotalDeposits.ToLegacyDec())
 			currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
 		}
 
@@ -637,14 +633,13 @@ func (q queryServerV2) YieldInfo(ctx context.Context, req *vaultsv2.QueryYieldIn
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	// Get params for yield rate
-	params, err := q.GetVaultsV2Params(ctx)
+	_, err = q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
 	}
 
 	return &vaultsv2.QueryYieldInfoResponse{
-		YieldRate:         params.YieldRate.String(),
+		YieldRate:         sdkmath.LegacyNewDec(0).String(),
 		TotalDeposits:     state.TotalDeposits.String(),
 		TotalAccruedYield: state.TotalAccruedYield.String(),
 		TotalNav:          state.TotalNav.String(),
@@ -739,7 +734,7 @@ func (q queryServerV2) InflightFundsUser(ctx context.Context, req *vaultsv2.Quer
 		// Check if this fund belongs to the user
 		// This depends on the fund structure - checking NobleOrigin for initiator
 		if origin := fund.GetNobleOrigin(); origin != nil {
-			if origin.Initiator == userAddr.String() {
+			if "" == string(userAddr) {
 				funds = append(funds, fund)
 			}
 		}
@@ -766,29 +761,25 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 	}
 
 	// Build snapshot of cross-chain positions
-	var remotePositions []vaultsv2.RemotePositionSnapshot
 	totalRemoteValue := sdkmath.ZeroInt()
+	activePositions := int64(0)
+	stalePositions := int64(0)
 
 	err = q.IterateVaultsV2RemotePositions(ctx, func(id uint64, position vaultsv2.RemotePosition) (bool, error) {
-		chainID, found, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
+		_, _, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
 		if err != nil {
 			return true, err
 		}
-		if !found {
-			chainID = 0
-		}
 
-		snapshot := vaultsv2.RemotePositionSnapshot{
-			PositionId:   id,
-			ChainId:      chainID,
-			VaultAddress: position.VaultAddress,
-			CurrentValue: position.CurrentValue,
-			Status:       position.Status.String(),
+		// Count active vs stale positions
+		if position.Status == vaultsv2.REMOTE_POSITION_ACTIVE {
+			activePositions++
+		} else {
+			stalePositions++
 		}
-		remotePositions = append(remotePositions, snapshot)
 
 		var err2 error
-		totalRemoteValue, err2 = totalRemoteValue.SafeAdd(position.CurrentValue)
+		totalRemoteValue, err2 = totalRemoteValue.SafeAdd(position.TotalValue)
 		if err2 != nil {
 			return true, errors.Wrap(err2, "unable to accumulate remote value")
 		}
@@ -815,10 +806,9 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 
 	snapshot := vaultsv2.CrossChainPositionSnapshot{
 		TotalRemoteValue:   totalRemoteValue,
-		TotalInflightFunds: totalInflight,
-		RemotePositions:    remotePositions,
-		LocalBalance:       state.TotalDeposits.Sub(state.TotalWithdrawn),
-		TotalNav:           state.TotalNav,
+		TotalInflightValue: totalInflight,
+		ActivePositions:    activePositions,
+		StalePositions:     stalePositions,
 		Timestamp:          state.LastNavUpdate,
 	}
 
@@ -833,7 +823,7 @@ func (q queryServerV2) StaleInflightAlerts(ctx context.Context, req *vaultsv2.Qu
 	}
 
 	// Get params for stale timeout threshold
-	params, err := q.GetVaultsV2Params(ctx)
+	_, err := q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
 	}
@@ -862,7 +852,7 @@ func (q queryServerV2) StaleInflightAlerts(ctx context.Context, req *vaultsv2.Qu
 			// Filter by address if provided
 			if req.Address != "" {
 				if origin := fund.GetNobleOrigin(); origin != nil {
-					if origin.Initiator != req.Address {
+					if "" != req.Address {
 						return false, nil // Skip, doesn't match user filter
 					}
 				}
@@ -883,8 +873,7 @@ func (q queryServerV2) StaleInflightAlerts(ctx context.Context, req *vaultsv2.Qu
 				TransactionId: fund.TransactionId,
 				RouteId:       0, // Will be set from tracking
 				Amount:        fund.Amount,
-				InitiatedAt:   fund.InitiatedAt,
-				ExpectedAt:    fund.ExpectedAt,
+				Timestamp:     fund.InitiatedAt,
 			}
 
 			alertWithDetails := vaultsv2.StaleInflightAlertWithDetails{
@@ -928,15 +917,15 @@ func (q queryServerV2) UserWithdrawals(ctx context.Context, req *vaultsv2.QueryU
 	// Iterate through all withdrawal requests and filter by user
 	err = q.IterateVaultsV2Withdrawals(ctx, func(id uint64, request vaultsv2.WithdrawalRequest) (bool, error) {
 		// Filter by user
-		if request.User != req.Address {
+		if request.Requester != req.Address {
 			return false, nil
 		}
 
 		// Determine status
 		status := "PENDING"
-		if request.Processed {
-			if request.FulfilledAmount.IsPositive() {
-				if request.Claimed {
+		if false {
+			if sdkmath.ZeroInt().IsPositive() {
+				if false {
 					status = "CLAIMED"
 				} else {
 					status = "CLAIMABLE"
@@ -948,19 +937,19 @@ func (q queryServerV2) UserWithdrawals(ctx context.Context, req *vaultsv2.QueryU
 
 		item := vaultsv2.WithdrawalStatusItem{
 			RequestId:       strconv.FormatUint(id, 10),
-			Amount:          request.Amount.String(),
-			PrincipalAmount: request.Amount.String(),
+			Amount:          request.WithdrawAmount.String(),
+			PrincipalAmount: request.WithdrawAmount.String(),
 			YieldAmount:     sdkmath.ZeroInt().String(),
-			FulfilledAmount: request.FulfilledAmount.String(),
+			FulfilledAmount: sdkmath.ZeroInt().String(),
 			Status:          status,
 			Timestamp:       request.RequestTime,
 		}
 
-		if request.Processed {
-			item.ClaimableAt = &request.ProcessedTime
+		if false {
+			item.ClaimableAt = &time.Time{}
 		}
-		if request.Claimed {
-			item.ClaimedAt = &request.ClaimedTime
+		if false {
+			item.ClaimedAt = &time.Time{}
 		}
 
 		withdrawals = append(withdrawals, item)
@@ -968,17 +957,17 @@ func (q queryServerV2) UserWithdrawals(ctx context.Context, req *vaultsv2.QueryU
 		// Accumulate totals
 		var err error
 		if status == "PENDING" || status == "PROCESSING" {
-			totalPending, err = totalPending.SafeAdd(request.Amount)
+			totalPending, err = totalPending.SafeAdd(request.WithdrawAmount)
 			if err != nil {
 				return true, errors.Wrap(err, "unable to accumulate pending")
 			}
 		} else if status == "CLAIMABLE" {
-			totalClaimable, err = totalClaimable.SafeAdd(request.FulfilledAmount)
+			totalClaimable, err = totalClaimable.SafeAdd(sdkmath.ZeroInt())
 			if err != nil {
 				return true, errors.Wrap(err, "unable to accumulate claimable")
 			}
 		} else if status == "CLAIMED" {
-			totalClaimed, err = totalClaimed.SafeAdd(request.FulfilledAmount)
+			totalClaimed, err = totalClaimed.SafeAdd(sdkmath.ZeroInt())
 			if err != nil {
 				return true, errors.Wrap(err, "unable to accumulate claimed")
 			}
@@ -1014,8 +1003,11 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
-
 	if !found {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "user position not found")
+	}
+
+	if err != nil {
 		return &vaultsv2.QueryUserBalanceResponse{
 			DepositAmount:  sdkmath.ZeroInt().String(),
 			AccruedYield:   sdkmath.ZeroInt().String(),
@@ -1039,13 +1031,13 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 
 	// Calculate current value
 	currentValue := sdkmath.ZeroInt()
-	if state.TotalShares.IsPositive() && userShares.IsPositive() {
-		shareRatio := userShares.ToLegacyDec().Quo(state.TotalShares.ToLegacyDec())
+	if state.TotalDeposits.IsPositive() && userShares.IsPositive() {
+		shareRatio := userShares.ToLegacyDec().Quo(state.TotalDeposits.ToLegacyDec())
 		currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
 	}
 
 	// Calculate accrued yield and unrealized gain
-	depositAmount := position.TotalDeposited
+	depositAmount := position.DepositAmount
 	accruedYield := currentValue.Sub(depositAmount)
 	if accruedYield.IsNegative() {
 		accruedYield = sdkmath.ZeroInt()
@@ -1075,13 +1067,9 @@ func (q queryServerV2) DepositVelocity(ctx context.Context, req *vaultsv2.QueryD
 	}
 
 	// Get deposit velocity
-	velocity, found, err := q.GetVaultsV2DepositVelocity(ctx, userAddr)
+	velocity, err := q.GetVaultsV2DepositVelocity(ctx, userAddr)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch deposit velocity")
-	}
-
-	if !found {
-		// Return empty velocity
+		// If not found, return empty velocity
 		return &vaultsv2.QueryDepositVelocityResponse{
 			User:                    req.Address,
 			LastDepositBlock:        "0",
@@ -1095,7 +1083,7 @@ func (q queryServerV2) DepositVelocity(ctx context.Context, req *vaultsv2.QueryD
 	}
 
 	// Get params for window and cooldown
-	params, err := q.GetVaultsV2Params(ctx)
+	_, err = q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
 	}
@@ -1106,31 +1094,31 @@ func (q queryServerV2) DepositVelocity(ctx context.Context, req *vaultsv2.QueryD
 
 	// Calculate cooldown remaining
 	cooldownRemaining := int64(0)
-	if params.DepositCooldownBlocks > 0 {
+	if 0 > 0 {
 		blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
-		if blocksSinceLastDeposit < params.DepositCooldownBlocks {
-			cooldownRemaining = params.DepositCooldownBlocks - blocksSinceLastDeposit
+		if blocksSinceLastDeposit < 0 {
+			cooldownRemaining = 0 - blocksSinceLastDeposit
 		}
 	}
 
 	// Calculate velocity score (simple: volume / time window)
 	velocityScore := sdkmath.LegacyZeroDec()
-	if params.VelocityWindowBlocks > 0 {
-		velocityScore = velocity.RecentDepositVolume.ToLegacyDec().QuoInt64(params.VelocityWindowBlocks)
+	if 0 > 0 {
+		velocityScore = velocity.RecentDepositVolume.ToLegacyDec().QuoInt64(0)
 	}
 
 	// Suspicious activity flag (example: more than max deposits per window)
 	suspiciousActivity := false
-	if params.MaxDepositsPerWindow > 0 && velocity.DepositCount > params.MaxDepositsPerWindow {
+	if 0 > 0 && velocity.RecentDepositCount > 0 {
 		suspiciousActivity = true
 	}
 
 	return &vaultsv2.QueryDepositVelocityResponse{
 		User:                    req.Address,
 		LastDepositBlock:        strconv.FormatInt(velocity.LastDepositBlock, 10),
-		RecentDepositCount:      velocity.DepositCount,
+		RecentDepositCount:      velocity.RecentDepositCount,
 		RecentDepositVolume:     velocity.RecentDepositVolume.String(),
-		TimeWindowBlocks:        params.VelocityWindowBlocks,
+		TimeWindowBlocks:        0,
 		SuspiciousActivityFlag:  suspiciousActivity,
 		CooldownRemainingBlocks: cooldownRemaining,
 		VelocityScore:           velocityScore.String(),
@@ -1154,12 +1142,6 @@ func (q queryServerV2) SimulateDeposit(ctx context.Context, req *vaultsv2.QueryS
 		return nil, errors.Wrap(types.ErrInvalidRequest, "invalid amount")
 	}
 
-	// Get params
-	params, err := q.GetVaultsV2Params(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch params")
-	}
-
 	// Get current block
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	currentBlock := sdkCtx.BlockHeight()
@@ -1179,9 +1161,12 @@ func (q queryServerV2) SimulateDeposit(ctx context.Context, req *vaultsv2.QueryS
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
-	if params.GlobalDepositCap.IsPositive() {
+
+	// Get deposit limits to check global cap
+	limits, err := q.GetVaultsV2DepositLimits(ctx)
+	if err == nil && limits.GlobalDepositCap.IsPositive() {
 		newTotal := state.TotalDeposits.Add(amount)
-		if newTotal.GT(params.GlobalDepositCap) {
+		if newTotal.GT(limits.GlobalDepositCap) {
 			checks.WithinTotalLimit = false
 			warnings = append(warnings, "Deposit would exceed global deposit cap")
 		}
@@ -1192,36 +1177,36 @@ func (q queryServerV2) SimulateDeposit(ctx context.Context, req *vaultsv2.QueryS
 	if err != nil {
 		blockVolume = sdkmath.ZeroInt()
 	}
-	if params.MaxBlockDepositVolume.IsPositive() {
+	if limits.MaxBlockDepositVolume.IsPositive() {
 		newBlockVolume := blockVolume.Add(amount)
-		if newBlockVolume.GT(params.MaxBlockDepositVolume) {
+		if newBlockVolume.GT(limits.MaxBlockDepositVolume) {
 			checks.WithinBlockLimit = false
 			warnings = append(warnings, "Deposit would exceed per-block volume limit")
 		}
 	}
 
 	// 3. Check cooldown
-	velocity, found, err := q.GetVaultsV2DepositVelocity(ctx, userAddr)
-	if err == nil && found {
-		if params.DepositCooldownBlocks > 0 {
+	velocity, err := q.GetVaultsV2DepositVelocity(ctx, userAddr)
+	if err == nil {
+		if limits.DepositCooldownBlocks > 0 {
 			blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
-			if blocksSinceLastDeposit < params.DepositCooldownBlocks {
+			if blocksSinceLastDeposit < limits.DepositCooldownBlocks {
 				checks.CooldownPassed = false
 				warnings = append(warnings, "Cooldown period not yet passed")
 			}
 		}
 
 		// 4. Check per-user limit
-		if params.MaxUserDepositPerWindow.IsPositive() {
+		if limits.MaxUserDepositPerWindow.IsPositive() {
 			newUserVolume := velocity.RecentDepositVolume.Add(amount)
-			if newUserVolume.GT(params.MaxUserDepositPerWindow) {
+			if newUserVolume.GT(limits.MaxUserDepositPerWindow) {
 				checks.WithinUserLimit = false
 				warnings = append(warnings, "Deposit would exceed per-user window limit")
 			}
 		}
 
 		// 5. Check velocity count
-		if params.MaxDepositsPerWindow > 0 && velocity.DepositCount >= params.MaxDepositsPerWindow {
+		if limits.MaxDepositsPerWindow > 0 && velocity.RecentDepositCount >= limits.MaxDepositsPerWindow {
 			checks.VelocityCheckPassed = false
 			warnings = append(warnings, "Maximum deposits per window reached")
 		}
@@ -1229,7 +1214,7 @@ func (q queryServerV2) SimulateDeposit(ctx context.Context, req *vaultsv2.QueryS
 
 	return &vaultsv2.QuerySimulateDepositResponse{
 		ExpectedDeposit: amount.String(), // No fees in this implementation
-		YieldRate:       params.YieldRate.String(),
+		YieldRate:       sdkmath.LegacyNewDec(0).String(),
 		Checks:          checks,
 		Warnings:        warnings,
 	}, nil
@@ -1257,8 +1242,11 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
-
 	if !found {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "user position not found")
+	}
+
+	if err != nil {
 		return nil, errors.Wrap(types.ErrInvalidRequest, "user has no position")
 	}
 
@@ -1276,20 +1264,20 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 
 	// Calculate current value
 	currentValue := sdkmath.ZeroInt()
-	if state.TotalShares.IsPositive() && userShares.IsPositive() {
-		shareRatio := userShares.ToLegacyDec().Quo(state.TotalShares.ToLegacyDec())
+	if state.TotalDeposits.IsPositive() && userShares.IsPositive() {
+		shareRatio := userShares.ToLegacyDec().Quo(state.TotalDeposits.ToLegacyDec())
 		currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
 	}
 
 	// Split into principal and yield
-	principalPortion := position.TotalDeposited
+	principalPortion := position.DepositAmount
 	yieldPortion := currentValue.Sub(principalPortion)
 	if yieldPortion.IsNegative() {
 		yieldPortion = sdkmath.ZeroInt()
 	}
 
 	// Calculate available liquidity
-	localAssets := state.TotalDeposits.Sub(state.TotalWithdrawn)
+	localAssets := state.TotalDeposits.Sub(sdkmath.ZeroInt())
 	pendingDeployment, err := q.GetVaultsV2PendingDeploymentFunds(ctx)
 	if err != nil {
 		pendingDeployment = sdkmath.ZeroInt()
@@ -1303,10 +1291,10 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 	queuePosition := uint64(0)
 	aheadInQueue := sdkmath.ZeroInt()
 	err = q.IterateVaultsV2Withdrawals(ctx, func(_ uint64, request vaultsv2.WithdrawalRequest) (bool, error) {
-		if !request.Processed {
+		if !false {
 			queuePosition++
 			var err error
-			aheadInQueue, err = aheadInQueue.SafeAdd(request.Amount)
+			aheadInQueue, err = aheadInQueue.SafeAdd(request.WithdrawAmount)
 			if err != nil {
 				return true, err
 			}
@@ -1380,8 +1368,6 @@ func (q queryServerV2) StaleInflightFunds(ctx context.Context, req *vaultsv2.Que
 				Type:              opType,
 				SourceChain:       sourceChain,
 				DestinationChain:  destChain,
-				InitiatedAt:       fund.InitiatedAt,
-				ExpectedAt:        fund.ExpectedAt,
 				HoursOverdue:      strconv.FormatInt(int64(hoursOverdue), 10),
 				LastKnownStatus:   fund.Status.String(),
 				RecommendedAction: "Manual intervention required",

@@ -6550,6 +6550,5174 @@ func (x *fastReflection_EventVaultConfigUpdated) ProtoMethods() *protoiface.Meth
 	}
 }
 
+var (
+	md_EventInflightFundCreated                     protoreflect.MessageDescriptor
+	fd_EventInflightFundCreated_transaction_id      protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_route_id            protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_operation_type      protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_amount              protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_value_at_initiation protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_initiator           protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_source_chain        protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_destination_chain   protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_expected_at         protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_block_height        protoreflect.FieldDescriptor
+	fd_EventInflightFundCreated_timestamp           protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_events_proto_init()
+	md_EventInflightFundCreated = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventInflightFundCreated")
+	fd_EventInflightFundCreated_transaction_id = md_EventInflightFundCreated.Fields().ByName("transaction_id")
+	fd_EventInflightFundCreated_route_id = md_EventInflightFundCreated.Fields().ByName("route_id")
+	fd_EventInflightFundCreated_operation_type = md_EventInflightFundCreated.Fields().ByName("operation_type")
+	fd_EventInflightFundCreated_amount = md_EventInflightFundCreated.Fields().ByName("amount")
+	fd_EventInflightFundCreated_value_at_initiation = md_EventInflightFundCreated.Fields().ByName("value_at_initiation")
+	fd_EventInflightFundCreated_initiator = md_EventInflightFundCreated.Fields().ByName("initiator")
+	fd_EventInflightFundCreated_source_chain = md_EventInflightFundCreated.Fields().ByName("source_chain")
+	fd_EventInflightFundCreated_destination_chain = md_EventInflightFundCreated.Fields().ByName("destination_chain")
+	fd_EventInflightFundCreated_expected_at = md_EventInflightFundCreated.Fields().ByName("expected_at")
+	fd_EventInflightFundCreated_block_height = md_EventInflightFundCreated.Fields().ByName("block_height")
+	fd_EventInflightFundCreated_timestamp = md_EventInflightFundCreated.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventInflightFundCreated)(nil)
+
+type fastReflection_EventInflightFundCreated EventInflightFundCreated
+
+func (x *EventInflightFundCreated) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventInflightFundCreated)(x)
+}
+
+func (x *EventInflightFundCreated) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventInflightFundCreated_messageType fastReflection_EventInflightFundCreated_messageType
+var _ protoreflect.MessageType = fastReflection_EventInflightFundCreated_messageType{}
+
+type fastReflection_EventInflightFundCreated_messageType struct{}
+
+func (x fastReflection_EventInflightFundCreated_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventInflightFundCreated)(nil)
+}
+func (x fastReflection_EventInflightFundCreated_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundCreated)
+}
+func (x fastReflection_EventInflightFundCreated_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundCreated
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventInflightFundCreated) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundCreated
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventInflightFundCreated) Type() protoreflect.MessageType {
+	return _fastReflection_EventInflightFundCreated_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventInflightFundCreated) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundCreated)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventInflightFundCreated) Interface() protoreflect.ProtoMessage {
+	return (*EventInflightFundCreated)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventInflightFundCreated) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_EventInflightFundCreated_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_EventInflightFundCreated_route_id, value) {
+			return
+		}
+	}
+	if x.OperationType != "" {
+		value := protoreflect.ValueOfString(x.OperationType)
+		if !f(fd_EventInflightFundCreated_operation_type, value) {
+			return
+		}
+	}
+	if x.Amount != "" {
+		value := protoreflect.ValueOfString(x.Amount)
+		if !f(fd_EventInflightFundCreated_amount, value) {
+			return
+		}
+	}
+	if x.ValueAtInitiation != "" {
+		value := protoreflect.ValueOfString(x.ValueAtInitiation)
+		if !f(fd_EventInflightFundCreated_value_at_initiation, value) {
+			return
+		}
+	}
+	if x.Initiator != "" {
+		value := protoreflect.ValueOfString(x.Initiator)
+		if !f(fd_EventInflightFundCreated_initiator, value) {
+			return
+		}
+	}
+	if x.SourceChain != "" {
+		value := protoreflect.ValueOfString(x.SourceChain)
+		if !f(fd_EventInflightFundCreated_source_chain, value) {
+			return
+		}
+	}
+	if x.DestinationChain != "" {
+		value := protoreflect.ValueOfString(x.DestinationChain)
+		if !f(fd_EventInflightFundCreated_destination_chain, value) {
+			return
+		}
+	}
+	if x.ExpectedAt != nil {
+		value := protoreflect.ValueOfMessage(x.ExpectedAt.ProtoReflect())
+		if !f(fd_EventInflightFundCreated_expected_at, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_EventInflightFundCreated_block_height, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_EventInflightFundCreated_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventInflightFundCreated) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.operation_type":
+		return x.OperationType != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.amount":
+		return x.Amount != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.value_at_initiation":
+		return x.ValueAtInitiation != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.initiator":
+		return x.Initiator != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.source_chain":
+		return x.SourceChain != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.destination_chain":
+		return x.DestinationChain != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.expected_at":
+		return x.ExpectedAt != nil
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCreated"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCreated does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCreated) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.operation_type":
+		x.OperationType = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.amount":
+		x.Amount = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.value_at_initiation":
+		x.ValueAtInitiation = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.initiator":
+		x.Initiator = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.source_chain":
+		x.SourceChain = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.destination_chain":
+		x.DestinationChain = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.expected_at":
+		x.ExpectedAt = nil
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCreated"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCreated does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventInflightFundCreated) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.operation_type":
+		value := x.OperationType
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.amount":
+		value := x.Amount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.value_at_initiation":
+		value := x.ValueAtInitiation
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.initiator":
+		value := x.Initiator
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.source_chain":
+		value := x.SourceChain
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.destination_chain":
+		value := x.DestinationChain
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.expected_at":
+		value := x.ExpectedAt
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCreated"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCreated does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCreated) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.operation_type":
+		x.OperationType = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.amount":
+		x.Amount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.value_at_initiation":
+		x.ValueAtInitiation = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.initiator":
+		x.Initiator = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.source_chain":
+		x.SourceChain = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.destination_chain":
+		x.DestinationChain = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.expected_at":
+		x.ExpectedAt = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCreated"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCreated does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCreated) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.expected_at":
+		if x.ExpectedAt == nil {
+			x.ExpectedAt = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.ExpectedAt.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.operation_type":
+		panic(fmt.Errorf("field operation_type of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.amount":
+		panic(fmt.Errorf("field amount of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.value_at_initiation":
+		panic(fmt.Errorf("field value_at_initiation of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.initiator":
+		panic(fmt.Errorf("field initiator of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.source_chain":
+		panic(fmt.Errorf("field source_chain of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.destination_chain":
+		panic(fmt.Errorf("field destination_chain of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventInflightFundCreated is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCreated"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCreated does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventInflightFundCreated) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.operation_type":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.value_at_initiation":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.initiator":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.source_chain":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.destination_chain":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.expected_at":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCreated.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCreated"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCreated does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventInflightFundCreated) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventInflightFundCreated", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventInflightFundCreated) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCreated) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventInflightFundCreated) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventInflightFundCreated) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventInflightFundCreated)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.OperationType)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Amount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ValueAtInitiation)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Initiator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.SourceChain)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.DestinationChain)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.ExpectedAt != nil {
+			l = options.Size(x.ExpectedAt)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundCreated)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x5a
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x50
+		}
+		if x.ExpectedAt != nil {
+			encoded, err := options.Marshal(x.ExpectedAt)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x4a
+		}
+		if len(x.DestinationChain) > 0 {
+			i -= len(x.DestinationChain)
+			copy(dAtA[i:], x.DestinationChain)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DestinationChain)))
+			i--
+			dAtA[i] = 0x42
+		}
+		if len(x.SourceChain) > 0 {
+			i -= len(x.SourceChain)
+			copy(dAtA[i:], x.SourceChain)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceChain)))
+			i--
+			dAtA[i] = 0x3a
+		}
+		if len(x.Initiator) > 0 {
+			i -= len(x.Initiator)
+			copy(dAtA[i:], x.Initiator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Initiator)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if len(x.ValueAtInitiation) > 0 {
+			i -= len(x.ValueAtInitiation)
+			copy(dAtA[i:], x.ValueAtInitiation)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ValueAtInitiation)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.Amount) > 0 {
+			i -= len(x.Amount)
+			copy(dAtA[i:], x.Amount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.OperationType) > 0 {
+			i -= len(x.OperationType)
+			copy(dAtA[i:], x.OperationType)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OperationType)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundCreated)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundCreated: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundCreated: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperationType", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OperationType = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Amount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValueAtInitiation", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ValueAtInitiation = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Initiator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Initiator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 7:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceChain", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.SourceChain = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DestinationChain", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DestinationChain = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 9:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExpectedAt", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ExpectedAt == nil {
+					x.ExpectedAt = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ExpectedAt); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 10:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 11:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventInflightFundStatusChanged                 protoreflect.MessageDescriptor
+	fd_EventInflightFundStatusChanged_transaction_id  protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_route_id        protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_previous_status protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_new_status      protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_amount          protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_reason          protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_block_height    protoreflect.FieldDescriptor
+	fd_EventInflightFundStatusChanged_timestamp       protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_events_proto_init()
+	md_EventInflightFundStatusChanged = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventInflightFundStatusChanged")
+	fd_EventInflightFundStatusChanged_transaction_id = md_EventInflightFundStatusChanged.Fields().ByName("transaction_id")
+	fd_EventInflightFundStatusChanged_route_id = md_EventInflightFundStatusChanged.Fields().ByName("route_id")
+	fd_EventInflightFundStatusChanged_previous_status = md_EventInflightFundStatusChanged.Fields().ByName("previous_status")
+	fd_EventInflightFundStatusChanged_new_status = md_EventInflightFundStatusChanged.Fields().ByName("new_status")
+	fd_EventInflightFundStatusChanged_amount = md_EventInflightFundStatusChanged.Fields().ByName("amount")
+	fd_EventInflightFundStatusChanged_reason = md_EventInflightFundStatusChanged.Fields().ByName("reason")
+	fd_EventInflightFundStatusChanged_block_height = md_EventInflightFundStatusChanged.Fields().ByName("block_height")
+	fd_EventInflightFundStatusChanged_timestamp = md_EventInflightFundStatusChanged.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventInflightFundStatusChanged)(nil)
+
+type fastReflection_EventInflightFundStatusChanged EventInflightFundStatusChanged
+
+func (x *EventInflightFundStatusChanged) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventInflightFundStatusChanged)(x)
+}
+
+func (x *EventInflightFundStatusChanged) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventInflightFundStatusChanged_messageType fastReflection_EventInflightFundStatusChanged_messageType
+var _ protoreflect.MessageType = fastReflection_EventInflightFundStatusChanged_messageType{}
+
+type fastReflection_EventInflightFundStatusChanged_messageType struct{}
+
+func (x fastReflection_EventInflightFundStatusChanged_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventInflightFundStatusChanged)(nil)
+}
+func (x fastReflection_EventInflightFundStatusChanged_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundStatusChanged)
+}
+func (x fastReflection_EventInflightFundStatusChanged_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundStatusChanged
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventInflightFundStatusChanged) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundStatusChanged
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventInflightFundStatusChanged) Type() protoreflect.MessageType {
+	return _fastReflection_EventInflightFundStatusChanged_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventInflightFundStatusChanged) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundStatusChanged)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventInflightFundStatusChanged) Interface() protoreflect.ProtoMessage {
+	return (*EventInflightFundStatusChanged)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventInflightFundStatusChanged) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_EventInflightFundStatusChanged_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_EventInflightFundStatusChanged_route_id, value) {
+			return
+		}
+	}
+	if x.PreviousStatus != "" {
+		value := protoreflect.ValueOfString(x.PreviousStatus)
+		if !f(fd_EventInflightFundStatusChanged_previous_status, value) {
+			return
+		}
+	}
+	if x.NewStatus != "" {
+		value := protoreflect.ValueOfString(x.NewStatus)
+		if !f(fd_EventInflightFundStatusChanged_new_status, value) {
+			return
+		}
+	}
+	if x.Amount != "" {
+		value := protoreflect.ValueOfString(x.Amount)
+		if !f(fd_EventInflightFundStatusChanged_amount, value) {
+			return
+		}
+	}
+	if x.Reason != "" {
+		value := protoreflect.ValueOfString(x.Reason)
+		if !f(fd_EventInflightFundStatusChanged_reason, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_EventInflightFundStatusChanged_block_height, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_EventInflightFundStatusChanged_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventInflightFundStatusChanged) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.previous_status":
+		return x.PreviousStatus != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.new_status":
+		return x.NewStatus != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.amount":
+		return x.Amount != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.reason":
+		return x.Reason != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStatusChanged"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStatusChanged does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStatusChanged) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.previous_status":
+		x.PreviousStatus = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.new_status":
+		x.NewStatus = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.amount":
+		x.Amount = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.reason":
+		x.Reason = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStatusChanged"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStatusChanged does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventInflightFundStatusChanged) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.previous_status":
+		value := x.PreviousStatus
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.new_status":
+		value := x.NewStatus
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.amount":
+		value := x.Amount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.reason":
+		value := x.Reason
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStatusChanged"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStatusChanged does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStatusChanged) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.previous_status":
+		x.PreviousStatus = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.new_status":
+		x.NewStatus = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.amount":
+		x.Amount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.reason":
+		x.Reason = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStatusChanged"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStatusChanged does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStatusChanged) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.previous_status":
+		panic(fmt.Errorf("field previous_status of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.new_status":
+		panic(fmt.Errorf("field new_status of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.amount":
+		panic(fmt.Errorf("field amount of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.reason":
+		panic(fmt.Errorf("field reason of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventInflightFundStatusChanged is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStatusChanged"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStatusChanged does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventInflightFundStatusChanged) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.previous_status":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.new_status":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.reason":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStatusChanged"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStatusChanged does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventInflightFundStatusChanged) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventInflightFundStatusChanged", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventInflightFundStatusChanged) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStatusChanged) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventInflightFundStatusChanged) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventInflightFundStatusChanged) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventInflightFundStatusChanged)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.PreviousStatus)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.NewStatus)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Amount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Reason)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundStatusChanged)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x42
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x38
+		}
+		if len(x.Reason) > 0 {
+			i -= len(x.Reason)
+			copy(dAtA[i:], x.Reason)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Reason)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if len(x.Amount) > 0 {
+			i -= len(x.Amount)
+			copy(dAtA[i:], x.Amount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.NewStatus) > 0 {
+			i -= len(x.NewStatus)
+			copy(dAtA[i:], x.NewStatus)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NewStatus)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.PreviousStatus) > 0 {
+			i -= len(x.PreviousStatus)
+			copy(dAtA[i:], x.PreviousStatus)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PreviousStatus)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundStatusChanged)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundStatusChanged: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundStatusChanged: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PreviousStatus", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.PreviousStatus = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewStatus", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.NewStatus = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Amount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Reason", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Reason = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventInflightFundCompleted                  protoreflect.MessageDescriptor
+	fd_EventInflightFundCompleted_transaction_id   protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_route_id         protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_operation_type   protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_final_amount     protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_initial_amount   protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_duration_seconds protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_block_height     protoreflect.FieldDescriptor
+	fd_EventInflightFundCompleted_timestamp        protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_events_proto_init()
+	md_EventInflightFundCompleted = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventInflightFundCompleted")
+	fd_EventInflightFundCompleted_transaction_id = md_EventInflightFundCompleted.Fields().ByName("transaction_id")
+	fd_EventInflightFundCompleted_route_id = md_EventInflightFundCompleted.Fields().ByName("route_id")
+	fd_EventInflightFundCompleted_operation_type = md_EventInflightFundCompleted.Fields().ByName("operation_type")
+	fd_EventInflightFundCompleted_final_amount = md_EventInflightFundCompleted.Fields().ByName("final_amount")
+	fd_EventInflightFundCompleted_initial_amount = md_EventInflightFundCompleted.Fields().ByName("initial_amount")
+	fd_EventInflightFundCompleted_duration_seconds = md_EventInflightFundCompleted.Fields().ByName("duration_seconds")
+	fd_EventInflightFundCompleted_block_height = md_EventInflightFundCompleted.Fields().ByName("block_height")
+	fd_EventInflightFundCompleted_timestamp = md_EventInflightFundCompleted.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventInflightFundCompleted)(nil)
+
+type fastReflection_EventInflightFundCompleted EventInflightFundCompleted
+
+func (x *EventInflightFundCompleted) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventInflightFundCompleted)(x)
+}
+
+func (x *EventInflightFundCompleted) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventInflightFundCompleted_messageType fastReflection_EventInflightFundCompleted_messageType
+var _ protoreflect.MessageType = fastReflection_EventInflightFundCompleted_messageType{}
+
+type fastReflection_EventInflightFundCompleted_messageType struct{}
+
+func (x fastReflection_EventInflightFundCompleted_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventInflightFundCompleted)(nil)
+}
+func (x fastReflection_EventInflightFundCompleted_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundCompleted)
+}
+func (x fastReflection_EventInflightFundCompleted_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundCompleted
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventInflightFundCompleted) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundCompleted
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventInflightFundCompleted) Type() protoreflect.MessageType {
+	return _fastReflection_EventInflightFundCompleted_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventInflightFundCompleted) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundCompleted)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventInflightFundCompleted) Interface() protoreflect.ProtoMessage {
+	return (*EventInflightFundCompleted)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventInflightFundCompleted) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_EventInflightFundCompleted_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_EventInflightFundCompleted_route_id, value) {
+			return
+		}
+	}
+	if x.OperationType != "" {
+		value := protoreflect.ValueOfString(x.OperationType)
+		if !f(fd_EventInflightFundCompleted_operation_type, value) {
+			return
+		}
+	}
+	if x.FinalAmount != "" {
+		value := protoreflect.ValueOfString(x.FinalAmount)
+		if !f(fd_EventInflightFundCompleted_final_amount, value) {
+			return
+		}
+	}
+	if x.InitialAmount != "" {
+		value := protoreflect.ValueOfString(x.InitialAmount)
+		if !f(fd_EventInflightFundCompleted_initial_amount, value) {
+			return
+		}
+	}
+	if x.DurationSeconds != int64(0) {
+		value := protoreflect.ValueOfInt64(x.DurationSeconds)
+		if !f(fd_EventInflightFundCompleted_duration_seconds, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_EventInflightFundCompleted_block_height, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_EventInflightFundCompleted_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventInflightFundCompleted) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.operation_type":
+		return x.OperationType != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.final_amount":
+		return x.FinalAmount != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.initial_amount":
+		return x.InitialAmount != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.duration_seconds":
+		return x.DurationSeconds != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCompleted"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCompleted does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCompleted) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.operation_type":
+		x.OperationType = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.final_amount":
+		x.FinalAmount = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.initial_amount":
+		x.InitialAmount = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.duration_seconds":
+		x.DurationSeconds = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCompleted"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCompleted does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventInflightFundCompleted) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.operation_type":
+		value := x.OperationType
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.final_amount":
+		value := x.FinalAmount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.initial_amount":
+		value := x.InitialAmount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.duration_seconds":
+		value := x.DurationSeconds
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCompleted"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCompleted does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCompleted) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.operation_type":
+		x.OperationType = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.final_amount":
+		x.FinalAmount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.initial_amount":
+		x.InitialAmount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.duration_seconds":
+		x.DurationSeconds = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCompleted"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCompleted does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCompleted) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.operation_type":
+		panic(fmt.Errorf("field operation_type of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.final_amount":
+		panic(fmt.Errorf("field final_amount of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.initial_amount":
+		panic(fmt.Errorf("field initial_amount of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.duration_seconds":
+		panic(fmt.Errorf("field duration_seconds of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventInflightFundCompleted is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCompleted"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCompleted does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventInflightFundCompleted) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.operation_type":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.final_amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.initial_amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.duration_seconds":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCompleted"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCompleted does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventInflightFundCompleted) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventInflightFundCompleted", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventInflightFundCompleted) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCompleted) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventInflightFundCompleted) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventInflightFundCompleted) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventInflightFundCompleted)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.OperationType)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.FinalAmount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.InitialAmount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.DurationSeconds != 0 {
+			n += 1 + runtime.Sov(uint64(x.DurationSeconds))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundCompleted)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x42
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x38
+		}
+		if x.DurationSeconds != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DurationSeconds))
+			i--
+			dAtA[i] = 0x30
+		}
+		if len(x.InitialAmount) > 0 {
+			i -= len(x.InitialAmount)
+			copy(dAtA[i:], x.InitialAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.InitialAmount)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.FinalAmount) > 0 {
+			i -= len(x.FinalAmount)
+			copy(dAtA[i:], x.FinalAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.FinalAmount)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.OperationType) > 0 {
+			i -= len(x.OperationType)
+			copy(dAtA[i:], x.OperationType)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OperationType)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundCompleted)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundCompleted: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundCompleted: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperationType", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OperationType = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field FinalAmount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.FinalAmount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field InitialAmount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.InitialAmount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DurationSeconds", wireType)
+				}
+				x.DurationSeconds = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.DurationSeconds |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventInflightFundStale                    protoreflect.MessageDescriptor
+	fd_EventInflightFundStale_transaction_id     protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_route_id           protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_amount             protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_hours_overdue      protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_expected_at        protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_current_status     protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_recommended_action protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_block_height       protoreflect.FieldDescriptor
+	fd_EventInflightFundStale_timestamp          protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_events_proto_init()
+	md_EventInflightFundStale = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventInflightFundStale")
+	fd_EventInflightFundStale_transaction_id = md_EventInflightFundStale.Fields().ByName("transaction_id")
+	fd_EventInflightFundStale_route_id = md_EventInflightFundStale.Fields().ByName("route_id")
+	fd_EventInflightFundStale_amount = md_EventInflightFundStale.Fields().ByName("amount")
+	fd_EventInflightFundStale_hours_overdue = md_EventInflightFundStale.Fields().ByName("hours_overdue")
+	fd_EventInflightFundStale_expected_at = md_EventInflightFundStale.Fields().ByName("expected_at")
+	fd_EventInflightFundStale_current_status = md_EventInflightFundStale.Fields().ByName("current_status")
+	fd_EventInflightFundStale_recommended_action = md_EventInflightFundStale.Fields().ByName("recommended_action")
+	fd_EventInflightFundStale_block_height = md_EventInflightFundStale.Fields().ByName("block_height")
+	fd_EventInflightFundStale_timestamp = md_EventInflightFundStale.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventInflightFundStale)(nil)
+
+type fastReflection_EventInflightFundStale EventInflightFundStale
+
+func (x *EventInflightFundStale) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventInflightFundStale)(x)
+}
+
+func (x *EventInflightFundStale) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventInflightFundStale_messageType fastReflection_EventInflightFundStale_messageType
+var _ protoreflect.MessageType = fastReflection_EventInflightFundStale_messageType{}
+
+type fastReflection_EventInflightFundStale_messageType struct{}
+
+func (x fastReflection_EventInflightFundStale_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventInflightFundStale)(nil)
+}
+func (x fastReflection_EventInflightFundStale_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundStale)
+}
+func (x fastReflection_EventInflightFundStale_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundStale
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventInflightFundStale) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundStale
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventInflightFundStale) Type() protoreflect.MessageType {
+	return _fastReflection_EventInflightFundStale_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventInflightFundStale) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundStale)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventInflightFundStale) Interface() protoreflect.ProtoMessage {
+	return (*EventInflightFundStale)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventInflightFundStale) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_EventInflightFundStale_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_EventInflightFundStale_route_id, value) {
+			return
+		}
+	}
+	if x.Amount != "" {
+		value := protoreflect.ValueOfString(x.Amount)
+		if !f(fd_EventInflightFundStale_amount, value) {
+			return
+		}
+	}
+	if x.HoursOverdue != int64(0) {
+		value := protoreflect.ValueOfInt64(x.HoursOverdue)
+		if !f(fd_EventInflightFundStale_hours_overdue, value) {
+			return
+		}
+	}
+	if x.ExpectedAt != nil {
+		value := protoreflect.ValueOfMessage(x.ExpectedAt.ProtoReflect())
+		if !f(fd_EventInflightFundStale_expected_at, value) {
+			return
+		}
+	}
+	if x.CurrentStatus != "" {
+		value := protoreflect.ValueOfString(x.CurrentStatus)
+		if !f(fd_EventInflightFundStale_current_status, value) {
+			return
+		}
+	}
+	if x.RecommendedAction != "" {
+		value := protoreflect.ValueOfString(x.RecommendedAction)
+		if !f(fd_EventInflightFundStale_recommended_action, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_EventInflightFundStale_block_height, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_EventInflightFundStale_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventInflightFundStale) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStale.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
+		return x.Amount != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
+		return x.HoursOverdue != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
+		return x.ExpectedAt != nil
+	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
+		return x.CurrentStatus != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.recommended_action":
+		return x.RecommendedAction != ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStale"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStale does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStale) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStale.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
+		x.Amount = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
+		x.HoursOverdue = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
+		x.ExpectedAt = nil
+	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
+		x.CurrentStatus = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.recommended_action":
+		x.RecommendedAction = ""
+	case "noble.dollar.vaults.v2.EventInflightFundStale.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStale"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStale does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventInflightFundStale) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStale.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
+		value := x.Amount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
+		value := x.HoursOverdue
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
+		value := x.ExpectedAt
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
+		value := x.CurrentStatus
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.recommended_action":
+		value := x.RecommendedAction
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStale"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStale does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStale) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStale.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
+		x.Amount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
+		x.HoursOverdue = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
+		x.ExpectedAt = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
+		x.CurrentStatus = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.recommended_action":
+		x.RecommendedAction = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundStale.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundStale.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStale"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStale does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStale) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
+		if x.ExpectedAt == nil {
+			x.ExpectedAt = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.ExpectedAt.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundStale.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundStale.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
+		panic(fmt.Errorf("field amount of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
+		panic(fmt.Errorf("field hours_overdue of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
+		panic(fmt.Errorf("field current_status of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.recommended_action":
+		panic(fmt.Errorf("field recommended_action of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventInflightFundStale is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStale"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStale does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventInflightFundStale) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundStale.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStale.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStale.recommended_action":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundStale.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundStale.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundStale"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundStale does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventInflightFundStale) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventInflightFundStale", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventInflightFundStale) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundStale) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventInflightFundStale) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventInflightFundStale) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventInflightFundStale)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.Amount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.HoursOverdue != 0 {
+			n += 1 + runtime.Sov(uint64(x.HoursOverdue))
+		}
+		if x.ExpectedAt != nil {
+			l = options.Size(x.ExpectedAt)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.CurrentStatus)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.RecommendedAction)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundStale)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x4a
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x40
+		}
+		if len(x.RecommendedAction) > 0 {
+			i -= len(x.RecommendedAction)
+			copy(dAtA[i:], x.RecommendedAction)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RecommendedAction)))
+			i--
+			dAtA[i] = 0x3a
+		}
+		if len(x.CurrentStatus) > 0 {
+			i -= len(x.CurrentStatus)
+			copy(dAtA[i:], x.CurrentStatus)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CurrentStatus)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.ExpectedAt != nil {
+			encoded, err := options.Marshal(x.ExpectedAt)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if x.HoursOverdue != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.HoursOverdue))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.Amount) > 0 {
+			i -= len(x.Amount)
+			copy(dAtA[i:], x.Amount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundStale)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundStale: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundStale: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Amount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field HoursOverdue", wireType)
+				}
+				x.HoursOverdue = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.HoursOverdue |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExpectedAt", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ExpectedAt == nil {
+					x.ExpectedAt = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ExpectedAt); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CurrentStatus", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.CurrentStatus = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 7:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RecommendedAction", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.RecommendedAction = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 9:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventInflightFundCleaned                 protoreflect.MessageDescriptor
+	fd_EventInflightFundCleaned_transaction_id  protoreflect.FieldDescriptor
+	fd_EventInflightFundCleaned_route_id        protoreflect.FieldDescriptor
+	fd_EventInflightFundCleaned_amount_returned protoreflect.FieldDescriptor
+	fd_EventInflightFundCleaned_reason          protoreflect.FieldDescriptor
+	fd_EventInflightFundCleaned_authority       protoreflect.FieldDescriptor
+	fd_EventInflightFundCleaned_block_height    protoreflect.FieldDescriptor
+	fd_EventInflightFundCleaned_timestamp       protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_events_proto_init()
+	md_EventInflightFundCleaned = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventInflightFundCleaned")
+	fd_EventInflightFundCleaned_transaction_id = md_EventInflightFundCleaned.Fields().ByName("transaction_id")
+	fd_EventInflightFundCleaned_route_id = md_EventInflightFundCleaned.Fields().ByName("route_id")
+	fd_EventInflightFundCleaned_amount_returned = md_EventInflightFundCleaned.Fields().ByName("amount_returned")
+	fd_EventInflightFundCleaned_reason = md_EventInflightFundCleaned.Fields().ByName("reason")
+	fd_EventInflightFundCleaned_authority = md_EventInflightFundCleaned.Fields().ByName("authority")
+	fd_EventInflightFundCleaned_block_height = md_EventInflightFundCleaned.Fields().ByName("block_height")
+	fd_EventInflightFundCleaned_timestamp = md_EventInflightFundCleaned.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventInflightFundCleaned)(nil)
+
+type fastReflection_EventInflightFundCleaned EventInflightFundCleaned
+
+func (x *EventInflightFundCleaned) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventInflightFundCleaned)(x)
+}
+
+func (x *EventInflightFundCleaned) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventInflightFundCleaned_messageType fastReflection_EventInflightFundCleaned_messageType
+var _ protoreflect.MessageType = fastReflection_EventInflightFundCleaned_messageType{}
+
+type fastReflection_EventInflightFundCleaned_messageType struct{}
+
+func (x fastReflection_EventInflightFundCleaned_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventInflightFundCleaned)(nil)
+}
+func (x fastReflection_EventInflightFundCleaned_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundCleaned)
+}
+func (x fastReflection_EventInflightFundCleaned_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundCleaned
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventInflightFundCleaned) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventInflightFundCleaned
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventInflightFundCleaned) Type() protoreflect.MessageType {
+	return _fastReflection_EventInflightFundCleaned_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventInflightFundCleaned) New() protoreflect.Message {
+	return new(fastReflection_EventInflightFundCleaned)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventInflightFundCleaned) Interface() protoreflect.ProtoMessage {
+	return (*EventInflightFundCleaned)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventInflightFundCleaned) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_EventInflightFundCleaned_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_EventInflightFundCleaned_route_id, value) {
+			return
+		}
+	}
+	if x.AmountReturned != "" {
+		value := protoreflect.ValueOfString(x.AmountReturned)
+		if !f(fd_EventInflightFundCleaned_amount_returned, value) {
+			return
+		}
+	}
+	if x.Reason != "" {
+		value := protoreflect.ValueOfString(x.Reason)
+		if !f(fd_EventInflightFundCleaned_reason, value) {
+			return
+		}
+	}
+	if x.Authority != "" {
+		value := protoreflect.ValueOfString(x.Authority)
+		if !f(fd_EventInflightFundCleaned_authority, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_EventInflightFundCleaned_block_height, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_EventInflightFundCleaned_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventInflightFundCleaned) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.amount_returned":
+		return x.AmountReturned != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.reason":
+		return x.Reason != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.authority":
+		return x.Authority != ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCleaned"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCleaned does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCleaned) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.amount_returned":
+		x.AmountReturned = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.reason":
+		x.Reason = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.authority":
+		x.Authority = ""
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCleaned"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCleaned does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventInflightFundCleaned) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.amount_returned":
+		value := x.AmountReturned
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.reason":
+		value := x.Reason
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.authority":
+		value := x.Authority
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCleaned"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCleaned does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCleaned) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.amount_returned":
+		x.AmountReturned = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.reason":
+		x.Reason = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.authority":
+		x.Authority = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCleaned"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCleaned does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCleaned) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.EventInflightFundCleaned is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.EventInflightFundCleaned is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.amount_returned":
+		panic(fmt.Errorf("field amount_returned of message noble.dollar.vaults.v2.EventInflightFundCleaned is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.reason":
+		panic(fmt.Errorf("field reason of message noble.dollar.vaults.v2.EventInflightFundCleaned is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.authority":
+		panic(fmt.Errorf("field authority of message noble.dollar.vaults.v2.EventInflightFundCleaned is not mutable"))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventInflightFundCleaned is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCleaned"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCleaned does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventInflightFundCleaned) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.amount_returned":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.reason":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.authority":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventInflightFundCleaned"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventInflightFundCleaned does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventInflightFundCleaned) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventInflightFundCleaned", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventInflightFundCleaned) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventInflightFundCleaned) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventInflightFundCleaned) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventInflightFundCleaned) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventInflightFundCleaned)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.AmountReturned)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Reason)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Authority)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundCleaned)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x3a
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x30
+		}
+		if len(x.Authority) > 0 {
+			i -= len(x.Authority)
+			copy(dAtA[i:], x.Authority)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Authority)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.Reason) > 0 {
+			i -= len(x.Reason)
+			copy(dAtA[i:], x.Reason)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Reason)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.AmountReturned) > 0 {
+			i -= len(x.AmountReturned)
+			copy(dAtA[i:], x.AmountReturned)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AmountReturned)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventInflightFundCleaned)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundCleaned: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventInflightFundCleaned: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountReturned", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AmountReturned = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Reason", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Reason = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Authority = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 7:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventRouteCapacityExceeded                        protoreflect.MessageDescriptor
+	fd_EventRouteCapacityExceeded_route_id               protoreflect.FieldDescriptor
+	fd_EventRouteCapacityExceeded_current_inflight_value protoreflect.FieldDescriptor
+	fd_EventRouteCapacityExceeded_capacity_limit         protoreflect.FieldDescriptor
+	fd_EventRouteCapacityExceeded_attempted_amount       protoreflect.FieldDescriptor
+	fd_EventRouteCapacityExceeded_block_height           protoreflect.FieldDescriptor
+	fd_EventRouteCapacityExceeded_timestamp              protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_events_proto_init()
+	md_EventRouteCapacityExceeded = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventRouteCapacityExceeded")
+	fd_EventRouteCapacityExceeded_route_id = md_EventRouteCapacityExceeded.Fields().ByName("route_id")
+	fd_EventRouteCapacityExceeded_current_inflight_value = md_EventRouteCapacityExceeded.Fields().ByName("current_inflight_value")
+	fd_EventRouteCapacityExceeded_capacity_limit = md_EventRouteCapacityExceeded.Fields().ByName("capacity_limit")
+	fd_EventRouteCapacityExceeded_attempted_amount = md_EventRouteCapacityExceeded.Fields().ByName("attempted_amount")
+	fd_EventRouteCapacityExceeded_block_height = md_EventRouteCapacityExceeded.Fields().ByName("block_height")
+	fd_EventRouteCapacityExceeded_timestamp = md_EventRouteCapacityExceeded.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventRouteCapacityExceeded)(nil)
+
+type fastReflection_EventRouteCapacityExceeded EventRouteCapacityExceeded
+
+func (x *EventRouteCapacityExceeded) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventRouteCapacityExceeded)(x)
+}
+
+func (x *EventRouteCapacityExceeded) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventRouteCapacityExceeded_messageType fastReflection_EventRouteCapacityExceeded_messageType
+var _ protoreflect.MessageType = fastReflection_EventRouteCapacityExceeded_messageType{}
+
+type fastReflection_EventRouteCapacityExceeded_messageType struct{}
+
+func (x fastReflection_EventRouteCapacityExceeded_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventRouteCapacityExceeded)(nil)
+}
+func (x fastReflection_EventRouteCapacityExceeded_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventRouteCapacityExceeded)
+}
+func (x fastReflection_EventRouteCapacityExceeded_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventRouteCapacityExceeded
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventRouteCapacityExceeded) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventRouteCapacityExceeded
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventRouteCapacityExceeded) Type() protoreflect.MessageType {
+	return _fastReflection_EventRouteCapacityExceeded_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventRouteCapacityExceeded) New() protoreflect.Message {
+	return new(fastReflection_EventRouteCapacityExceeded)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventRouteCapacityExceeded) Interface() protoreflect.ProtoMessage {
+	return (*EventRouteCapacityExceeded)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventRouteCapacityExceeded) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_EventRouteCapacityExceeded_route_id, value) {
+			return
+		}
+	}
+	if x.CurrentInflightValue != "" {
+		value := protoreflect.ValueOfString(x.CurrentInflightValue)
+		if !f(fd_EventRouteCapacityExceeded_current_inflight_value, value) {
+			return
+		}
+	}
+	if x.CapacityLimit != "" {
+		value := protoreflect.ValueOfString(x.CapacityLimit)
+		if !f(fd_EventRouteCapacityExceeded_capacity_limit, value) {
+			return
+		}
+	}
+	if x.AttemptedAmount != "" {
+		value := protoreflect.ValueOfString(x.AttemptedAmount)
+		if !f(fd_EventRouteCapacityExceeded_attempted_amount, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_EventRouteCapacityExceeded_block_height, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_EventRouteCapacityExceeded_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventRouteCapacityExceeded) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.current_inflight_value":
+		return x.CurrentInflightValue != ""
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.capacity_limit":
+		return x.CapacityLimit != ""
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.attempted_amount":
+		return x.AttemptedAmount != ""
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventRouteCapacityExceeded"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventRouteCapacityExceeded does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRouteCapacityExceeded) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.current_inflight_value":
+		x.CurrentInflightValue = ""
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.capacity_limit":
+		x.CapacityLimit = ""
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.attempted_amount":
+		x.AttemptedAmount = ""
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventRouteCapacityExceeded"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventRouteCapacityExceeded does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventRouteCapacityExceeded) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.current_inflight_value":
+		value := x.CurrentInflightValue
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.capacity_limit":
+		value := x.CapacityLimit
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.attempted_amount":
+		value := x.AttemptedAmount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventRouteCapacityExceeded"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventRouteCapacityExceeded does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRouteCapacityExceeded) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.current_inflight_value":
+		x.CurrentInflightValue = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.capacity_limit":
+		x.CapacityLimit = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.attempted_amount":
+		x.AttemptedAmount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventRouteCapacityExceeded"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventRouteCapacityExceeded does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRouteCapacityExceeded) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.EventRouteCapacityExceeded is not mutable"))
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.current_inflight_value":
+		panic(fmt.Errorf("field current_inflight_value of message noble.dollar.vaults.v2.EventRouteCapacityExceeded is not mutable"))
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.capacity_limit":
+		panic(fmt.Errorf("field capacity_limit of message noble.dollar.vaults.v2.EventRouteCapacityExceeded is not mutable"))
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.attempted_amount":
+		panic(fmt.Errorf("field attempted_amount of message noble.dollar.vaults.v2.EventRouteCapacityExceeded is not mutable"))
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventRouteCapacityExceeded is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventRouteCapacityExceeded"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventRouteCapacityExceeded does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventRouteCapacityExceeded) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.current_inflight_value":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.capacity_limit":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.attempted_amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventRouteCapacityExceeded"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventRouteCapacityExceeded does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventRouteCapacityExceeded) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventRouteCapacityExceeded", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventRouteCapacityExceeded) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRouteCapacityExceeded) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventRouteCapacityExceeded) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventRouteCapacityExceeded) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventRouteCapacityExceeded)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.CurrentInflightValue)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.CapacityLimit)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.AttemptedAmount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventRouteCapacityExceeded)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x28
+		}
+		if len(x.AttemptedAmount) > 0 {
+			i -= len(x.AttemptedAmount)
+			copy(dAtA[i:], x.AttemptedAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AttemptedAmount)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.CapacityLimit) > 0 {
+			i -= len(x.CapacityLimit)
+			copy(dAtA[i:], x.CapacityLimit)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CapacityLimit)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.CurrentInflightValue) > 0 {
+			i -= len(x.CurrentInflightValue)
+			copy(dAtA[i:], x.CurrentInflightValue)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CurrentInflightValue)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventRouteCapacityExceeded)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventRouteCapacityExceeded: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventRouteCapacityExceeded: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CurrentInflightValue", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.CurrentInflightValue = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CapacityLimit", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.CapacityLimit = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttemptedAmount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AttemptedAmount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -7292,6 +12460,615 @@ func (x *EventVaultConfigUpdated) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
+// EventInflightFundCreated is emitted when an inflight fund operation is initiated
+type EventInflightFundCreated struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Operation type (DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.)
+	OperationType string `protobuf:"bytes,3,opt,name=operation_type,json=operationType,proto3" json:"operation_type,omitempty"`
+	// Amount
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	// Value at initiation
+	ValueAtInitiation string `protobuf:"bytes,5,opt,name=value_at_initiation,json=valueAtInitiation,proto3" json:"value_at_initiation,omitempty"`
+	// Initiator address
+	Initiator string `protobuf:"bytes,6,opt,name=initiator,proto3" json:"initiator,omitempty"`
+	// Source chain
+	SourceChain string `protobuf:"bytes,7,opt,name=source_chain,json=sourceChain,proto3" json:"source_chain,omitempty"`
+	// Destination chain
+	DestinationChain string `protobuf:"bytes,8,opt,name=destination_chain,json=destinationChain,proto3" json:"destination_chain,omitempty"`
+	// Expected completion time
+	ExpectedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expected_at,json=expectedAt,proto3" json:"expected_at,omitempty"`
+	// Block height
+	BlockHeight int64 `protobuf:"varint,10,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Timestamp
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *EventInflightFundCreated) Reset() {
+	*x = EventInflightFundCreated{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventInflightFundCreated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventInflightFundCreated) ProtoMessage() {}
+
+// Deprecated: Use EventInflightFundCreated.ProtoReflect.Descriptor instead.
+func (*EventInflightFundCreated) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *EventInflightFundCreated) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *EventInflightFundCreated) GetOperationType() string {
+	if x != nil {
+		return x.OperationType
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetValueAtInitiation() string {
+	if x != nil {
+		return x.ValueAtInitiation
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetInitiator() string {
+	if x != nil {
+		return x.Initiator
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetSourceChain() string {
+	if x != nil {
+		return x.SourceChain
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetDestinationChain() string {
+	if x != nil {
+		return x.DestinationChain
+	}
+	return ""
+}
+
+func (x *EventInflightFundCreated) GetExpectedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpectedAt
+	}
+	return nil
+}
+
+func (x *EventInflightFundCreated) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *EventInflightFundCreated) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+// EventInflightFundStatusChanged is emitted when an inflight fund's status changes
+type EventInflightFundStatusChanged struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Previous status
+	PreviousStatus string `protobuf:"bytes,3,opt,name=previous_status,json=previousStatus,proto3" json:"previous_status,omitempty"`
+	// New status
+	NewStatus string `protobuf:"bytes,4,opt,name=new_status,json=newStatus,proto3" json:"new_status,omitempty"`
+	// Amount
+	Amount string `protobuf:"bytes,5,opt,name=amount,proto3" json:"amount,omitempty"`
+	// Status change reason
+	Reason string `protobuf:"bytes,6,opt,name=reason,proto3" json:"reason,omitempty"`
+	// Block height
+	BlockHeight int64 `protobuf:"varint,7,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Timestamp
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *EventInflightFundStatusChanged) Reset() {
+	*x = EventInflightFundStatusChanged{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventInflightFundStatusChanged) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventInflightFundStatusChanged) ProtoMessage() {}
+
+// Deprecated: Use EventInflightFundStatusChanged.ProtoReflect.Descriptor instead.
+func (*EventInflightFundStatusChanged) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *EventInflightFundStatusChanged) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *EventInflightFundStatusChanged) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *EventInflightFundStatusChanged) GetPreviousStatus() string {
+	if x != nil {
+		return x.PreviousStatus
+	}
+	return ""
+}
+
+func (x *EventInflightFundStatusChanged) GetNewStatus() string {
+	if x != nil {
+		return x.NewStatus
+	}
+	return ""
+}
+
+func (x *EventInflightFundStatusChanged) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *EventInflightFundStatusChanged) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *EventInflightFundStatusChanged) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *EventInflightFundStatusChanged) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+// EventInflightFundCompleted is emitted when an inflight fund operation completes
+type EventInflightFundCompleted struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Operation type
+	OperationType string `protobuf:"bytes,3,opt,name=operation_type,json=operationType,proto3" json:"operation_type,omitempty"`
+	// Final amount
+	FinalAmount string `protobuf:"bytes,4,opt,name=final_amount,json=finalAmount,proto3" json:"final_amount,omitempty"`
+	// Initial amount
+	InitialAmount string `protobuf:"bytes,5,opt,name=initial_amount,json=initialAmount,proto3" json:"initial_amount,omitempty"`
+	// Time taken (seconds)
+	DurationSeconds int64 `protobuf:"varint,6,opt,name=duration_seconds,json=durationSeconds,proto3" json:"duration_seconds,omitempty"`
+	// Block height
+	BlockHeight int64 `protobuf:"varint,7,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Timestamp
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *EventInflightFundCompleted) Reset() {
+	*x = EventInflightFundCompleted{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventInflightFundCompleted) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventInflightFundCompleted) ProtoMessage() {}
+
+// Deprecated: Use EventInflightFundCompleted.ProtoReflect.Descriptor instead.
+func (*EventInflightFundCompleted) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *EventInflightFundCompleted) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *EventInflightFundCompleted) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *EventInflightFundCompleted) GetOperationType() string {
+	if x != nil {
+		return x.OperationType
+	}
+	return ""
+}
+
+func (x *EventInflightFundCompleted) GetFinalAmount() string {
+	if x != nil {
+		return x.FinalAmount
+	}
+	return ""
+}
+
+func (x *EventInflightFundCompleted) GetInitialAmount() string {
+	if x != nil {
+		return x.InitialAmount
+	}
+	return ""
+}
+
+func (x *EventInflightFundCompleted) GetDurationSeconds() int64 {
+	if x != nil {
+		return x.DurationSeconds
+	}
+	return 0
+}
+
+func (x *EventInflightFundCompleted) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *EventInflightFundCompleted) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+// EventInflightFundStale is emitted when an inflight fund is detected as stale
+type EventInflightFundStale struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Amount
+	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	// Hours overdue
+	HoursOverdue int64 `protobuf:"varint,4,opt,name=hours_overdue,json=hoursOverdue,proto3" json:"hours_overdue,omitempty"`
+	// Expected completion time
+	ExpectedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expected_at,json=expectedAt,proto3" json:"expected_at,omitempty"`
+	// Current status
+	CurrentStatus string `protobuf:"bytes,6,opt,name=current_status,json=currentStatus,proto3" json:"current_status,omitempty"`
+	// Recommended action
+	RecommendedAction string `protobuf:"bytes,7,opt,name=recommended_action,json=recommendedAction,proto3" json:"recommended_action,omitempty"`
+	// Block height
+	BlockHeight int64 `protobuf:"varint,8,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Timestamp
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *EventInflightFundStale) Reset() {
+	*x = EventInflightFundStale{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventInflightFundStale) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventInflightFundStale) ProtoMessage() {}
+
+// Deprecated: Use EventInflightFundStale.ProtoReflect.Descriptor instead.
+func (*EventInflightFundStale) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *EventInflightFundStale) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *EventInflightFundStale) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *EventInflightFundStale) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *EventInflightFundStale) GetHoursOverdue() int64 {
+	if x != nil {
+		return x.HoursOverdue
+	}
+	return 0
+}
+
+func (x *EventInflightFundStale) GetExpectedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpectedAt
+	}
+	return nil
+}
+
+func (x *EventInflightFundStale) GetCurrentStatus() string {
+	if x != nil {
+		return x.CurrentStatus
+	}
+	return ""
+}
+
+func (x *EventInflightFundStale) GetRecommendedAction() string {
+	if x != nil {
+		return x.RecommendedAction
+	}
+	return ""
+}
+
+func (x *EventInflightFundStale) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *EventInflightFundStale) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+// EventInflightFundCleaned is emitted when a stale inflight fund is cleaned up
+type EventInflightFundCleaned struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Amount returned to vault
+	AmountReturned string `protobuf:"bytes,3,opt,name=amount_returned,json=amountReturned,proto3" json:"amount_returned,omitempty"`
+	// Reason for cleanup
+	Reason string `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	// Authority that triggered cleanup
+	Authority string `protobuf:"bytes,5,opt,name=authority,proto3" json:"authority,omitempty"`
+	// Block height
+	BlockHeight int64 `protobuf:"varint,6,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Timestamp
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *EventInflightFundCleaned) Reset() {
+	*x = EventInflightFundCleaned{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventInflightFundCleaned) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventInflightFundCleaned) ProtoMessage() {}
+
+// Deprecated: Use EventInflightFundCleaned.ProtoReflect.Descriptor instead.
+func (*EventInflightFundCleaned) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *EventInflightFundCleaned) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *EventInflightFundCleaned) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *EventInflightFundCleaned) GetAmountReturned() string {
+	if x != nil {
+		return x.AmountReturned
+	}
+	return ""
+}
+
+func (x *EventInflightFundCleaned) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *EventInflightFundCleaned) GetAuthority() string {
+	if x != nil {
+		return x.Authority
+	}
+	return ""
+}
+
+func (x *EventInflightFundCleaned) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *EventInflightFundCleaned) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+// EventRouteCapacityExceeded is emitted when a route's capacity limit is reached
+type EventRouteCapacityExceeded struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Route ID
+	RouteId uint32 `protobuf:"varint,1,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Current inflight value
+	CurrentInflightValue string `protobuf:"bytes,2,opt,name=current_inflight_value,json=currentInflightValue,proto3" json:"current_inflight_value,omitempty"`
+	// Route capacity limit
+	CapacityLimit string `protobuf:"bytes,3,opt,name=capacity_limit,json=capacityLimit,proto3" json:"capacity_limit,omitempty"`
+	// Attempted operation amount
+	AttemptedAmount string `protobuf:"bytes,4,opt,name=attempted_amount,json=attemptedAmount,proto3" json:"attempted_amount,omitempty"`
+	// Block height
+	BlockHeight int64 `protobuf:"varint,5,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Timestamp
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *EventRouteCapacityExceeded) Reset() {
+	*x = EventRouteCapacityExceeded{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventRouteCapacityExceeded) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventRouteCapacityExceeded) ProtoMessage() {}
+
+// Deprecated: Use EventRouteCapacityExceeded.ProtoReflect.Descriptor instead.
+func (*EventRouteCapacityExceeded) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *EventRouteCapacityExceeded) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *EventRouteCapacityExceeded) GetCurrentInflightValue() string {
+	if x != nil {
+		return x.CurrentInflightValue
+	}
+	return ""
+}
+
+func (x *EventRouteCapacityExceeded) GetCapacityLimit() string {
+	if x != nil {
+		return x.CapacityLimit
+	}
+	return ""
+}
+
+func (x *EventRouteCapacityExceeded) GetAttemptedAmount() string {
+	if x != nil {
+		return x.AttemptedAmount
+	}
+	return ""
+}
+
+func (x *EventRouteCapacityExceeded) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *EventRouteCapacityExceeded) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
 var File_noble_dollar_vaults_v2_events_proto protoreflect.FileDescriptor
 
 var file_noble_dollar_vaults_v2_events_proto_rawDesc = []byte{
@@ -7520,21 +13297,192 @@ var file_noble_dollar_vaults_v2_events_proto_rawDesc = []byte{
 	0x70, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
 	0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0xdd, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d,
-	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
-	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50,
-	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e,
-	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75,
-	0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2,
-	0x02, 0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02,
-	0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61,
-	0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c,
-	0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e,
-	0x6f, 0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61,
-	0x75, 0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0xe5, 0x04, 0x0a, 0x18, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x46, 0x75, 0x6e, 0x64, 0x43, 0x72,
+	0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74,
+	0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08,
+	0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x07,
+	0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0d, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x48,
+	0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
+	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
+	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,
+	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x60, 0x0a, 0x13, 0x76, 0x61, 0x6c, 0x75,
+	0x65, 0x5f, 0x61, 0x74, 0x5f, 0x69, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
+	0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49,
+	0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x11, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x41, 0x74,
+	0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x36, 0x0a, 0x09, 0x69, 0x6e,
+	0x69, 0x74, 0x69, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
+	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x69, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74,
+	0x6f, 0x72, 0x12, 0x21, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x63, 0x68, 0x61,
+	0x69, 0x6e, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x2b, 0x0a, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x10, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x68, 0x61,
+	0x69, 0x6e, 0x12, 0x45, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x5f, 0x61,
+	0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65,
+	0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x42, 0x0a, 0x09,
+	0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f,
+	0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x22, 0xf3, 0x02, 0x0a, 0x1e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67,
+	0x68, 0x74, 0x46, 0x75, 0x6e, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x68, 0x61, 0x6e,
+	0x67, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x72, 0x61,
+	0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x72, 0x6f,
+	0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x07, 0x72, 0x6f,
+	0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x27, 0x0a, 0x0f, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75,
+	0x73, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e,
+	0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x1d,
+	0x0a, 0x0a, 0x6e, 0x65, 0x77, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x09, 0x6e, 0x65, 0x77, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x48, 0x0a,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8,
+	0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
+	0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f,
+	0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x12,
+	0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18,
+	0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67,
+	0x68, 0x74, 0x12, 0x42, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18,
+	0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0xc5, 0x03, 0x0a, 0x1a, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x46, 0x75, 0x6e, 0x64, 0x43, 0x6f, 0x6d, 0x70,
+	0x6c, 0x65, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74,
+	0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08,
+	0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x07,
+	0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0d, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x53,
+	0x0a, 0x0c, 0x66, 0x69, 0x6e, 0x61, 0x6c, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e,
+	0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e,
+	0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0b, 0x66, 0x69, 0x6e, 0x61, 0x6c, 0x41, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x12, 0x57, 0x0a, 0x0e, 0x69, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f,
+	0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
+	0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x69,
+	0x6e, 0x69, 0x74, 0x69, 0x61, 0x6c, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x29, 0x0a, 0x10,
+	0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x73,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x53, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x73, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+	0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x42, 0x0a, 0x09, 0x74, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90,
+	0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0xcd,
+	0x03, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74,
+	0x46, 0x75, 0x6e, 0x64, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61,
+	0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x12, 0x19, 0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0d, 0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x48, 0x0a, 0x06, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f,
+	0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
+	0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x68, 0x6f, 0x75, 0x72, 0x73, 0x5f, 0x6f,
+	0x76, 0x65, 0x72, 0x64, 0x75, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x68, 0x6f,
+	0x75, 0x72, 0x73, 0x4f, 0x76, 0x65, 0x72, 0x64, 0x75, 0x65, 0x12, 0x45, 0x0a, 0x0b, 0x65, 0x78,
+	0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f,
+	0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x41,
+	0x74, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x75, 0x72, 0x72, 0x65,
+	0x6e, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x2d, 0x0a, 0x12, 0x72, 0x65, 0x63, 0x6f,
+	0x6d, 0x6d, 0x65, 0x6e, 0x64, 0x65, 0x64, 0x5f, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x72, 0x65, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x64, 0x65,
+	0x64, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+	0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x42, 0x0a, 0x09, 0x74, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90,
+	0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0xee,
+	0x02, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74,
+	0x46, 0x75, 0x6e, 0x64, 0x43, 0x6c, 0x65, 0x61, 0x6e, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x74,
+	0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0d, 0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x59, 0x0a,
+	0x0f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x72, 0x65, 0x74, 0x75, 0x72, 0x6e, 0x65, 0x64,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74,
+	0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
+	0x52, 0x65, 0x74, 0x75, 0x72, 0x6e, 0x65, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73,
+	0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e,
+	0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61,
+	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b,
+	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x42, 0x0a, 0x09, 0x74,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00,
+	0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22,
+	0xbc, 0x03, 0x0a, 0x1a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x43, 0x61,
+	0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x45, 0x78, 0x63, 0x65, 0x65, 0x64, 0x65, 0x64, 0x12, 0x19,
+	0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d,
+	0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x66, 0x0a, 0x16, 0x63, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x5f, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda,
+	0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x14, 0x63, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x56, 0x61, 0x6c, 0x75,
+	0x65, 0x12, 0x57, 0x0a, 0x0e, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x5f, 0x6c, 0x69,
+	0x6d, 0x69, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda,
+	0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x63, 0x61, 0x70,
+	0x61, 0x63, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x5b, 0x0a, 0x10, 0x61, 0x74,
+	0x74, 0x65, 0x6d, 0x70, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e,
+	0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e,
+	0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0f, 0x61, 0x74, 0x74, 0x65, 0x6d, 0x70, 0x74, 0x65,
+	0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+	0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x42, 0x0a, 0x09, 0x74, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90,
+	0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0xdd,
+	0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
+	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x0b, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f,
+	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76,
+	0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c,
+	0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f,
+	0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74,
+	0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c,
+	0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22,
+	0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c,
+	0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7549,35 +13497,49 @@ func file_noble_dollar_vaults_v2_events_proto_rawDescGZIP() []byte {
 	return file_noble_dollar_vaults_v2_events_proto_rawDescData
 }
 
-var file_noble_dollar_vaults_v2_events_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_noble_dollar_vaults_v2_events_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_noble_dollar_vaults_v2_events_proto_goTypes = []interface{}{
-	(*EventDeposit)(nil),                // 0: noble.dollar.vaults.v2.EventDeposit
-	(*EventWithdraw)(nil),               // 1: noble.dollar.vaults.v2.EventWithdraw
-	(*EventWithdrawlRequested)(nil),     // 2: noble.dollar.vaults.v2.EventWithdrawlRequested
-	(*EventWithdrawalCancelled)(nil),    // 3: noble.dollar.vaults.v2.EventWithdrawalCancelled
-	(*EventWithdrawalProcessed)(nil),    // 4: noble.dollar.vaults.v2.EventWithdrawalProcessed
-	(*EventNAVUpdated)(nil),             // 5: noble.dollar.vaults.v2.EventNAVUpdated
-	(*EventFeeCollected)(nil),           // 6: noble.dollar.vaults.v2.EventFeeCollected
-	(*EventYieldPreferenceUpdated)(nil), // 7: noble.dollar.vaults.v2.EventYieldPreferenceUpdated
-	(*EventVaultConfigUpdated)(nil),     // 8: noble.dollar.vaults.v2.EventVaultConfigUpdated
-	(*timestamppb.Timestamp)(nil),       // 9: google.protobuf.Timestamp
+	(*EventDeposit)(nil),                   // 0: noble.dollar.vaults.v2.EventDeposit
+	(*EventWithdraw)(nil),                  // 1: noble.dollar.vaults.v2.EventWithdraw
+	(*EventWithdrawlRequested)(nil),        // 2: noble.dollar.vaults.v2.EventWithdrawlRequested
+	(*EventWithdrawalCancelled)(nil),       // 3: noble.dollar.vaults.v2.EventWithdrawalCancelled
+	(*EventWithdrawalProcessed)(nil),       // 4: noble.dollar.vaults.v2.EventWithdrawalProcessed
+	(*EventNAVUpdated)(nil),                // 5: noble.dollar.vaults.v2.EventNAVUpdated
+	(*EventFeeCollected)(nil),              // 6: noble.dollar.vaults.v2.EventFeeCollected
+	(*EventYieldPreferenceUpdated)(nil),    // 7: noble.dollar.vaults.v2.EventYieldPreferenceUpdated
+	(*EventVaultConfigUpdated)(nil),        // 8: noble.dollar.vaults.v2.EventVaultConfigUpdated
+	(*EventInflightFundCreated)(nil),       // 9: noble.dollar.vaults.v2.EventInflightFundCreated
+	(*EventInflightFundStatusChanged)(nil), // 10: noble.dollar.vaults.v2.EventInflightFundStatusChanged
+	(*EventInflightFundCompleted)(nil),     // 11: noble.dollar.vaults.v2.EventInflightFundCompleted
+	(*EventInflightFundStale)(nil),         // 12: noble.dollar.vaults.v2.EventInflightFundStale
+	(*EventInflightFundCleaned)(nil),       // 13: noble.dollar.vaults.v2.EventInflightFundCleaned
+	(*EventRouteCapacityExceeded)(nil),     // 14: noble.dollar.vaults.v2.EventRouteCapacityExceeded
+	(*timestamppb.Timestamp)(nil),          // 15: google.protobuf.Timestamp
 }
 var file_noble_dollar_vaults_v2_events_proto_depIdxs = []int32{
-	9,  // 0: noble.dollar.vaults.v2.EventDeposit.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 1: noble.dollar.vaults.v2.EventWithdraw.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 2: noble.dollar.vaults.v2.EventWithdrawlRequested.expected_unlock_time:type_name -> google.protobuf.Timestamp
-	9,  // 3: noble.dollar.vaults.v2.EventWithdrawlRequested.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 4: noble.dollar.vaults.v2.EventWithdrawalCancelled.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 5: noble.dollar.vaults.v2.EventWithdrawalProcessed.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 6: noble.dollar.vaults.v2.EventNAVUpdated.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 7: noble.dollar.vaults.v2.EventFeeCollected.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 8: noble.dollar.vaults.v2.EventYieldPreferenceUpdated.timestamp:type_name -> google.protobuf.Timestamp
-	9,  // 9: noble.dollar.vaults.v2.EventVaultConfigUpdated.timestamp:type_name -> google.protobuf.Timestamp
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	15, // 0: noble.dollar.vaults.v2.EventDeposit.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 1: noble.dollar.vaults.v2.EventWithdraw.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 2: noble.dollar.vaults.v2.EventWithdrawlRequested.expected_unlock_time:type_name -> google.protobuf.Timestamp
+	15, // 3: noble.dollar.vaults.v2.EventWithdrawlRequested.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 4: noble.dollar.vaults.v2.EventWithdrawalCancelled.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 5: noble.dollar.vaults.v2.EventWithdrawalProcessed.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 6: noble.dollar.vaults.v2.EventNAVUpdated.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 7: noble.dollar.vaults.v2.EventFeeCollected.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 8: noble.dollar.vaults.v2.EventYieldPreferenceUpdated.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 9: noble.dollar.vaults.v2.EventVaultConfigUpdated.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 10: noble.dollar.vaults.v2.EventInflightFundCreated.expected_at:type_name -> google.protobuf.Timestamp
+	15, // 11: noble.dollar.vaults.v2.EventInflightFundCreated.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 12: noble.dollar.vaults.v2.EventInflightFundStatusChanged.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 13: noble.dollar.vaults.v2.EventInflightFundCompleted.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 14: noble.dollar.vaults.v2.EventInflightFundStale.expected_at:type_name -> google.protobuf.Timestamp
+	15, // 15: noble.dollar.vaults.v2.EventInflightFundStale.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 16: noble.dollar.vaults.v2.EventInflightFundCleaned.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 17: noble.dollar.vaults.v2.EventRouteCapacityExceeded.timestamp:type_name -> google.protobuf.Timestamp
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_noble_dollar_vaults_v2_events_proto_init() }
@@ -7694,6 +13656,78 @@ func file_noble_dollar_vaults_v2_events_proto_init() {
 				return nil
 			}
 		}
+		file_noble_dollar_vaults_v2_events_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventInflightFundCreated); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_events_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventInflightFundStatusChanged); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_events_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventInflightFundCompleted); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_events_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventInflightFundStale); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_events_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventInflightFundCleaned); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_events_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventRouteCapacityExceeded); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -7701,7 +13735,7 @@ func file_noble_dollar_vaults_v2_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_noble_dollar_vaults_v2_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

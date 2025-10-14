@@ -97,7 +97,7 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID string, reas
 			if newInflight.IsNegative() {
 				newInflight = sdkmath.ZeroInt()
 			}
-			if err := k.SetVaultsV2InflightValueByRoute(ctx, routeID, newInflight); err != nil {
+			if err := k.SubtractVaultsV2InflightValueByRoute(ctx, routeID, fund.Amount); err != nil {
 				return errors.Wrap(err, "unable to update route inflight value")
 			}
 		}
@@ -105,13 +105,13 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID string, reas
 
 	// Return funds to vault - update pending deployment if it was an outbound operation
 	if origin := fund.GetNobleOrigin(); origin != nil {
-		if origin.OperationType == vaultsv2.InflightOperationType_DEPOSIT_TO_POSITION ||
-			origin.OperationType == vaultsv2.InflightOperationType_REBALANCE_OUTBOUND {
+		if origin.OperationType == vaultsv2.OPERATION_TYPE_DEPOSIT ||
+			origin.OperationType == vaultsv2.OPERATION_TYPE_REBALANCE {
 			// Subtract from pending deployment
 			if err := k.SubtractVaultsV2PendingDeploymentFunds(ctx, fund.Amount); err != nil {
 				return errors.Wrap(err, "unable to update pending deployment")
 			}
-		} else if origin.OperationType == vaultsv2.InflightOperationType_WITHDRAWAL_FROM_POSITION {
+		} else if origin.OperationType == vaultsv2.OPERATION_TYPE_WITHDRAWAL {
 			// Subtract from pending withdrawal distribution
 			if err := k.SubtractVaultsV2PendingWithdrawalDistribution(ctx, fund.Amount); err != nil {
 				return errors.Wrap(err, "unable to update pending withdrawal distribution")
@@ -158,7 +158,7 @@ func (k *Keeper) EmitInflightStatusChangeEvent(ctx context.Context, txID string,
 }
 
 // EmitInflightCreatedEvent emits an event when a new inflight fund is created.
-func (k *Keeper) EmitInflightCreatedEvent(ctx context.Context, txID string, routeID uint32, opType vaultsv2.InflightOperationType, amount sdkmath.Int, initiator, sourceChain, destChain string, expectedAt time.Time) error {
+func (k *Keeper) EmitInflightCreatedEvent(ctx context.Context, txID string, routeID uint32, opType vaultsv2.OperationType, amount sdkmath.Int, initiator, sourceChain, destChain string, expectedAt time.Time) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	return sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundCreated{
@@ -177,7 +177,7 @@ func (k *Keeper) EmitInflightCreatedEvent(ctx context.Context, txID string, rout
 }
 
 // EmitInflightCompletedEvent emits an event when an inflight fund completes.
-func (k *Keeper) EmitInflightCompletedEvent(ctx context.Context, txID string, routeID uint32, opType vaultsv2.InflightOperationType, initialAmount, finalAmount sdkmath.Int, initiatedAt time.Time) error {
+func (k *Keeper) EmitInflightCompletedEvent(ctx context.Context, txID string, routeID uint32, opType vaultsv2.OperationType, initialAmount, finalAmount sdkmath.Int, initiatedAt time.Time) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	currentTime := sdkCtx.BlockTime()
 

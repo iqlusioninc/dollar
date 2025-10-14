@@ -22,12 +22,13 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
 	"cosmossdk.io/collections"
-	"cosmossdk.io/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
@@ -48,16 +49,16 @@ const navBasisPointsMultiplier int64 = 10_000
 
 func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	if route.HyptokenId.IsZeroAddress() {
-		return errors.Wrap(types.ErrInvalidRequest, "hyptoken identifier cannot be zero")
+		return sdkerrors.Wrap(types.ErrInvalidRequest, "hyptoken identifier cannot be zero")
 	}
 	if route.ReceiverChainHook.IsZeroAddress() {
-		return errors.Wrap(types.ErrInvalidRequest, "receiver chain hook cannot be zero")
+		return sdkerrors.Wrap(types.ErrInvalidRequest, "receiver chain hook cannot be zero")
 	}
 	if route.RemotePositionAddress.IsZeroAddress() {
-		return errors.Wrap(types.ErrInvalidRequest, "remote position address cannot be zero")
+		return sdkerrors.Wrap(types.ErrInvalidRequest, "remote position address cannot be zero")
 	}
 	if route.MaxInflightValue.IsNegative() || route.MaxInflightValue.IsZero() {
-		return errors.Wrap(vaultsv2.ErrInvalidAmount, "max inflight value must be positive")
+		return sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "max inflight value must be positive")
 	}
 
 	return nil
@@ -68,7 +69,7 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.Int) (sdkmath.Int, error) {
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return currentNav, errors.Wrap(err, "unable to fetch params")
+		return currentNav, sdkerrors.Wrap(err, "unable to fetch params")
 	}
 
 	// If TWAP is disabled, use current NAV
@@ -79,7 +80,7 @@ func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.In
 	// Get recent snapshots
 	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, int(params.TwapConfig.WindowSize))
 	if err != nil {
-		return currentNav, errors.Wrap(err, "unable to fetch NAV snapshots")
+		return currentNav, sdkerrors.Wrap(err, "unable to fetch NAV snapshots")
 	}
 
 	// If insufficient snapshots, use current NAV
@@ -111,14 +112,14 @@ func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.In
 	for _, snapshot := range validSnapshots {
 		sum, err = sum.SafeAdd(snapshot.Nav)
 		if err != nil {
-			return currentNav, errors.Wrap(err, "overflow in TWAP calculation")
+			return currentNav, sdkerrors.Wrap(err, "overflow in TWAP calculation")
 		}
 	}
 
 	// Include current NAV in the average
 	sum, err = sum.SafeAdd(currentNav)
 	if err != nil {
-		return currentNav, errors.Wrap(err, "overflow adding current NAV to TWAP")
+		return currentNav, sdkerrors.Wrap(err, "overflow adding current NAV to TWAP")
 	}
 
 	count := int64(len(validSnapshots) + 1)
@@ -131,7 +132,7 @@ func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.In
 func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return false, errors.Wrap(err, "unable to fetch params")
+		return false, sdkerrors.Wrap(err, "unable to fetch params")
 	}
 
 	// If TWAP is disabled, don't record snapshots
@@ -147,7 +148,7 @@ func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) 
 	// Get most recent snapshot
 	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, 1)
 	if err != nil {
-		return false, errors.Wrap(err, "unable to fetch recent snapshots")
+		return false, sdkerrors.Wrap(err, "unable to fetch recent snapshots")
 	}
 
 	if len(snapshots) == 0 {
@@ -163,40 +164,40 @@ func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) 
 // UpdateDepositLimits updates the deposit limits and risk control configuration.
 func (m msgServerV2) UpdateDepositLimits(ctx context.Context, msg *vaultsv2.MsgUpdateDepositLimits) (*vaultsv2.MsgUpdateDepositLimitsResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	// Validate the new limits
 	if msg.Limits.MaxUserDepositPerWindow.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "max user deposit per window cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "max user deposit per window cannot be negative")
 	}
 	if msg.Limits.MaxBlockDepositVolume.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "max block deposit volume cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "max block deposit volume cannot be negative")
 	}
 	if msg.Limits.GlobalDepositCap.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "global deposit cap cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "global deposit cap cannot be negative")
 	}
 	if msg.Limits.DepositCooldownBlocks < 0 {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "deposit cooldown blocks cannot be negative")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "deposit cooldown blocks cannot be negative")
 	}
 	if msg.Limits.VelocityWindowBlocks < 0 {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "velocity window blocks cannot be negative")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "velocity window blocks cannot be negative")
 	}
 
 	// Get existing limits for comparison
 	existingLimits, hasExisting, err := m.getDepositLimits(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch existing deposit limits")
+		return nil, sdkerrors.Wrap(err, "unable to fetch existing deposit limits")
 	}
 
 	var previousJSON string
 	if hasExisting {
 		prevBytes, err := m.cdc.MarshalJSON(&existingLimits)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to marshal previous limits")
+			return nil, sdkerrors.Wrap(err, "unable to marshal previous limits")
 		}
 		previousJSON = string(prevBytes)
 	} else {
@@ -205,12 +206,12 @@ func (m msgServerV2) UpdateDepositLimits(ctx context.Context, msg *vaultsv2.MsgU
 
 	// Persist the new limits
 	if err := m.setDepositLimits(ctx, msg.Limits); err != nil {
-		return nil, errors.Wrap(err, "unable to persist deposit limits")
+		return nil, sdkerrors.Wrap(err, "unable to persist deposit limits")
 	}
 
 	newBytes, err := m.cdc.MarshalJSON(&msg.Limits)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to marshal new limits")
+		return nil, sdkerrors.Wrap(err, "unable to marshal new limits")
 	}
 	newJSON := string(newBytes)
 
@@ -224,7 +225,7 @@ func (m msgServerV2) UpdateDepositLimits(ctx context.Context, msg *vaultsv2.MsgU
 		BlockHeight:    sdk.UnwrapSDKContext(ctx).BlockHeight(),
 		Timestamp:      headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit deposit limits updated event")
+		return nil, sdkerrors.Wrap(err, "unable to emit deposit limits updated event")
 	}
 
 	return &vaultsv2.MsgUpdateDepositLimitsResponse{
@@ -294,36 +295,36 @@ func NewMsgServerV2(keeper *Keeper) vaultsv2.MsgServer {
 
 func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*vaultsv2.MsgDepositResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 
 	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
 	}
 
 	addrBz, err := m.address.StringToBytes(msg.Depositor)
 	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid depositor address: %s", msg.Depositor)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid depositor address: %s", msg.Depositor)
 	}
 	depositor := sdk.AccAddress(addrBz)
 
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault parameters")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault parameters")
 	}
 	if !params.VaultEnabled {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault deposits are disabled")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault deposits are disabled")
 	}
 	if params.MinDepositAmount.IsPositive() && msg.Amount.LT(params.MinDepositAmount) {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAmount, "deposit below minimum of %s", params.MinDepositAmount.String())
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, "deposit below minimum of %s", params.MinDepositAmount.String())
 	}
 
 	config, err := m.GetVaultsV2Config(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault configuration")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault configuration")
 	}
 	if !config.Enabled {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
 	}
 
 	// Enforce deposit limits and risk controls
@@ -335,22 +336,22 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	balance := m.bank.GetBalance(ctx, depositor, m.denom).Amount
 	if balance.LT(msg.Amount) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient balance for deposit")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient balance for deposit")
 	}
 
 	coin := sdk.NewCoin(m.denom, msg.Amount)
 	if err := m.bank.SendCoins(ctx, depositor, types.ModuleAddress, sdk.NewCoins(coin)); err != nil {
-		return nil, errors.Wrap(err, "unable to transfer deposit into module account")
+		return nil, sdkerrors.Wrap(err, "unable to transfer deposit into module account")
 	}
 
 	if err := m.AddVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, errors.Wrap(err, "unable to record pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to record pending deployment funds")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	position, found, err := m.GetVaultsV2UserPosition(ctx, depositor)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user position")
+		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
 		position.FirstDepositTime = headerInfo.Time
@@ -361,23 +362,23 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	position.LastActivityTime = headerInfo.Time
 	position.DepositAmount, err = position.DepositAmount.SafeAdd(msg.Amount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update position deposit amount")
+		return nil, sdkerrors.Wrap(err, "unable to update position deposit amount")
 	}
 	if !found || msg.ReceiveYieldOverride {
 		position.ReceiveYield = msg.ReceiveYield
 	}
 	if err := m.SetVaultsV2UserPosition(ctx, depositor, position); err != nil {
-		return nil, errors.Wrap(err, "unable to store user position")
+		return nil, sdkerrors.Wrap(err, "unable to store user position")
 	}
 
 	stateForPricing, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 
 	totalShares, err := m.GetVaultsV2TotalShares(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch total share supply")
+		return nil, sdkerrors.Wrap(err, "unable to fetch total share supply")
 	}
 
 	// Calculate TWAP NAV for share pricing (protects against manipulation)
@@ -385,7 +386,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	if totalShares.IsPositive() {
 		twapNav, err := m.calculateTWAPNav(ctx, stateForPricing.TotalNav)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to calculate TWAP NAV")
+			return nil, sdkerrors.Wrap(err, "unable to calculate TWAP NAV")
 		}
 		navForPricing = twapNav
 	}
@@ -403,46 +404,46 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	currentShares, err := m.GetVaultsV2UserShares(ctx, depositor)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user shares")
+		return nil, sdkerrors.Wrap(err, "unable to fetch user shares")
 	}
 	updatedShares, err := currentShares.SafeAdd(mintedShares)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update user shares")
+		return nil, sdkerrors.Wrap(err, "unable to update user shares")
 	}
 	if err := m.SetVaultsV2UserShares(ctx, depositor, updatedShares); err != nil {
-		return nil, errors.Wrap(err, "unable to store user shares")
+		return nil, sdkerrors.Wrap(err, "unable to store user shares")
 	}
 	if currentShares.IsZero() && updatedShares.IsPositive() {
 		if err := m.IncrementVaultsV2TotalUsers(ctx); err != nil {
-			return nil, errors.Wrap(err, "unable to increment total users")
+			return nil, sdkerrors.Wrap(err, "unable to increment total users")
 		}
 	}
 
 	totalShares, err = totalShares.SafeAdd(mintedShares)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update total share supply")
+		return nil, sdkerrors.Wrap(err, "unable to update total share supply")
 	}
 	if err := m.SetVaultsV2TotalShares(ctx, totalShares); err != nil {
-		return nil, errors.Wrap(err, "unable to persist total share supply")
+		return nil, sdkerrors.Wrap(err, "unable to persist total share supply")
 	}
 
 	if err := m.AddAmountToVaultsV2Totals(ctx, msg.Amount, sdkmath.ZeroInt()); err != nil {
-		return nil, errors.Wrap(err, "unable to update aggregate vault totals")
+		return nil, sdkerrors.Wrap(err, "unable to update aggregate vault totals")
 	}
 
 	// Update deposit tracking metrics
 	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
-		return nil, errors.Wrap(err, "unable to update deposit tracking")
+		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.DepositsEnabled = config.Enabled
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventDeposit{
@@ -451,7 +452,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		BlockHeight:     sdk.UnwrapSDKContext(ctx).BlockHeight(),
 		Timestamp:       headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit deposit event")
+		return nil, sdkerrors.Wrap(err, "unable to emit deposit event")
 	}
 
 	return &vaultsv2.MsgDepositResponse{AmountDeposited: msg.Amount}, nil
@@ -459,104 +460,104 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgRequestWithdrawal) (*vaultsv2.MsgRequestWithdrawalResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 
 	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal amount must be positive")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal amount must be positive")
 	}
 
 	addrBz, err := m.address.StringToBytes(msg.Requester)
 	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid requester address: %s", msg.Requester)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid requester address: %s", msg.Requester)
 	}
 	requester := sdk.AccAddress(addrBz)
 
 	position, found, err := m.GetVaultsV2UserPosition(ctx, requester)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user position")
+		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "no position found for requester")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "no position found for requester")
 	}
 
 	available, err := position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to determine available balance")
+		return nil, sdkerrors.Wrap(err, "unable to determine available balance")
 	}
 	if available.LT(msg.Amount) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient unlocked balance for withdrawal")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient unlocked balance for withdrawal")
 	}
 
 	userShares, err := m.GetVaultsV2UserShares(ctx, requester)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user shares")
+		return nil, sdkerrors.Wrap(err, "unable to fetch user shares")
 	}
 	if userShares.LT(msg.Amount) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient shares to withdraw")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient shares to withdraw")
 	}
 	updatedShares, err := userShares.SafeSub(msg.Amount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update user shares")
+		return nil, sdkerrors.Wrap(err, "unable to update user shares")
 	}
 	if err := m.SetVaultsV2UserShares(ctx, requester, updatedShares); err != nil {
-		return nil, errors.Wrap(err, "unable to persist user shares")
+		return nil, sdkerrors.Wrap(err, "unable to persist user shares")
 	}
 	if userShares.IsPositive() && updatedShares.IsZero() {
 		if err := m.DecrementVaultsV2TotalUsers(ctx); err != nil {
-			return nil, errors.Wrap(err, "unable to decrement total users")
+			return nil, sdkerrors.Wrap(err, "unable to decrement total users")
 		}
 	}
 
 	totalShares, err := m.GetVaultsV2TotalShares(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch total share supply")
+		return nil, sdkerrors.Wrap(err, "unable to fetch total share supply")
 	}
 	totalShares, err = totalShares.SafeSub(msg.Amount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update total share supply")
+		return nil, sdkerrors.Wrap(err, "unable to update total share supply")
 	}
 	if err := m.SetVaultsV2TotalShares(ctx, totalShares); err != nil {
-		return nil, errors.Wrap(err, "unable to persist total share supply")
+		return nil, sdkerrors.Wrap(err, "unable to persist total share supply")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update pending withdrawal amount")
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
 	}
 	position.ActiveWithdrawalRequests++
 	position.LastActivityTime = headerInfo.Time
 	if err := m.SetVaultsV2UserPosition(ctx, requester, position); err != nil {
-		return nil, errors.Wrap(err, "unable to persist user position")
+		return nil, sdkerrors.Wrap(err, "unable to persist user position")
 	}
 
 	if err := m.AddVaultsV2PendingWithdrawalAmount(ctx, msg.Amount); err != nil {
-		return nil, errors.Wrap(err, "unable to record pending withdrawal amount")
+		return nil, sdkerrors.Wrap(err, "unable to record pending withdrawal amount")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.PendingWithdrawalRequests++
 	state.TotalAmountPendingWithdrawal, err = state.TotalAmountPendingWithdrawal.SafeAdd(msg.Amount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update pending withdrawal totals")
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
 	}
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault parameters")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault parameters")
 	}
 
 	id, err := m.NextVaultsV2WithdrawalID(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to allocate withdrawal id")
+		return nil, sdkerrors.Wrap(err, "unable to allocate withdrawal id")
 	}
 
 	unlockTime := headerInfo.Time
@@ -574,7 +575,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		RequestBlockHeight: sdk.UnwrapSDKContext(ctx).BlockHeight(),
 	}
 	if err := m.SetVaultsV2Withdrawal(ctx, id, request); err != nil {
-		return nil, errors.Wrap(err, "unable to persist withdrawal request")
+		return nil, sdkerrors.Wrap(err, "unable to persist withdrawal request")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventWithdrawlRequested{
@@ -585,7 +586,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		BlockHeight:         request.RequestBlockHeight,
 		Timestamp:           headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit withdrawal requested event")
+		return nil, sdkerrors.Wrap(err, "unable to emit withdrawal requested event")
 	}
 
 	return &vaultsv2.MsgRequestWithdrawalResponse{
@@ -598,21 +599,21 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 
 func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSetYieldPreference) (*vaultsv2.MsgSetYieldPreferenceResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 
 	addrBz, err := m.address.StringToBytes(msg.User)
 	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid user address: %s", msg.User)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid user address: %s", msg.User)
 	}
 	user := sdk.AccAddress(addrBz)
 
 	position, found, err := m.GetVaultsV2UserPosition(ctx, user)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user position")
+		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "user position not found")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "user position not found")
 	}
 
 	previousPreference := position.ReceiveYield
@@ -620,7 +621,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 		headerInfo := m.header.GetHeaderInfo(ctx)
 		position.LastActivityTime = headerInfo.Time
 		if err := m.SetVaultsV2UserPosition(ctx, user, position); err != nil {
-			return nil, errors.Wrap(err, "unable to persist user position")
+			return nil, sdkerrors.Wrap(err, "unable to persist user position")
 		}
 		return &vaultsv2.MsgSetYieldPreferenceResponse{
 			PreviousPreference: previousPreference,
@@ -633,7 +634,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 	position.LastActivityTime = headerInfo.Time
 
 	if err := m.SetVaultsV2UserPosition(ctx, user, position); err != nil {
-		return nil, errors.Wrap(err, "unable to persist user position")
+		return nil, sdkerrors.Wrap(err, "unable to persist user position")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventYieldPreferenceUpdated{
@@ -643,7 +644,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
 		Timestamp:               headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit yield preference event")
+		return nil, sdkerrors.Wrap(err, "unable to emit yield preference event")
 	}
 
 	return &vaultsv2.MsgSetYieldPreferenceResponse{
@@ -654,10 +655,10 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 
 func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.MsgProcessWithdrawalQueue) (*vaultsv2.MsgProcessWithdrawalQueueResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	limit := msg.MaxRequests
@@ -695,12 +696,12 @@ func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.M
 		return processed >= limit, nil
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate withdrawal queue")
+		return nil, sdkerrors.Wrap(err, "unable to iterate withdrawal queue")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 
 	if processed > 0 {
@@ -711,7 +712,7 @@ func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.M
 			BlockHeight:            sdk.UnwrapSDKContext(ctx).BlockHeight(),
 			Timestamp:              headerInfo.Time,
 		}); err != nil {
-			return nil, errors.Wrap(err, "unable to emit withdrawal processed event")
+			return nil, sdkerrors.Wrap(err, "unable to emit withdrawal processed event")
 		}
 	}
 
@@ -725,46 +726,46 @@ func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.M
 
 func (m msgServerV2) UpdateVaultConfig(ctx context.Context, msg *vaultsv2.MsgUpdateVaultConfig) (*vaultsv2.MsgUpdateVaultConfigResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	if msg.Config.MaxTotalDeposits.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "maximum total deposits cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "maximum total deposits cannot be negative")
 	}
 	if msg.Config.TargetYieldRate.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "target yield rate cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "target yield rate cannot be negative")
 	}
 
 	existingConfig, err := m.GetVaultsV2Config(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch current vault config")
+		return nil, sdkerrors.Wrap(err, "unable to fetch current vault config")
 	}
 
 	if err := m.SetVaultsV2Config(ctx, msg.Config); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault config")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault config")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.DepositsEnabled = msg.Config.Enabled
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	prevJSON, err := m.cdc.MarshalJSON(&existingConfig)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to marshal previous config")
+		return nil, sdkerrors.Wrap(err, "unable to marshal previous config")
 	}
 	newJSON, err := m.cdc.MarshalJSON(&msg.Config)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to marshal new config")
+		return nil, sdkerrors.Wrap(err, "unable to marshal new config")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventVaultConfigUpdated{
@@ -775,7 +776,7 @@ func (m msgServerV2) UpdateVaultConfig(ctx context.Context, msg *vaultsv2.MsgUpd
 		BlockHeight:    sdk.UnwrapSDKContext(ctx).BlockHeight(),
 		Timestamp:      headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit vault config updated event")
+		return nil, sdkerrors.Wrap(err, "unable to emit vault config updated event")
 	}
 
 	return &vaultsv2.MsgUpdateVaultConfigResponse{
@@ -786,50 +787,50 @@ func (m msgServerV2) UpdateVaultConfig(ctx context.Context, msg *vaultsv2.MsgUpd
 
 func (m msgServerV2) UpdateParams(ctx context.Context, msg *vaultsv2.MsgUpdateParams) (*vaultsv2.MsgUpdateParamsResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	if msg.Params.MinDepositAmount.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum deposit amount cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum deposit amount cannot be negative")
 	}
 	if msg.Params.MinWithdrawalAmount.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum withdrawal amount cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum withdrawal amount cannot be negative")
 	}
 	if msg.Params.MaxNavChangeBps < 0 {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "maximum NAV change must be non-negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "maximum NAV change must be non-negative")
 	}
 	if msg.Params.WithdrawalRequestTimeout < 0 {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal request timeout must be non-negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal request timeout must be non-negative")
 	}
 	if msg.Params.MaxWithdrawalRequestsPerBlock < 0 {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "max withdrawal requests per block must be non-negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "max withdrawal requests per block must be non-negative")
 	}
 
 	params := msg.Params
 	params.Authority = m.authority
 
 	if err := m.SetVaultsV2Params(ctx, params); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault params")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault params")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 
 	config, err := m.GetVaultsV2Config(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault config")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault config")
 	}
 
 	state.DepositsEnabled = params.VaultEnabled && config.Enabled
 	state.WithdrawalsEnabled = params.VaultEnabled
 
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	return &vaultsv2.MsgUpdateParamsResponse{}, nil
@@ -837,10 +838,10 @@ func (m msgServerV2) UpdateParams(ctx context.Context, msg *vaultsv2.MsgUpdatePa
 
 func (m msgServerV2) CreateCrossChainRoute(ctx context.Context, msg *vaultsv2.MsgCreateCrossChainRoute) (*vaultsv2.MsgCreateCrossChainRouteResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	if err := validateCrossChainRoute(msg.Route); err != nil {
@@ -850,12 +851,12 @@ func (m msgServerV2) CreateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 	var duplicateErr error
 	if err := m.IterateVaultsV2CrossChainRoutes(ctx, func(_ uint32, existing vaultsv2.CrossChainRoute) (bool, error) {
 		if existing.RemotePositionAddress == msg.Route.RemotePositionAddress {
-			duplicateErr = errors.Wrap(types.ErrInvalidRequest, "cross-chain route already exists for remote position address")
+			duplicateErr = sdkerrors.Wrap(types.ErrInvalidRequest, "cross-chain route already exists for remote position address")
 			return true, nil
 		}
 		return false, nil
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to verify existing routes")
+		return nil, sdkerrors.Wrap(err, "unable to verify existing routes")
 	}
 	if duplicateErr != nil {
 		return nil, duplicateErr
@@ -863,11 +864,11 @@ func (m msgServerV2) CreateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 
 	routeID, err := m.NextVaultsV2CrossChainRouteID(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to allocate cross-chain route id")
+		return nil, sdkerrors.Wrap(err, "unable to allocate cross-chain route id")
 	}
 
 	if err := m.SetVaultsV2CrossChainRoute(ctx, routeID, msg.Route); err != nil {
-		return nil, errors.Wrap(err, "unable to persist cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to persist cross-chain route")
 	}
 
 	return &vaultsv2.MsgCreateCrossChainRouteResponse{RouteId: routeID}, nil
@@ -875,10 +876,10 @@ func (m msgServerV2) CreateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 
 func (m msgServerV2) UpdateCrossChainRoute(ctx context.Context, msg *vaultsv2.MsgUpdateCrossChainRoute) (*vaultsv2.MsgUpdateCrossChainRouteResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	if err := validateCrossChainRoute(msg.Route); err != nil {
@@ -887,10 +888,10 @@ func (m msgServerV2) UpdateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 
 	existing, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
 	}
 	if !found {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
 	}
 
 	var duplicateErr error
@@ -899,12 +900,12 @@ func (m msgServerV2) UpdateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 			return false, nil
 		}
 		if route.RemotePositionAddress == msg.Route.RemotePositionAddress {
-			duplicateErr = errors.Wrap(types.ErrInvalidRequest, "cross-chain route already exists for remote position address")
+			duplicateErr = sdkerrors.Wrap(types.ErrInvalidRequest, "cross-chain route already exists for remote position address")
 			return true, nil
 		}
 		return false, nil
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to verify existing routes")
+		return nil, sdkerrors.Wrap(err, "unable to verify existing routes")
 	}
 	if duplicateErr != nil {
 		return nil, duplicateErr
@@ -912,16 +913,16 @@ func (m msgServerV2) UpdateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 
 	prevJSON, err := m.cdc.MarshalJSON(&existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to marshal previous route config")
+		return nil, sdkerrors.Wrap(err, "unable to marshal previous route config")
 	}
 
 	newJSON, err := m.cdc.MarshalJSON(&msg.Route)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to marshal new route config")
+		return nil, sdkerrors.Wrap(err, "unable to marshal new route config")
 	}
 
 	if err := m.SetVaultsV2CrossChainRoute(ctx, msg.RouteId, msg.Route); err != nil {
-		return nil, errors.Wrap(err, "unable to persist cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to persist cross-chain route")
 	}
 
 	return &vaultsv2.MsgUpdateCrossChainRouteResponse{
@@ -933,18 +934,18 @@ func (m msgServerV2) UpdateCrossChainRoute(ctx context.Context, msg *vaultsv2.Ms
 
 func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.MsgDisableCrossChainRoute) (*vaultsv2.MsgDisableCrossChainRouteResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
 	}
 	if !found {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -952,7 +953,7 @@ func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.M
 
 	positions, err := m.GetAllVaultsV2RemotePositions(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch remote positions")
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote positions")
 	}
 
 	for _, entry := range positions {
@@ -961,13 +962,13 @@ func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.M
 			entry.Position.Status = vaultsv2.REMOTE_POSITION_ERROR
 			entry.Position.LastUpdate = headerInfo.Time
 			if err := m.SetVaultsV2RemotePosition(ctx, entry.ID, entry.Position); err != nil {
-				return nil, errors.Wrapf(err, "unable to update remote position %d", entry.ID)
+				return nil, sdkerrors.Wrapf(err, "unable to update remote position %d", entry.ID)
 			}
 		}
 	}
 
 	if err := m.DeleteVaultsV2CrossChainRoute(ctx, msg.RouteId); err != nil {
-		return nil, errors.Wrap(err, "unable to remove cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to remove cross-chain route")
 	}
 
 	return &vaultsv2.MsgDisableCrossChainRouteResponse{
@@ -978,42 +979,42 @@ func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.M
 
 func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.MsgCreateRemotePosition) (*vaultsv2.MsgCreateRemotePositionResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Manager != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
 	}
 	if msg.ChainId == 0 {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "chain id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "chain id must be provided")
 	}
 	if msg.VaultAddress == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "vault address must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "vault address must be provided")
 	}
 	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
 	}
 	if msg.MinSharesOut.IsPositive() && msg.Amount.LT(msg.MinSharesOut) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
 	}
 
 	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
 	}
 	if pendingDeployment.LT(msg.Amount) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient pending deployment funds")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient pending deployment funds")
 	}
 
 	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to decode vault address")
+		return nil, sdkerrors.Wrap(err, "unable to decode vault address")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	positionID, err := m.NextVaultsV2RemotePositionID(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to allocate remote position id")
+		return nil, sdkerrors.Wrap(err, "unable to allocate remote position id")
 	}
 
 	position := vaultsv2.RemotePosition{
@@ -1027,24 +1028,24 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	}
 
 	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
-		return nil, errors.Wrap(err, "unable to store remote position")
+		return nil, sdkerrors.Wrap(err, "unable to store remote position")
 	}
 
 	if err := m.SetVaultsV2RemotePositionChainID(ctx, positionID, msg.ChainId); err != nil {
-		return nil, errors.Wrap(err, "unable to store remote position chain id")
+		return nil, sdkerrors.Wrap(err, "unable to store remote position chain id")
 	}
 
 	if err := m.SubtractVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, errors.Wrap(err, "unable to update pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to update pending deployment funds")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	return &vaultsv2.MsgCreateRemotePositionResponse{
@@ -1056,40 +1057,40 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 
 func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgCloseRemotePosition) (*vaultsv2.MsgCloseRemotePositionResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Manager != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
 	}
 	if msg.PositionId == 0 {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "position id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "position id must be provided")
 	}
 
 	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.PositionId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch remote position")
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
 	}
 	if !found {
-		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
 	}
 	if position.Status == vaultsv2.REMOTE_POSITION_CLOSED {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "remote position already closed")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "remote position already closed")
 	}
 
 	withdrawAmount := position.TotalValue
 	if msg.PartialAmount.IsPositive() {
 		if msg.PartialAmount.GT(position.TotalValue) {
-			return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "partial amount exceeds position value")
+			return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "partial amount exceeds position value")
 		}
 		withdrawAmount = msg.PartialAmount
 	}
 	if !withdrawAmount.IsPositive() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw amount must be positive")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw amount must be positive")
 	}
 
 	totalValue, err := position.TotalValue.SafeSub(withdrawAmount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update position value")
+		return nil, sdkerrors.Wrap(err, "unable to update position value")
 	}
 	position.TotalValue = totalValue
 
@@ -1118,20 +1119,20 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 	position.LastUpdate = headerInfo.Time
 
 	if err := m.SetVaultsV2RemotePosition(ctx, msg.PositionId, position); err != nil {
-		return nil, errors.Wrap(err, "unable to persist remote position")
+		return nil, sdkerrors.Wrap(err, "unable to persist remote position")
 	}
 
 	if err := m.AddVaultsV2PendingWithdrawalDistribution(ctx, withdrawAmount); err != nil {
-		return nil, errors.Wrap(err, "unable to update pending withdrawal distribution")
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal distribution")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	return &vaultsv2.MsgCloseRemotePositionResponse{
@@ -1143,15 +1144,15 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 
 func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) (*vaultsv2.MsgRebalanceResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 
 	if msg.Manager != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
 	}
 
 	if len(msg.TargetAllocations) == 0 {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "at least one target allocation is required")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "at least one target allocation is required")
 	}
 
 	seen := make(map[uint64]struct{}, len(msg.TargetAllocations))
@@ -1159,34 +1160,34 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 
 	for _, allocation := range msg.TargetAllocations {
 		if allocation == nil {
-			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation cannot be nil")
+			return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "target allocation cannot be nil")
 		}
 		if allocation.PositionId == 0 {
-			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation position id must be greater than zero")
+			return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "target allocation position id must be greater than zero")
 		}
 		if allocation.TargetPercentage == 0 {
-			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation percentage must be greater than zero")
+			return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "target allocation percentage must be greater than zero")
 		}
 		if allocation.TargetPercentage > 100 {
-			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation percentage cannot exceed 100")
+			return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "target allocation percentage cannot exceed 100")
 		}
 		if _, exists := seen[allocation.PositionId]; exists {
-			return nil, errors.Wrapf(types.ErrInvalidRequest, "duplicate target allocation for position %d", allocation.PositionId)
+			return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "duplicate target allocation for position %d", allocation.PositionId)
 		}
 
 		seen[allocation.PositionId] = struct{}{}
 		total += allocation.TargetPercentage
 		if total > 100 {
-			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocations exceed 100 percent")
+			return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "target allocations exceed 100 percent")
 		}
 	}
 
 	positions, err := m.GetAllVaultsV2RemotePositions(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch remote positions")
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote positions")
 	}
 	if len(positions) == 0 {
-		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "no remote positions configured")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrRemotePositionNotFound, "no remote positions configured")
 	}
 
 	indexByID := make(map[uint64]int, len(positions))
@@ -1199,21 +1200,21 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 
 	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
 	}
 
 	totalTracked = pendingDeployment
 	for _, entry := range positions {
 		totalTracked, err = totalTracked.SafeAdd(entry.Position.TotalValue)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to aggregate remote position value")
+			return nil, sdkerrors.Wrap(err, "unable to aggregate remote position value")
 		}
 	}
 
 	for _, allocation := range msg.TargetAllocations {
 		idx, ok := indexByID[allocation.PositionId]
 		if !ok {
-			return nil, errors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "target position %d not found", allocation.PositionId)
+			return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "target position %d not found", allocation.PositionId)
 		}
 		if totalTracked.IsZero() || allocation.TargetPercentage == 0 {
 			targetDesired[allocation.PositionId] = sdkmath.ZeroInt()
@@ -1270,12 +1271,12 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		position := positions[adj.index].Position
 
 		if adj.amount.GT(position.TotalValue) {
-			return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "rebalance reduction exceeds position value")
+			return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "rebalance reduction exceeds position value")
 		}
 
 		totalValue, err := position.TotalValue.SafeSub(adj.amount)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to reduce position value")
+			return nil, sdkerrors.Wrap(err, "unable to reduce position value")
 		}
 		position.TotalValue = totalValue
 
@@ -1304,7 +1305,7 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 
 		available, err = available.SafeAdd(adj.amount)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to accumulate freed funds")
+			return nil, sdkerrors.Wrap(err, "unable to accumulate freed funds")
 		}
 
 		positions[adj.index].Position = position
@@ -1316,14 +1317,14 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 			continue
 		}
 		if available.LT(adj.amount) {
-			return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "insufficient liquidity for rebalance")
+			return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "insufficient liquidity for rebalance")
 		}
 
 		entry := positions[adj.index]
 
 		inflightID, err := m.NextVaultsV2InflightID(ctx)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to allocate inflight identifier")
+			return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
 		}
 
 		destination := &vaultsv2.RemotePosition{
@@ -1353,12 +1354,12 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		}
 
 		if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-			return nil, errors.Wrap(err, "unable to persist inflight fund")
+			return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
 		}
 
 		available, err = available.SafeSub(adj.amount)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to deduct deployed funds")
+			return nil, sdkerrors.Wrap(err, "unable to deduct deployed funds")
 		}
 
 		operations++
@@ -1366,22 +1367,22 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 
 	for _, entry := range positions {
 		if err := m.SetVaultsV2RemotePosition(ctx, entry.ID, entry.Position); err != nil {
-			return nil, errors.Wrap(err, "unable to persist remote position")
+			return nil, sdkerrors.Wrap(err, "unable to persist remote position")
 		}
 	}
 
 	if err := m.VaultsV2PendingDeploymentFunds.Set(ctx, available); err != nil {
-		return nil, errors.Wrap(err, "unable to persist pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to persist pending deployment funds")
 	}
 
 	headerInfo = m.header.GetHeaderInfo(ctx)
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	summary := fmt.Sprintf("rebalanced %d positions; pending deployment %s", operations, available.String())
@@ -1394,21 +1395,21 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 
 func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteDeposit) (*vaultsv2.MsgRemoteDepositResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
 	}
 	if msg.MinShares.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum shares cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum shares cannot be negative")
 	}
 
 	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
 	}
 	if !found {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
 	}
 
 	// Enforce route capacity before creating inflight fund
@@ -1420,7 +1421,7 @@ func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteD
 
 	inflightID, err := m.NextVaultsV2InflightID(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to allocate inflight identifier")
+		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
 	}
 
 	sharesAllocated := msg.MinShares
@@ -1465,11 +1466,11 @@ func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteD
 	}
 
 	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, msg.Amount); err != nil {
-		return nil, errors.Wrap(err, "unable to record inflight value for route")
+		return nil, sdkerrors.Wrap(err, "unable to record inflight value for route")
 	}
 
 	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-		return nil, errors.Wrap(err, "unable to persist inflight fund")
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
 	}
 
 	// Emit inflight created event
@@ -1479,7 +1480,7 @@ func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteD
 		msg.RouteId,
 		vaultsv2.OPERATION_TYPE_DEPOSIT,
 		msg.Amount,
-		msg.Authority, // or derive from context
+		msg.Depositor, // or derive from context
 		"noble",
 		strconv.FormatUint(uint64(msg.RouteId), 10),
 		headerInfo.Time,
@@ -1497,37 +1498,37 @@ func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteD
 
 func (m msgServerV2) RemoteWithdraw(ctx context.Context, msg *vaultsv2.MsgRemoteWithdraw) (*vaultsv2.MsgRemoteWithdrawResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Shares.IsNil() || !msg.Shares.IsPositive() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw shares must be positive")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw shares must be positive")
 	}
 	if msg.MinAmount.IsNegative() {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum amount cannot be negative")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum amount cannot be negative")
 	}
 
 	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
 	}
 	if !found {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
 	}
 
 	positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, route.RemotePositionAddress)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to lookup remote position")
+		return nil, sdkerrors.Wrap(err, "unable to lookup remote position")
 	}
 	if !foundPosition {
-		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found for route")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found for route")
 	}
 	if position.SharesHeld.LT(msg.Shares) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient remote shares for withdrawal")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient remote shares for withdrawal")
 	}
 
 	currentInflight, err := m.GetVaultsV2InflightValueByRoute(ctx, msg.RouteId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch route inflight value")
+		return nil, sdkerrors.Wrap(err, "unable to fetch route inflight value")
 	}
 	inflightAmount := msg.MinAmount
 	if !inflightAmount.IsPositive() {
@@ -1535,22 +1536,22 @@ func (m msgServerV2) RemoteWithdraw(ctx context.Context, msg *vaultsv2.MsgRemote
 	}
 	projected, err := currentInflight.SafeAdd(inflightAmount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to calculate projected inflight value")
+		return nil, sdkerrors.Wrap(err, "unable to calculate projected inflight value")
 	}
 	if projected.GT(route.MaxInflightValue) {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "route inflight cap exceeded")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "route inflight cap exceeded")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	position.Status = vaultsv2.REMOTE_POSITION_WITHDRAWING
 	position.LastUpdate = headerInfo.Time
 	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
-		return nil, errors.Wrap(err, "unable to update remote position status")
+		return nil, sdkerrors.Wrap(err, "unable to update remote position status")
 	}
 
 	inflightID, err := m.NextVaultsV2InflightID(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to allocate inflight identifier")
+		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
 	}
 
 	fund := vaultsv2.InflightFund{
@@ -1590,11 +1591,11 @@ func (m msgServerV2) RemoteWithdraw(ctx context.Context, msg *vaultsv2.MsgRemote
 	}
 
 	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, inflightAmount); err != nil {
-		return nil, errors.Wrap(err, "unable to record inflight value for route")
+		return nil, sdkerrors.Wrap(err, "unable to record inflight value for route")
 	}
 
 	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-		return nil, errors.Wrap(err, "unable to persist inflight fund")
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
 	}
 
 	return &vaultsv2.MsgRemoteWithdrawResponse{
@@ -1609,19 +1610,19 @@ func (m msgServerV2) RemoteWithdraw(ctx context.Context, msg *vaultsv2.MsgRemote
 
 func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.MsgProcessInFlightPosition) (*vaultsv2.MsgProcessInFlightPositionResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	inflightID := strconv.FormatUint(msg.Nonce, 10)
 	fund, found, err := m.GetVaultsV2InflightFund(ctx, inflightID)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch inflight fund")
+		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", msg.Nonce)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", msg.Nonce)
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -1729,7 +1730,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 	}
 
 	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-		return nil, errors.Wrap(err, "unable to persist inflight fund update")
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund update")
 	}
 
 	// Emit status change event
@@ -1747,7 +1748,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 	// Emit completion event if completed
 	if msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED {
-		opType := vaultsv2.OPERATION_TYPE_UNSPECIFIED
+		opType := vaultsv2.OPERATION_TYPE_DEPOSIT
 		if origin := fund.GetNobleOrigin(); origin != nil {
 			opType = origin.OperationType
 		}
@@ -1772,35 +1773,35 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 func (m msgServerV2) RegisterOracle(ctx context.Context, msg *vaultsv2.MsgRegisterOracle) (*vaultsv2.MsgRegisterOracleResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 	if msg.PositionId == 0 {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "position id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "position id must be provided")
 	}
 
 	routePosition, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, msg.PositionId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch remote position")
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
 	}
 	if !foundPosition {
-		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
 	}
 
 	oracleID := oracleIdentifier(msg.PositionId, msg.SourceChain)
 	if _, exists, err := m.GetVaultsV2EnrolledOracle(ctx, oracleID); err != nil {
-		return nil, errors.Wrap(err, "unable to check existing oracle")
+		return nil, sdkerrors.Wrap(err, "unable to check existing oracle")
 	} else if exists {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle already registered")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "oracle already registered")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	remoteChainID, hasChain, err := m.GetVaultsV2RemotePositionChainID(ctx, msg.PositionId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch remote position chain id")
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position chain id")
 	}
 	if !hasChain {
 		remoteChainID = 0
@@ -1816,7 +1817,7 @@ func (m msgServerV2) RegisterOracle(ctx context.Context, msg *vaultsv2.MsgRegist
 	}
 
 	if err := m.SetVaultsV2EnrolledOracle(ctx, oracleID, metadata); err != nil {
-		return nil, errors.Wrap(err, "unable to persist enrolled oracle")
+		return nil, sdkerrors.Wrap(err, "unable to persist enrolled oracle")
 	}
 
 	remoteOracle := vaultsv2.RemotePositionOracle{
@@ -1830,7 +1831,7 @@ func (m msgServerV2) RegisterOracle(ctx context.Context, msg *vaultsv2.MsgRegist
 	}
 
 	if err := m.SetVaultsV2RemotePositionOracle(ctx, msg.PositionId, remoteOracle); err != nil {
-		return nil, errors.Wrap(err, "unable to persist remote position oracle")
+		return nil, sdkerrors.Wrap(err, "unable to persist remote position oracle")
 	}
 
 	return &vaultsv2.MsgRegisterOracleResponse{
@@ -1842,21 +1843,21 @@ func (m msgServerV2) RegisterOracle(ctx context.Context, msg *vaultsv2.MsgRegist
 
 func (m msgServerV2) UpdateOracleConfig(ctx context.Context, msg *vaultsv2.MsgUpdateOracleConfig) (*vaultsv2.MsgUpdateOracleConfigResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 	if msg.OracleId == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "oracle id must be provided")
 	}
 
 	metadata, found, err := m.GetVaultsV2EnrolledOracle(ctx, msg.OracleId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch enrolled oracle")
+		return nil, sdkerrors.Wrap(err, "unable to fetch enrolled oracle")
 	}
 	if !found {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle not found")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "oracle not found")
 	}
 
 	if msg.MaxStaleness > 0 {
@@ -1865,7 +1866,7 @@ func (m msgServerV2) UpdateOracleConfig(ctx context.Context, msg *vaultsv2.MsgUp
 	metadata.Active = msg.Active
 
 	if err := m.SetVaultsV2EnrolledOracle(ctx, msg.OracleId, metadata); err != nil {
-		return nil, errors.Wrap(err, "unable to persist oracle config")
+		return nil, sdkerrors.Wrap(err, "unable to persist oracle config")
 	}
 
 	return &vaultsv2.MsgUpdateOracleConfigResponse{
@@ -1876,29 +1877,29 @@ func (m msgServerV2) UpdateOracleConfig(ctx context.Context, msg *vaultsv2.MsgUp
 
 func (m msgServerV2) RemoveOracle(ctx context.Context, msg *vaultsv2.MsgRemoveOracle) (*vaultsv2.MsgRemoveOracleResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 	if msg.OracleId == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "oracle id must be provided")
 	}
 
 	metadata, found, err := m.GetVaultsV2EnrolledOracle(ctx, msg.OracleId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch enrolled oracle")
+		return nil, sdkerrors.Wrap(err, "unable to fetch enrolled oracle")
 	}
 	if !found {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle not found")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "oracle not found")
 	}
 
 	if err := m.DeleteVaultsV2EnrolledOracle(ctx, msg.OracleId); err != nil {
-		return nil, errors.Wrap(err, "unable to delete enrolled oracle")
+		return nil, sdkerrors.Wrap(err, "unable to delete enrolled oracle")
 	}
 
 	if err := m.DeleteVaultsV2RemotePositionOracle(ctx, metadata.PositionId); err != nil {
-		return nil, errors.Wrap(err, "unable to remove remote position oracle")
+		return nil, sdkerrors.Wrap(err, "unable to remove remote position oracle")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -1912,19 +1913,19 @@ func (m msgServerV2) RemoveOracle(ctx context.Context, msg *vaultsv2.MsgRemoveOr
 
 func (m msgServerV2) UpdateOracleParams(ctx context.Context, msg *vaultsv2.MsgUpdateOracleParams) (*vaultsv2.MsgUpdateOracleParamsResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	previous, err := m.GetVaultsV2OracleParams(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch oracle params")
+		return nil, sdkerrors.Wrap(err, "unable to fetch oracle params")
 	}
 
 	if err := m.SetVaultsV2OracleParams(ctx, msg.Params); err != nil {
-		return nil, errors.Wrap(err, "unable to persist oracle params")
+		return nil, sdkerrors.Wrap(err, "unable to persist oracle params")
 	}
 
 	return &vaultsv2.MsgUpdateOracleParamsResponse{
@@ -1935,74 +1936,74 @@ func (m msgServerV2) UpdateOracleParams(ctx context.Context, msg *vaultsv2.MsgUp
 
 func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaimWithdrawal) (*vaultsv2.MsgClaimWithdrawalResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.RequestId == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "request id must be provided")
 	}
 
 	id, err := strconv.ParseUint(msg.RequestId, 10, 64)
 	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid request id: %s", msg.RequestId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid request id: %s", msg.RequestId)
 	}
 
 	addrBz, err := m.address.StringToBytes(msg.Claimer)
 	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid claimer address: %s", msg.Claimer)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid claimer address: %s", msg.Claimer)
 	}
 	claimer := sdk.AccAddress(addrBz)
 
 	request, found, err := m.GetVaultsV2Withdrawal(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch withdrawal request")
+		return nil, sdkerrors.Wrap(err, "unable to fetch withdrawal request")
 	}
 	if !found {
-		return nil, errors.Wrap(vaultsv2.ErrWithdrawalNotFound, "withdrawal request not found")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrWithdrawalNotFound, "withdrawal request not found")
 	}
 	if request.Requester != msg.Claimer {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal does not belong to claimer")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal does not belong to claimer")
 	}
 	if request.Status != vaultsv2.WITHDRAWAL_REQUEST_STATUS_READY {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal is not ready for claiming")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal is not ready for claiming")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	if headerInfo.Time.Before(request.UnlockTime) {
-		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal is still locked")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal is still locked")
 	}
 
 	withdrawAmount := request.WithdrawAmount
 	if err := m.DeleteVaultsV2Withdrawal(ctx, id); err != nil {
-		return nil, errors.Wrap(err, "unable to remove withdrawal request")
+		return nil, sdkerrors.Wrap(err, "unable to remove withdrawal request")
 	}
 
 	if err := m.SubtractVaultsV2PendingWithdrawalAmount(ctx, withdrawAmount); err != nil {
-		return nil, errors.Wrap(err, "unable to update pending withdrawal amount")
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
 	}
 
 	if err := m.SubtractAmountFromVaultsV2Totals(ctx, withdrawAmount, sdkmath.ZeroInt()); err != nil {
-		return nil, errors.Wrap(err, "unable to update vault totals")
+		return nil, sdkerrors.Wrap(err, "unable to update vault totals")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	if state.PendingWithdrawalRequests > 0 {
 		state.PendingWithdrawalRequests--
 	}
 	state.TotalAmountPendingWithdrawal, err = state.TotalAmountPendingWithdrawal.SafeSub(withdrawAmount)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to update pending withdrawal totals")
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
 	}
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	position, found, err := m.GetVaultsV2UserPosition(ctx, claimer)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user position")
+		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if found {
 		if position.AmountPendingWithdrawal.IsPositive() {
@@ -2021,17 +2022,17 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		position.LastActivityTime = headerInfo.Time
 		if position.DepositAmount.IsZero() && !position.AmountPendingWithdrawal.IsPositive() && position.ActiveWithdrawalRequests == 0 {
 			if err := m.DeleteVaultsV2UserPosition(ctx, claimer); err != nil {
-				return nil, errors.Wrap(err, "unable to delete empty user position")
+				return nil, sdkerrors.Wrap(err, "unable to delete empty user position")
 			}
 		} else {
 			if err := m.SetVaultsV2UserPosition(ctx, claimer, position); err != nil {
-				return nil, errors.Wrap(err, "unable to persist user position")
+				return nil, sdkerrors.Wrap(err, "unable to persist user position")
 			}
 		}
 	}
 
 	if err := m.bank.SendCoins(ctx, types.ModuleAddress, claimer, sdk.NewCoins(sdk.NewCoin(m.denom, withdrawAmount))); err != nil {
-		return nil, errors.Wrap(err, "unable to transfer withdrawal proceeds")
+		return nil, sdkerrors.Wrap(err, "unable to transfer withdrawal proceeds")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventWithdraw{
@@ -2043,7 +2044,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		BlockHeight:         sdk.UnwrapSDKContext(ctx).BlockHeight(),
 		Timestamp:           headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit withdrawal event")
+		return nil, sdkerrors.Wrap(err, "unable to emit withdrawal event")
 	}
 
 	return &vaultsv2.MsgClaimWithdrawalResponse{
@@ -2056,23 +2057,23 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) (*vaultsv2.MsgUpdateNAVResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	navInfo, err := m.GetVaultsV2NAVInfo(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch nav info")
+		return nil, sdkerrors.Wrap(err, "unable to fetch nav info")
 	}
 
 	previousNav := navInfo.CurrentNav
 
 	if msg.PreviousNav.IsPositive() && !previousNav.Equal(msg.PreviousNav) {
-		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "previous nav mismatch")
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "previous nav mismatch")
 	}
 
 	changeBps := msg.ChangeBps
@@ -2088,7 +2089,7 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 	// Circuit breaker: Check if NAV change exceeds maximum allowed threshold
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault parameters")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault parameters")
 	}
 
 	circuitBreakerTriggered := false
@@ -2104,7 +2105,7 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 
 			// If circuit breaker was not explicitly overridden by authority, reject the update
 			if !msg.CircuitBreakerActive {
-				return nil, errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				return nil, sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
 					"NAV change of %d bps exceeds maximum allowed %d bps (use CircuitBreakerActive=true to override)",
 					absChangeBps, params.MaxNavChangeBps)
 			}
@@ -2118,19 +2119,19 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 	navInfo.CircuitBreakerActive = circuitBreakerTriggered || msg.CircuitBreakerActive
 
 	if err := m.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
-		return nil, errors.Wrap(err, "unable to persist nav info")
+		return nil, sdkerrors.Wrap(err, "unable to persist nav info")
 	}
 
 	// Record NAV snapshot for TWAP if conditions are met
 	shouldRecord, err := m.shouldRecordNAVSnapshot(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to check snapshot recording conditions")
+		return nil, sdkerrors.Wrap(err, "unable to check snapshot recording conditions")
 	}
 
 	if shouldRecord {
 		totalShares, err := m.GetVaultsV2TotalShares(ctx)
 		if err != nil {
-			return nil, errors.Wrap(err, "unable to fetch total shares for snapshot")
+			return nil, sdkerrors.Wrap(err, "unable to fetch total shares for snapshot")
 		}
 
 		snapshot := vaultsv2.NAVSnapshot{
@@ -2141,7 +2142,7 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 		}
 
 		if err := m.AddVaultsV2NAVSnapshot(ctx, snapshot); err != nil {
-			return nil, errors.Wrap(err, "unable to record NAV snapshot")
+			return nil, sdkerrors.Wrap(err, "unable to record NAV snapshot")
 		}
 
 		// Optionally prune old snapshots if max age is configured
@@ -2152,13 +2153,13 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 
 	state.TotalNav = msg.NewNav
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, errors.Wrap(err, "unable to persist vault state")
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventNAVUpdated{
@@ -2172,7 +2173,7 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 		BlockHeight:       sdk.UnwrapSDKContext(ctx).BlockHeight(),
 		Timestamp:         headerInfo.Time,
 	}); err != nil {
-		return nil, errors.Wrap(err, "unable to emit nav updated event")
+		return nil, sdkerrors.Wrap(err, "unable to emit nav updated event")
 	}
 
 	return &vaultsv2.MsgUpdateNAVResponse{
@@ -2185,26 +2186,26 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 
 func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgHandleStaleInflight) (*vaultsv2.MsgHandleStaleInflightResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 	if msg.InflightId == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "inflight id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "inflight id must be provided")
 	}
 
 	nonce, err := strconv.ParseUint(msg.InflightId, 10, 64)
 	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid inflight id: %s", msg.InflightId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid inflight id: %s", msg.InflightId)
 	}
 
 	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.InflightId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch inflight fund")
+		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.InflightId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.InflightId)
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -2230,25 +2231,25 @@ func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgH
 
 func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.MsgCleanupStaleInflight) (*vaultsv2.MsgCleanupStaleInflightResponse, error) {
 	if msg == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 	if msg.Authority != m.authority {
-		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 	if msg.TransactionId == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "transaction id must be provided")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "transaction id must be provided")
 	}
 	if msg.Reason == "" {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "reason must be provided for audit trail")
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "reason must be provided for audit trail")
 	}
 
 	// Get the fund before cleanup to return details
 	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.TransactionId)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch inflight fund")
+		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.TransactionId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.TransactionId)
 	}
 
 	// Extract route ID
@@ -2285,7 +2286,7 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 	// Get deposit limits configuration
 	limits, hasLimits, err := m.getDepositLimits(ctx)
 	if err != nil {
-		return errors.Wrap(err, "unable to fetch deposit limits")
+		return sdkerrors.Wrap(err, "unable to fetch deposit limits")
 	}
 
 	// If no limits configured, allow deposit
@@ -2297,16 +2298,16 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 	if limits.GlobalDepositCap.IsPositive() {
 		state, err := m.GetVaultsV2VaultState(ctx)
 		if err != nil {
-			return errors.Wrap(err, "unable to fetch vault state")
+			return sdkerrors.Wrap(err, "unable to fetch vault state")
 		}
 
 		projectedTotal, err := state.TotalDeposits.SafeAdd(amount)
 		if err != nil {
-			return errors.Wrap(err, "deposit amount causes overflow")
+			return sdkerrors.Wrap(err, "deposit amount causes overflow")
 		}
 
 		if projectedTotal.GT(limits.GlobalDepositCap) {
-			return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+			return sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
 				"deposit would exceed global cap of %s (current: %s, deposit: %s)",
 				limits.GlobalDepositCap.String(), state.TotalDeposits.String(), amount.String())
 		}
@@ -2316,16 +2317,16 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 	if limits.MaxBlockDepositVolume.IsPositive() {
 		blockVolume, err := m.getBlockDepositVolume(ctx, currentBlock)
 		if err != nil {
-			return errors.Wrap(err, "unable to fetch block deposit volume")
+			return sdkerrors.Wrap(err, "unable to fetch block deposit volume")
 		}
 
 		projectedBlockVolume, err := blockVolume.SafeAdd(amount)
 		if err != nil {
-			return errors.Wrap(err, "block volume calculation overflow")
+			return sdkerrors.Wrap(err, "block volume calculation overflow")
 		}
 
 		if projectedBlockVolume.GT(limits.MaxBlockDepositVolume) {
-			return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+			return sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
 				"deposit would exceed per-block limit of %s (current block volume: %s)",
 				limits.MaxBlockDepositVolume.String(), blockVolume.String())
 		}
@@ -2335,14 +2336,14 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 	if limits.DepositCooldownBlocks > 0 {
 		velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
 		if err != nil {
-			return errors.Wrap(err, "unable to fetch deposit velocity")
+			return sdkerrors.Wrap(err, "unable to fetch deposit velocity")
 		}
 
 		if hasVelocity && velocity.LastDepositBlock > 0 {
 			blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
 			if blocksSinceLastDeposit < limits.DepositCooldownBlocks {
 				remainingBlocks := limits.DepositCooldownBlocks - blocksSinceLastDeposit
-				return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				return sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
 					"deposit cooldown active: %d blocks remaining (last deposit at block %d)",
 					remainingBlocks, velocity.LastDepositBlock)
 			}
@@ -2353,7 +2354,7 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 	if limits.MaxUserDepositPerWindow.IsPositive() || limits.MaxDepositsPerWindow > 0 {
 		velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
 		if err != nil {
-			return errors.Wrap(err, "unable to fetch deposit velocity")
+			return sdkerrors.Wrap(err, "unable to fetch deposit velocity")
 		}
 
 		// Initialize velocity if not exists
@@ -2374,7 +2375,7 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 
 		// Check deposit count limit
 		if limits.MaxDepositsPerWindow > 0 && velocity.RecentDepositCount >= limits.MaxDepositsPerWindow {
-			return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+			return sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
 				"user has reached maximum of %d deposits per %d-block window",
 				limits.MaxDepositsPerWindow, limits.VelocityWindowBlocks)
 		}
@@ -2383,11 +2384,11 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 		if limits.MaxUserDepositPerWindow.IsPositive() {
 			projectedVolume, err := velocity.RecentDepositVolume.SafeAdd(amount)
 			if err != nil {
-				return errors.Wrap(err, "velocity volume calculation overflow")
+				return sdkerrors.Wrap(err, "velocity volume calculation overflow")
 			}
 
 			if projectedVolume.GT(limits.MaxUserDepositPerWindow) {
-				return errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				return sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
 					"deposit would exceed user limit of %s per %d-block window (current: %s)",
 					limits.MaxUserDepositPerWindow.String(), limits.VelocityWindowBlocks,
 					velocity.RecentDepositVolume.String())
@@ -2403,7 +2404,7 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 func (m msgServerV2) updateDepositTracking(ctx context.Context, depositor sdk.AccAddress, amount sdkmath.Int, currentBlock int64) error {
 	limits, hasLimits, err := m.getDepositLimits(ctx)
 	if err != nil {
-		return errors.Wrap(err, "unable to fetch deposit limits")
+		return sdkerrors.Wrap(err, "unable to fetch deposit limits")
 	}
 
 	if !hasLimits {
@@ -2412,18 +2413,18 @@ func (m msgServerV2) updateDepositTracking(ctx context.Context, depositor sdk.Ac
 
 	// Update block volume
 	if err := m.incrementBlockDeposit(ctx, currentBlock, amount); err != nil {
-		return errors.Wrap(err, "unable to update block deposit volume")
+		return sdkerrors.Wrap(err, "unable to update block deposit volume")
 	}
 
 	// Update user deposit history
 	if err := m.recordUserDeposit(ctx, depositor, currentBlock, amount); err != nil {
-		return errors.Wrap(err, "unable to record user deposit")
+		return sdkerrors.Wrap(err, "unable to record user deposit")
 	}
 
 	// Update user velocity
 	velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
 	if err != nil {
-		return errors.Wrap(err, "unable to fetch deposit velocity")
+		return sdkerrors.Wrap(err, "unable to fetch deposit velocity")
 	}
 
 	if !hasVelocity {
@@ -2446,11 +2447,11 @@ func (m msgServerV2) updateDepositTracking(ctx context.Context, depositor sdk.Ac
 	velocity.RecentDepositCount++
 	velocity.RecentDepositVolume, err = velocity.RecentDepositVolume.SafeAdd(amount)
 	if err != nil {
-		return errors.Wrap(err, "unable to update velocity volume")
+		return sdkerrors.Wrap(err, "unable to update velocity volume")
 	}
 
 	if err := m.setDepositVelocity(ctx, depositor, velocity); err != nil {
-		return errors.Wrap(err, "unable to persist deposit velocity")
+		return sdkerrors.Wrap(err, "unable to persist deposit velocity")
 	}
 
 	return nil

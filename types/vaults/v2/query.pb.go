@@ -9,9 +9,9 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -5202,6 +5202,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+var Query_serviceDesc = _Query_serviceDesc
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "noble.dollar.vaults.v2.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -6920,7 +6921,7 @@ func (m *QueryNAVResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	n30, err30 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastUpdate):])
+	n30, err30 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate):])
 	if err30 != nil {
 		return 0, err30
 	}
@@ -7012,7 +7013,7 @@ func (m *WithdrawalQueueItem) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3a
 	}
-	n32, err32 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	n32, err32 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
 	if err32 != nil {
 		return 0, err32
 	}
@@ -7196,7 +7197,7 @@ func (m *WithdrawalStatusItem) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.ClaimedAt != nil {
-		n35, err35 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ClaimedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ClaimedAt):])
+		n35, err35 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.ClaimedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.ClaimedAt):])
 		if err35 != nil {
 			return 0, err35
 		}
@@ -7206,7 +7207,7 @@ func (m *WithdrawalStatusItem) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x4a
 	}
 	if m.ClaimableAt != nil {
-		n36, err36 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ClaimableAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ClaimableAt):])
+		n36, err36 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.ClaimableAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.ClaimableAt):])
 		if err36 != nil {
 			return 0, err36
 		}
@@ -7215,7 +7216,7 @@ func (m *WithdrawalStatusItem) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x42
 	}
-	n37, err37 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	n37, err37 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
 	if err37 != nil {
 		return 0, err37
 	}
@@ -7864,7 +7865,7 @@ func (m *InflightFundView) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x62
 	}
-	n40, err40 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.ExpectedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.ExpectedAt):])
+	n40, err40 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.ExpectedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpectedAt):])
 	if err40 != nil {
 		return 0, err40
 	}
@@ -7872,7 +7873,7 @@ func (m *InflightFundView) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintQuery(dAtA, i, uint64(n40))
 	i--
 	dAtA[i] = 0x5a
-	n41, err41 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.InitiatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.InitiatedAt):])
+	n41, err41 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.InitiatedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InitiatedAt):])
 	if err41 != nil {
 		return 0, err41
 	}
@@ -8119,7 +8120,7 @@ func (m *StaleInflightFundView) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x4a
 	}
-	n42, err42 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.ExpectedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.ExpectedAt):])
+	n42, err42 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.ExpectedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpectedAt):])
 	if err42 != nil {
 		return 0, err42
 	}
@@ -8127,7 +8128,7 @@ func (m *StaleInflightFundView) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintQuery(dAtA, i, uint64(n42))
 	i--
 	dAtA[i] = 0x42
-	n43, err43 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.InitiatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.InitiatedAt):])
+	n43, err43 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.InitiatedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InitiatedAt):])
 	if err43 != nil {
 		return 0, err43
 	}
@@ -8277,7 +8278,7 @@ func (m *VaultRemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n44, err44 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastUpdate):])
+	n44, err44 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate):])
 	if err44 != nil {
 		return 0, err44
 	}
@@ -9021,7 +9022,7 @@ func (m *QueryNAVResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastUpdate)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate)
 	n += 1 + l + sovQuery(uint64(l))
 	l = len(m.TotalDeposits)
 	if l > 0 {
@@ -9093,7 +9094,7 @@ func (m *WithdrawalQueueItem) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovQuery(uint64(l))
 	l = len(m.Status)
 	if l > 0 {
@@ -9186,14 +9187,14 @@ func (m *WithdrawalStatusItem) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovQuery(uint64(l))
 	if m.ClaimableAt != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.ClaimableAt)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.ClaimableAt)
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	if m.ClaimedAt != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.ClaimedAt)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.ClaimedAt)
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -9491,9 +9492,9 @@ func (m *InflightFundView) Size() (n int) {
 	if m.DestinationPositionId != 0 {
 		n += 1 + sovQuery(uint64(m.DestinationPositionId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.InitiatedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InitiatedAt)
 	n += 1 + l + sovQuery(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.ExpectedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpectedAt)
 	n += 1 + l + sovQuery(uint64(l))
 	l = len(m.Status)
 	if l > 0 {
@@ -9595,9 +9596,9 @@ func (m *StaleInflightFundView) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.InitiatedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InitiatedAt)
 	n += 1 + l + sovQuery(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.ExpectedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpectedAt)
 	n += 1 + l + sovQuery(uint64(l))
 	l = len(m.HoursOverdue)
 	if l > 0 {
@@ -9689,7 +9690,7 @@ func (m *VaultRemotePosition) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastUpdate)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate)
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -13903,7 +13904,7 @@ func (m *QueryNAVResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -14460,7 +14461,7 @@ func (m *WithdrawalQueueItem) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -15139,7 +15140,7 @@ func (m *WithdrawalStatusItem) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -15175,7 +15176,7 @@ func (m *WithdrawalStatusItem) Unmarshal(dAtA []byte) error {
 			if m.ClaimableAt == nil {
 				m.ClaimableAt = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.ClaimableAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.ClaimableAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -15211,7 +15212,7 @@ func (m *WithdrawalStatusItem) Unmarshal(dAtA []byte) error {
 			if m.ClaimedAt == nil {
 				m.ClaimedAt = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.ClaimedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.ClaimedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -17259,7 +17260,7 @@ func (m *InflightFundView) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.InitiatedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.InitiatedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -17292,7 +17293,7 @@ func (m *InflightFundView) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.ExpectedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.ExpectedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18229,7 +18230,7 @@ func (m *StaleInflightFundView) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.InitiatedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.InitiatedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18262,7 +18263,7 @@ func (m *StaleInflightFundView) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.ExpectedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.ExpectedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18920,7 +18921,7 @@ func (m *VaultRemotePosition) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -9,8 +9,8 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	_ "github.com/cosmos/cosmos-sdk/types/tx/amino"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -874,7 +874,7 @@ func (m *YieldDeductionParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastCollection, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastCollection):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastCollection, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastCollection):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -945,7 +945,7 @@ func (m *FeeAccrual) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x30
 	}
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.PeriodEnd, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.PeriodEnd):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.PeriodEnd, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.PeriodEnd):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -953,7 +953,7 @@ func (m *FeeAccrual) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintFees(dAtA, i, uint64(n2))
 	i--
 	dAtA[i] = 0x2a
-	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.PeriodStart, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.PeriodStart):])
+	n3, err3 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.PeriodStart, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.PeriodStart):])
 	if err3 != nil {
 		return 0, err3
 	}
@@ -1048,7 +1048,7 @@ func (m *FeeCollection) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x12
-	n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	n4, err4 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
 	if err4 != nil {
 		return 0, err4
 	}
@@ -1147,7 +1147,7 @@ func (m *FeeStats) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastCollection, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastCollection):])
+	n5, err5 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastCollection, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastCollection):])
 	if err5 != nil {
 		return 0, err5
 	}
@@ -1223,7 +1223,7 @@ func (m *PerformanceFeeState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x22
-	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.PeriodStart, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.PeriodStart):])
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.PeriodStart, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.PeriodStart):])
 	if err6 != nil {
 		return 0, err6
 	}
@@ -1231,7 +1231,7 @@ func (m *PerformanceFeeState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintFees(dAtA, i, uint64(n6))
 	i--
 	dAtA[i] = 0x1a
-	n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastCalculation, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastCalculation):])
+	n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastCalculation, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastCalculation):])
 	if err7 != nil {
 		return 0, err7
 	}
@@ -1290,7 +1290,7 @@ func (m *FeeExemption) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x22
 	}
 	if m.Expiry != nil {
-		n8, err8 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.Expiry, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.Expiry):])
+		n8, err8 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.Expiry, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiry):])
 		if err8 != nil {
 			return 0, err8
 		}
@@ -1376,7 +1376,7 @@ func (m *FeeSchedule) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	n12, err12 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EffectiveDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EffectiveDate):])
+	n12, err12 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EffectiveDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EffectiveDate):])
 	if err12 != nil {
 		return 0, err12
 	}
@@ -1438,7 +1438,7 @@ func (m *YieldDeductionParams) Size() (n int) {
 	if m.CollectionFrequency != 0 {
 		n += 1 + sovFees(uint64(m.CollectionFrequency))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastCollection)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastCollection)
 	n += 1 + l + sovFees(uint64(l))
 	return n
 }
@@ -1456,9 +1456,9 @@ func (m *FeeAccrual) Size() (n int) {
 	n += 1 + l + sovFees(uint64(l))
 	l = m.YieldToDeduct.Size()
 	n += 1 + l + sovFees(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.PeriodStart)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.PeriodStart)
 	n += 1 + l + sovFees(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.PeriodEnd)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.PeriodEnd)
 	n += 1 + l + sovFees(uint64(l))
 	if m.Collected {
 		n += 2
@@ -1472,7 +1472,7 @@ func (m *FeeCollection) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovFees(uint64(l))
 	l = m.TotalAmount.Size()
 	n += 1 + l + sovFees(uint64(l))
@@ -1522,7 +1522,7 @@ func (m *FeeStats) Size() (n int) {
 	if m.CurrentAnnualRate != 0 {
 		n += 1 + sovFees(uint64(m.CurrentAnnualRate))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastCollection)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastCollection)
 	n += 1 + l + sovFees(uint64(l))
 	l = m.AvgDailyCollection.Size()
 	n += 1 + l + sovFees(uint64(l))
@@ -1540,9 +1540,9 @@ func (m *PerformanceFeeState) Size() (n int) {
 	_ = l
 	l = m.HighWaterMark.Size()
 	n += 1 + l + sovFees(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastCalculation)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastCalculation)
 	n += 1 + l + sovFees(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.PeriodStart)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.PeriodStart)
 	n += 1 + l + sovFees(uint64(l))
 	l = m.AccruedPerformanceFees.Size()
 	n += 1 + l + sovFees(uint64(l))
@@ -1570,7 +1570,7 @@ func (m *FeeExemption) Size() (n int) {
 		n += 1 + sovFees(uint64(l)) + l
 	}
 	if m.Expiry != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.Expiry)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiry)
 		n += 1 + l + sovFees(uint64(l))
 	}
 	l = len(m.Reason)
@@ -1589,7 +1589,7 @@ func (m *FeeSchedule) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EffectiveDate)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EffectiveDate)
 	n += 1 + l + sovFees(uint64(l))
 	if m.FeeConfig != nil {
 		l = m.FeeConfig.Size()
@@ -1949,7 +1949,7 @@ func (m *YieldDeductionParams) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastCollection, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastCollection, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2119,7 +2119,7 @@ func (m *FeeAccrual) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.PeriodStart, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.PeriodStart, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2152,7 +2152,7 @@ func (m *FeeAccrual) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.PeriodEnd, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.PeriodEnd, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2255,7 +2255,7 @@ func (m *FeeCollection) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2702,7 +2702,7 @@ func (m *FeeStats) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastCollection, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastCollection, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2872,7 +2872,7 @@ func (m *PerformanceFeeState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastCalculation, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastCalculation, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2905,7 +2905,7 @@ func (m *PerformanceFeeState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.PeriodStart, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.PeriodStart, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3148,7 +3148,7 @@ func (m *FeeExemption) Unmarshal(dAtA []byte) error {
 			if m.Expiry == nil {
 				m.Expiry = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.Expiry, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.Expiry, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3283,7 +3283,7 @@ func (m *FeeSchedule) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EffectiveDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EffectiveDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

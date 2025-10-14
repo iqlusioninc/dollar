@@ -4855,6 +4855,2427 @@ func (x *fastReflection_YieldDistribution) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var (
+	md_DepositLimit                             protoreflect.MessageDescriptor
+	fd_DepositLimit_max_user_deposit_per_window protoreflect.FieldDescriptor
+	fd_DepositLimit_max_block_deposit_volume    protoreflect.FieldDescriptor
+	fd_DepositLimit_global_deposit_cap          protoreflect.FieldDescriptor
+	fd_DepositLimit_deposit_cooldown_blocks     protoreflect.FieldDescriptor
+	fd_DepositLimit_velocity_window_blocks      protoreflect.FieldDescriptor
+	fd_DepositLimit_max_deposits_per_window     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_vaults_proto_init()
+	md_DepositLimit = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("DepositLimit")
+	fd_DepositLimit_max_user_deposit_per_window = md_DepositLimit.Fields().ByName("max_user_deposit_per_window")
+	fd_DepositLimit_max_block_deposit_volume = md_DepositLimit.Fields().ByName("max_block_deposit_volume")
+	fd_DepositLimit_global_deposit_cap = md_DepositLimit.Fields().ByName("global_deposit_cap")
+	fd_DepositLimit_deposit_cooldown_blocks = md_DepositLimit.Fields().ByName("deposit_cooldown_blocks")
+	fd_DepositLimit_velocity_window_blocks = md_DepositLimit.Fields().ByName("velocity_window_blocks")
+	fd_DepositLimit_max_deposits_per_window = md_DepositLimit.Fields().ByName("max_deposits_per_window")
+}
+
+var _ protoreflect.Message = (*fastReflection_DepositLimit)(nil)
+
+type fastReflection_DepositLimit DepositLimit
+
+func (x *DepositLimit) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_DepositLimit)(x)
+}
+
+func (x *DepositLimit) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_DepositLimit_messageType fastReflection_DepositLimit_messageType
+var _ protoreflect.MessageType = fastReflection_DepositLimit_messageType{}
+
+type fastReflection_DepositLimit_messageType struct{}
+
+func (x fastReflection_DepositLimit_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_DepositLimit)(nil)
+}
+func (x fastReflection_DepositLimit_messageType) New() protoreflect.Message {
+	return new(fastReflection_DepositLimit)
+}
+func (x fastReflection_DepositLimit_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_DepositLimit
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_DepositLimit) Descriptor() protoreflect.MessageDescriptor {
+	return md_DepositLimit
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_DepositLimit) Type() protoreflect.MessageType {
+	return _fastReflection_DepositLimit_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_DepositLimit) New() protoreflect.Message {
+	return new(fastReflection_DepositLimit)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_DepositLimit) Interface() protoreflect.ProtoMessage {
+	return (*DepositLimit)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_DepositLimit) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.MaxUserDepositPerWindow != "" {
+		value := protoreflect.ValueOfString(x.MaxUserDepositPerWindow)
+		if !f(fd_DepositLimit_max_user_deposit_per_window, value) {
+			return
+		}
+	}
+	if x.MaxBlockDepositVolume != "" {
+		value := protoreflect.ValueOfString(x.MaxBlockDepositVolume)
+		if !f(fd_DepositLimit_max_block_deposit_volume, value) {
+			return
+		}
+	}
+	if x.GlobalDepositCap != "" {
+		value := protoreflect.ValueOfString(x.GlobalDepositCap)
+		if !f(fd_DepositLimit_global_deposit_cap, value) {
+			return
+		}
+	}
+	if x.DepositCooldownBlocks != int64(0) {
+		value := protoreflect.ValueOfInt64(x.DepositCooldownBlocks)
+		if !f(fd_DepositLimit_deposit_cooldown_blocks, value) {
+			return
+		}
+	}
+	if x.VelocityWindowBlocks != int64(0) {
+		value := protoreflect.ValueOfInt64(x.VelocityWindowBlocks)
+		if !f(fd_DepositLimit_velocity_window_blocks, value) {
+			return
+		}
+	}
+	if x.MaxDepositsPerWindow != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.MaxDepositsPerWindow)
+		if !f(fd_DepositLimit_max_deposits_per_window, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_DepositLimit) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositLimit.max_user_deposit_per_window":
+		return x.MaxUserDepositPerWindow != ""
+	case "noble.dollar.vaults.v2.DepositLimit.max_block_deposit_volume":
+		return x.MaxBlockDepositVolume != ""
+	case "noble.dollar.vaults.v2.DepositLimit.global_deposit_cap":
+		return x.GlobalDepositCap != ""
+	case "noble.dollar.vaults.v2.DepositLimit.deposit_cooldown_blocks":
+		return x.DepositCooldownBlocks != int64(0)
+	case "noble.dollar.vaults.v2.DepositLimit.velocity_window_blocks":
+		return x.VelocityWindowBlocks != int64(0)
+	case "noble.dollar.vaults.v2.DepositLimit.max_deposits_per_window":
+		return x.MaxDepositsPerWindow != uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositLimit"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositLimit does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositLimit) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositLimit.max_user_deposit_per_window":
+		x.MaxUserDepositPerWindow = ""
+	case "noble.dollar.vaults.v2.DepositLimit.max_block_deposit_volume":
+		x.MaxBlockDepositVolume = ""
+	case "noble.dollar.vaults.v2.DepositLimit.global_deposit_cap":
+		x.GlobalDepositCap = ""
+	case "noble.dollar.vaults.v2.DepositLimit.deposit_cooldown_blocks":
+		x.DepositCooldownBlocks = int64(0)
+	case "noble.dollar.vaults.v2.DepositLimit.velocity_window_blocks":
+		x.VelocityWindowBlocks = int64(0)
+	case "noble.dollar.vaults.v2.DepositLimit.max_deposits_per_window":
+		x.MaxDepositsPerWindow = uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositLimit"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositLimit does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_DepositLimit) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.DepositLimit.max_user_deposit_per_window":
+		value := x.MaxUserDepositPerWindow
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.DepositLimit.max_block_deposit_volume":
+		value := x.MaxBlockDepositVolume
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.DepositLimit.global_deposit_cap":
+		value := x.GlobalDepositCap
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.DepositLimit.deposit_cooldown_blocks":
+		value := x.DepositCooldownBlocks
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.DepositLimit.velocity_window_blocks":
+		value := x.VelocityWindowBlocks
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.DepositLimit.max_deposits_per_window":
+		value := x.MaxDepositsPerWindow
+		return protoreflect.ValueOfUint32(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositLimit"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositLimit does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositLimit) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositLimit.max_user_deposit_per_window":
+		x.MaxUserDepositPerWindow = value.Interface().(string)
+	case "noble.dollar.vaults.v2.DepositLimit.max_block_deposit_volume":
+		x.MaxBlockDepositVolume = value.Interface().(string)
+	case "noble.dollar.vaults.v2.DepositLimit.global_deposit_cap":
+		x.GlobalDepositCap = value.Interface().(string)
+	case "noble.dollar.vaults.v2.DepositLimit.deposit_cooldown_blocks":
+		x.DepositCooldownBlocks = value.Int()
+	case "noble.dollar.vaults.v2.DepositLimit.velocity_window_blocks":
+		x.VelocityWindowBlocks = value.Int()
+	case "noble.dollar.vaults.v2.DepositLimit.max_deposits_per_window":
+		x.MaxDepositsPerWindow = uint32(value.Uint())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositLimit"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositLimit does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositLimit) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositLimit.max_user_deposit_per_window":
+		panic(fmt.Errorf("field max_user_deposit_per_window of message noble.dollar.vaults.v2.DepositLimit is not mutable"))
+	case "noble.dollar.vaults.v2.DepositLimit.max_block_deposit_volume":
+		panic(fmt.Errorf("field max_block_deposit_volume of message noble.dollar.vaults.v2.DepositLimit is not mutable"))
+	case "noble.dollar.vaults.v2.DepositLimit.global_deposit_cap":
+		panic(fmt.Errorf("field global_deposit_cap of message noble.dollar.vaults.v2.DepositLimit is not mutable"))
+	case "noble.dollar.vaults.v2.DepositLimit.deposit_cooldown_blocks":
+		panic(fmt.Errorf("field deposit_cooldown_blocks of message noble.dollar.vaults.v2.DepositLimit is not mutable"))
+	case "noble.dollar.vaults.v2.DepositLimit.velocity_window_blocks":
+		panic(fmt.Errorf("field velocity_window_blocks of message noble.dollar.vaults.v2.DepositLimit is not mutable"))
+	case "noble.dollar.vaults.v2.DepositLimit.max_deposits_per_window":
+		panic(fmt.Errorf("field max_deposits_per_window of message noble.dollar.vaults.v2.DepositLimit is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositLimit"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositLimit does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_DepositLimit) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositLimit.max_user_deposit_per_window":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.DepositLimit.max_block_deposit_volume":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.DepositLimit.global_deposit_cap":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.DepositLimit.deposit_cooldown_blocks":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.DepositLimit.velocity_window_blocks":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.DepositLimit.max_deposits_per_window":
+		return protoreflect.ValueOfUint32(uint32(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositLimit"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositLimit does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_DepositLimit) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.DepositLimit", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_DepositLimit) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositLimit) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_DepositLimit) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_DepositLimit) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*DepositLimit)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.MaxUserDepositPerWindow)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.MaxBlockDepositVolume)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.GlobalDepositCap)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.DepositCooldownBlocks != 0 {
+			n += 1 + runtime.Sov(uint64(x.DepositCooldownBlocks))
+		}
+		if x.VelocityWindowBlocks != 0 {
+			n += 1 + runtime.Sov(uint64(x.VelocityWindowBlocks))
+		}
+		if x.MaxDepositsPerWindow != 0 {
+			n += 1 + runtime.Sov(uint64(x.MaxDepositsPerWindow))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*DepositLimit)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.MaxDepositsPerWindow != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxDepositsPerWindow))
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.VelocityWindowBlocks != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.VelocityWindowBlocks))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.DepositCooldownBlocks != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DepositCooldownBlocks))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.GlobalDepositCap) > 0 {
+			i -= len(x.GlobalDepositCap)
+			copy(dAtA[i:], x.GlobalDepositCap)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GlobalDepositCap)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.MaxBlockDepositVolume) > 0 {
+			i -= len(x.MaxBlockDepositVolume)
+			copy(dAtA[i:], x.MaxBlockDepositVolume)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MaxBlockDepositVolume)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.MaxUserDepositPerWindow) > 0 {
+			i -= len(x.MaxUserDepositPerWindow)
+			copy(dAtA[i:], x.MaxUserDepositPerWindow)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MaxUserDepositPerWindow)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*DepositLimit)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DepositLimit: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DepositLimit: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxUserDepositPerWindow", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.MaxUserDepositPerWindow = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxBlockDepositVolume", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.MaxBlockDepositVolume = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GlobalDepositCap", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.GlobalDepositCap = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DepositCooldownBlocks", wireType)
+				}
+				x.DepositCooldownBlocks = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.DepositCooldownBlocks |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field VelocityWindowBlocks", wireType)
+				}
+				x.VelocityWindowBlocks = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.VelocityWindowBlocks |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxDepositsPerWindow", wireType)
+				}
+				x.MaxDepositsPerWindow = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.MaxDepositsPerWindow |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_DepositVelocity                       protoreflect.MessageDescriptor
+	fd_DepositVelocity_last_deposit_block    protoreflect.FieldDescriptor
+	fd_DepositVelocity_recent_deposit_count  protoreflect.FieldDescriptor
+	fd_DepositVelocity_recent_deposit_volume protoreflect.FieldDescriptor
+	fd_DepositVelocity_time_window_blocks    protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_vaults_proto_init()
+	md_DepositVelocity = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("DepositVelocity")
+	fd_DepositVelocity_last_deposit_block = md_DepositVelocity.Fields().ByName("last_deposit_block")
+	fd_DepositVelocity_recent_deposit_count = md_DepositVelocity.Fields().ByName("recent_deposit_count")
+	fd_DepositVelocity_recent_deposit_volume = md_DepositVelocity.Fields().ByName("recent_deposit_volume")
+	fd_DepositVelocity_time_window_blocks = md_DepositVelocity.Fields().ByName("time_window_blocks")
+}
+
+var _ protoreflect.Message = (*fastReflection_DepositVelocity)(nil)
+
+type fastReflection_DepositVelocity DepositVelocity
+
+func (x *DepositVelocity) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_DepositVelocity)(x)
+}
+
+func (x *DepositVelocity) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_DepositVelocity_messageType fastReflection_DepositVelocity_messageType
+var _ protoreflect.MessageType = fastReflection_DepositVelocity_messageType{}
+
+type fastReflection_DepositVelocity_messageType struct{}
+
+func (x fastReflection_DepositVelocity_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_DepositVelocity)(nil)
+}
+func (x fastReflection_DepositVelocity_messageType) New() protoreflect.Message {
+	return new(fastReflection_DepositVelocity)
+}
+func (x fastReflection_DepositVelocity_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_DepositVelocity
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_DepositVelocity) Descriptor() protoreflect.MessageDescriptor {
+	return md_DepositVelocity
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_DepositVelocity) Type() protoreflect.MessageType {
+	return _fastReflection_DepositVelocity_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_DepositVelocity) New() protoreflect.Message {
+	return new(fastReflection_DepositVelocity)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_DepositVelocity) Interface() protoreflect.ProtoMessage {
+	return (*DepositVelocity)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_DepositVelocity) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.LastDepositBlock != int64(0) {
+		value := protoreflect.ValueOfInt64(x.LastDepositBlock)
+		if !f(fd_DepositVelocity_last_deposit_block, value) {
+			return
+		}
+	}
+	if x.RecentDepositCount != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RecentDepositCount)
+		if !f(fd_DepositVelocity_recent_deposit_count, value) {
+			return
+		}
+	}
+	if x.RecentDepositVolume != "" {
+		value := protoreflect.ValueOfString(x.RecentDepositVolume)
+		if !f(fd_DepositVelocity_recent_deposit_volume, value) {
+			return
+		}
+	}
+	if x.TimeWindowBlocks != int64(0) {
+		value := protoreflect.ValueOfInt64(x.TimeWindowBlocks)
+		if !f(fd_DepositVelocity_time_window_blocks, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_DepositVelocity) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositVelocity.last_deposit_block":
+		return x.LastDepositBlock != int64(0)
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_count":
+		return x.RecentDepositCount != uint32(0)
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_volume":
+		return x.RecentDepositVolume != ""
+	case "noble.dollar.vaults.v2.DepositVelocity.time_window_blocks":
+		return x.TimeWindowBlocks != int64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositVelocity"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositVelocity does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositVelocity) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositVelocity.last_deposit_block":
+		x.LastDepositBlock = int64(0)
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_count":
+		x.RecentDepositCount = uint32(0)
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_volume":
+		x.RecentDepositVolume = ""
+	case "noble.dollar.vaults.v2.DepositVelocity.time_window_blocks":
+		x.TimeWindowBlocks = int64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositVelocity"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositVelocity does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_DepositVelocity) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.DepositVelocity.last_deposit_block":
+		value := x.LastDepositBlock
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_count":
+		value := x.RecentDepositCount
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_volume":
+		value := x.RecentDepositVolume
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.DepositVelocity.time_window_blocks":
+		value := x.TimeWindowBlocks
+		return protoreflect.ValueOfInt64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositVelocity"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositVelocity does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositVelocity) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositVelocity.last_deposit_block":
+		x.LastDepositBlock = value.Int()
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_count":
+		x.RecentDepositCount = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_volume":
+		x.RecentDepositVolume = value.Interface().(string)
+	case "noble.dollar.vaults.v2.DepositVelocity.time_window_blocks":
+		x.TimeWindowBlocks = value.Int()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositVelocity"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositVelocity does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositVelocity) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositVelocity.last_deposit_block":
+		panic(fmt.Errorf("field last_deposit_block of message noble.dollar.vaults.v2.DepositVelocity is not mutable"))
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_count":
+		panic(fmt.Errorf("field recent_deposit_count of message noble.dollar.vaults.v2.DepositVelocity is not mutable"))
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_volume":
+		panic(fmt.Errorf("field recent_deposit_volume of message noble.dollar.vaults.v2.DepositVelocity is not mutable"))
+	case "noble.dollar.vaults.v2.DepositVelocity.time_window_blocks":
+		panic(fmt.Errorf("field time_window_blocks of message noble.dollar.vaults.v2.DepositVelocity is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositVelocity"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositVelocity does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_DepositVelocity) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.DepositVelocity.last_deposit_block":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_count":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.DepositVelocity.recent_deposit_volume":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.DepositVelocity.time_window_blocks":
+		return protoreflect.ValueOfInt64(int64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.DepositVelocity"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.DepositVelocity does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_DepositVelocity) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.DepositVelocity", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_DepositVelocity) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DepositVelocity) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_DepositVelocity) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_DepositVelocity) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*DepositVelocity)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.LastDepositBlock != 0 {
+			n += 1 + runtime.Sov(uint64(x.LastDepositBlock))
+		}
+		if x.RecentDepositCount != 0 {
+			n += 1 + runtime.Sov(uint64(x.RecentDepositCount))
+		}
+		l = len(x.RecentDepositVolume)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.TimeWindowBlocks != 0 {
+			n += 1 + runtime.Sov(uint64(x.TimeWindowBlocks))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*DepositVelocity)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.TimeWindowBlocks != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.TimeWindowBlocks))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.RecentDepositVolume) > 0 {
+			i -= len(x.RecentDepositVolume)
+			copy(dAtA[i:], x.RecentDepositVolume)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RecentDepositVolume)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RecentDepositCount != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RecentDepositCount))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.LastDepositBlock != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.LastDepositBlock))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*DepositVelocity)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DepositVelocity: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DepositVelocity: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LastDepositBlock", wireType)
+				}
+				x.LastDepositBlock = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.LastDepositBlock |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RecentDepositCount", wireType)
+				}
+				x.RecentDepositCount = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RecentDepositCount |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RecentDepositVolume", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.RecentDepositVolume = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TimeWindowBlocks", wireType)
+				}
+				x.TimeWindowBlocks = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.TimeWindowBlocks |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_TWAPConfig                       protoreflect.MessageDescriptor
+	fd_TWAPConfig_enabled               protoreflect.FieldDescriptor
+	fd_TWAPConfig_window_size           protoreflect.FieldDescriptor
+	fd_TWAPConfig_min_snapshot_interval protoreflect.FieldDescriptor
+	fd_TWAPConfig_max_snapshot_age      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_vaults_proto_init()
+	md_TWAPConfig = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("TWAPConfig")
+	fd_TWAPConfig_enabled = md_TWAPConfig.Fields().ByName("enabled")
+	fd_TWAPConfig_window_size = md_TWAPConfig.Fields().ByName("window_size")
+	fd_TWAPConfig_min_snapshot_interval = md_TWAPConfig.Fields().ByName("min_snapshot_interval")
+	fd_TWAPConfig_max_snapshot_age = md_TWAPConfig.Fields().ByName("max_snapshot_age")
+}
+
+var _ protoreflect.Message = (*fastReflection_TWAPConfig)(nil)
+
+type fastReflection_TWAPConfig TWAPConfig
+
+func (x *TWAPConfig) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_TWAPConfig)(x)
+}
+
+func (x *TWAPConfig) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_TWAPConfig_messageType fastReflection_TWAPConfig_messageType
+var _ protoreflect.MessageType = fastReflection_TWAPConfig_messageType{}
+
+type fastReflection_TWAPConfig_messageType struct{}
+
+func (x fastReflection_TWAPConfig_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_TWAPConfig)(nil)
+}
+func (x fastReflection_TWAPConfig_messageType) New() protoreflect.Message {
+	return new(fastReflection_TWAPConfig)
+}
+func (x fastReflection_TWAPConfig_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_TWAPConfig
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_TWAPConfig) Descriptor() protoreflect.MessageDescriptor {
+	return md_TWAPConfig
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_TWAPConfig) Type() protoreflect.MessageType {
+	return _fastReflection_TWAPConfig_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_TWAPConfig) New() protoreflect.Message {
+	return new(fastReflection_TWAPConfig)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_TWAPConfig) Interface() protoreflect.ProtoMessage {
+	return (*TWAPConfig)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_TWAPConfig) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Enabled != false {
+		value := protoreflect.ValueOfBool(x.Enabled)
+		if !f(fd_TWAPConfig_enabled, value) {
+			return
+		}
+	}
+	if x.WindowSize != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.WindowSize)
+		if !f(fd_TWAPConfig_window_size, value) {
+			return
+		}
+	}
+	if x.MinSnapshotInterval != int64(0) {
+		value := protoreflect.ValueOfInt64(x.MinSnapshotInterval)
+		if !f(fd_TWAPConfig_min_snapshot_interval, value) {
+			return
+		}
+	}
+	if x.MaxSnapshotAge != int64(0) {
+		value := protoreflect.ValueOfInt64(x.MaxSnapshotAge)
+		if !f(fd_TWAPConfig_max_snapshot_age, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_TWAPConfig) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.TWAPConfig.enabled":
+		return x.Enabled != false
+	case "noble.dollar.vaults.v2.TWAPConfig.window_size":
+		return x.WindowSize != uint32(0)
+	case "noble.dollar.vaults.v2.TWAPConfig.min_snapshot_interval":
+		return x.MinSnapshotInterval != int64(0)
+	case "noble.dollar.vaults.v2.TWAPConfig.max_snapshot_age":
+		return x.MaxSnapshotAge != int64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.TWAPConfig"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.TWAPConfig does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_TWAPConfig) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.TWAPConfig.enabled":
+		x.Enabled = false
+	case "noble.dollar.vaults.v2.TWAPConfig.window_size":
+		x.WindowSize = uint32(0)
+	case "noble.dollar.vaults.v2.TWAPConfig.min_snapshot_interval":
+		x.MinSnapshotInterval = int64(0)
+	case "noble.dollar.vaults.v2.TWAPConfig.max_snapshot_age":
+		x.MaxSnapshotAge = int64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.TWAPConfig"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.TWAPConfig does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_TWAPConfig) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.TWAPConfig.enabled":
+		value := x.Enabled
+		return protoreflect.ValueOfBool(value)
+	case "noble.dollar.vaults.v2.TWAPConfig.window_size":
+		value := x.WindowSize
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.TWAPConfig.min_snapshot_interval":
+		value := x.MinSnapshotInterval
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.TWAPConfig.max_snapshot_age":
+		value := x.MaxSnapshotAge
+		return protoreflect.ValueOfInt64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.TWAPConfig"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.TWAPConfig does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_TWAPConfig) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.TWAPConfig.enabled":
+		x.Enabled = value.Bool()
+	case "noble.dollar.vaults.v2.TWAPConfig.window_size":
+		x.WindowSize = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.TWAPConfig.min_snapshot_interval":
+		x.MinSnapshotInterval = value.Int()
+	case "noble.dollar.vaults.v2.TWAPConfig.max_snapshot_age":
+		x.MaxSnapshotAge = value.Int()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.TWAPConfig"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.TWAPConfig does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_TWAPConfig) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.TWAPConfig.enabled":
+		panic(fmt.Errorf("field enabled of message noble.dollar.vaults.v2.TWAPConfig is not mutable"))
+	case "noble.dollar.vaults.v2.TWAPConfig.window_size":
+		panic(fmt.Errorf("field window_size of message noble.dollar.vaults.v2.TWAPConfig is not mutable"))
+	case "noble.dollar.vaults.v2.TWAPConfig.min_snapshot_interval":
+		panic(fmt.Errorf("field min_snapshot_interval of message noble.dollar.vaults.v2.TWAPConfig is not mutable"))
+	case "noble.dollar.vaults.v2.TWAPConfig.max_snapshot_age":
+		panic(fmt.Errorf("field max_snapshot_age of message noble.dollar.vaults.v2.TWAPConfig is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.TWAPConfig"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.TWAPConfig does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_TWAPConfig) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.TWAPConfig.enabled":
+		return protoreflect.ValueOfBool(false)
+	case "noble.dollar.vaults.v2.TWAPConfig.window_size":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.TWAPConfig.min_snapshot_interval":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.TWAPConfig.max_snapshot_age":
+		return protoreflect.ValueOfInt64(int64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.TWAPConfig"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.TWAPConfig does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_TWAPConfig) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.TWAPConfig", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_TWAPConfig) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_TWAPConfig) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_TWAPConfig) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_TWAPConfig) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*TWAPConfig)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Enabled {
+			n += 2
+		}
+		if x.WindowSize != 0 {
+			n += 1 + runtime.Sov(uint64(x.WindowSize))
+		}
+		if x.MinSnapshotInterval != 0 {
+			n += 1 + runtime.Sov(uint64(x.MinSnapshotInterval))
+		}
+		if x.MaxSnapshotAge != 0 {
+			n += 1 + runtime.Sov(uint64(x.MaxSnapshotAge))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*TWAPConfig)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.MaxSnapshotAge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxSnapshotAge))
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.MinSnapshotInterval != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MinSnapshotInterval))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.WindowSize != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.WindowSize))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.Enabled {
+			i--
+			if x.Enabled {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*TWAPConfig)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: TWAPConfig: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: TWAPConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.Enabled = bool(v != 0)
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field WindowSize", wireType)
+				}
+				x.WindowSize = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.WindowSize |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinSnapshotInterval", wireType)
+				}
+				x.MinSnapshotInterval = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.MinSnapshotInterval |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxSnapshotAge", wireType)
+				}
+				x.MaxSnapshotAge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.MaxSnapshotAge |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_NAVSnapshot              protoreflect.MessageDescriptor
+	fd_NAVSnapshot_nav          protoreflect.FieldDescriptor
+	fd_NAVSnapshot_timestamp    protoreflect.FieldDescriptor
+	fd_NAVSnapshot_block_height protoreflect.FieldDescriptor
+	fd_NAVSnapshot_total_shares protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_vaults_proto_init()
+	md_NAVSnapshot = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("NAVSnapshot")
+	fd_NAVSnapshot_nav = md_NAVSnapshot.Fields().ByName("nav")
+	fd_NAVSnapshot_timestamp = md_NAVSnapshot.Fields().ByName("timestamp")
+	fd_NAVSnapshot_block_height = md_NAVSnapshot.Fields().ByName("block_height")
+	fd_NAVSnapshot_total_shares = md_NAVSnapshot.Fields().ByName("total_shares")
+}
+
+var _ protoreflect.Message = (*fastReflection_NAVSnapshot)(nil)
+
+type fastReflection_NAVSnapshot NAVSnapshot
+
+func (x *NAVSnapshot) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_NAVSnapshot)(x)
+}
+
+func (x *NAVSnapshot) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_NAVSnapshot_messageType fastReflection_NAVSnapshot_messageType
+var _ protoreflect.MessageType = fastReflection_NAVSnapshot_messageType{}
+
+type fastReflection_NAVSnapshot_messageType struct{}
+
+func (x fastReflection_NAVSnapshot_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_NAVSnapshot)(nil)
+}
+func (x fastReflection_NAVSnapshot_messageType) New() protoreflect.Message {
+	return new(fastReflection_NAVSnapshot)
+}
+func (x fastReflection_NAVSnapshot_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_NAVSnapshot
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_NAVSnapshot) Descriptor() protoreflect.MessageDescriptor {
+	return md_NAVSnapshot
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_NAVSnapshot) Type() protoreflect.MessageType {
+	return _fastReflection_NAVSnapshot_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_NAVSnapshot) New() protoreflect.Message {
+	return new(fastReflection_NAVSnapshot)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_NAVSnapshot) Interface() protoreflect.ProtoMessage {
+	return (*NAVSnapshot)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_NAVSnapshot) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Nav != "" {
+		value := protoreflect.ValueOfString(x.Nav)
+		if !f(fd_NAVSnapshot_nav, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_NAVSnapshot_timestamp, value) {
+			return
+		}
+	}
+	if x.BlockHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.BlockHeight)
+		if !f(fd_NAVSnapshot_block_height, value) {
+			return
+		}
+	}
+	if x.TotalShares != "" {
+		value := protoreflect.ValueOfString(x.TotalShares)
+		if !f(fd_NAVSnapshot_total_shares, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_NAVSnapshot) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+		return x.Nav != ""
+	case "noble.dollar.vaults.v2.NAVSnapshot.timestamp":
+		return x.Timestamp != nil
+	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+		return x.BlockHeight != int64(0)
+	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+		return x.TotalShares != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NAVSnapshot) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+		x.Nav = ""
+	case "noble.dollar.vaults.v2.NAVSnapshot.timestamp":
+		x.Timestamp = nil
+	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+		x.BlockHeight = int64(0)
+	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+		x.TotalShares = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_NAVSnapshot) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+		value := x.Nav
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.NAVSnapshot.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+		value := x.BlockHeight
+		return protoreflect.ValueOfInt64(value)
+	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+		value := x.TotalShares
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NAVSnapshot) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+		x.Nav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.NAVSnapshot.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+		x.BlockHeight = value.Int()
+	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+		x.TotalShares = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NAVSnapshot) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.NAVSnapshot.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+		panic(fmt.Errorf("field nav of message noble.dollar.vaults.v2.NAVSnapshot is not mutable"))
+	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.NAVSnapshot is not mutable"))
+	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+		panic(fmt.Errorf("field total_shares of message noble.dollar.vaults.v2.NAVSnapshot is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_NAVSnapshot) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.NAVSnapshot.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_NAVSnapshot) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.NAVSnapshot", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_NAVSnapshot) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NAVSnapshot) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_NAVSnapshot) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*NAVSnapshot)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Nav)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BlockHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockHeight))
+		}
+		l = len(x.TotalShares)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*NAVSnapshot)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.TotalShares) > 0 {
+			i -= len(x.TotalShares)
+			copy(dAtA[i:], x.TotalShares)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TotalShares)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if x.BlockHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockHeight))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Nav) > 0 {
+			i -= len(x.Nav)
+			copy(dAtA[i:], x.Nav)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Nav)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*NAVSnapshot)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVSnapshot: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVSnapshot: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Nav", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Nav = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+				}
+				x.BlockHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalShares", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TotalShares = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -5458,6 +7879,280 @@ func (x *YieldDistribution) GetEligibleDepositors() uint64 {
 	return 0
 }
 
+// DepositLimit defines deposit limits and risk controls
+type DepositLimit struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Maximum deposit amount per user per time window
+	MaxUserDepositPerWindow string `protobuf:"bytes,1,opt,name=max_user_deposit_per_window,json=maxUserDepositPerWindow,proto3" json:"max_user_deposit_per_window,omitempty"`
+	// Maximum deposit volume per block
+	MaxBlockDepositVolume string `protobuf:"bytes,2,opt,name=max_block_deposit_volume,json=maxBlockDepositVolume,proto3" json:"max_block_deposit_volume,omitempty"`
+	// Global maximum total deposits (vault capacity)
+	GlobalDepositCap string `protobuf:"bytes,3,opt,name=global_deposit_cap,json=globalDepositCap,proto3" json:"global_deposit_cap,omitempty"`
+	// Cooldown period in blocks between deposits
+	DepositCooldownBlocks int64 `protobuf:"varint,4,opt,name=deposit_cooldown_blocks,json=depositCooldownBlocks,proto3" json:"deposit_cooldown_blocks,omitempty"`
+	// Time window for velocity tracking (in blocks)
+	VelocityWindowBlocks int64 `protobuf:"varint,5,opt,name=velocity_window_blocks,json=velocityWindowBlocks,proto3" json:"velocity_window_blocks,omitempty"`
+	// Maximum number of deposits per user in time window
+	MaxDepositsPerWindow uint32 `protobuf:"varint,6,opt,name=max_deposits_per_window,json=maxDepositsPerWindow,proto3" json:"max_deposits_per_window,omitempty"`
+}
+
+func (x *DepositLimit) Reset() {
+	*x = DepositLimit{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DepositLimit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DepositLimit) ProtoMessage() {}
+
+// Deprecated: Use DepositLimit.ProtoReflect.Descriptor instead.
+func (*DepositLimit) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_vaults_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DepositLimit) GetMaxUserDepositPerWindow() string {
+	if x != nil {
+		return x.MaxUserDepositPerWindow
+	}
+	return ""
+}
+
+func (x *DepositLimit) GetMaxBlockDepositVolume() string {
+	if x != nil {
+		return x.MaxBlockDepositVolume
+	}
+	return ""
+}
+
+func (x *DepositLimit) GetGlobalDepositCap() string {
+	if x != nil {
+		return x.GlobalDepositCap
+	}
+	return ""
+}
+
+func (x *DepositLimit) GetDepositCooldownBlocks() int64 {
+	if x != nil {
+		return x.DepositCooldownBlocks
+	}
+	return 0
+}
+
+func (x *DepositLimit) GetVelocityWindowBlocks() int64 {
+	if x != nil {
+		return x.VelocityWindowBlocks
+	}
+	return 0
+}
+
+func (x *DepositLimit) GetMaxDepositsPerWindow() uint32 {
+	if x != nil {
+		return x.MaxDepositsPerWindow
+	}
+	return 0
+}
+
+// DepositVelocity tracks user deposit velocity for risk monitoring
+type DepositVelocity struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Block height of last deposit
+	LastDepositBlock int64 `protobuf:"varint,1,opt,name=last_deposit_block,json=lastDepositBlock,proto3" json:"last_deposit_block,omitempty"`
+	// Number of deposits in recent time window
+	RecentDepositCount uint32 `protobuf:"varint,2,opt,name=recent_deposit_count,json=recentDepositCount,proto3" json:"recent_deposit_count,omitempty"`
+	// Total volume deposited in recent time window
+	RecentDepositVolume string `protobuf:"bytes,3,opt,name=recent_deposit_volume,json=recentDepositVolume,proto3" json:"recent_deposit_volume,omitempty"`
+	// Time window size in blocks
+	TimeWindowBlocks int64 `protobuf:"varint,4,opt,name=time_window_blocks,json=timeWindowBlocks,proto3" json:"time_window_blocks,omitempty"`
+}
+
+func (x *DepositVelocity) Reset() {
+	*x = DepositVelocity{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DepositVelocity) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DepositVelocity) ProtoMessage() {}
+
+// Deprecated: Use DepositVelocity.ProtoReflect.Descriptor instead.
+func (*DepositVelocity) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_vaults_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DepositVelocity) GetLastDepositBlock() int64 {
+	if x != nil {
+		return x.LastDepositBlock
+	}
+	return 0
+}
+
+func (x *DepositVelocity) GetRecentDepositCount() uint32 {
+	if x != nil {
+		return x.RecentDepositCount
+	}
+	return 0
+}
+
+func (x *DepositVelocity) GetRecentDepositVolume() string {
+	if x != nil {
+		return x.RecentDepositVolume
+	}
+	return ""
+}
+
+func (x *DepositVelocity) GetTimeWindowBlocks() int64 {
+	if x != nil {
+		return x.TimeWindowBlocks
+	}
+	return 0
+}
+
+// TWAPConfig configures Time-Weighted Average Price for share pricing
+type TWAPConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Whether TWAP is enabled for share pricing
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// Number of historical NAV snapshots to include in TWAP calculation
+	WindowSize uint32 `protobuf:"varint,2,opt,name=window_size,json=windowSize,proto3" json:"window_size,omitempty"`
+	// Minimum time between NAV snapshots (in seconds)
+	MinSnapshotInterval int64 `protobuf:"varint,3,opt,name=min_snapshot_interval,json=minSnapshotInterval,proto3" json:"min_snapshot_interval,omitempty"`
+	// Maximum age of snapshots to include (in seconds)
+	MaxSnapshotAge int64 `protobuf:"varint,4,opt,name=max_snapshot_age,json=maxSnapshotAge,proto3" json:"max_snapshot_age,omitempty"`
+}
+
+func (x *TWAPConfig) Reset() {
+	*x = TWAPConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TWAPConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TWAPConfig) ProtoMessage() {}
+
+// Deprecated: Use TWAPConfig.ProtoReflect.Descriptor instead.
+func (*TWAPConfig) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_vaults_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *TWAPConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *TWAPConfig) GetWindowSize() uint32 {
+	if x != nil {
+		return x.WindowSize
+	}
+	return 0
+}
+
+func (x *TWAPConfig) GetMinSnapshotInterval() int64 {
+	if x != nil {
+		return x.MinSnapshotInterval
+	}
+	return 0
+}
+
+func (x *TWAPConfig) GetMaxSnapshotAge() int64 {
+	if x != nil {
+		return x.MaxSnapshotAge
+	}
+	return 0
+}
+
+// NAVSnapshot represents a point-in-time NAV observation for TWAP
+type NAVSnapshot struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// NAV value at this snapshot
+	Nav string `protobuf:"bytes,1,opt,name=nav,proto3" json:"nav,omitempty"`
+	// Timestamp of this snapshot
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// Block height at this snapshot
+	BlockHeight int64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	// Total shares at this snapshot (for reference)
+	TotalShares string `protobuf:"bytes,4,opt,name=total_shares,json=totalShares,proto3" json:"total_shares,omitempty"`
+}
+
+func (x *NAVSnapshot) Reset() {
+	*x = NAVSnapshot{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NAVSnapshot) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NAVSnapshot) ProtoMessage() {}
+
+// Deprecated: Use NAVSnapshot.ProtoReflect.Descriptor instead.
+func (*NAVSnapshot) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_vaults_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *NAVSnapshot) GetNav() string {
+	if x != nil {
+		return x.Nav
+	}
+	return ""
+}
+
+func (x *NAVSnapshot) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+func (x *NAVSnapshot) GetBlockHeight() int64 {
+	if x != nil {
+		return x.BlockHeight
+	}
+	return 0
+}
+
+func (x *NAVSnapshot) GetTotalShares() string {
+	if x != nil {
+		return x.TotalShares
+	}
+	return ""
+}
+
 var File_noble_dollar_vaults_v2_vaults_proto protoreflect.FileDescriptor
 
 var file_noble_dollar_vaults_v2_vaults_proto_rawDesc = []byte{
@@ -5657,36 +8352,111 @@ var file_noble_dollar_vaults_v2_vaults_proto_rawDesc = []byte{
 	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x2f, 0x0a, 0x13, 0x65,
 	0x6c, 0x69, 0x67, 0x69, 0x62, 0x6c, 0x65, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f,
 	0x72, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x65, 0x6c, 0x69, 0x67, 0x69, 0x62,
-	0x6c, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x73, 0x2a, 0xe4, 0x01, 0x0a,
-	0x17, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x25, 0x0a, 0x21, 0x57, 0x49, 0x54, 0x48,
-	0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53,
-	0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47, 0x10, 0x00, 0x12,
-	0x23, 0x0a, 0x1f, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45,
-	0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x52, 0x45, 0x41,
-	0x44, 0x59, 0x10, 0x01, 0x12, 0x27, 0x0a, 0x23, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57,
-	0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55,
-	0x53, 0x5f, 0x50, 0x52, 0x4f, 0x43, 0x45, 0x53, 0x53, 0x45, 0x44, 0x10, 0x02, 0x12, 0x27, 0x0a,
-	0x23, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55,
-	0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x43, 0x41, 0x4e, 0x43, 0x45,
-	0x4c, 0x4c, 0x45, 0x44, 0x10, 0x03, 0x12, 0x25, 0x0a, 0x21, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52,
-	0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41,
-	0x54, 0x55, 0x53, 0x5f, 0x45, 0x58, 0x50, 0x49, 0x52, 0x45, 0x44, 0x10, 0x04, 0x1a, 0x04, 0x88,
-	0xa3, 0x1e, 0x00, 0x42, 0xdd, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
-	0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
-	0x76, 0x32, 0x42, 0x0b, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
-	0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76,
-	0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x4e, 0x44, 0x56,
-	0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e,
-	0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c,
-	0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c,
-	0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x3a,
-	0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x3a,
-	0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6c, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x73, 0x22, 0xee, 0x03, 0x0a,
+	0x0c, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x6e, 0x0a,
+	0x1b, 0x6d, 0x61, 0x78, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x5f, 0x70, 0x65, 0x72, 0x5f, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e,
+	0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8,
+	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x17, 0x6d, 0x61, 0x78, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x70,
+	0x6f, 0x73, 0x69, 0x74, 0x50, 0x65, 0x72, 0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x12, 0x69, 0x0a,
+	0x18, 0x6d, 0x61, 0x78, 0x5f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73,
+	0x69, 0x74, 0x5f, 0x76, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
+	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4,
+	0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x15, 0x6d, 0x61, 0x78, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x44, 0x65, 0x70, 0x6f, 0x73,
+	0x69, 0x74, 0x56, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x12, 0x5e, 0x0a, 0x12, 0x67, 0x6c, 0x6f, 0x62,
+	0x61, 0x6c, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x5f, 0x63, 0x61, 0x70, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e,
+	0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e,
+	0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x10, 0x67, 0x6c, 0x6f, 0x62, 0x61, 0x6c, 0x44, 0x65,
+	0x70, 0x6f, 0x73, 0x69, 0x74, 0x43, 0x61, 0x70, 0x12, 0x36, 0x0a, 0x17, 0x64, 0x65, 0x70, 0x6f,
+	0x73, 0x69, 0x74, 0x5f, 0x63, 0x6f, 0x6f, 0x6c, 0x64, 0x6f, 0x77, 0x6e, 0x5f, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x15, 0x64, 0x65, 0x70, 0x6f, 0x73,
+	0x69, 0x74, 0x43, 0x6f, 0x6f, 0x6c, 0x64, 0x6f, 0x77, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x73,
+	0x12, 0x34, 0x0a, 0x16, 0x76, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x5f, 0x77, 0x69, 0x6e,
+	0x64, 0x6f, 0x77, 0x5f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x14, 0x76, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74, 0x79, 0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77,
+	0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x12, 0x35, 0x0a, 0x17, 0x6d, 0x61, 0x78, 0x5f, 0x64, 0x65,
+	0x70, 0x6f, 0x73, 0x69, 0x74, 0x73, 0x5f, 0x70, 0x65, 0x72, 0x5f, 0x77, 0x69, 0x6e, 0x64, 0x6f,
+	0x77, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x14, 0x6d, 0x61, 0x78, 0x44, 0x65, 0x70, 0x6f,
+	0x73, 0x69, 0x74, 0x73, 0x50, 0x65, 0x72, 0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x22, 0x85, 0x02,
+	0x0a, 0x0f, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x56, 0x65, 0x6c, 0x6f, 0x63, 0x69, 0x74,
+	0x79, 0x12, 0x2c, 0x0a, 0x12, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x5f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x10, 0x6c,
+	0x61, 0x73, 0x74, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x12,
+	0x30, 0x0a, 0x14, 0x72, 0x65, 0x63, 0x65, 0x6e, 0x74, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x12, 0x72,
+	0x65, 0x63, 0x65, 0x6e, 0x74, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x43, 0x6f, 0x75, 0x6e,
+	0x74, 0x12, 0x64, 0x0a, 0x15, 0x72, 0x65, 0x63, 0x65, 0x6e, 0x74, 0x5f, 0x64, 0x65, 0x70, 0x6f,
+	0x73, 0x69, 0x74, 0x5f, 0x76, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2,
+	0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x13, 0x72, 0x65, 0x63, 0x65, 0x6e, 0x74, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x56, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x12, 0x2c, 0x0a, 0x12, 0x74, 0x69, 0x6d, 0x65, 0x5f,
+	0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x5f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x03, 0x52, 0x10, 0x74, 0x69, 0x6d, 0x65, 0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x42,
+	0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x22, 0xa5, 0x01, 0x0a, 0x0a, 0x54, 0x57, 0x41, 0x50, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x1f,
+	0x0a, 0x0b, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0d, 0x52, 0x0a, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x53, 0x69, 0x7a, 0x65, 0x12,
+	0x32, 0x0a, 0x15, 0x6d, 0x69, 0x6e, 0x5f, 0x73, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x5f,
+	0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x13,
+	0x6d, 0x69, 0x6e, 0x53, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x49, 0x6e, 0x74, 0x65, 0x72,
+	0x76, 0x61, 0x6c, 0x12, 0x28, 0x0a, 0x10, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x6e, 0x61, 0x70, 0x73,
+	0x68, 0x6f, 0x74, 0x5f, 0x61, 0x67, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0e, 0x6d,
+	0x61, 0x78, 0x53, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x41, 0x67, 0x65, 0x22, 0x8d, 0x02,
+	0x0a, 0x0b, 0x4e, 0x41, 0x56, 0x53, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x12, 0x42, 0x0a,
+	0x03, 0x6e, 0x61, 0x76, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00,
+	0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
+	0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x03, 0x6e, 0x61,
+	0x76, 0x12, 0x42, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x68,
+	0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x53, 0x0a, 0x0c, 0x74, 0x6f, 0x74, 0x61,
+	0x6c, 0x5f, 0x73, 0x68, 0x61, 0x72, 0x65, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
+	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
+	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,
+	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x0b, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x53, 0x68, 0x61, 0x72, 0x65, 0x73, 0x2a, 0xe4, 0x01,
+	0x0a, 0x17, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x25, 0x0a, 0x21, 0x57, 0x49, 0x54,
+	0x48, 0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f,
+	0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47, 0x10, 0x00,
+	0x12, 0x23, 0x0a, 0x1f, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52,
+	0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x52, 0x45,
+	0x41, 0x44, 0x59, 0x10, 0x01, 0x12, 0x27, 0x0a, 0x23, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41,
+	0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54,
+	0x55, 0x53, 0x5f, 0x50, 0x52, 0x4f, 0x43, 0x45, 0x53, 0x53, 0x45, 0x44, 0x10, 0x02, 0x12, 0x27,
+	0x0a, 0x23, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51,
+	0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x43, 0x41, 0x4e, 0x43,
+	0x45, 0x4c, 0x4c, 0x45, 0x44, 0x10, 0x03, 0x12, 0x25, 0x0a, 0x21, 0x57, 0x49, 0x54, 0x48, 0x44,
+	0x52, 0x41, 0x57, 0x41, 0x4c, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x5f, 0x53, 0x54,
+	0x41, 0x54, 0x55, 0x53, 0x5f, 0x45, 0x58, 0x50, 0x49, 0x52, 0x45, 0x44, 0x10, 0x04, 0x1a, 0x04,
+	0x88, 0xa3, 0x1e, 0x00, 0x42, 0xdd, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62,
+	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x2e, 0x76, 0x32, 0x42, 0x0b, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
+	0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c,
+	0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f,
+	0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x4e, 0x44,
+	0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
+	0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16, 0x4e, 0x6f, 0x62,
+	0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c,
+	0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62, 0x6c, 0x65,
+	0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5702,7 +8472,7 @@ func file_noble_dollar_vaults_v2_vaults_proto_rawDescGZIP() []byte {
 }
 
 var file_noble_dollar_vaults_v2_vaults_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_noble_dollar_vaults_v2_vaults_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_noble_dollar_vaults_v2_vaults_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_noble_dollar_vaults_v2_vaults_proto_goTypes = []interface{}{
 	(WithdrawalRequestStatus)(0),  // 0: noble.dollar.vaults.v2.WithdrawalRequestStatus
 	(*UserPosition)(nil),          // 1: noble.dollar.vaults.v2.UserPosition
@@ -5712,22 +8482,27 @@ var file_noble_dollar_vaults_v2_vaults_proto_goTypes = []interface{}{
 	(*DepositResult)(nil),         // 5: noble.dollar.vaults.v2.DepositResult
 	(*WithdrawalResult)(nil),      // 6: noble.dollar.vaults.v2.WithdrawalResult
 	(*YieldDistribution)(nil),     // 7: noble.dollar.vaults.v2.YieldDistribution
-	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
+	(*DepositLimit)(nil),          // 8: noble.dollar.vaults.v2.DepositLimit
+	(*DepositVelocity)(nil),       // 9: noble.dollar.vaults.v2.DepositVelocity
+	(*TWAPConfig)(nil),            // 10: noble.dollar.vaults.v2.TWAPConfig
+	(*NAVSnapshot)(nil),           // 11: noble.dollar.vaults.v2.NAVSnapshot
+	(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
 }
 var file_noble_dollar_vaults_v2_vaults_proto_depIdxs = []int32{
-	8, // 0: noble.dollar.vaults.v2.UserPosition.first_deposit_time:type_name -> google.protobuf.Timestamp
-	8, // 1: noble.dollar.vaults.v2.UserPosition.last_activity_time:type_name -> google.protobuf.Timestamp
-	8, // 2: noble.dollar.vaults.v2.WithdrawalRequest.request_time:type_name -> google.protobuf.Timestamp
-	8, // 3: noble.dollar.vaults.v2.WithdrawalRequest.unlock_time:type_name -> google.protobuf.Timestamp
-	0, // 4: noble.dollar.vaults.v2.WithdrawalRequest.status:type_name -> noble.dollar.vaults.v2.WithdrawalRequestStatus
-	8, // 5: noble.dollar.vaults.v2.VaultState.last_nav_update:type_name -> google.protobuf.Timestamp
-	8, // 6: noble.dollar.vaults.v2.YieldCalculation.calculation_time:type_name -> google.protobuf.Timestamp
-	8, // 7: noble.dollar.vaults.v2.YieldDistribution.distribution_time:type_name -> google.protobuf.Timestamp
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	12, // 0: noble.dollar.vaults.v2.UserPosition.first_deposit_time:type_name -> google.protobuf.Timestamp
+	12, // 1: noble.dollar.vaults.v2.UserPosition.last_activity_time:type_name -> google.protobuf.Timestamp
+	12, // 2: noble.dollar.vaults.v2.WithdrawalRequest.request_time:type_name -> google.protobuf.Timestamp
+	12, // 3: noble.dollar.vaults.v2.WithdrawalRequest.unlock_time:type_name -> google.protobuf.Timestamp
+	0,  // 4: noble.dollar.vaults.v2.WithdrawalRequest.status:type_name -> noble.dollar.vaults.v2.WithdrawalRequestStatus
+	12, // 5: noble.dollar.vaults.v2.VaultState.last_nav_update:type_name -> google.protobuf.Timestamp
+	12, // 6: noble.dollar.vaults.v2.YieldCalculation.calculation_time:type_name -> google.protobuf.Timestamp
+	12, // 7: noble.dollar.vaults.v2.YieldDistribution.distribution_time:type_name -> google.protobuf.Timestamp
+	12, // 8: noble.dollar.vaults.v2.NAVSnapshot.timestamp:type_name -> google.protobuf.Timestamp
+	9,  // [9:9] is the sub-list for method output_type
+	9,  // [9:9] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_noble_dollar_vaults_v2_vaults_proto_init() }
@@ -5820,6 +8595,54 @@ func file_noble_dollar_vaults_v2_vaults_proto_init() {
 				return nil
 			}
 		}
+		file_noble_dollar_vaults_v2_vaults_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DepositLimit); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_vaults_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DepositVelocity); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_vaults_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TWAPConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_vaults_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NAVSnapshot); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -5827,7 +8650,7 @@ func file_noble_dollar_vaults_v2_vaults_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_noble_dollar_vaults_v2_vaults_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
