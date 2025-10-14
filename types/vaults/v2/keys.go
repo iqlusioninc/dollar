@@ -57,4 +57,7 @@ var (
 	OracleParamsKey                  = []byte("vaults/v2/oracle_params")
 	CrossChainRoutePrefix            = []byte("vaults/v2/cross_chain_route/")
 	CrossChainRouteNextIDKey         = []byte("vaults/v2/cross_chain_route_next_id")
+	BlockDepositVolumePrefix         = []byte("vaults/v2/block_deposit_volume/")
+	NAVSnapshotsPrefix               = []byte("vaults/v2/nav_snapshots/")
+	NAVSnapshotNextIDKey             = []byte("vaults/v2/nav_snapshot_next_id")
 )

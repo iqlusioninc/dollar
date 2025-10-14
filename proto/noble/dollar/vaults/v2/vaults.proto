@@ -342,3 +342,46 @@ message DepositVelocity {
   // Time window size in blocks
   int64 time_window_blocks = 4;
 }
+
+// TWAPConfig configures Time-Weighted Average Price for share pricing
+message TWAPConfig {
+  // Whether TWAP is enabled for share pricing
+  bool enabled = 1;
+
+  // Number of historical NAV snapshots to include in TWAP calculation
+  uint32 window_size = 2;
+
+  // Minimum time between NAV snapshots (in seconds)
+  int64 min_snapshot_interval = 3;
+
+  // Maximum age of snapshots to include (in seconds)
+  int64 max_snapshot_age = 4;
+}
+
+// NAVSnapshot represents a point-in-time NAV observation for TWAP
+message NAVSnapshot {
+  // NAV value at this snapshot
+  string nav = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Timestamp of this snapshot
+  google.protobuf.Timestamp timestamp = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Block height at this snapshot
+  int64 block_height = 3;
+
+  // Total shares at this snapshot (for reference)
+  string total_shares = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}

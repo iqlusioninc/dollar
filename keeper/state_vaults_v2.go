@@ -438,6 +438,11 @@ func (k *Keeper) GetAllVaultsV2RemotePositions(ctx context.Context) ([]RemotePos
 	return positions, err
 }
 
+// IterateVaultsV2RemotePositions iterates over all remote positions and calls the provided function for each.
+func (k *Keeper) IterateVaultsV2RemotePositions(ctx context.Context, fn func(id uint64, position vaultsv2.RemotePosition) (bool, error)) error {
+	return k.VaultsV2RemotePositions.Walk(ctx, nil, fn)
+}
+
 // GetVaultsV2Withdrawal fetches a withdrawal request by id.
 func (k *Keeper) GetVaultsV2Withdrawal(ctx context.Context, id uint64) (vaultsv2.WithdrawalRequest, bool, error) {
 	req, err := k.VaultsV2WithdrawalQueue.Get(ctx, id)
@@ -1012,4 +1017,115 @@ func (k *Keeper) DeleteVaultsV2InflightFund(ctx context.Context, id string) erro
 // IterateVaultsV2InflightFunds walks all inflight fund entries invoking the supplied callback.
 func (k *Keeper) IterateVaultsV2InflightFunds(ctx context.Context, fn func(string, vaultsv2.InflightFund) (bool, error)) error {
 	return k.VaultsV2InflightFunds.Walk(ctx, nil, fn)
+}
+
+// TWAP (Time-Weighted Average Price) Snapshot Management
+
+// NextVaultsV2NAVSnapshotID increments and returns the next NAV snapshot identifier.
+func (k *Keeper) NextVaultsV2NAVSnapshotID(ctx context.Context) (int64, error) {
+	next, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
+	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, err
+		}
+		next = 1
+	} else {
+		next++
+	}
+
+	if err := k.VaultsV2NAVSnapshotNextID.Set(ctx, next); err != nil {
+		return 0, err
+	}
+
+	return next, nil
+}
+
+// AddVaultsV2NAVSnapshot records a new NAV snapshot for TWAP calculations.
+func (k *Keeper) AddVaultsV2NAVSnapshot(ctx context.Context, snapshot vaultsv2.NAVSnapshot) error {
+	id, err := k.NextVaultsV2NAVSnapshotID(ctx)
+	if err != nil {
+		return err
+	}
+
+	return k.VaultsV2NAVSnapshots.Set(ctx, id, snapshot)
+}
+
+// GetVaultsV2NAVSnapshot retrieves a specific NAV snapshot by ID.
+func (k *Keeper) GetVaultsV2NAVSnapshot(ctx context.Context, id int64) (vaultsv2.NAVSnapshot, bool, error) {
+	snapshot, err := k.VaultsV2NAVSnapshots.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.NAVSnapshot{}, false, nil
+		}
+		return vaultsv2.NAVSnapshot{}, false, err
+	}
+
+	return snapshot, true, nil
+}
+
+// GetRecentVaultsV2NAVSnapshots retrieves the N most recent NAV snapshots.
+// Returns snapshots in reverse chronological order (newest first).
+func (k *Keeper) GetRecentVaultsV2NAVSnapshots(ctx context.Context, limit int) ([]vaultsv2.NAVSnapshot, error) {
+	if limit <= 0 {
+		return nil, nil
+	}
+
+	currentID, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	snapshots := make([]vaultsv2.NAVSnapshot, 0, limit)
+
+	// Iterate backwards from most recent
+	for i := currentID - 1; i > 0 && len(snapshots) < limit; i-- {
+		snapshot, found, err := k.GetVaultsV2NAVSnapshot(ctx, i)
+		if err != nil {
+			return nil, err
+		}
+		if found {
+			snapshots = append(snapshots, snapshot)
+		}
+	}
+
+	return snapshots, nil
+}
+
+// PruneOldVaultsV2NAVSnapshots removes snapshots older than the specified age.
+// This helps keep storage bounded for TWAP calculations.
+func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAge int64, currentTime int64) (int, error) {
+	pruned := 0
+	cutoffTime := currentTime - maxAge
+
+	// Get current max ID
+	currentID, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	// Iterate through all snapshots and remove old ones
+	for i := int64(1); i < currentID; i++ {
+		snapshot, found, err := k.GetVaultsV2NAVSnapshot(ctx, i)
+		if err != nil {
+			return pruned, err
+		}
+		if !found {
+			continue
+		}
+
+		if snapshot.Timestamp.Unix() < cutoffTime {
+			if err := k.VaultsV2NAVSnapshots.Remove(ctx, i); err != nil {
+				return pruned, err
+			}
+			pruned++
+		}
+	}
+
+	return pruned, nil
 }

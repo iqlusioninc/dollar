@@ -63,6 +63,103 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
+// calculateTWAPNav computes the Time-Weighted Average Price of NAV using recent snapshots.
+// Returns the TWAP value or the current NAV if TWAP is disabled or insufficient data.
+func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.Int) (sdkmath.Int, error) {
+	params, err := m.GetVaultsV2Params(ctx)
+	if err != nil {
+		return currentNav, errors.Wrap(err, "unable to fetch params")
+	}
+
+	// If TWAP is disabled, use current NAV
+	if !params.TwapConfig.Enabled || params.TwapConfig.WindowSize == 0 {
+		return currentNav, nil
+	}
+
+	// Get recent snapshots
+	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, int(params.TwapConfig.WindowSize))
+	if err != nil {
+		return currentNav, errors.Wrap(err, "unable to fetch NAV snapshots")
+	}
+
+	// If insufficient snapshots, use current NAV
+	if len(snapshots) == 0 {
+		return currentNav, nil
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	currentTime := headerInfo.Time.Unix()
+
+	// Filter snapshots by age
+	validSnapshots := make([]vaultsv2.NAVSnapshot, 0, len(snapshots))
+	for _, snapshot := range snapshots {
+		age := currentTime - snapshot.Timestamp.Unix()
+		if params.TwapConfig.MaxSnapshotAge > 0 && age > params.TwapConfig.MaxSnapshotAge {
+			continue
+		}
+		validSnapshots = append(validSnapshots, snapshot)
+	}
+
+	// If no valid snapshots, use current NAV
+	if len(validSnapshots) == 0 {
+		return currentNav, nil
+	}
+
+	// Calculate Time-Weighted Average
+	// We use simple average for now, but could be enhanced to true time-weighting
+	sum := sdkmath.ZeroInt()
+	for _, snapshot := range validSnapshots {
+		sum, err = sum.SafeAdd(snapshot.Nav)
+		if err != nil {
+			return currentNav, errors.Wrap(err, "overflow in TWAP calculation")
+		}
+	}
+
+	// Include current NAV in the average
+	sum, err = sum.SafeAdd(currentNav)
+	if err != nil {
+		return currentNav, errors.Wrap(err, "overflow adding current NAV to TWAP")
+	}
+
+	count := int64(len(validSnapshots) + 1)
+	twapNav := sum.QuoRaw(count)
+
+	return twapNav, nil
+}
+
+// shouldRecordNAVSnapshot determines if a new NAV snapshot should be recorded.
+func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
+	params, err := m.GetVaultsV2Params(ctx)
+	if err != nil {
+		return false, errors.Wrap(err, "unable to fetch params")
+	}
+
+	// If TWAP is disabled, don't record snapshots
+	if !params.TwapConfig.Enabled {
+		return false, nil
+	}
+
+	// Check minimum interval
+	if params.TwapConfig.MinSnapshotInterval <= 0 {
+		return true, nil // No minimum interval
+	}
+
+	// Get most recent snapshot
+	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, 1)
+	if err != nil {
+		return false, errors.Wrap(err, "unable to fetch recent snapshots")
+	}
+
+	if len(snapshots) == 0 {
+		return true, nil // No previous snapshot, record the first one
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	timeSinceLastSnapshot := headerInfo.Time.Unix() - snapshots[0].Timestamp.Unix()
+
+	return timeSinceLastSnapshot >= params.TwapConfig.MinSnapshotInterval, nil
+}
+
 // UpdateDepositLimits updates the deposit limits and risk control configuration.
 func (m msgServerV2) UpdateDepositLimits(ctx context.Context, msg *vaultsv2.MsgUpdateDepositLimits) (*vaultsv2.MsgUpdateDepositLimitsResponse, error) {
 	if msg == nil {
@@ -283,10 +380,20 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, errors.Wrap(err, "unable to fetch total share supply")
 	}
 
+	// Calculate TWAP NAV for share pricing (protects against manipulation)
+	navForPricing := stateForPricing.TotalNav
+	if totalShares.IsPositive() {
+		twapNav, err := m.calculateTWAPNav(ctx, stateForPricing.TotalNav)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to calculate TWAP NAV")
+		}
+		navForPricing = twapNav
+	}
+
 	mintedShares := msg.Amount
-	if totalShares.IsPositive() && stateForPricing.TotalNav.IsPositive() {
+	if totalShares.IsPositive() && navForPricing.IsPositive() {
 		priceNumerator := totalShares
-		priceDenominator := stateForPricing.TotalNav
+		priceDenominator := navForPricing
 		shares := msg.Amount.Mul(priceNumerator).Quo(priceDenominator)
 		if shares.IsZero() {
 			shares = sdkmath.NewInt(1)
@@ -1973,6 +2080,35 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 
 	if err := m.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
 		return nil, errors.Wrap(err, "unable to persist nav info")
+	}
+
+	// Record NAV snapshot for TWAP if conditions are met
+	shouldRecord, err := m.shouldRecordNAVSnapshot(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to check snapshot recording conditions")
+	}
+
+	if shouldRecord {
+		totalShares, err := m.GetVaultsV2TotalShares(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to fetch total shares for snapshot")
+		}
+
+		snapshot := vaultsv2.NAVSnapshot{
+			Nav:         msg.NewNav,
+			Timestamp:   headerInfo.Time,
+			BlockHeight: sdk.UnwrapSDKContext(ctx).BlockHeight(),
+			TotalShares: totalShares,
+		}
+
+		if err := m.AddVaultsV2NAVSnapshot(ctx, snapshot); err != nil {
+			return nil, errors.Wrap(err, "unable to record NAV snapshot")
+		}
+
+		// Optionally prune old snapshots if max age is configured
+		if params.TwapConfig.MaxSnapshotAge > 0 {
+			_, _ = m.PruneOldVaultsV2NAVSnapshots(ctx, params.TwapConfig.MaxSnapshotAge, headerInfo.Time.Unix())
+		}
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)

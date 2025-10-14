@@ -105,6 +105,8 @@ type Keeper struct {
 	VaultsV2OracleParams                  collections.Item[vaultsv2.OracleGovernanceParams]
 	VaultsV2InflightValueByRoute          collections.Map[uint32, math.Int]
 	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
+	VaultsV2NAVSnapshots                  collections.Map[int64, vaultsv2.NAVSnapshot]
+	VaultsV2NAVSnapshotNextID             collections.Item[int64]
 
 	PortalOwner         collections.Item[string]
 	PortalPaused        collections.Item[bool]
@@ -210,6 +212,8 @@ func NewKeeper(
 		VaultsV2OracleParams:                  collections.NewItem(builder, vaultsv2.OracleParamsKey, "vaults_v2_oracle_params", codec.CollValue[vaultsv2.OracleGovernanceParams](cdc)),
 		VaultsV2InflightValueByRoute:          collections.NewMap(builder, vaultsv2.InflightValueByRoutePrefix, "vaults_v2_inflight_value_by_route", collections.Uint32Key, sdk.IntValue),
 		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
+		VaultsV2NAVSnapshots:                  collections.NewMap(builder, vaultsv2.NAVSnapshotsPrefix, "vaults_v2_nav_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.NAVSnapshot](cdc)),
+		VaultsV2NAVSnapshotNextID:             collections.NewItem(builder, vaultsv2.NAVSnapshotNextIDKey, "vaults_v2_nav_snapshot_next_id", collections.Int64Value),
 
 		PortalOwner:         collections.NewItem(builder, portal.OwnerKey, "portal_owner", collections.StringValue),
 		PortalPaused:        collections.NewItem(builder, portal.PausedKey, "portal_paused", collections.BoolValue),
