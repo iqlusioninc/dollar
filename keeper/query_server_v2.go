@@ -22,6 +22,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -78,6 +79,81 @@ func (q queryServerV2) Params(ctx context.Context, req *vaultsv2.QueryParamsRequ
 	}
 
 	return &vaultsv2.QueryParamsResponse{Params: params}, nil
+}
+
+func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInflightFundsRequest) (*vaultsv2.QueryInflightFundsResponse, error) {
+	if req == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
+	}
+
+	var (
+		funds []vaultsv2.InflightFundView
+		total = sdkmath.ZeroInt()
+	)
+
+	err := q.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+		view := vaultsv2.InflightFundView{
+			TransactionId: fund.TransactionId,
+			Amount:        fund.Amount.String(),
+			CurrentValue:  fund.ValueAtInitiation.String(),
+			InitiatedAt:   fund.InitiatedAt,
+			ExpectedAt:    fund.ExpectedAt,
+			Status:        fund.Status.String(),
+		}
+
+		if origin := fund.GetRemoteOrigin(); origin != nil {
+			view.SourceChain = origin.HyptokenId.String()
+		}
+		if destination := fund.GetRemoteDestination(); destination != nil {
+			view.DestinationChain = destination.VaultAddress.String()
+		}
+		if noble := fund.GetNobleOrigin(); noble != nil {
+			view.Type = noble.OperationType.String()
+		}
+		if nobleDest := fund.GetNobleDestination(); nobleDest != nil {
+			view.Type = nobleDest.OperationType.String()
+		}
+		if tracking := fund.GetProviderTracking(); tracking != nil {
+			if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
+				if hyperlane.OriginDomain != 0 {
+					view.SourceChain = strconv.FormatUint(uint64(hyperlane.OriginDomain), 10)
+				}
+				if hyperlane.DestinationDomain != 0 {
+					view.DestinationChain = strconv.FormatUint(uint64(hyperlane.DestinationDomain), 10)
+					view.RouteId = hyperlane.DestinationDomain
+				}
+			}
+		}
+
+		var err error
+		total, err = total.SafeAdd(fund.Amount)
+		if err != nil {
+			return true, errors.Wrap(err, "unable to accumulate inflight totals")
+		}
+
+		funds = append(funds, view)
+		return false, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	pendingDeployment, err := q.GetVaultsV2PendingDeploymentFunds(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch pending deployment funds")
+	}
+
+	pendingWithdrawalDist, err := q.GetVaultsV2PendingWithdrawalDistribution(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch pending withdrawal distribution")
+	}
+
+	return &vaultsv2.QueryInflightFundsResponse{
+		InflightFunds:                 funds,
+		TotalInflight:                 total.String(),
+		PendingDeployment:             pendingDeployment.String(),
+		PendingWithdrawalDistribution: pendingWithdrawalDist.String(),
+	}, nil
 }
 
 func (q queryServerV2) buildVaultStatsEntry(ctx context.Context) (vaultsv2.VaultStatsEntry, error) {

@@ -22,11 +22,13 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
+	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"dollar.noble.xyz/v3/types"
@@ -405,15 +407,419 @@ func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.M
 }
 
 func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.MsgCreateRemotePosition) (*vaultsv2.MsgCreateRemotePositionResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "create remote position")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Manager != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+	}
+	if msg.ChainId == 0 {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "chain id must be provided")
+	}
+	if msg.VaultAddress == "" {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "vault address must be provided")
+	}
+	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+	}
+	if msg.MinSharesOut.IsPositive() && msg.Amount.LT(msg.MinSharesOut) {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
+	}
+
+	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch pending deployment funds")
+	}
+	if pendingDeployment.LT(msg.Amount) {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient pending deployment funds")
+	}
+
+	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to decode vault address")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	positionID, err := m.NextVaultsV2RemotePositionID(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to allocate remote position id")
+	}
+
+	position := vaultsv2.RemotePosition{
+		VaultAddress: vaultAddress,
+		SharesHeld:   msg.Amount,
+		Principal:    msg.Amount,
+		SharePrice:   sdkmath.LegacyOneDec(),
+		TotalValue:   msg.Amount,
+		LastUpdate:   headerInfo.Time,
+		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
+	}
+
+	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
+		return nil, errors.Wrap(err, "unable to store remote position")
+	}
+
+	if err := m.SetVaultsV2RemotePositionChainID(ctx, positionID, msg.ChainId); err != nil {
+		return nil, errors.Wrap(err, "unable to store remote position chain id")
+	}
+
+	if err := m.SubtractVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
+		return nil, errors.Wrap(err, "unable to update pending deployment funds")
+	}
+
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+	state.LastNavUpdate = headerInfo.Time
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault state")
+	}
+
+	return &vaultsv2.MsgCreateRemotePositionResponse{
+		PositionId:         positionID,
+		RouteId:            msg.ChainId,
+		ExpectedCompletion: headerInfo.Time,
+	}, nil
 }
 
 func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgCloseRemotePosition) (*vaultsv2.MsgCloseRemotePositionResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "close remote position")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Manager != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+	}
+	if msg.PositionId == 0 {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "position id must be provided")
+	}
+
+	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.PositionId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch remote position")
+	}
+	if !found {
+		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
+	}
+	if position.Status == vaultsv2.REMOTE_POSITION_CLOSED {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "remote position already closed")
+	}
+
+	withdrawAmount := position.TotalValue
+	if msg.PartialAmount.IsPositive() {
+		if msg.PartialAmount.GT(position.TotalValue) {
+			return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "partial amount exceeds position value")
+		}
+		withdrawAmount = msg.PartialAmount
+	}
+	if !withdrawAmount.IsPositive() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw amount must be positive")
+	}
+
+	totalValue, err := position.TotalValue.SafeSub(withdrawAmount)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to update position value")
+	}
+	position.TotalValue = totalValue
+
+	shares, err := position.SharesHeld.SafeSub(withdrawAmount)
+	if err != nil {
+		shares = sdkmath.ZeroInt()
+	}
+	position.SharesHeld = shares
+
+	principal := position.Principal
+	if principal.IsPositive() {
+		principal, err = principal.SafeSub(withdrawAmount)
+		if err != nil || principal.IsNegative() {
+			principal = sdkmath.ZeroInt()
+		}
+	}
+	position.Principal = principal
+
+	if position.TotalValue.IsPositive() {
+		position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+	} else {
+		position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	position.LastUpdate = headerInfo.Time
+
+	if err := m.SetVaultsV2RemotePosition(ctx, msg.PositionId, position); err != nil {
+		return nil, errors.Wrap(err, "unable to persist remote position")
+	}
+
+	if err := m.AddVaultsV2PendingWithdrawalDistribution(ctx, withdrawAmount); err != nil {
+		return nil, errors.Wrap(err, "unable to update pending withdrawal distribution")
+	}
+
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+	state.LastNavUpdate = headerInfo.Time
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault state")
+	}
+
+	return &vaultsv2.MsgCloseRemotePositionResponse{
+		PositionId:         msg.PositionId,
+		Initiated:          true,
+		ExpectedCompletion: headerInfo.Time,
+	}, nil
 }
 
 func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) (*vaultsv2.MsgRebalanceResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "rebalance")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+
+	if msg.Manager != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+	}
+
+	if len(msg.TargetAllocations) == 0 {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "at least one target allocation is required")
+	}
+
+	seen := make(map[uint64]struct{}, len(msg.TargetAllocations))
+	var total uint32
+
+	for _, allocation := range msg.TargetAllocations {
+		if allocation == nil {
+			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation cannot be nil")
+		}
+		if allocation.PositionId == 0 {
+			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation position id must be greater than zero")
+		}
+		if allocation.TargetPercentage == 0 {
+			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation percentage must be greater than zero")
+		}
+		if allocation.TargetPercentage > 100 {
+			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocation percentage cannot exceed 100")
+		}
+		if _, exists := seen[allocation.PositionId]; exists {
+			return nil, errors.Wrapf(types.ErrInvalidRequest, "duplicate target allocation for position %d", allocation.PositionId)
+		}
+
+		seen[allocation.PositionId] = struct{}{}
+		total += allocation.TargetPercentage
+		if total > 100 {
+			return nil, errors.Wrap(types.ErrInvalidRequest, "target allocations exceed 100 percent")
+		}
+	}
+
+	positions, err := m.GetAllVaultsV2RemotePositions(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch remote positions")
+	}
+	if len(positions) == 0 {
+		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "no remote positions configured")
+	}
+
+	indexByID := make(map[uint64]int, len(positions))
+	for i := range positions {
+		indexByID[positions[i].ID] = i
+	}
+
+	targetDesired := make(map[uint64]sdkmath.Int, len(msg.TargetAllocations))
+	totalTracked := sdkmath.ZeroInt()
+
+	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch pending deployment funds")
+	}
+
+	totalTracked = pendingDeployment
+	for _, entry := range positions {
+		totalTracked, err = totalTracked.SafeAdd(entry.Position.TotalValue)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to aggregate remote position value")
+		}
+	}
+
+	for _, allocation := range msg.TargetAllocations {
+		idx, ok := indexByID[allocation.PositionId]
+		if !ok {
+			return nil, errors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "target position %d not found", allocation.PositionId)
+		}
+		if totalTracked.IsZero() || allocation.TargetPercentage == 0 {
+			targetDesired[allocation.PositionId] = sdkmath.ZeroInt()
+			continue
+		}
+		desired := totalTracked.MulRaw(int64(allocation.TargetPercentage)).QuoRaw(100)
+
+		// ensure desired value is not greater than the total tracked amount to avoid rounding overflow
+		if desired.GT(totalTracked) {
+			desired = totalTracked
+		}
+
+		targetDesired[allocation.PositionId] = desired
+		positions[idx].Position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	type adjustment struct {
+		index  int
+		amount sdkmath.Int
+	}
+
+	var decreases []adjustment
+	var increases []adjustment
+
+	for i := range positions {
+		id := positions[i].ID
+		current := positions[i].Position.TotalValue
+		desired, ok := targetDesired[id]
+		if !ok {
+			desired = current
+		}
+
+		delta := desired.Sub(current)
+		if delta.IsZero() {
+			continue
+		}
+
+		if delta.IsNegative() {
+			decreases = append(decreases, adjustment{index: i, amount: delta.Neg()})
+		} else {
+			increases = append(increases, adjustment{index: i, amount: delta})
+		}
+	}
+
+	available := pendingDeployment
+	operations := 0
+
+	for _, adj := range decreases {
+		if adj.amount.IsZero() {
+			continue
+		}
+		position := positions[adj.index].Position
+
+		if adj.amount.GT(position.TotalValue) {
+			return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "rebalance reduction exceeds position value")
+		}
+
+		totalValue, err := position.TotalValue.SafeSub(adj.amount)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to reduce position value")
+		}
+		position.TotalValue = totalValue
+
+		shares, err := position.SharesHeld.SafeSub(adj.amount)
+		if err != nil {
+			shares = sdkmath.ZeroInt()
+		}
+		position.SharesHeld = shares
+
+		principal := position.Principal
+		if principal.IsPositive() {
+			principal, err = principal.SafeSub(adj.amount)
+			if err != nil || principal.IsNegative() {
+				principal = sdkmath.ZeroInt()
+			}
+		}
+		position.Principal = principal
+
+		if position.TotalValue.IsPositive() {
+			position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+		} else {
+			position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+		}
+
+		position.LastUpdate = headerInfo.Time
+
+		available, err = available.SafeAdd(adj.amount)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to accumulate freed funds")
+		}
+
+		positions[adj.index].Position = position
+		operations++
+	}
+
+	for _, adj := range increases {
+		if adj.amount.IsZero() {
+			continue
+		}
+		if available.LT(adj.amount) {
+			return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "insufficient liquidity for rebalance")
+		}
+
+		entry := positions[adj.index]
+
+		inflightID, err := m.NextVaultsV2InflightID(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to allocate inflight identifier")
+		}
+
+		destination := &vaultsv2.RemotePosition{
+			HyptokenId:   entry.Position.HyptokenId,
+			VaultAddress: entry.Position.VaultAddress,
+			SharePrice:   entry.Position.SharePrice,
+			Status:       entry.Position.Status,
+		}
+
+		fund := vaultsv2.InflightFund{
+			Id:                strconv.FormatUint(inflightID, 10),
+			TransactionId:     fmt.Sprintf("rebalance:%d", entry.ID),
+			Amount:            adj.amount,
+			ValueAtInitiation: adj.amount,
+			InitiatedAt:       headerInfo.Time,
+			ExpectedAt:        headerInfo.Time,
+			Status:            vaultsv2.INFLIGHT_PENDING,
+			Origin:            &vaultsv2.InflightFund_NobleOrigin{NobleOrigin: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_REBALANCE}},
+			Destination:       &vaultsv2.InflightFund_RemoteDestination{RemoteDestination: destination},
+			ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+				TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+					HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+						DestinationDomain: entry.ChainID,
+					},
+				},
+			},
+		}
+
+		if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
+			return nil, errors.Wrap(err, "unable to persist inflight fund")
+		}
+
+		available, err = available.SafeSub(adj.amount)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to deduct deployed funds")
+		}
+
+		operations++
+	}
+
+	for _, entry := range positions {
+		if err := m.SetVaultsV2RemotePosition(ctx, entry.ID, entry.Position); err != nil {
+			return nil, errors.Wrap(err, "unable to persist remote position")
+		}
+	}
+
+	if err := m.VaultsV2PendingDeploymentFunds.Set(ctx, available); err != nil {
+		return nil, errors.Wrap(err, "unable to persist pending deployment funds")
+	}
+
+	headerInfo = m.header.GetHeaderInfo(ctx)
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+	state.LastNavUpdate = headerInfo.Time
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault state")
+	}
+
+	summary := fmt.Sprintf("rebalanced %d positions; pending deployment %s", operations, available.String())
+
+	return &vaultsv2.MsgRebalanceResponse{
+		OperationsInitiated: int32(operations),
+		Summary:             summary,
+	}, nil
 }
 
 func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteDeposit) (*vaultsv2.MsgRemoteDepositResponse, error) {

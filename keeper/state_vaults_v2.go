@@ -32,6 +32,13 @@ import (
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
+// RemotePositionEntry represents a remote position entry with its identifier and chain metadata.
+type RemotePositionEntry struct {
+	ID       uint64
+	Position vaultsv2.RemotePosition
+	ChainID  uint32
+}
+
 // GetVaultsV2Params returns the currently configured vaults v2 parameters.
 // When no parameters have been stored yet the zero-value configuration is
 // returned without error.
@@ -185,6 +192,97 @@ func (k *Keeper) PeekVaultsV2WithdrawalID(ctx context.Context) (uint64, error) {
 func (k *Keeper) SetVaultsV2Withdrawal(ctx context.Context, id uint64, request vaultsv2.WithdrawalRequest) error {
 	request.RequestId = strconv.FormatUint(id, 10)
 	return k.VaultsV2WithdrawalQueue.Set(ctx, id, request)
+}
+
+// NextVaultsV2RemotePositionID increments and returns the next remote position identifier.
+func (k *Keeper) NextVaultsV2RemotePositionID(ctx context.Context) (uint64, error) {
+	next, err := k.VaultsV2RemotePositionNextID.Get(ctx)
+	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, err
+		}
+		next = 1
+	} else {
+		next++
+	}
+
+	if err := k.VaultsV2RemotePositionNextID.Set(ctx, next); err != nil {
+		return 0, err
+	}
+
+	return next, nil
+}
+
+// GetVaultsV2RemotePosition fetches a remote position entry by id.
+func (k *Keeper) GetVaultsV2RemotePosition(ctx context.Context, id uint64) (vaultsv2.RemotePosition, bool, error) {
+	position, err := k.VaultsV2RemotePositions.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.RemotePosition{}, false, nil
+		}
+		return vaultsv2.RemotePosition{}, false, err
+	}
+
+	return position, true, nil
+}
+
+// SetVaultsV2RemotePosition stores a remote position entry.
+func (k *Keeper) SetVaultsV2RemotePosition(ctx context.Context, id uint64, position vaultsv2.RemotePosition) error {
+	return k.VaultsV2RemotePositions.Set(ctx, id, position)
+}
+
+// DeleteVaultsV2RemotePosition removes a remote position entry and associated metadata.
+func (k *Keeper) DeleteVaultsV2RemotePosition(ctx context.Context, id uint64) error {
+	if err := k.VaultsV2RemotePositions.Remove(ctx, id); err != nil && !errors.Is(err, collections.ErrNotFound) {
+		return err
+	}
+	if err := k.VaultsV2RemotePositionChains.Remove(ctx, id); err != nil && !errors.Is(err, collections.ErrNotFound) {
+		return err
+	}
+	return nil
+}
+
+// GetVaultsV2RemotePositionChainID returns the chain identifier associated with a remote position.
+func (k *Keeper) GetVaultsV2RemotePositionChainID(ctx context.Context, id uint64) (uint32, bool, error) {
+	chainID, err := k.VaultsV2RemotePositionChains.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return 0, false, nil
+		}
+		return 0, false, err
+	}
+
+	return chainID, true, nil
+}
+
+// SetVaultsV2RemotePositionChainID associates a chain identifier with a remote position.
+func (k *Keeper) SetVaultsV2RemotePositionChainID(ctx context.Context, id uint64, chainID uint32) error {
+	return k.VaultsV2RemotePositionChains.Set(ctx, id, chainID)
+}
+
+// GetAllVaultsV2RemotePositions returns all remote positions stored in state.
+func (k *Keeper) GetAllVaultsV2RemotePositions(ctx context.Context) ([]RemotePositionEntry, error) {
+	var positions []RemotePositionEntry
+
+	err := k.VaultsV2RemotePositions.Walk(ctx, nil, func(id uint64, position vaultsv2.RemotePosition) (bool, error) {
+		chainID, err := k.VaultsV2RemotePositionChains.Get(ctx, id)
+		if err != nil {
+			if !errors.Is(err, collections.ErrNotFound) {
+				return true, err
+			}
+			chainID = 0
+		}
+
+		positions = append(positions, RemotePositionEntry{
+			ID:       id,
+			Position: position,
+			ChainID:  chainID,
+		})
+
+		return false, nil
+	})
+
+	return positions, err
 }
 
 // GetVaultsV2Withdrawal fetches a withdrawal request by id.
@@ -469,6 +567,64 @@ func (k *Keeper) SubtractVaultsV2PendingWithdrawalAmount(ctx context.Context, am
 	return k.VaultsV2PendingWithdrawalsAmount.Set(ctx, current)
 }
 
+// GetVaultsV2PendingWithdrawalDistribution returns the amount awaiting distribution post remote withdrawals.
+func (k *Keeper) GetVaultsV2PendingWithdrawalDistribution(ctx context.Context) (math.Int, error) {
+	amount, err := k.VaultsV2PendingWithdrawalDistribution.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return math.ZeroInt(), nil
+		}
+		return math.ZeroInt(), err
+	}
+
+	return amount, nil
+}
+
+// AddVaultsV2PendingWithdrawalDistribution increments the distribution balance.
+func (k *Keeper) AddVaultsV2PendingWithdrawalDistribution(ctx context.Context, amount math.Int) error {
+	if !amount.IsPositive() {
+		return nil
+	}
+
+	current, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
+	if err != nil {
+		return err
+	}
+
+	current, err = current.SafeAdd(amount)
+	if err != nil {
+		return err
+	}
+
+	return k.VaultsV2PendingWithdrawalDistribution.Set(ctx, current)
+}
+
+// SubtractVaultsV2PendingWithdrawalDistribution decrements the distribution balance.
+func (k *Keeper) SubtractVaultsV2PendingWithdrawalDistribution(ctx context.Context, amount math.Int) error {
+	if !amount.IsPositive() {
+		return nil
+	}
+
+	current, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
+	if err != nil {
+		return err
+	}
+
+	current, err = current.SafeSub(amount)
+	if err != nil {
+		return err
+	}
+
+	if !current.IsPositive() {
+		if err := k.VaultsV2PendingWithdrawalDistribution.Remove(ctx); err != nil && !errors.Is(err, collections.ErrNotFound) {
+			return err
+		}
+		return nil
+	}
+
+	return k.VaultsV2PendingWithdrawalDistribution.Set(ctx, current)
+}
+
 // IncrementVaultsV2TotalUsers increases the total user count tracked in the
 // aggregate vault state.
 func (k *Keeper) IncrementVaultsV2TotalUsers(ctx context.Context) error {
@@ -524,4 +680,56 @@ func (k *Keeper) SetVaultsV2RemotePositionOracle(ctx context.Context, positionID
 // oracles invoking the supplied callback for each entry.
 func (k *Keeper) IterateVaultsV2RemotePositionOracles(ctx context.Context, fn func(uint64, vaultsv2.RemotePositionOracle) (bool, error)) error {
 	return k.VaultsV2RemotePositionOracles.Walk(ctx, nil, fn)
+}
+
+// NextVaultsV2InflightID increments and returns the next inflight fund identifier.
+func (k *Keeper) NextVaultsV2InflightID(ctx context.Context) (uint64, error) {
+	next, err := k.VaultsV2InflightNextID.Get(ctx)
+	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, err
+		}
+		next = 1
+	} else {
+		next++
+	}
+
+	if err := k.VaultsV2InflightNextID.Set(ctx, next); err != nil {
+		return 0, err
+	}
+
+	return next, nil
+}
+
+// SetVaultsV2InflightFund stores the provided inflight fund under its identifier.
+func (k *Keeper) SetVaultsV2InflightFund(ctx context.Context, fund vaultsv2.InflightFund) error {
+	if fund.Id == "" {
+		return errors.New("inflight fund identifier cannot be empty")
+	}
+
+	return k.VaultsV2InflightFunds.Set(ctx, fund.Id, fund)
+}
+
+// GetVaultsV2InflightFund fetches an inflight fund by its identifier.
+func (k *Keeper) GetVaultsV2InflightFund(ctx context.Context, id string) (vaultsv2.InflightFund, bool, error) {
+	fund, err := k.VaultsV2InflightFunds.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.InflightFund{}, false, nil
+		}
+
+		return vaultsv2.InflightFund{}, false, err
+	}
+
+	return fund, true, nil
+}
+
+// DeleteVaultsV2InflightFund removes an inflight fund entry from state.
+func (k *Keeper) DeleteVaultsV2InflightFund(ctx context.Context, id string) error {
+	return k.VaultsV2InflightFunds.Remove(ctx, id)
+}
+
+// IterateVaultsV2InflightFunds walks all inflight fund entries invoking the supplied callback.
+func (k *Keeper) IterateVaultsV2InflightFunds(ctx context.Context, fn func(string, vaultsv2.InflightFund) (bool, error)) error {
+	return k.VaultsV2InflightFunds.Walk(ctx, nil, fn)
 }

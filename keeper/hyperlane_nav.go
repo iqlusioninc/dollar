@@ -22,6 +22,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"cosmossdk.io/errors"
@@ -73,6 +74,62 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 
 	if err := k.SetVaultsV2RemotePositionOracle(ctx, payload.PositionID, oracle); err != nil {
 		return nil, errors.Wrap(err, "unable to persist remote position oracle")
+	}
+
+	position, found, err := k.GetVaultsV2RemotePosition(ctx, payload.PositionID)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch remote position")
+	}
+	if found {
+		position.SharePrice = payload.SharePrice
+		position.SharesHeld = payload.SharesHeld
+		position.TotalValue = payload.SharePrice.MulInt(payload.SharesHeld).TruncateInt()
+		position.LastUpdate = payload.Timestamp
+		if position.TotalValue.IsPositive() {
+			position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+		} else {
+			position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+		}
+
+		if payload.InflightAckID != 0 {
+			inflightID := strconv.FormatUint(payload.InflightAckID, 10)
+			fund, inflightFound, err := k.GetVaultsV2InflightFund(ctx, inflightID)
+			if err != nil {
+				return nil, errors.Wrap(err, "unable to fetch inflight fund for acknowledgement")
+			}
+
+			if inflightFound {
+				fund.Status = vaultsv2.INFLIGHT_COMPLETED
+				fund.ExpectedAt = payload.Timestamp
+				if fund.ProviderTracking != nil {
+					if tracking := fund.ProviderTracking.GetHyperlaneTracking(); tracking != nil {
+						tracking.Processed = true
+					}
+				}
+
+				if err := k.SetVaultsV2InflightFund(ctx, fund); err != nil {
+					return nil, errors.Wrap(err, "unable to persist inflight fund acknowledgement")
+				}
+
+				if fund.GetRemoteDestination() != nil {
+					principal, err := position.Principal.SafeAdd(fund.Amount)
+					if err != nil {
+						return nil, errors.Wrap(err, "unable to add inflight amount to remote position principal")
+					}
+					position.Principal = principal
+				} else if fund.GetRemoteOrigin() != nil {
+					principal, err := position.Principal.SafeSub(fund.Amount)
+					if err != nil {
+						return nil, errors.Wrap(err, "unable to subtract inflight amount from remote position principal")
+					}
+					position.Principal = principal
+				}
+			}
+		}
+
+		if err := k.SetVaultsV2RemotePosition(ctx, payload.PositionID, position); err != nil {
+			return nil, errors.Wrap(err, "unable to persist remote position")
+		}
 	}
 
 	updatedNav, err := k.recalculateVaultsV2NAV(ctx, payload.Timestamp)

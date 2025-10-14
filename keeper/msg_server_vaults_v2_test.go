@@ -21,12 +21,14 @@
 package keeper_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
 
 	"cosmossdk.io/core/header"
 	"cosmossdk.io/math"
+	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -929,4 +931,296 @@ func TestCompleteWithdrawalRemovesPosition(t *testing.T) {
 
 	// ASSERT: Bob received all funds back
 	assert.Equal(t, math.NewInt(100*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
+}
+
+func TestCreateRemotePosition(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	pending, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(200*ONE_V2), pending)
+
+	vaultAddress := hyperlaneutil.CreateMockHexAddress("vault", 1).String()
+
+	resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: vaultAddress,
+		ChainId:      8453,
+		Amount:       math.NewInt(150 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, uint64(1), resp.PositionId)
+
+	pending, err = k.GetVaultsV2PendingDeploymentFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(50*ONE_V2), pending)
+
+	position, found, err := k.GetVaultsV2RemotePosition(ctx, resp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(150*ONE_V2), position.TotalValue)
+	assert.Equal(t, math.NewInt(150*ONE_V2), position.SharesHeld)
+	assert.Equal(t, math.NewInt(150*ONE_V2), position.Principal)
+
+	chainID, foundChain, err := k.GetVaultsV2RemotePositionChainID(ctx, resp.PositionId)
+	require.NoError(t, err)
+	require.True(t, foundChain)
+	assert.Equal(t, uint32(8453), chainID)
+}
+
+func TestCloseRemotePositionPartial(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	vaultAddress := hyperlaneutil.CreateMockHexAddress("vault", 2).String()
+	createResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: vaultAddress,
+		ChainId:      998,
+		Amount:       math.NewInt(150 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	resp, err := vaultsV2Server.CloseRemotePosition(ctx, &vaultsv2.MsgCloseRemotePosition{
+		Manager:       "authority",
+		PositionId:    createResp.PositionId,
+		PartialAmount: math.NewInt(100 * ONE_V2),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.True(t, resp.Initiated)
+
+	position, found, err := k.GetVaultsV2RemotePosition(ctx, createResp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.TotalValue)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.SharesHeld)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.Principal)
+	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, position.Status)
+
+	pendingDistribution, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(100*ONE_V2), pendingDistribution)
+}
+
+func TestRebalanceAdjustsPositions(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(300*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(300 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	pos1Addr := hyperlaneutil.CreateMockHexAddress("vault", 3).String()
+	pos2Addr := hyperlaneutil.CreateMockHexAddress("vault", 4).String()
+
+	pos1Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: pos1Addr,
+		ChainId:      8453,
+		Amount:       math.NewInt(150 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	pos2Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: pos2Addr,
+		ChainId:      998,
+		Amount:       math.NewInt(50 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC)})
+
+	resp, err := vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: pos1Resp.PositionId, TargetPercentage: 40},
+			{PositionId: pos2Resp.PositionId, TargetPercentage: 30},
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, int32(2), resp.OperationsInitiated)
+	assert.Contains(t, resp.Summary, "pending deployment 90000000")
+
+	pos1, found, err := k.GetVaultsV2RemotePosition(ctx, pos1Resp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(120*ONE_V2), pos1.TotalValue)
+
+	pos2, found, err := k.GetVaultsV2RemotePosition(ctx, pos2Resp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(50*ONE_V2), pos2.TotalValue)
+
+	pending, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(90*ONE_V2), pending)
+
+	var inflight []vaultsv2.InflightFund
+	err = k.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+		inflight = append(inflight, fund)
+		return false, nil
+	})
+	require.NoError(t, err)
+	require.Len(t, inflight, 1)
+	assert.Equal(t, fmt.Sprintf("rebalance:%d", pos2Resp.PositionId), inflight[0].TransactionId)
+	assert.Equal(t, math.NewInt(40*ONE_V2), inflight[0].Amount)
+	assert.Equal(t, vaultsv2.INFLIGHT_PENDING, inflight[0].Status)
+}
+
+func TestRebalanceInsufficientLiquidity(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	pos1Addr := hyperlaneutil.CreateMockHexAddress("vault", 5).String()
+	pos2Addr := hyperlaneutil.CreateMockHexAddress("vault", 6).String()
+
+	pos1Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: pos1Addr,
+		ChainId:      8453,
+		Amount:       math.NewInt(150 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	_, err = vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: pos2Addr,
+		ChainId:      998,
+		Amount:       math.NewInt(50 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: pos1Resp.PositionId, TargetPercentage: 100},
+		},
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "insufficient liquidity")
+}
+
+func TestRebalanceInvalidAuthority(t *testing.T) {
+	_, vaultsV2Server, _, ctx, _ := setupV2Test(t)
+
+	_, err := vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "noble1unauthorised",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: 1, TargetPercentage: 50},
+		},
+	})
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid authority")
+}
+
+func TestRebalanceInvalidTargets(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	posAddr := hyperlaneutil.CreateMockHexAddress("vault", 7).String()
+	resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: posAddr,
+		ChainId:      8453,
+		Amount:       math.NewInt(100 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "at least one target allocation")
+
+	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: 0, TargetPercentage: 10},
+		},
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "greater than zero")
+
+	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: resp.PositionId, TargetPercentage: 0},
+		},
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "greater than zero")
+
+	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: resp.PositionId, TargetPercentage: 60},
+			{PositionId: resp.PositionId, TargetPercentage: 20},
+		},
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "duplicate target allocation")
+
+	pos2Addr := hyperlaneutil.CreateMockHexAddress("vault", 8).String()
+	pos2Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: pos2Addr,
+		ChainId:      998,
+		Amount:       math.NewInt(50 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
+		Manager: "authority",
+		TargetAllocations: []*vaultsv2.TargetAllocation{
+			{PositionId: resp.PositionId, TargetPercentage: 60},
+			{PositionId: pos2Resp.PositionId, TargetPercentage: 50},
+		},
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "exceed 100 percent")
 }

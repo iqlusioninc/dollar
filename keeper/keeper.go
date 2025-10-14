@@ -78,18 +78,24 @@ type Keeper struct {
 	YieldRecipients    collections.Map[collections.Pair[int32, string], string]
 	RetryAmounts       collections.Map[collections.Pair[int32, string], math.Int]
 
-	VaultsV2Params                   collections.Item[vaultsv2.Params]
-	VaultsV2Config                   collections.Item[vaultsv2.VaultConfig]
-	VaultsV2UserPositions            collections.Map[[]byte, vaultsv2.UserPosition]
-	VaultsV2UserShares               collections.Map[[]byte, math.Int]
-	VaultsV2TotalShares              collections.Item[math.Int]
-	VaultsV2PendingDeploymentFunds   collections.Item[math.Int]
-	VaultsV2PendingWithdrawalsAmount collections.Item[math.Int]
-	VaultsV2WithdrawalQueue          collections.Map[uint64, vaultsv2.WithdrawalRequest]
-	VaultsV2WithdrawalNextID         collections.Item[uint64]
-	VaultsV2NAVInfo                  collections.Item[vaultsv2.NAVInfo]
-	VaultsV2VaultState               collections.Item[vaultsv2.VaultState]
-	VaultsV2RemotePositionOracles    collections.Map[uint64, vaultsv2.RemotePositionOracle]
+	VaultsV2Params                        collections.Item[vaultsv2.Params]
+	VaultsV2Config                        collections.Item[vaultsv2.VaultConfig]
+	VaultsV2UserPositions                 collections.Map[[]byte, vaultsv2.UserPosition]
+	VaultsV2UserShares                    collections.Map[[]byte, math.Int]
+	VaultsV2TotalShares                   collections.Item[math.Int]
+	VaultsV2PendingDeploymentFunds        collections.Item[math.Int]
+	VaultsV2PendingWithdrawalsAmount      collections.Item[math.Int]
+	VaultsV2WithdrawalQueue               collections.Map[uint64, vaultsv2.WithdrawalRequest]
+	VaultsV2WithdrawalNextID              collections.Item[uint64]
+	VaultsV2NAVInfo                       collections.Item[vaultsv2.NAVInfo]
+	VaultsV2VaultState                    collections.Item[vaultsv2.VaultState]
+	VaultsV2RemotePositions               collections.Map[uint64, vaultsv2.RemotePosition]
+	VaultsV2RemotePositionNextID          collections.Item[uint64]
+	VaultsV2RemotePositionChains          collections.Map[uint64, uint32]
+	VaultsV2RemotePositionOracles         collections.Map[uint64, vaultsv2.RemotePositionOracle]
+	VaultsV2InflightFunds                 collections.Map[string, vaultsv2.InflightFund]
+	VaultsV2InflightNextID                collections.Item[uint64]
+	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
 
 	PortalOwner         collections.Item[string]
 	PortalPaused        collections.Item[bool]
@@ -168,18 +174,24 @@ func NewKeeper(
 		YieldRecipients:    collections.NewMap(builder, types.YieldRecipientPrefix, "yield_recipients", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), collections.StringValue),
 		RetryAmounts:       collections.NewMap(builder, types.RetryAmountPrefix, "retry_amounts", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), sdk.IntValue),
 
-		VaultsV2Params:                   collections.NewItem(builder, vaultsv2.ParamsKey, "vaults_v2_params", codec.CollValue[vaultsv2.Params](cdc)),
-		VaultsV2Config:                   collections.NewItem(builder, vaultsv2.VaultConfigurationKey, "vaults_v2_config", codec.CollValue[vaultsv2.VaultConfig](cdc)),
-		VaultsV2UserPositions:            collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
-		VaultsV2UserShares:               collections.NewMap(builder, vaultsv2.UserSharesPrefix, "vaults_v2_user_shares", collections.BytesKey, sdk.IntValue),
-		VaultsV2TotalShares:              collections.NewItem(builder, vaultsv2.TotalSharesKey, "vaults_v2_total_shares", sdk.IntValue),
-		VaultsV2PendingDeploymentFunds:   collections.NewItem(builder, vaultsv2.PendingDeploymentFundsKey, "vaults_v2_pending_deployment", sdk.IntValue),
-		VaultsV2PendingWithdrawalsAmount: collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
-		VaultsV2WithdrawalQueue:          collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),
-		VaultsV2WithdrawalNextID:         collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
-		VaultsV2NAVInfo:                  collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
-		VaultsV2VaultState:               collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
-		VaultsV2RemotePositionOracles:    collections.NewMap(builder, vaultsv2.RemotePositionOraclesPrefix, "vaults_v2_remote_position_oracles", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePositionOracle](cdc)),
+		VaultsV2Params:                        collections.NewItem(builder, vaultsv2.ParamsKey, "vaults_v2_params", codec.CollValue[vaultsv2.Params](cdc)),
+		VaultsV2Config:                        collections.NewItem(builder, vaultsv2.VaultConfigurationKey, "vaults_v2_config", codec.CollValue[vaultsv2.VaultConfig](cdc)),
+		VaultsV2UserPositions:                 collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
+		VaultsV2UserShares:                    collections.NewMap(builder, vaultsv2.UserSharesPrefix, "vaults_v2_user_shares", collections.BytesKey, sdk.IntValue),
+		VaultsV2TotalShares:                   collections.NewItem(builder, vaultsv2.TotalSharesKey, "vaults_v2_total_shares", sdk.IntValue),
+		VaultsV2PendingDeploymentFunds:        collections.NewItem(builder, vaultsv2.PendingDeploymentFundsKey, "vaults_v2_pending_deployment", sdk.IntValue),
+		VaultsV2PendingWithdrawalsAmount:      collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
+		VaultsV2WithdrawalQueue:               collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),
+		VaultsV2WithdrawalNextID:              collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
+		VaultsV2NAVInfo:                       collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
+		VaultsV2VaultState:                    collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
+		VaultsV2RemotePositions:               collections.NewMap(builder, vaultsv2.RemotePositionPrefix, "vaults_v2_remote_positions", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePosition](cdc)),
+		VaultsV2RemotePositionNextID:          collections.NewItem(builder, vaultsv2.RemotePositionNextIDKey, "vaults_v2_remote_position_next_id", collections.Uint64Value),
+		VaultsV2RemotePositionChains:          collections.NewMap(builder, vaultsv2.RemotePositionChainPrefix, "vaults_v2_remote_position_chains", collections.Uint64Key, collections.Uint32Value),
+		VaultsV2RemotePositionOracles:         collections.NewMap(builder, vaultsv2.RemotePositionOraclesPrefix, "vaults_v2_remote_position_oracles", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePositionOracle](cdc)),
+		VaultsV2InflightFunds:                 collections.NewMap(builder, vaultsv2.InflightFundsPrefix, "vaults_v2_inflight_funds", collections.StringKey, codec.CollValue[vaultsv2.InflightFund](cdc)),
+		VaultsV2InflightNextID:                collections.NewItem(builder, vaultsv2.InflightNextIDKey, "vaults_v2_inflight_next_id", collections.Uint64Value),
+		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
 
 		PortalOwner:         collections.NewItem(builder, portal.OwnerKey, "portal_owner", collections.StringValue),
 		PortalPaused:        collections.NewItem(builder, portal.PausedKey, "portal_paused", collections.BoolValue),
