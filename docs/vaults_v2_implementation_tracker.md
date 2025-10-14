@@ -24,10 +24,10 @@ implementation into alignment with the protobuf API and product spec.
   - [x] `MsgCreateCrossChainRoute`
   - [x] `MsgUpdateCrossChainRoute`
   - [x] `MsgDisableCrossChainRoute`
-- [ ] Remote operation initiators
-  - [ ] `MsgRemoteDeposit`
-  - [ ] `MsgRemoteWithdraw`
-  - [ ] `MsgProcessInFlightPosition`
+- [x] Remote operation initiators
+  - [x] `MsgRemoteDeposit`
+  - [x] `MsgRemoteWithdraw`
+  - [x] `MsgProcessInFlightPosition`
 - [ ] Oracle administration
   - [ ] `MsgRegisterOracle`
   - [ ] `MsgUpdateOracleConfig`
@@ -72,3 +72,4 @@ implementation into alignment with the protobuf API and product spec.
 - 2025-03-17: Scoped focus on core message handlers (Part 1).
 - 2025-03-17: Implemented `MsgSetYieldPreference`, `MsgUpdateVaultConfig`, and `MsgUpdateParams`; added unit coverage.
 - 2025-03-17: Implemented cross-chain route lifecycle (`Create`, `Update`, `Disable`) with state storage and tests.
+- 2025-03-17: Implemented remote operation initiators (`RemoteDeposit`, `RemoteWithdraw`, `ProcessInFlightPosition`) with inflight tracking and tests.

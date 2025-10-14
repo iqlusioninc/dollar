@@ -309,6 +309,64 @@ func (k *Keeper) IterateVaultsV2CrossChainRoutes(ctx context.Context, fn func(ui
 	return k.VaultsV2CrossChainRoutes.Walk(ctx, nil, fn)
 }
 
+// GetVaultsV2InflightValueByRoute returns the currently tracked inflight value for a route.
+func (k *Keeper) GetVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32) (math.Int, error) {
+	value, err := k.VaultsV2InflightValueByRoute.Get(ctx, routeID)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return math.ZeroInt(), nil
+		}
+		return math.ZeroInt(), err
+	}
+
+	return value, nil
+}
+
+// AddVaultsV2InflightValueByRoute increments the inflight value tracked for the given route.
+func (k *Keeper) AddVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32, amount math.Int) error {
+	if !amount.IsPositive() {
+		return nil
+	}
+
+	current, err := k.GetVaultsV2InflightValueByRoute(ctx, routeID)
+	if err != nil {
+		return err
+	}
+
+	current, err = current.SafeAdd(amount)
+	if err != nil {
+		return err
+	}
+
+	return k.VaultsV2InflightValueByRoute.Set(ctx, routeID, current)
+}
+
+// SubtractVaultsV2InflightValueByRoute decrements the inflight value tracked for the given route.
+func (k *Keeper) SubtractVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32, amount math.Int) error {
+	if !amount.IsPositive() {
+		return nil
+	}
+
+	current, err := k.GetVaultsV2InflightValueByRoute(ctx, routeID)
+	if err != nil {
+		return err
+	}
+
+	current, err = current.SafeSub(amount)
+	if err != nil {
+		return err
+	}
+
+	if !current.IsPositive() {
+		if err := k.VaultsV2InflightValueByRoute.Remove(ctx, routeID); err != nil && !errors.Is(err, collections.ErrNotFound) {
+			return err
+		}
+		return nil
+	}
+
+	return k.VaultsV2InflightValueByRoute.Set(ctx, routeID, current)
+}
+
 // GetAllVaultsV2RemotePositions returns all remote positions stored in state.
 func (k *Keeper) GetAllVaultsV2RemotePositions(ctx context.Context) ([]RemotePositionEntry, error) {
 	var positions []RemotePositionEntry

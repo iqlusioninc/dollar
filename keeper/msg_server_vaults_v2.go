@@ -59,6 +59,21 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
+func (m msgServerV2) findRemotePositionByAddress(ctx context.Context, address hyperlaneutil.HexAddress) (uint64, vaultsv2.RemotePosition, bool, error) {
+	positions, err := m.GetAllVaultsV2RemotePositions(ctx)
+	if err != nil {
+		return 0, vaultsv2.RemotePosition{}, false, err
+	}
+
+	for _, entry := range positions {
+		if entry.Position.VaultAddress == address {
+			return entry.ID, entry.Position, true, nil
+		}
+	}
+
+	return 0, vaultsv2.RemotePosition{}, false, nil
+}
+
 func NewMsgServerV2(keeper *Keeper) vaultsv2.MsgServer {
 	return &msgServerV2{Keeper: keeper}
 }
@@ -1125,15 +1140,342 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 }
 
 func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteDeposit) (*vaultsv2.MsgRemoteDepositResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "remote deposit")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
+	}
+	if msg.MinShares.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum shares cannot be negative")
+	}
+
+	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+	}
+	if !found {
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+	}
+
+	currentInflight, err := m.GetVaultsV2InflightValueByRoute(ctx, msg.RouteId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch route inflight value")
+	}
+	projected, err := currentInflight.SafeAdd(msg.Amount)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to calculate projected inflight value")
+	}
+	if projected.GT(route.MaxInflightValue) {
+		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "route inflight cap exceeded")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	inflightID, err := m.NextVaultsV2InflightID(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to allocate inflight identifier")
+	}
+
+	sharesAllocated := msg.MinShares
+	if !sharesAllocated.IsPositive() {
+		sharesAllocated = msg.Amount
+	}
+
+	fund := vaultsv2.InflightFund{
+		Id:                strconv.FormatUint(inflightID, 10),
+		TransactionId:     msg.RemoteAddress,
+		Amount:            msg.Amount,
+		ValueAtInitiation: sharesAllocated,
+		InitiatedAt:       headerInfo.Time,
+		ExpectedAt:        headerInfo.Time,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		Origin: &vaultsv2.InflightFund_NobleOrigin{
+			NobleOrigin: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_DEPOSIT},
+		},
+		Destination: &vaultsv2.InflightFund_RemoteDestination{
+			RemoteDestination: &vaultsv2.RemotePosition{
+				HyptokenId:    route.HyptokenId,
+				VaultAddress:  route.RemotePositionAddress,
+				SharesHeld:    sdkmath.ZeroInt(),
+				Principal:     sdkmath.ZeroInt(),
+				SharePrice:    sdkmath.LegacyOneDec(),
+				TotalValue:    sdkmath.ZeroInt(),
+				Status:        vaultsv2.REMOTE_POSITION_ACTIVE,
+				OracleAddress: "",
+				MaxStaleness:  0,
+				LastUpdate:    headerInfo.Time,
+			},
+		},
+		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+					DestinationDomain: msg.RouteId,
+					Nonce:             inflightID,
+					Processed:         false,
+				},
+			},
+		},
+	}
+
+	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, msg.Amount); err != nil {
+		return nil, errors.Wrap(err, "unable to record inflight value for route")
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
+		return nil, errors.Wrap(err, "unable to persist inflight fund")
+	}
+
+	return &vaultsv2.MsgRemoteDepositResponse{
+		Nonce:              inflightID,
+		RouteId:            msg.RouteId,
+		SharesAllocated:    sharesAllocated,
+		AmountSent:         msg.Amount,
+		ExpectedCompletion: headerInfo.Time,
+		ProviderTracking:   fund.ProviderTracking,
+	}, nil
 }
 
 func (m msgServerV2) RemoteWithdraw(ctx context.Context, msg *vaultsv2.MsgRemoteWithdraw) (*vaultsv2.MsgRemoteWithdrawResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "remote withdraw")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Shares.IsNil() || !msg.Shares.IsPositive() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw shares must be positive")
+	}
+	if msg.MinAmount.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum amount cannot be negative")
+	}
+
+	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+	}
+	if !found {
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+	}
+
+	positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, route.RemotePositionAddress)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to lookup remote position")
+	}
+	if !foundPosition {
+		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found for route")
+	}
+	if position.SharesHeld.LT(msg.Shares) {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient remote shares for withdrawal")
+	}
+
+	currentInflight, err := m.GetVaultsV2InflightValueByRoute(ctx, msg.RouteId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch route inflight value")
+	}
+	inflightAmount := msg.MinAmount
+	if !inflightAmount.IsPositive() {
+		inflightAmount = msg.Shares
+	}
+	projected, err := currentInflight.SafeAdd(inflightAmount)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to calculate projected inflight value")
+	}
+	if projected.GT(route.MaxInflightValue) {
+		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "route inflight cap exceeded")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	position.Status = vaultsv2.REMOTE_POSITION_WITHDRAWING
+	position.LastUpdate = headerInfo.Time
+	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
+		return nil, errors.Wrap(err, "unable to update remote position status")
+	}
+
+	inflightID, err := m.NextVaultsV2InflightID(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to allocate inflight identifier")
+	}
+
+	fund := vaultsv2.InflightFund{
+		Id:                strconv.FormatUint(inflightID, 10),
+		TransactionId:     msg.Withdrawer,
+		Amount:            inflightAmount,
+		ValueAtInitiation: msg.Shares,
+		InitiatedAt:       headerInfo.Time,
+		ExpectedAt:        headerInfo.Time,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		Origin: &vaultsv2.InflightFund_RemoteOrigin{
+			RemoteOrigin: &vaultsv2.RemotePosition{
+				HyptokenId:    route.HyptokenId,
+				VaultAddress:  route.RemotePositionAddress,
+				SharesHeld:    position.SharesHeld,
+				Principal:     position.Principal,
+				SharePrice:    position.SharePrice,
+				TotalValue:    position.TotalValue,
+				LastUpdate:    position.LastUpdate,
+				Status:        position.Status,
+				OracleAddress: position.OracleAddress,
+				MaxStaleness:  position.MaxStaleness,
+			},
+		},
+		Destination: &vaultsv2.InflightFund_NobleDestination{
+			NobleDestination: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_WITHDRAWAL},
+		},
+		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+					OriginDomain: msg.RouteId,
+					Nonce:        inflightID,
+					Processed:    false,
+				},
+			},
+		},
+	}
+
+	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, inflightAmount); err != nil {
+		return nil, errors.Wrap(err, "unable to record inflight value for route")
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
+		return nil, errors.Wrap(err, "unable to persist inflight fund")
+	}
+
+	return &vaultsv2.MsgRemoteWithdrawResponse{
+		Nonce:              inflightID,
+		RouteId:            msg.RouteId,
+		SharesWithdrawn:    msg.Shares,
+		ExpectedAmount:     inflightAmount,
+		ExpectedCompletion: headerInfo.Time,
+		ProviderTracking:   fund.ProviderTracking,
+	}, nil
 }
 
 func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.MsgProcessInFlightPosition) (*vaultsv2.MsgProcessInFlightPositionResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "process inflight position")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	inflightID := strconv.FormatUint(msg.Nonce, 10)
+	fund, found, err := m.GetVaultsV2InflightFund(ctx, inflightID)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch inflight fund")
+	}
+	if !found {
+		return nil, errors.Wrap(vaultsv2.ErrInflightNotFound, "inflight fund not found")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	if msg.ProviderTracking != nil {
+		fund.ProviderTracking = msg.ProviderTracking
+	}
+
+	fund.Status = msg.ResultStatus
+	fund.ExpectedAt = headerInfo.Time
+
+	processedAmount := msg.ResultAmount
+	if !processedAmount.IsPositive() {
+		processedAmount = fund.Amount
+	}
+
+	sharesAffected := fund.ValueAtInitiation
+	if !sharesAffected.IsPositive() {
+		sharesAffected = processedAmount
+	}
+
+	var routeID uint32
+	if tracking := fund.GetProviderTracking(); tracking != nil {
+		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
+			if hyperlane.DestinationDomain != 0 {
+				routeID = hyperlane.DestinationDomain
+			} else if hyperlane.OriginDomain != 0 {
+				routeID = hyperlane.OriginDomain
+			}
+			hyperlane.Processed = msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED
+		}
+	}
+
+	removeRouteValue := func(amount sdkmath.Int) {
+		if routeID != 0 && amount.IsPositive() {
+			_ = m.SubtractVaultsV2InflightValueByRoute(ctx, routeID, amount)
+		}
+	}
+
+	switch msg.ResultStatus {
+	case vaultsv2.INFLIGHT_COMPLETED:
+		removeRouteValue(processedAmount)
+
+		if fund.GetOrigin() != nil {
+			if origin := fund.GetRemoteOrigin(); origin != nil {
+				positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, origin.VaultAddress)
+				if err == nil && foundPosition {
+					if sharesAffected.IsPositive() {
+						newShares, err := position.SharesHeld.SafeSub(sharesAffected)
+						if err == nil {
+							position.SharesHeld = newShares
+						} else {
+							position.SharesHeld = sdkmath.ZeroInt()
+						}
+					}
+					if processedAmount.IsPositive() {
+						total, err := position.TotalValue.SafeSub(processedAmount)
+						if err == nil {
+							position.TotalValue = total
+						} else {
+							position.TotalValue = sdkmath.ZeroInt()
+						}
+						principal, err := position.Principal.SafeSub(processedAmount)
+						if err == nil && !principal.IsNegative() {
+							position.Principal = principal
+						} else {
+							position.Principal = sdkmath.ZeroInt()
+						}
+					}
+					if position.SharesHeld.IsPositive() {
+						position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+					} else {
+						position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+					}
+					position.LastUpdate = headerInfo.Time
+					_ = m.SetVaultsV2RemotePosition(ctx, positionID, position)
+				}
+			}
+			if processedAmount.IsPositive() {
+				_ = m.AddVaultsV2PendingWithdrawalDistribution(ctx, processedAmount)
+			}
+		} else if fund.GetDestination() != nil {
+			// Deposit completion – nothing additional for now beyond clearing inflight totals.
+		}
+	case vaultsv2.INFLIGHT_FAILED, vaultsv2.INFLIGHT_TIMEOUT:
+		removeRouteValue(fund.Amount)
+
+		if fund.GetOrigin() == nil && fund.Amount.IsPositive() {
+			_ = m.AddVaultsV2PendingDeploymentFunds(ctx, fund.Amount)
+		}
+
+		if origin := fund.GetRemoteOrigin(); origin != nil {
+			positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, origin.VaultAddress)
+			if err == nil && foundPosition {
+				position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+				position.LastUpdate = headerInfo.Time
+				_ = m.SetVaultsV2RemotePosition(ctx, positionID, position)
+			}
+		}
+	default:
+		// No-op for pending/confirmed transitions.
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
+		return nil, errors.Wrap(err, "unable to persist inflight fund update")
+	}
+
+	return &vaultsv2.MsgProcessInFlightPositionResponse{
+		Nonce:           msg.Nonce,
+		FinalStatus:     msg.ResultStatus,
+		AmountProcessed: processedAmount,
+		SharesAffected:  sharesAffected,
+	}, nil
 }
 
 func (m msgServerV2) RegisterOracle(ctx context.Context, msg *vaultsv2.MsgRegisterOracle) (*vaultsv2.MsgRegisterOracleResponse, error) {

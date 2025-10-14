@@ -1353,6 +1353,26 @@ func TestCreateCrossChainRoute(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, route, stored)
+
+	depResp, err := vaultsV2Server.RemoteDeposit(ctx, &vaultsv2.MsgRemoteDeposit{
+		Depositor:     "noble1depositor",
+		RouteId:       resp.RouteId,
+		Amount:        math.NewInt(25 * ONE_V2),
+		RemoteAddress: "0xrecipient",
+		MinShares:     math.NewInt(20 * ONE_V2),
+	})
+	require.NoError(t, err)
+
+	inflightID := strconv.FormatUint(depResp.Nonce, 10)
+	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
+	require.NoError(t, err)
+	require.True(t, foundFund)
+	assert.Equal(t, math.NewInt(25*ONE_V2), fund.Amount)
+	assert.Equal(t, vaultsv2.INFLIGHT_PENDING, fund.Status)
+
+	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, resp.RouteId)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(25*ONE_V2), routeValue)
 }
 
 func TestUpdateCrossChainRoute(t *testing.T) {
@@ -1398,6 +1418,139 @@ func TestUpdateCrossChainRoute(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, updated, stored)
+}
+
+func TestRemoteWithdrawCreatesInflight(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	route := vaultsv2.CrossChainRoute{
+		HyptokenId:            hyperlaneutil.CreateMockHexAddress("route", 5),
+		ReceiverChainHook:     hyperlaneutil.CreateMockHexAddress("hook", 5),
+		RemotePositionAddress: hyperlaneutil.CreateMockHexAddress("remote", 5),
+		MaxInflightValue:      math.NewInt(1_000 * ONE_V2),
+	}
+
+	createResp, err := vaultsV2Server.CreateCrossChainRoute(ctx, &vaultsv2.MsgCreateCrossChainRoute{
+		Authority: "authority",
+		Route:     route,
+	})
+	require.NoError(t, err)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	targetAddr := route.RemotePositionAddress.String()
+	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: targetAddr,
+		ChainId:      8453,
+		Amount:       math.NewInt(120 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	withdrawResp, err := vaultsV2Server.RemoteWithdraw(ctx, &vaultsv2.MsgRemoteWithdraw{
+		Withdrawer: bob.Address,
+		RouteId:    createResp.RouteId,
+		Shares:     math.NewInt(40 * ONE_V2),
+		MinAmount:  math.NewInt(35 * ONE_V2),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, createResp.RouteId, withdrawResp.RouteId)
+
+	position, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, vaultsv2.REMOTE_POSITION_WITHDRAWING, position.Status)
+
+	inflightID := strconv.FormatUint(withdrawResp.Nonce, 10)
+	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
+	require.NoError(t, err)
+	require.True(t, foundFund)
+	assert.Equal(t, math.NewInt(35*ONE_V2), fund.Amount)
+	assert.Equal(t, math.NewInt(40*ONE_V2), fund.ValueAtInitiation)
+
+	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, createResp.RouteId)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(35*ONE_V2), routeValue)
+}
+
+func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	route := vaultsv2.CrossChainRoute{
+		HyptokenId:            hyperlaneutil.CreateMockHexAddress("route", 6),
+		ReceiverChainHook:     hyperlaneutil.CreateMockHexAddress("hook", 6),
+		RemotePositionAddress: hyperlaneutil.CreateMockHexAddress("remote", 6),
+		MaxInflightValue:      math.NewInt(1_000 * ONE_V2),
+	}
+
+	createResp, err := vaultsV2Server.CreateCrossChainRoute(ctx, &vaultsv2.MsgCreateCrossChainRoute{
+		Authority: "authority",
+		Route:     route,
+	})
+	require.NoError(t, err)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	targetAddr := route.RemotePositionAddress.String()
+	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: targetAddr,
+		ChainId:      8453,
+		Amount:       math.NewInt(120 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	withdrawResp, err := vaultsV2Server.RemoteWithdraw(ctx, &vaultsv2.MsgRemoteWithdraw{
+		Withdrawer: bob.Address,
+		RouteId:    createResp.RouteId,
+		Shares:     math.NewInt(30 * ONE_V2),
+		MinAmount:  math.NewInt(25 * ONE_V2),
+	})
+	require.NoError(t, err)
+
+	_, err = vaultsV2Server.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
+		Authority:    "authority",
+		Nonce:        withdrawResp.Nonce,
+		ResultStatus: vaultsv2.INFLIGHT_COMPLETED,
+		ResultAmount: math.NewInt(28 * ONE_V2),
+		ErrorMessage: "",
+	})
+	require.NoError(t, err)
+
+	position, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, position.Status)
+	assert.Equal(t, math.NewInt(90*ONE_V2), position.SharesHeld)
+	assert.Equal(t, math.NewInt(92*ONE_V2), position.TotalValue)
+
+	inflightID := strconv.FormatUint(withdrawResp.Nonce, 10)
+	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
+	require.NoError(t, err)
+	require.True(t, foundFund)
+	assert.Equal(t, vaultsv2.INFLIGHT_COMPLETED, fund.Status)
+
+	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, createResp.RouteId)
+	require.NoError(t, err)
+	assert.True(t, routeValue.IsZero())
+
+	pendingDistribution, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(28*ONE_V2), pendingDistribution)
 }
 
 func TestDisableCrossChainRoute(t *testing.T) {
