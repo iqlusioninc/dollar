@@ -22,12 +22,172 @@ package keeper
 
 import (
 	"context"
+	"math/big"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/types"
+
+	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
+
+// updateVaultsV2Accounting synchronises the aggregate vault accounting figures
+// with the latest NAV information and distributes accrued yield across user
+// positions proportionally to their share holdings.
+func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
+	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
+	if err != nil {
+		return err
+	}
+
+	if navInfo.CurrentNav.IsNil() {
+		return nil
+	}
+
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return err
+	}
+
+	totalShares, err := k.GetVaultsV2TotalShares(ctx)
+	if err != nil {
+		return err
+	}
+
+	// When there are no active shares, reset accrued yield information and
+	// simply mirror the NAV in the aggregate vault state.
+	if totalShares.IsZero() {
+		if err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
+			if position.AccruedYield.IsZero() {
+				return false, nil
+			}
+
+			position.AccruedYield = sdkmath.ZeroInt()
+			if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
+				return true, err
+			}
+
+			return false, nil
+		}); err != nil {
+			return err
+		}
+
+		state.TotalNav = navInfo.CurrentNav
+
+		if !state.TotalDeposits.IsNil() {
+			if state.TotalAccruedYield, err = navInfo.CurrentNav.SafeSub(state.TotalDeposits); err != nil {
+				return err
+			}
+		} else {
+			state.TotalAccruedYield = sdkmath.ZeroInt()
+		}
+
+		if !navInfo.LastUpdate.IsZero() {
+			state.LastNavUpdate = navInfo.LastUpdate
+		}
+
+		return k.SetVaultsV2VaultState(ctx, state)
+	}
+
+	if state.TotalNav.Equal(navInfo.CurrentNav) && !navInfo.LastUpdate.After(state.LastNavUpdate) {
+		return nil
+	}
+
+	navBig := navInfo.CurrentNav.BigInt()
+	totalSharesBig := totalShares.BigInt()
+
+	residual := new(big.Int)
+	aggregatedYield := sdkmath.ZeroInt()
+	aggregatedDeposits := sdkmath.ZeroInt()
+
+	err = k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
+		shares, err := k.GetVaultsV2UserShares(ctx, address)
+		if err != nil {
+			return true, err
+		}
+
+		if !shares.IsPositive() {
+			pending := position.AmountPendingWithdrawal
+
+			if !position.AccruedYield.IsZero() || position.DepositAmount.IsNil() || !position.DepositAmount.Equal(pending) {
+				position.AccruedYield = sdkmath.ZeroInt()
+				position.DepositAmount = pending
+				if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
+					return true, err
+				}
+			}
+
+			aggregatedDeposits, err = aggregatedDeposits.SafeAdd(pending)
+			if err != nil {
+				return true, err
+			}
+
+			return false, nil
+		}
+
+		numerator := new(big.Int).Mul(navBig, shares.BigInt())
+		quotient := new(big.Int)
+		remainder := new(big.Int)
+		quotient.QuoRem(numerator, totalSharesBig, remainder)
+
+		residual.Add(residual, remainder)
+		if residual.Cmp(totalSharesBig) >= 0 {
+			extra := new(big.Int).Div(new(big.Int).Set(residual), totalSharesBig)
+			if extra.Sign() > 0 {
+				quotient.Add(quotient, extra)
+				residual.Sub(residual, new(big.Int).Mul(totalSharesBig, extra))
+			}
+		}
+
+		value := sdkmath.NewIntFromBigInt(quotient)
+		accruedYield, err := value.SafeSub(shares)
+		if err != nil {
+			return true, err
+		}
+
+		position.AccruedYield = accruedYield
+		depositAmount := shares
+		if position.AmountPendingWithdrawal.IsPositive() {
+			if depositAmount, err = depositAmount.SafeAdd(position.AmountPendingWithdrawal); err != nil {
+				return true, err
+			}
+		}
+		position.DepositAmount = depositAmount
+		if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
+			return true, err
+		}
+
+		aggregatedYield, err = aggregatedYield.SafeAdd(accruedYield)
+		if err != nil {
+			return true, err
+		}
+
+		aggregatedDeposits, err = aggregatedDeposits.SafeAdd(depositAmount)
+		if err != nil {
+			return true, err
+		}
+
+		return false, nil
+	})
+	if err != nil {
+		return err
+	}
+
+	state.TotalAccruedYield = aggregatedYield
+	state.TotalDeposits = aggregatedDeposits
+	state.TotalNav = navInfo.CurrentNav
+	if !navInfo.LastUpdate.IsZero() {
+		state.LastNavUpdate = navInfo.LastUpdate
+	}
+
+	return k.SetVaultsV2VaultState(ctx, state)
+}
 
 // BeginBlocker is called at the beginning of each block.
 func (k *Keeper) BeginBlocker(ctx context.Context) error {
+	if err := k.updateVaultsV2Accounting(ctx); err != nil {
+		return err
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			k.logger.Error("recovered panic while ending vaults season one", "err", r)
