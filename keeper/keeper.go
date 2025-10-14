@@ -89,6 +89,7 @@ type Keeper struct {
 	VaultsV2WithdrawalNextID         collections.Item[uint64]
 	VaultsV2NAVInfo                  collections.Item[vaultsv2.NAVInfo]
 	VaultsV2VaultState               collections.Item[vaultsv2.VaultState]
+	VaultsV2RemotePositionOracles    collections.Map[uint64, vaultsv2.RemotePositionOracle]
 
 	PortalOwner         collections.Item[string]
 	PortalPaused        collections.Item[bool]
@@ -178,6 +179,7 @@ func NewKeeper(
 		VaultsV2WithdrawalNextID:         collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
 		VaultsV2NAVInfo:                  collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
 		VaultsV2VaultState:               collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
+		VaultsV2RemotePositionOracles:    collections.NewMap(builder, vaultsv2.RemotePositionOraclesPrefix, "vaults_v2_remote_position_oracles", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePositionOracle](cdc)),
 
 		PortalOwner:         collections.NewItem(builder, portal.OwnerKey, "portal_owner", collections.StringValue),
 		PortalPaused:        collections.NewItem(builder, portal.PausedKey, "portal_paused", collections.BoolValue),

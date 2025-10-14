@@ -496,3 +496,32 @@ func (k *Keeper) DecrementVaultsV2TotalUsers(ctx context.Context) error {
 
 	return k.SetVaultsV2VaultState(ctx, state)
 }
+
+// GetVaultsV2RemotePositionOracle fetches the oracle tracking information for
+// a remote position. The boolean return value indicates whether the oracle was
+// found in state.
+func (k *Keeper) GetVaultsV2RemotePositionOracle(ctx context.Context, positionID uint64) (vaultsv2.RemotePositionOracle, bool, error) {
+	oracle, err := k.VaultsV2RemotePositionOracles.Get(ctx, positionID)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.RemotePositionOracle{}, false, nil
+		}
+
+		return vaultsv2.RemotePositionOracle{}, false, err
+	}
+
+	return oracle, true, nil
+}
+
+// SetVaultsV2RemotePositionOracle persists the provided oracle configuration
+// for the given position identifier.
+func (k *Keeper) SetVaultsV2RemotePositionOracle(ctx context.Context, positionID uint64, oracle vaultsv2.RemotePositionOracle) error {
+	oracle.PositionId = positionID
+	return k.VaultsV2RemotePositionOracles.Set(ctx, positionID, oracle)
+}
+
+// IterateVaultsV2RemotePositionOracles walks all stored remote position
+// oracles invoking the supplied callback for each entry.
+func (k *Keeper) IterateVaultsV2RemotePositionOracles(ctx context.Context, fn func(uint64, vaultsv2.RemotePositionOracle) (bool, error)) error {
+	return k.VaultsV2RemotePositionOracles.Walk(ctx, nil, fn)
+}
