@@ -98,16 +98,19 @@ func TestBeginBlocker_DistributesPositiveYield(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	require.True(t, alicePosition.AccruedYield.Equal(sdkmath.NewInt(10)))
+	require.True(t, alicePosition.DepositAmount.Equal(deposits[0]))
 
 	bobPosition, found, err := k.GetVaultsV2UserPosition(ctx, bob)
 	require.NoError(t, err)
 	require.True(t, found)
 	require.True(t, bobPosition.AccruedYield.Equal(sdkmath.NewInt(30)))
+	require.True(t, bobPosition.DepositAmount.Equal(deposits[1]))
 
 	state, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	require.True(t, state.TotalAccruedYield.Equal(sdkmath.NewInt(40)))
 	require.True(t, state.TotalNav.Equal(sdkmath.NewInt(440)))
+	require.True(t, state.TotalDeposits.Equal(sdkmath.NewInt(400)))
 	require.True(t, state.LastNavUpdate.Equal(navUpdate.LastUpdate))
 }
 
@@ -131,16 +134,19 @@ func TestBeginBlocker_DistributesLoss(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	require.True(t, firstPosition.AccruedYield.Equal(sdkmath.NewInt(-20)))
+	require.True(t, firstPosition.DepositAmount.Equal(deposits[0]))
 
 	secondPosition, found, err := k.GetVaultsV2UserPosition(ctx, second)
 	require.NoError(t, err)
 	require.True(t, found)
 	require.True(t, secondPosition.AccruedYield.Equal(sdkmath.NewInt(-20)))
+	require.True(t, secondPosition.DepositAmount.Equal(deposits[1]))
 
 	state, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	require.True(t, state.TotalAccruedYield.Equal(sdkmath.NewInt(-40)))
 	require.True(t, state.TotalNav.Equal(sdkmath.NewInt(360)))
+	require.True(t, state.TotalDeposits.Equal(sdkmath.NewInt(400)))
 	require.True(t, state.LastNavUpdate.Equal(navUpdate.LastUpdate))
 }
 
@@ -176,5 +182,6 @@ func TestBeginBlocker_DistributesRemainderFairly(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, state.TotalAccruedYield.Equal(sdkmath.NewInt(97)))
 	require.True(t, state.TotalNav.Equal(sdkmath.NewInt(100)))
+	require.True(t, state.TotalDeposits.Equal(sdkmath.NewInt(3)))
 	require.True(t, state.LastNavUpdate.Equal(navUpdate.LastUpdate))
 }

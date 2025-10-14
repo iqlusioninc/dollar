@@ -97,6 +97,7 @@ func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
 
 	residual := new(big.Int)
 	aggregatedYield := sdkmath.ZeroInt()
+	aggregatedDeposits := sdkmath.ZeroInt()
 
 	err = k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
 		shares, err := k.GetVaultsV2UserShares(ctx, address)
@@ -105,12 +106,21 @@ func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
 		}
 
 		if !shares.IsPositive() {
-			if !position.AccruedYield.IsZero() {
+			pending := position.AmountPendingWithdrawal
+
+			if !position.AccruedYield.IsZero() || position.DepositAmount.IsNil() || !position.DepositAmount.Equal(pending) {
 				position.AccruedYield = sdkmath.ZeroInt()
+				position.DepositAmount = pending
 				if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
 					return true, err
 				}
 			}
+
+			aggregatedDeposits, err = aggregatedDeposits.SafeAdd(pending)
+			if err != nil {
+				return true, err
+			}
+
 			return false, nil
 		}
 
@@ -135,11 +145,23 @@ func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
 		}
 
 		position.AccruedYield = accruedYield
+		depositAmount := shares
+		if position.AmountPendingWithdrawal.IsPositive() {
+			if depositAmount, err = depositAmount.SafeAdd(position.AmountPendingWithdrawal); err != nil {
+				return true, err
+			}
+		}
+		position.DepositAmount = depositAmount
 		if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
 			return true, err
 		}
 
 		aggregatedYield, err = aggregatedYield.SafeAdd(accruedYield)
+		if err != nil {
+			return true, err
+		}
+
+		aggregatedDeposits, err = aggregatedDeposits.SafeAdd(depositAmount)
 		if err != nil {
 			return true, err
 		}
@@ -151,6 +173,7 @@ func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
 	}
 
 	state.TotalAccruedYield = aggregatedYield
+	state.TotalDeposits = aggregatedDeposits
 	state.TotalNav = navInfo.CurrentNav
 	if !navInfo.LastUpdate.IsZero() {
 		state.LastNavUpdate = navInfo.LastUpdate
