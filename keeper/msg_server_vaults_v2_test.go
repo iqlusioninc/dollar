@@ -1553,6 +1553,303 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	assert.Equal(t, math.NewInt(28*ONE_V2), pendingDistribution)
 }
 
+func TestRegisterOracle(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(150*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(150 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	remoteAddr := hyperlaneutil.CreateMockHexAddress("remote", 7)
+	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: remoteAddr.String(),
+		ChainId:      8453,
+		Amount:       math.NewInt(100 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	registerResp, err := vaultsV2Server.RegisterOracle(ctx, &vaultsv2.MsgRegisterOracle{
+		Authority:        "authority",
+		PositionId:       posResp.PositionId,
+		OracleAddress:    hyperlaneutil.CreateMockHexAddress("oracle", 1),
+		SourceChain:      "8453",
+		MaxStaleness:     3600,
+		ProviderType:     vaultsv2.PROVIDER_TYPE_HYPERLANE,
+		OriginIdentifier: "mailbox",
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, registerResp.OracleId)
+
+	oracleMeta, found, err := k.GetVaultsV2EnrolledOracle(ctx, registerResp.OracleId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, posResp.PositionId, oracleMeta.PositionId)
+	assert.True(t, oracleMeta.Active)
+	assert.Equal(t, int64(3600), oracleMeta.MaxStaleness)
+
+	remoteOracle, foundRemote, err := k.GetVaultsV2RemotePositionOracle(ctx, posResp.PositionId)
+	require.NoError(t, err)
+	require.True(t, foundRemote)
+	assert.Equal(t, oracleMeta.OracleAddress, remoteOracle.OracleAddress)
+}
+
+func TestUpdateOracleConfig(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(150*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(150 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	remoteAddr := hyperlaneutil.CreateMockHexAddress("remote", 8)
+	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: remoteAddr.String(),
+		ChainId:      8453,
+		Amount:       math.NewInt(100 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	oracleResp, err := vaultsV2Server.RegisterOracle(ctx, &vaultsv2.MsgRegisterOracle{
+		Authority:        "authority",
+		PositionId:       posResp.PositionId,
+		OracleAddress:    hyperlaneutil.CreateMockHexAddress("oracle", 2),
+		SourceChain:      "8453",
+		MaxStaleness:     1800,
+		ProviderType:     vaultsv2.PROVIDER_TYPE_HYPERLANE,
+		OriginIdentifier: "mailbox",
+	})
+	require.NoError(t, err)
+
+	updateResp, err := vaultsV2Server.UpdateOracleConfig(ctx, &vaultsv2.MsgUpdateOracleConfig{
+		Authority:    "authority",
+		OracleId:     oracleResp.OracleId,
+		MaxStaleness: 90,
+		Active:       false,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, updateResp.UpdatedConfig)
+	assert.Equal(t, int64(90), updateResp.UpdatedConfig.MaxStaleness)
+	assert.False(t, updateResp.UpdatedConfig.Active)
+
+	saved, found, err := k.GetVaultsV2EnrolledOracle(ctx, oracleResp.OracleId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.False(t, saved.Active)
+	assert.Equal(t, int64(90), saved.MaxStaleness)
+}
+
+func TestRemoveOracle(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(150*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(150 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	remoteAddr := hyperlaneutil.CreateMockHexAddress("remote", 9)
+	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: remoteAddr.String(),
+		ChainId:      8453,
+		Amount:       math.NewInt(100 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	oracleResp, err := vaultsV2Server.RegisterOracle(ctx, &vaultsv2.MsgRegisterOracle{
+		Authority:        "authority",
+		PositionId:       posResp.PositionId,
+		OracleAddress:    hyperlaneutil.CreateMockHexAddress("oracle", 3),
+		SourceChain:      "8453",
+		MaxStaleness:     1200,
+		ProviderType:     vaultsv2.PROVIDER_TYPE_HYPERLANE,
+		OriginIdentifier: "mailbox",
+	})
+	require.NoError(t, err)
+
+	removeResp, err := vaultsV2Server.RemoveOracle(ctx, &vaultsv2.MsgRemoveOracle{
+		Authority: "authority",
+		OracleId:  oracleResp.OracleId,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, oracleResp.OracleId, removeResp.OracleId)
+	require.Equal(t, posResp.PositionId, removeResp.PositionId)
+
+	_, found, err := k.GetVaultsV2EnrolledOracle(ctx, oracleResp.OracleId)
+	require.NoError(t, err)
+	assert.False(t, found)
+
+	_, foundRemote, err := k.GetVaultsV2RemotePositionOracle(ctx, posResp.PositionId)
+	require.NoError(t, err)
+	assert.False(t, foundRemote)
+}
+
+func TestUpdateOracleParams(t *testing.T) {
+	k, vaultsV2Server, _, ctx, _ := setupV2Test(t)
+
+	params := vaultsv2.OracleGovernanceParams{
+		MaxUpdateInterval:    600,
+		MinUpdateInterval:    60,
+		MaxPriceDeviationBps: 50,
+		DefaultStaleness: &vaultsv2.StalenessConfig{
+			WarningThreshold:  1800,
+			CriticalThreshold: 3600,
+			MaxStaleness:      5400,
+		},
+	}
+
+	resp, err := vaultsV2Server.UpdateOracleParams(ctx, &vaultsv2.MsgUpdateOracleParams{
+		Authority: "authority",
+		Params:    params,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, params, resp.NewParams)
+	assert.Equal(t, vaultsv2.OracleGovernanceParams{}, resp.PreviousParams)
+
+	stored, err := k.GetVaultsV2OracleParams(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, params, stored)
+}
+
+func TestUpdateNAV(t *testing.T) {
+	k, vaultsV2Server, _, baseCtx, _ := setupV2Test(t)
+
+	initialNav := vaultsv2.NAVInfo{
+		CurrentNav: math.NewInt(100 * ONE_V2),
+	}
+	require.NoError(t, k.SetVaultsV2NAVInfo(baseCtx, initialNav))
+
+	state := vaultsv2.VaultState{
+		TotalDeposits:             math.NewInt(150 * ONE_V2),
+		TotalAccruedYield:         math.NewInt(25 * ONE_V2),
+		TotalNav:                  math.NewInt(100 * ONE_V2),
+		LastNavUpdate:             time.Time{},
+		DepositsEnabled:           true,
+		WithdrawalsEnabled:        true,
+		TotalUsers:                10,
+		PendingWithdrawalRequests: 0,
+	}
+	require.NoError(t, k.SetVaultsV2VaultState(baseCtx, state))
+
+	updateTime := time.Date(2024, 4, 4, 0, 0, 0, 0, time.UTC)
+	ctx := baseCtx.WithHeaderInfo(header.Info{Time: updateTime})
+
+	resp, err := vaultsV2Server.UpdateNAV(ctx, &vaultsv2.MsgUpdateNAV{
+		Authority:   "authority",
+		NewNav:      math.NewInt(110 * ONE_V2),
+		PreviousNav: math.NewInt(100 * ONE_V2),
+		ChangeBps:   0,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, math.NewInt(110*ONE_V2), resp.AppliedNav)
+	assert.Equal(t, updateTime, resp.Timestamp)
+
+	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(100*ONE_V2), navInfo.PreviousNav)
+	assert.Equal(t, math.NewInt(110*ONE_V2), navInfo.CurrentNav)
+	assert.Equal(t, updateTime, navInfo.LastUpdate)
+	assert.NotZero(t, navInfo.ChangeBps)
+
+	updatedState, err := k.GetVaultsV2VaultState(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(110*ONE_V2), updatedState.TotalNav)
+	assert.Equal(t, updateTime, updatedState.LastNavUpdate)
+
+	_, err = vaultsV2Server.UpdateNAV(ctx, &vaultsv2.MsgUpdateNAV{
+		Authority:   "authority",
+		NewNav:      math.NewInt(120 * ONE_V2),
+		PreviousNav: math.NewInt(999),
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "previous nav mismatch")
+}
+
+func TestHandleStaleInflightMarksTimeout(t *testing.T) {
+	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
+
+	route := vaultsv2.CrossChainRoute{
+		HyptokenId:            hyperlaneutil.CreateMockHexAddress("route", 10),
+		ReceiverChainHook:     hyperlaneutil.CreateMockHexAddress("hook", 10),
+		RemotePositionAddress: hyperlaneutil.CreateMockHexAddress("remote", 10),
+		MaxInflightValue:      math.NewInt(1_000 * ONE_V2),
+	}
+
+	routeResp, err := vaultsV2Server.CreateCrossChainRoute(baseCtx, &vaultsv2.MsgCreateCrossChainRoute{
+		Authority: "authority",
+		Route:     route,
+	})
+	require.NoError(t, err)
+
+	require.NoError(t, k.Mint(baseCtx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
+	_, err = vaultsV2Server.Deposit(baseCtx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(200 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	targetAddr := route.RemotePositionAddress.String()
+	_, err = vaultsV2Server.CreateRemotePosition(baseCtx, &vaultsv2.MsgCreateRemotePosition{
+		Manager:      "authority",
+		VaultAddress: targetAddr,
+		ChainId:      8453,
+		Amount:       math.NewInt(120 * ONE_V2),
+		MinSharesOut: math.ZeroInt(),
+	})
+	require.NoError(t, err)
+
+	depositResp, err := vaultsV2Server.RemoteDeposit(baseCtx, &vaultsv2.MsgRemoteDeposit{
+		Depositor:     "noble1depositor",
+		RouteId:       routeResp.RouteId,
+		Amount:        math.NewInt(30 * ONE_V2),
+		RemoteAddress: "0xrecipient",
+		MinShares:     math.NewInt(25 * ONE_V2),
+	})
+	require.NoError(t, err)
+
+	beforePending, err := k.GetVaultsV2PendingDeploymentFunds(baseCtx)
+	require.NoError(t, err)
+
+	ctx := baseCtx.WithHeaderInfo(header.Info{Time: time.Date(2024, 5, 5, 0, 0, 0, 0, time.UTC)})
+	handleResp, err := vaultsV2Server.HandleStaleInflight(ctx, &vaultsv2.MsgHandleStaleInflight{
+		Authority:  "authority",
+		InflightId: strconv.FormatUint(depositResp.Nonce, 10),
+		NewStatus:  vaultsv2.INFLIGHT_TIMEOUT,
+		Reason:     "manual timeout",
+	})
+	require.NoError(t, err)
+	require.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, handleResp.FinalStatus)
+
+	fund, found, err := k.GetVaultsV2InflightFund(ctx, handleResp.InflightId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, fund.Status)
+
+	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, routeResp.RouteId)
+	require.NoError(t, err)
+	assert.True(t, routeValue.IsZero())
+
+	pendingDeployment, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, beforePending, pendingDeployment)
+}
+
 func TestDisableCrossChainRoute(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 

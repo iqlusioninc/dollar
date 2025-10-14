@@ -28,14 +28,14 @@ implementation into alignment with the protobuf API and product spec.
   - [x] `MsgRemoteDeposit`
   - [x] `MsgRemoteWithdraw`
   - [x] `MsgProcessInFlightPosition`
-- [ ] Oracle administration
-  - [ ] `MsgRegisterOracle`
-  - [ ] `MsgUpdateOracleConfig`
-  - [ ] `MsgRemoveOracle`
-  - [ ] `MsgUpdateOracleParams`
-- [ ] NAV management
-  - [ ] `MsgUpdateNAV`
-  - [ ] `MsgHandleStaleInflight`
+- [x] Oracle administration
+  - [x] `MsgRegisterOracle`
+  - [x] `MsgUpdateOracleConfig`
+  - [x] `MsgRemoveOracle`
+  - [x] `MsgUpdateOracleParams`
+- [x] NAV management
+  - [x] `MsgUpdateNAV`
+  - [x] `MsgHandleStaleInflight`
 
 ### 2. Inflight Lifecycle
 
@@ -73,3 +73,4 @@ implementation into alignment with the protobuf API and product spec.
 - 2025-03-17: Implemented `MsgSetYieldPreference`, `MsgUpdateVaultConfig`, and `MsgUpdateParams`; added unit coverage.
 - 2025-03-17: Implemented cross-chain route lifecycle (`Create`, `Update`, `Disable`) with state storage and tests.
 - 2025-03-17: Implemented remote operation initiators (`RemoteDeposit`, `RemoteWithdraw`, `ProcessInFlightPosition`) with inflight tracking and tests.
+- 2025-03-17: Implemented NAV management (`MsgUpdateNAV`, `MsgHandleStaleInflight`) with state updates and regression tests.

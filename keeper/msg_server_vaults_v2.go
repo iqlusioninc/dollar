@@ -42,6 +42,8 @@ type msgServerV2 struct {
 	*Keeper
 }
 
+const navBasisPointsMultiplier int64 = 10_000
+
 func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	if route.HyptokenId.IsZeroAddress() {
 		return errors.Wrap(types.ErrInvalidRequest, "hyptoken identifier cannot be zero")
@@ -72,6 +74,13 @@ func (m msgServerV2) findRemotePositionByAddress(ctx context.Context, address hy
 	}
 
 	return 0, vaultsv2.RemotePosition{}, false, nil
+}
+
+func oracleIdentifier(positionID uint64, sourceChain string) string {
+	if sourceChain == "" {
+		return strconv.FormatUint(positionID, 10)
+	}
+	return fmt.Sprintf("%d:%s", positionID, sourceChain)
 }
 
 func NewMsgServerV2(keeper *Keeper) vaultsv2.MsgServer {
@@ -1362,7 +1371,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		return nil, errors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, errors.Wrap(vaultsv2.ErrInflightNotFound, "inflight fund not found")
+		return nil, errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", msg.Nonce)
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -1479,19 +1488,166 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 }
 
 func (m msgServerV2) RegisterOracle(ctx context.Context, msg *vaultsv2.MsgRegisterOracle) (*vaultsv2.MsgRegisterOracleResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "register oracle")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.PositionId == 0 {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "position id must be provided")
+	}
+
+	routePosition, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, msg.PositionId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch remote position")
+	}
+	if !foundPosition {
+		return nil, errors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
+	}
+
+	oracleID := oracleIdentifier(msg.PositionId, msg.SourceChain)
+	if _, exists, err := m.GetVaultsV2EnrolledOracle(ctx, oracleID); err != nil {
+		return nil, errors.Wrap(err, "unable to check existing oracle")
+	} else if exists {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle already registered")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	remoteChainID, hasChain, err := m.GetVaultsV2RemotePositionChainID(ctx, msg.PositionId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch remote position chain id")
+	}
+	if !hasChain {
+		remoteChainID = 0
+	}
+
+	metadata := vaultsv2.EnrolledOracle{
+		PositionId:    msg.PositionId,
+		SourceChain:   msg.SourceChain,
+		OracleAddress: msg.OracleAddress,
+		MaxStaleness:  msg.MaxStaleness,
+		RegisteredAt:  headerInfo.Time,
+		Active:        true,
+	}
+
+	if err := m.SetVaultsV2EnrolledOracle(ctx, oracleID, metadata); err != nil {
+		return nil, errors.Wrap(err, "unable to persist enrolled oracle")
+	}
+
+	remoteOracle := vaultsv2.RemotePositionOracle{
+		PositionId:    msg.PositionId,
+		ChainId:       remoteChainID,
+		OracleAddress: msg.OracleAddress,
+		VaultAddress:  routePosition.VaultAddress.String(),
+		SharesHeld:    sdkmath.ZeroInt(),
+		SharePrice:    sdkmath.LegacyZeroDec(),
+		LastUpdate:    headerInfo.Time,
+	}
+
+	if err := m.SetVaultsV2RemotePositionOracle(ctx, msg.PositionId, remoteOracle); err != nil {
+		return nil, errors.Wrap(err, "unable to persist remote position oracle")
+	}
+
+	return &vaultsv2.MsgRegisterOracleResponse{
+		OracleId:     oracleID,
+		PositionId:   msg.PositionId,
+		RegisteredAt: headerInfo.Time,
+	}, nil
 }
 
 func (m msgServerV2) UpdateOracleConfig(ctx context.Context, msg *vaultsv2.MsgUpdateOracleConfig) (*vaultsv2.MsgUpdateOracleConfigResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "update oracle config")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.OracleId == "" {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle id must be provided")
+	}
+
+	metadata, found, err := m.GetVaultsV2EnrolledOracle(ctx, msg.OracleId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch enrolled oracle")
+	}
+	if !found {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle not found")
+	}
+
+	if msg.MaxStaleness > 0 {
+		metadata.MaxStaleness = msg.MaxStaleness
+	}
+	metadata.Active = msg.Active
+
+	if err := m.SetVaultsV2EnrolledOracle(ctx, msg.OracleId, metadata); err != nil {
+		return nil, errors.Wrap(err, "unable to persist oracle config")
+	}
+
+	return &vaultsv2.MsgUpdateOracleConfigResponse{
+		OracleId:      msg.OracleId,
+		UpdatedConfig: &metadata,
+	}, nil
 }
 
 func (m msgServerV2) RemoveOracle(ctx context.Context, msg *vaultsv2.MsgRemoveOracle) (*vaultsv2.MsgRemoveOracleResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "remove oracle")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.OracleId == "" {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle id must be provided")
+	}
+
+	metadata, found, err := m.GetVaultsV2EnrolledOracle(ctx, msg.OracleId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch enrolled oracle")
+	}
+	if !found {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "oracle not found")
+	}
+
+	if err := m.DeleteVaultsV2EnrolledOracle(ctx, msg.OracleId); err != nil {
+		return nil, errors.Wrap(err, "unable to delete enrolled oracle")
+	}
+
+	if err := m.DeleteVaultsV2RemotePositionOracle(ctx, metadata.PositionId); err != nil {
+		return nil, errors.Wrap(err, "unable to remove remote position oracle")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	return &vaultsv2.MsgRemoveOracleResponse{
+		OracleId:   msg.OracleId,
+		PositionId: metadata.PositionId,
+		RemovedAt:  headerInfo.Time,
+	}, nil
 }
 
 func (m msgServerV2) UpdateOracleParams(ctx context.Context, msg *vaultsv2.MsgUpdateOracleParams) (*vaultsv2.MsgUpdateOracleParamsResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "update oracle params")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	previous, err := m.GetVaultsV2OracleParams(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch oracle params")
+	}
+
+	if err := m.SetVaultsV2OracleParams(ctx, msg.Params); err != nil {
+		return nil, errors.Wrap(err, "unable to persist oracle params")
+	}
+
+	return &vaultsv2.MsgUpdateOracleParamsResponse{
+		PreviousParams: previous,
+		NewParams:      msg.Params,
+	}, nil
 }
 
 func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaimWithdrawal) (*vaultsv2.MsgClaimWithdrawalResponse, error) {
@@ -1616,9 +1772,120 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 }
 
 func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) (*vaultsv2.MsgUpdateNAVResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "update NAV")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	navInfo, err := m.GetVaultsV2NAVInfo(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch nav info")
+	}
+
+	previousNav := navInfo.CurrentNav
+
+	if msg.PreviousNav.IsPositive() && !previousNav.Equal(msg.PreviousNav) {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "previous nav mismatch")
+	}
+
+	changeBps := msg.ChangeBps
+	if changeBps == 0 && previousNav.IsPositive() {
+		previousDec := previousNav.ToLegacyDec()
+		if !previousDec.IsZero() {
+			delta := msg.NewNav.ToLegacyDec().Sub(previousDec)
+			changeDec := delta.MulInt(sdkmath.NewInt(navBasisPointsMultiplier)).Quo(previousDec)
+			changeBps = int32(changeDec.TruncateInt64())
+		}
+	}
+
+	navInfo.PreviousNav = previousNav
+	navInfo.CurrentNav = msg.NewNav
+	navInfo.LastUpdate = headerInfo.Time
+	navInfo.ChangeBps = changeBps
+	navInfo.CircuitBreakerActive = msg.CircuitBreakerActive
+
+	if err := m.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
+		return nil, errors.Wrap(err, "unable to persist nav info")
+	}
+
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+
+	state.TotalNav = msg.NewNav
+	state.LastNavUpdate = headerInfo.Time
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault state")
+	}
+
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventNAVUpdated{
+		PreviousNav:       previousNav,
+		NewNav:            msg.NewNav,
+		ChangeBps:         changeBps,
+		TotalDeposits:     state.TotalDeposits,
+		TotalAccruedYield: state.TotalAccruedYield,
+		Authority:         msg.Authority,
+		Reason:            "",
+		BlockHeight:       sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:         headerInfo.Time,
+	}); err != nil {
+		return nil, errors.Wrap(err, "unable to emit nav updated event")
+	}
+
+	return &vaultsv2.MsgUpdateNAVResponse{
+		AppliedNav:           msg.NewNav,
+		ChangeBps:            changeBps,
+		Timestamp:            headerInfo.Time,
+		CircuitBreakerActive: msg.CircuitBreakerActive,
+	}, nil
 }
 
 func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgHandleStaleInflight) (*vaultsv2.MsgHandleStaleInflightResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "handle stale inflight")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.InflightId == "" {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "inflight id must be provided")
+	}
+
+	nonce, err := strconv.ParseUint(msg.InflightId, 10, 64)
+	if err != nil {
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid inflight id: %s", msg.InflightId)
+	}
+
+	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.InflightId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch inflight fund")
+	}
+	if !found {
+		return nil, errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.InflightId)
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	returned, err := m.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
+		Authority:        msg.Authority,
+		Nonce:            nonce,
+		ResultStatus:     msg.NewStatus,
+		ResultAmount:     fund.Amount,
+		ErrorMessage:     msg.Reason,
+		ProviderTracking: fund.ProviderTracking,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &vaultsv2.MsgHandleStaleInflightResponse{
+		InflightId:  msg.InflightId,
+		FinalStatus: returned.FinalStatus,
+		HandledAt:   headerInfo.Time,
+	}, nil
 }

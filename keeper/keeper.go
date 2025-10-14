@@ -97,6 +97,8 @@ type Keeper struct {
 	VaultsV2CrossChainRouteNextID         collections.Item[uint32]
 	VaultsV2InflightFunds                 collections.Map[string, vaultsv2.InflightFund]
 	VaultsV2InflightNextID                collections.Item[uint64]
+	VaultsV2EnrolledOracles               collections.Map[string, vaultsv2.EnrolledOracle]
+	VaultsV2OracleParams                  collections.Item[vaultsv2.OracleGovernanceParams]
 	VaultsV2InflightValueByRoute          collections.Map[uint32, math.Int]
 	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
 
@@ -196,6 +198,8 @@ func NewKeeper(
 		VaultsV2CrossChainRouteNextID:         collections.NewItem(builder, vaultsv2.CrossChainRouteNextIDKey, "vaults_v2_cross_chain_route_next_id", collections.Uint32Value),
 		VaultsV2InflightFunds:                 collections.NewMap(builder, vaultsv2.InflightFundsPrefix, "vaults_v2_inflight_funds", collections.StringKey, codec.CollValue[vaultsv2.InflightFund](cdc)),
 		VaultsV2InflightNextID:                collections.NewItem(builder, vaultsv2.InflightNextIDKey, "vaults_v2_inflight_next_id", collections.Uint64Value),
+		VaultsV2EnrolledOracles:               collections.NewMap(builder, vaultsv2.EnrolledOraclePrefix, "vaults_v2_enrolled_oracles", collections.StringKey, codec.CollValue[vaultsv2.EnrolledOracle](cdc)),
+		VaultsV2OracleParams:                  collections.NewItem(builder, vaultsv2.OracleParamsKey, "vaults_v2_oracle_params", codec.CollValue[vaultsv2.OracleGovernanceParams](cdc)),
 		VaultsV2InflightValueByRoute:          collections.NewMap(builder, vaultsv2.InflightValueByRoutePrefix, "vaults_v2_inflight_value_by_route", collections.Uint32Key, sdk.IntValue),
 		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
 

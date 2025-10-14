@@ -309,6 +309,52 @@ func (k *Keeper) IterateVaultsV2CrossChainRoutes(ctx context.Context, fn func(ui
 	return k.VaultsV2CrossChainRoutes.Walk(ctx, nil, fn)
 }
 
+// SetVaultsV2EnrolledOracle stores an enrolled oracle configuration.
+func (k *Keeper) SetVaultsV2EnrolledOracle(ctx context.Context, oracleID string, oracle vaultsv2.EnrolledOracle) error {
+	return k.VaultsV2EnrolledOracles.Set(ctx, oracleID, oracle)
+}
+
+// GetVaultsV2EnrolledOracle retrieves an enrolled oracle configuration.
+func (k *Keeper) GetVaultsV2EnrolledOracle(ctx context.Context, oracleID string) (vaultsv2.EnrolledOracle, bool, error) {
+	oracle, err := k.VaultsV2EnrolledOracles.Get(ctx, oracleID)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.EnrolledOracle{}, false, nil
+		}
+		return vaultsv2.EnrolledOracle{}, false, err
+	}
+
+	return oracle, true, nil
+}
+
+// DeleteVaultsV2EnrolledOracle removes an enrolled oracle configuration.
+func (k *Keeper) DeleteVaultsV2EnrolledOracle(ctx context.Context, oracleID string) error {
+	return k.VaultsV2EnrolledOracles.Remove(ctx, oracleID)
+}
+
+// IterateVaultsV2EnrolledOracles iterates over all enrolled oracles.
+func (k *Keeper) IterateVaultsV2EnrolledOracles(ctx context.Context, fn func(string, vaultsv2.EnrolledOracle) (bool, error)) error {
+	return k.VaultsV2EnrolledOracles.Walk(ctx, nil, fn)
+}
+
+// GetVaultsV2OracleParams returns the stored oracle governance parameters.
+func (k *Keeper) GetVaultsV2OracleParams(ctx context.Context) (vaultsv2.OracleGovernanceParams, error) {
+	params, err := k.VaultsV2OracleParams.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.OracleGovernanceParams{}, nil
+		}
+		return vaultsv2.OracleGovernanceParams{}, err
+	}
+
+	return params, nil
+}
+
+// SetVaultsV2OracleParams stores oracle governance parameters.
+func (k *Keeper) SetVaultsV2OracleParams(ctx context.Context, params vaultsv2.OracleGovernanceParams) error {
+	return k.VaultsV2OracleParams.Set(ctx, params)
+}
+
 // GetVaultsV2InflightValueByRoute returns the currently tracked inflight value for a route.
 func (k *Keeper) GetVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32) (math.Int, error) {
 	value, err := k.VaultsV2InflightValueByRoute.Get(ctx, routeID)
@@ -781,6 +827,11 @@ func (k *Keeper) GetVaultsV2RemotePositionOracle(ctx context.Context, positionID
 func (k *Keeper) SetVaultsV2RemotePositionOracle(ctx context.Context, positionID uint64, oracle vaultsv2.RemotePositionOracle) error {
 	oracle.PositionId = positionID
 	return k.VaultsV2RemotePositionOracles.Set(ctx, positionID, oracle)
+}
+
+// DeleteVaultsV2RemotePositionOracle removes the oracle entry for a position.
+func (k *Keeper) DeleteVaultsV2RemotePositionOracle(ctx context.Context, positionID uint64) error {
+	return k.VaultsV2RemotePositionOracles.Remove(ctx, positionID)
 }
 
 // IterateVaultsV2RemotePositionOracles walks all stored remote position
