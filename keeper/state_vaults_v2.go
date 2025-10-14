@@ -260,6 +260,55 @@ func (k *Keeper) SetVaultsV2RemotePositionChainID(ctx context.Context, id uint64
 	return k.VaultsV2RemotePositionChains.Set(ctx, id, chainID)
 }
 
+// NextVaultsV2CrossChainRouteID increments and returns the next cross-chain route identifier.
+func (k *Keeper) NextVaultsV2CrossChainRouteID(ctx context.Context) (uint32, error) {
+	next, err := k.VaultsV2CrossChainRouteNextID.Get(ctx)
+	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, err
+		}
+
+		next = 1
+	} else {
+		next++
+	}
+
+	if err := k.VaultsV2CrossChainRouteNextID.Set(ctx, next); err != nil {
+		return 0, err
+	}
+
+	return next, nil
+}
+
+// SetVaultsV2CrossChainRoute stores a cross-chain route configuration under the provided identifier.
+func (k *Keeper) SetVaultsV2CrossChainRoute(ctx context.Context, id uint32, route vaultsv2.CrossChainRoute) error {
+	return k.VaultsV2CrossChainRoutes.Set(ctx, id, route)
+}
+
+// GetVaultsV2CrossChainRoute fetches a cross-chain route configuration by identifier.
+func (k *Keeper) GetVaultsV2CrossChainRoute(ctx context.Context, id uint32) (vaultsv2.CrossChainRoute, bool, error) {
+	route, err := k.VaultsV2CrossChainRoutes.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.CrossChainRoute{}, false, nil
+		}
+
+		return vaultsv2.CrossChainRoute{}, false, err
+	}
+
+	return route, true, nil
+}
+
+// DeleteVaultsV2CrossChainRoute removes a cross-chain route configuration.
+func (k *Keeper) DeleteVaultsV2CrossChainRoute(ctx context.Context, id uint32) error {
+	return k.VaultsV2CrossChainRoutes.Remove(ctx, id)
+}
+
+// IterateVaultsV2CrossChainRoutes walks each stored cross-chain route and executes the supplied callback.
+func (k *Keeper) IterateVaultsV2CrossChainRoutes(ctx context.Context, fn func(uint32, vaultsv2.CrossChainRoute) (bool, error)) error {
+	return k.VaultsV2CrossChainRoutes.Walk(ctx, nil, fn)
+}
+
 // GetAllVaultsV2RemotePositions returns all remote positions stored in state.
 func (k *Keeper) GetAllVaultsV2RemotePositions(ctx context.Context) ([]RemotePositionEntry, error) {
 	var positions []RemotePositionEntry

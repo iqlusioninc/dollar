@@ -53,4 +53,6 @@ var (
 	OracleUpdatesPrefix              = []byte("vaults/v2/oracle_updates/")
 	OracleRouteConfigsPrefix         = []byte("vaults/v2/oracle_route_configs/")
 	LastOracleUpdatePrefix           = []byte("vaults/v2/last_oracle_update/")
+	CrossChainRoutePrefix            = []byte("vaults/v2/cross_chain_route/")
+	CrossChainRouteNextIDKey         = []byte("vaults/v2/cross_chain_route_next_id")
 )

@@ -42,6 +42,23 @@ type msgServerV2 struct {
 	*Keeper
 }
 
+func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
+	if route.HyptokenId.IsZeroAddress() {
+		return errors.Wrap(types.ErrInvalidRequest, "hyptoken identifier cannot be zero")
+	}
+	if route.ReceiverChainHook.IsZeroAddress() {
+		return errors.Wrap(types.ErrInvalidRequest, "receiver chain hook cannot be zero")
+	}
+	if route.RemotePositionAddress.IsZeroAddress() {
+		return errors.Wrap(types.ErrInvalidRequest, "remote position address cannot be zero")
+	}
+	if route.MaxInflightValue.IsNegative() || route.MaxInflightValue.IsZero() {
+		return errors.Wrap(vaultsv2.ErrInvalidAmount, "max inflight value must be positive")
+	}
+
+	return nil
+}
+
 func NewMsgServerV2(keeper *Keeper) vaultsv2.MsgServer {
 	return &msgServerV2{Keeper: keeper}
 }
@@ -312,7 +329,59 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 }
 
 func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSetYieldPreference) (*vaultsv2.MsgSetYieldPreferenceResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "set yield preference")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+
+	addrBz, err := m.address.StringToBytes(msg.User)
+	if err != nil {
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid user address: %s", msg.User)
+	}
+	user := sdk.AccAddress(addrBz)
+
+	position, found, err := m.GetVaultsV2UserPosition(ctx, user)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch user position")
+	}
+	if !found {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidVaultState, "user position not found")
+	}
+
+	previousPreference := position.ReceiveYield
+	if previousPreference == msg.ReceiveYield {
+		headerInfo := m.header.GetHeaderInfo(ctx)
+		position.LastActivityTime = headerInfo.Time
+		if err := m.SetVaultsV2UserPosition(ctx, user, position); err != nil {
+			return nil, errors.Wrap(err, "unable to persist user position")
+		}
+		return &vaultsv2.MsgSetYieldPreferenceResponse{
+			PreviousPreference: previousPreference,
+			NewPreference:      msg.ReceiveYield,
+		}, nil
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	position.ReceiveYield = msg.ReceiveYield
+	position.LastActivityTime = headerInfo.Time
+
+	if err := m.SetVaultsV2UserPosition(ctx, user, position); err != nil {
+		return nil, errors.Wrap(err, "unable to persist user position")
+	}
+
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventYieldPreferenceUpdated{
+		User:                    msg.User,
+		PreviousYieldPreference: previousPreference,
+		NewYieldPreference:      msg.ReceiveYield,
+		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:               headerInfo.Time,
+	}); err != nil {
+		return nil, errors.Wrap(err, "unable to emit yield preference event")
+	}
+
+	return &vaultsv2.MsgSetYieldPreferenceResponse{
+		PreviousPreference: previousPreference,
+		NewPreference:      msg.ReceiveYield,
+	}, nil
 }
 
 func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.MsgProcessWithdrawalQueue) (*vaultsv2.MsgProcessWithdrawalQueueResponse, error) {
@@ -387,23 +456,256 @@ func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.M
 }
 
 func (m msgServerV2) UpdateVaultConfig(ctx context.Context, msg *vaultsv2.MsgUpdateVaultConfig) (*vaultsv2.MsgUpdateVaultConfigResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "update vault config")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	if msg.Config.MaxTotalDeposits.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "maximum total deposits cannot be negative")
+	}
+	if msg.Config.TargetYieldRate.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "target yield rate cannot be negative")
+	}
+
+	existingConfig, err := m.GetVaultsV2Config(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch current vault config")
+	}
+
+	if err := m.SetVaultsV2Config(ctx, msg.Config); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault config")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+	state.DepositsEnabled = msg.Config.Enabled
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault state")
+	}
+
+	prevJSON, err := m.cdc.MarshalJSON(&existingConfig)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to marshal previous config")
+	}
+	newJSON, err := m.cdc.MarshalJSON(&msg.Config)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to marshal new config")
+	}
+
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventVaultConfigUpdated{
+		PreviousConfig: string(prevJSON),
+		NewConfig:      string(newJSON),
+		Authority:      msg.Authority,
+		Reason:         msg.Reason,
+		BlockHeight:    sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:      headerInfo.Time,
+	}); err != nil {
+		return nil, errors.Wrap(err, "unable to emit vault config updated event")
+	}
+
+	return &vaultsv2.MsgUpdateVaultConfigResponse{
+		PreviousConfig: string(prevJSON),
+		NewConfig:      string(newJSON),
+	}, nil
 }
 
 func (m msgServerV2) UpdateParams(ctx context.Context, msg *vaultsv2.MsgUpdateParams) (*vaultsv2.MsgUpdateParamsResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "update params")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	if msg.Params.MinDepositAmount.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum deposit amount cannot be negative")
+	}
+	if msg.Params.MinWithdrawalAmount.IsNegative() {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "minimum withdrawal amount cannot be negative")
+	}
+	if msg.Params.MaxNavChangeBps < 0 {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "maximum NAV change must be non-negative")
+	}
+	if msg.Params.WithdrawalRequestTimeout < 0 {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal request timeout must be non-negative")
+	}
+	if msg.Params.MaxWithdrawalRequestsPerBlock < 0 {
+		return nil, errors.Wrap(vaultsv2.ErrInvalidAmount, "max withdrawal requests per block must be non-negative")
+	}
+
+	params := msg.Params
+	params.Authority = m.authority
+
+	if err := m.SetVaultsV2Params(ctx, params); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault params")
+	}
+
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault state")
+	}
+
+	config, err := m.GetVaultsV2Config(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch vault config")
+	}
+
+	state.DepositsEnabled = params.VaultEnabled && config.Enabled
+	state.WithdrawalsEnabled = params.VaultEnabled
+
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, errors.Wrap(err, "unable to persist vault state")
+	}
+
+	return &vaultsv2.MsgUpdateParamsResponse{}, nil
 }
 
 func (m msgServerV2) CreateCrossChainRoute(ctx context.Context, msg *vaultsv2.MsgCreateCrossChainRoute) (*vaultsv2.MsgCreateCrossChainRouteResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "create cross-chain route")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	if err := validateCrossChainRoute(msg.Route); err != nil {
+		return nil, err
+	}
+
+	var duplicateErr error
+	if err := m.IterateVaultsV2CrossChainRoutes(ctx, func(_ uint32, existing vaultsv2.CrossChainRoute) (bool, error) {
+		if existing.RemotePositionAddress == msg.Route.RemotePositionAddress {
+			duplicateErr = errors.Wrap(types.ErrInvalidRequest, "cross-chain route already exists for remote position address")
+			return true, nil
+		}
+		return false, nil
+	}); err != nil {
+		return nil, errors.Wrap(err, "unable to verify existing routes")
+	}
+	if duplicateErr != nil {
+		return nil, duplicateErr
+	}
+
+	routeID, err := m.NextVaultsV2CrossChainRouteID(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to allocate cross-chain route id")
+	}
+
+	if err := m.SetVaultsV2CrossChainRoute(ctx, routeID, msg.Route); err != nil {
+		return nil, errors.Wrap(err, "unable to persist cross-chain route")
+	}
+
+	return &vaultsv2.MsgCreateCrossChainRouteResponse{RouteId: routeID}, nil
 }
 
 func (m msgServerV2) UpdateCrossChainRoute(ctx context.Context, msg *vaultsv2.MsgUpdateCrossChainRoute) (*vaultsv2.MsgUpdateCrossChainRouteResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "update cross-chain route")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	if err := validateCrossChainRoute(msg.Route); err != nil {
+		return nil, err
+	}
+
+	existing, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+	}
+	if !found {
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+	}
+
+	var duplicateErr error
+	if err := m.IterateVaultsV2CrossChainRoutes(ctx, func(id uint32, route vaultsv2.CrossChainRoute) (bool, error) {
+		if id == msg.RouteId {
+			return false, nil
+		}
+		if route.RemotePositionAddress == msg.Route.RemotePositionAddress {
+			duplicateErr = errors.Wrap(types.ErrInvalidRequest, "cross-chain route already exists for remote position address")
+			return true, nil
+		}
+		return false, nil
+	}); err != nil {
+		return nil, errors.Wrap(err, "unable to verify existing routes")
+	}
+	if duplicateErr != nil {
+		return nil, duplicateErr
+	}
+
+	prevJSON, err := m.cdc.MarshalJSON(&existing)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to marshal previous route config")
+	}
+
+	newJSON, err := m.cdc.MarshalJSON(&msg.Route)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to marshal new route config")
+	}
+
+	if err := m.SetVaultsV2CrossChainRoute(ctx, msg.RouteId, msg.Route); err != nil {
+		return nil, errors.Wrap(err, "unable to persist cross-chain route")
+	}
+
+	return &vaultsv2.MsgUpdateCrossChainRouteResponse{
+		RouteId:        msg.RouteId,
+		PreviousConfig: string(prevJSON),
+		NewConfig:      string(newJSON),
+	}, nil
 }
 
 func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.MsgDisableCrossChainRoute) (*vaultsv2.MsgDisableCrossChainRouteResponse, error) {
-	return nil, errors.Wrap(vaultsv2.ErrUnimplemented, "disable cross-chain route")
+	if msg == nil {
+		return nil, errors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, errors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+
+	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch cross-chain route")
+	}
+	if !found {
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	var affected int64
+
+	positions, err := m.GetAllVaultsV2RemotePositions(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch remote positions")
+	}
+
+	for _, entry := range positions {
+		if entry.Position.VaultAddress == route.RemotePositionAddress {
+			affected++
+			entry.Position.Status = vaultsv2.REMOTE_POSITION_ERROR
+			entry.Position.LastUpdate = headerInfo.Time
+			if err := m.SetVaultsV2RemotePosition(ctx, entry.ID, entry.Position); err != nil {
+				return nil, errors.Wrapf(err, "unable to update remote position %d", entry.ID)
+			}
+		}
+	}
+
+	if err := m.DeleteVaultsV2CrossChainRoute(ctx, msg.RouteId); err != nil {
+		return nil, errors.Wrap(err, "unable to remove cross-chain route")
+	}
+
+	return &vaultsv2.MsgDisableCrossChainRouteResponse{
+		RouteId:           msg.RouteId,
+		AffectedPositions: affected,
+	}, nil
 }
 
 func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.MsgCreateRemotePosition) (*vaultsv2.MsgCreateRemotePositionResponse, error) {
