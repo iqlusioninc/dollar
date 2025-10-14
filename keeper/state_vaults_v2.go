@@ -826,6 +826,10 @@ func (k *Keeper) setDepositLimits(ctx context.Context, limits vaultsv2.DepositLi
 	return k.VaultsV2DepositLimits.Set(ctx, limits)
 }
 
+// getDepositVelocity is an internal helper that retrieves deposit velocity with a found flag.
+// This is used by message handlers that need to distinguish between "not found" and "storage error".
+// The second return value (bool) indicates whether the velocity entry exists.
+// For query operations, use GetVaultsV2DepositVelocity instead which has simpler error semantics.
 func (k *Keeper) getDepositVelocity(ctx context.Context, addr sdk.AccAddress) (vaultsv2.DepositVelocity, bool, error) {
 	velocity, err := k.VaultsV2DepositVelocity.Get(ctx, addr)
 	if err != nil {
@@ -837,15 +841,24 @@ func (k *Keeper) getDepositVelocity(ctx context.Context, addr sdk.AccAddress) (v
 	return velocity, true, nil
 }
 
+// setDepositVelocity is an internal helper that sets deposit velocity for a user.
+// This is used by message handlers. Takes a typed sdk.AccAddress for convenience.
+// For external use, see SetVaultsV2DepositVelocity which takes raw bytes.
 func (k *Keeper) setDepositVelocity(ctx context.Context, addr sdk.AccAddress, velocity vaultsv2.DepositVelocity) error {
 	return k.VaultsV2DepositVelocity.Set(ctx, addr, velocity)
 }
 
+// recordUserDeposit is an internal helper that records a user's deposit at a specific block height.
+// This creates an entry in the deposit history used for velocity tracking and malicious deposit detection.
+// The history is pruned when users fully exit the vault (see PruneUserDepositHistory).
 func (k *Keeper) recordUserDeposit(ctx context.Context, addr sdk.AccAddress, block int64, amount math.Int) error {
 	key := collections.Join(addr.Bytes(), block)
 	return k.VaultsV2UserDepositHistory.Set(ctx, key, amount)
 }
 
+// incrementBlockDeposit is an internal helper that adds to the total deposit volume for a specific block.
+// This is used to enforce per-block deposit limits and detect suspicious activity.
+// Uses safe addition to prevent overflow.
 func (k *Keeper) incrementBlockDeposit(ctx context.Context, block int64, amount math.Int) error {
 	current, err := k.VaultsV2BlockDepositVolume.Get(ctx, block)
 	if err != nil {
@@ -861,6 +874,8 @@ func (k *Keeper) incrementBlockDeposit(ctx context.Context, block int64, amount 
 	return k.VaultsV2BlockDepositVolume.Set(ctx, block, updated)
 }
 
+// getBlockDepositVolume is an internal helper that retrieves the total deposit volume for a specific block.
+// Returns zero if no deposits occurred in that block (not an error).
 func (k *Keeper) getBlockDepositVolume(ctx context.Context, block int64) (math.Int, error) {
 	volume, err := k.VaultsV2BlockDepositVolume.Get(ctx, block)
 	if err != nil {
@@ -1089,6 +1104,9 @@ func (k *Keeper) SetVaultsV2DepositLimits(ctx context.Context, limits vaultsv2.D
 }
 
 // GetVaultsV2DepositVelocity retrieves the deposit velocity for a user.
+// This is the public API used by query handlers and external callers.
+// Returns an error if the entry is not found or if there's a storage error.
+// For message handlers that need to distinguish "not found" from "error", use the internal getDepositVelocity helper.
 func (k *Keeper) GetVaultsV2DepositVelocity(ctx context.Context, user []byte) (vaultsv2.DepositVelocity, error) {
 	velocity, err := k.VaultsV2DepositVelocity.Get(ctx, user)
 	if err != nil {
@@ -1098,6 +1116,8 @@ func (k *Keeper) GetVaultsV2DepositVelocity(ctx context.Context, user []byte) (v
 }
 
 // SetVaultsV2DepositVelocity sets the deposit velocity for a user.
+// This is the public API used by external callers. Takes raw bytes for the user address.
+// For message handlers that work with typed addresses, use the internal setDepositVelocity helper.
 func (k *Keeper) SetVaultsV2DepositVelocity(ctx context.Context, user []byte, velocity vaultsv2.DepositVelocity) error {
 	return k.VaultsV2DepositVelocity.Set(ctx, user, velocity)
 }
