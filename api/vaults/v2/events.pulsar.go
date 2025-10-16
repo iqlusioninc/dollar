@@ -3,6 +3,7 @@ package vaultsv2
 
 import (
 	_ "cosmossdk.io/api/amino"
+	binary "encoding/binary"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
@@ -12,6 +13,7 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
+	math "math"
 	reflect "reflect"
 	sync "sync"
 )
@@ -9372,8 +9374,8 @@ func (x *fastReflection_EventInflightFundStale) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
-	if x.HoursOverdue != int64(0) {
-		value := protoreflect.ValueOfInt64(x.HoursOverdue)
+	if x.HoursOverdue != float64(0) || math.Signbit(x.HoursOverdue) {
+		value := protoreflect.ValueOfFloat64(x.HoursOverdue)
 		if !f(fd_EventInflightFundStale_hours_overdue, value) {
 			return
 		}
@@ -9430,7 +9432,7 @@ func (x *fastReflection_EventInflightFundStale) Has(fd protoreflect.FieldDescrip
 	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
 		return x.Amount != ""
 	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
-		return x.HoursOverdue != int64(0)
+		return x.HoursOverdue != float64(0) || math.Signbit(x.HoursOverdue)
 	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
 		return x.ExpectedAt != nil
 	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
@@ -9464,7 +9466,7 @@ func (x *fastReflection_EventInflightFundStale) Clear(fd protoreflect.FieldDescr
 	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
 		x.Amount = ""
 	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
-		x.HoursOverdue = int64(0)
+		x.HoursOverdue = float64(0)
 	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
 		x.ExpectedAt = nil
 	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
@@ -9502,7 +9504,7 @@ func (x *fastReflection_EventInflightFundStale) Get(descriptor protoreflect.Fiel
 		return protoreflect.ValueOfString(value)
 	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
 		value := x.HoursOverdue
-		return protoreflect.ValueOfInt64(value)
+		return protoreflect.ValueOfFloat64(value)
 	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
 		value := x.ExpectedAt
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -9545,7 +9547,7 @@ func (x *fastReflection_EventInflightFundStale) Set(fd protoreflect.FieldDescrip
 	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
 		x.Amount = value.Interface().(string)
 	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
-		x.HoursOverdue = value.Int()
+		x.HoursOverdue = value.Float()
 	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
 		x.ExpectedAt = value.Message().Interface().(*timestamppb.Timestamp)
 	case "noble.dollar.vaults.v2.EventInflightFundStale.current_status":
@@ -9620,7 +9622,7 @@ func (x *fastReflection_EventInflightFundStale) NewField(fd protoreflect.FieldDe
 	case "noble.dollar.vaults.v2.EventInflightFundStale.amount":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.EventInflightFundStale.hours_overdue":
-		return protoreflect.ValueOfInt64(int64(0))
+		return protoreflect.ValueOfFloat64(float64(0))
 	case "noble.dollar.vaults.v2.EventInflightFundStale.expected_at":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -9713,8 +9715,8 @@ func (x *fastReflection_EventInflightFundStale) ProtoMethods() *protoiface.Metho
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.HoursOverdue != 0 {
-			n += 1 + runtime.Sov(uint64(x.HoursOverdue))
+		if x.HoursOverdue != 0 || math.Signbit(x.HoursOverdue) {
+			n += 9
 		}
 		if x.ExpectedAt != nil {
 			l = options.Size(x.ExpectedAt)
@@ -9811,10 +9813,11 @@ func (x *fastReflection_EventInflightFundStale) ProtoMethods() *protoiface.Metho
 			i--
 			dAtA[i] = 0x2a
 		}
-		if x.HoursOverdue != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.HoursOverdue))
+		if x.HoursOverdue != 0 || math.Signbit(x.HoursOverdue) {
+			i -= 8
+			binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(x.HoursOverdue))))
 			i--
-			dAtA[i] = 0x20
+			dAtA[i] = 0x21
 		}
 		if len(x.Amount) > 0 {
 			i -= len(x.Amount)
@@ -9968,24 +9971,16 @@ func (x *fastReflection_EventInflightFundStale) ProtoMethods() *protoiface.Metho
 				x.Amount = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
-				if wireType != 0 {
+				if wireType != 1 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field HoursOverdue", wireType)
 				}
-				x.HoursOverdue = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.HoursOverdue |= int64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+				var v uint64
+				if (iNdEx + 8) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
+				v = uint64(binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+				iNdEx += 8
+				x.HoursOverdue = float64(math.Float64frombits(v))
 			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExpectedAt", wireType)
@@ -12768,7 +12763,7 @@ type EventInflightFundStale struct {
 	// Amount
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	// Hours overdue
-	HoursOverdue int64 `protobuf:"varint,4,opt,name=hours_overdue,json=hoursOverdue,proto3" json:"hours_overdue,omitempty"`
+	HoursOverdue float64 `protobuf:"fixed64,4,opt,name=hours_overdue,json=hoursOverdue,proto3" json:"hours_overdue,omitempty"`
 	// Expected completion time
 	ExpectedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expected_at,json=expectedAt,proto3" json:"expected_at,omitempty"`
 	// Current status
@@ -12822,7 +12817,7 @@ func (x *EventInflightFundStale) GetAmount() string {
 	return ""
 }
 
-func (x *EventInflightFundStale) GetHoursOverdue() int64 {
+func (x *EventInflightFundStale) GetHoursOverdue() float64 {
 	if x != nil {
 		return x.HoursOverdue
 	}
@@ -13375,7 +13370,7 @@ var file_noble_dollar_vaults_v2_events_proto_rawDesc = []byte{
 	0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74,
 	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x23, 0x0a,
 	0x0d, 0x68, 0x6f, 0x75, 0x72, 0x73, 0x5f, 0x6f, 0x76, 0x65, 0x72, 0x64, 0x75, 0x65, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x68, 0x6f, 0x75, 0x72, 0x73, 0x4f, 0x76, 0x65, 0x72, 0x64,
+	0x20, 0x01, 0x28, 0x01, 0x52, 0x0c, 0x68, 0x6f, 0x75, 0x72, 0x73, 0x4f, 0x76, 0x65, 0x72, 0x64,
 	0x75, 0x65, 0x12, 0x45, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x5f, 0x61,
 	0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,

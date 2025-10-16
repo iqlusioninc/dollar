@@ -440,7 +440,7 @@ message EventInflightFundStale {
   ];
 
   // Hours overdue
-  int64 hours_overdue = 4;
+  double hours_overdue = 4;
 
   // Expected completion time
   google.protobuf.Timestamp expected_at = 5 [
