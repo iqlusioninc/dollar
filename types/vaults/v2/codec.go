@@ -23,6 +23,7 @@ package v2
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
@@ -45,6 +46,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgProcessInFlightPosition{}, "dollar/vaults/v2/ProcessInFlightPosition", nil)
 	cdc.RegisterConcrete(&MsgUpdateNAV{}, "dollar/vaults/v2/UpdateNAV", nil)
 	cdc.RegisterConcrete(&MsgHandleStaleInflight{}, "dollar/vaults/v2/HandleStaleInflight", nil)
+	cdc.RegisterConcrete(&MsgUpdateDepositLimits{}, "dollar/vaults/v2/UpdateDepositLimits", nil)
+	cdc.RegisterConcrete(&MsgCleanupStaleInflight{}, "dollar/vaults/v2/CleanupStaleInflight", nil)
 	cdc.RegisterConcrete(&MsgRegisterOracle{}, "dollar/vaults/v2/RegisterOracle", nil)
 	cdc.RegisterConcrete(&MsgUpdateOracleConfig{}, "dollar/vaults/v2/UpdateOracleConfig", nil)
 	cdc.RegisterConcrete(&MsgRemoveOracle{}, "dollar/vaults/v2/RemoveOracle", nil)
@@ -52,5 +55,32 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgDeposit{},
+		&MsgRequestWithdrawal{},
+		&MsgClaimWithdrawal{},
+		&MsgSetYieldPreference{},
+		&MsgProcessWithdrawalQueue{},
+		&MsgUpdateVaultConfig{},
+		&MsgUpdateParams{},
+		&MsgCreateCrossChainRoute{},
+		&MsgUpdateCrossChainRoute{},
+		&MsgDisableCrossChainRoute{},
+		&MsgCreateRemotePosition{},
+		&MsgCloseRemotePosition{},
+		&MsgRebalance{},
+		&MsgRemoteDeposit{},
+		&MsgRemoteWithdraw{},
+		&MsgProcessInFlightPosition{},
+		&MsgUpdateNAV{},
+		&MsgHandleStaleInflight{},
+		&MsgUpdateDepositLimits{},
+		&MsgCleanupStaleInflight{},
+		&MsgRegisterOracle{},
+		&MsgUpdateOracleConfig{},
+		&MsgRemoveOracle{},
+		&MsgUpdateOracleParams{},
+	)
+
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
