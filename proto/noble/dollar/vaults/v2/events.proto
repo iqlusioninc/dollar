@@ -357,10 +357,10 @@ message EventInflightFundStatusChanged {
   uint32 route_id = 2;
 
   // Previous status
-  string previous_status = 3;
+  InflightStatus previous_status = 3;
 
   // New status
-  string new_status = 4;
+  InflightStatus new_status = 4;
 
   // Amount
   string amount = 5 [
@@ -449,7 +449,7 @@ message EventInflightFundStale {
   ];
 
   // Current status
-  string current_status = 6;
+  InflightStatus current_status = 6;
 
   // Recommended action
   string recommended_action = 7;
