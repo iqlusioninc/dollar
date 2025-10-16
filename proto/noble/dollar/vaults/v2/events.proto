@@ -6,6 +6,7 @@ import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "noble/dollar/vaults/v2/cross_chain.proto";
 
 option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
@@ -304,7 +305,7 @@ message EventInflightFundCreated {
   uint32 route_id = 2;
 
   // Operation type (DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.)
-  string operation_type = 3;
+  OperationType operation_type = 3;
 
   // Amount
   string amount = 4 [
@@ -391,7 +392,7 @@ message EventInflightFundCompleted {
   uint32 route_id = 2;
 
   // Operation type
-  string operation_type = 3;
+  OperationType operation_type = 3;
 
   // Final amount
   string final_amount = 4 [
