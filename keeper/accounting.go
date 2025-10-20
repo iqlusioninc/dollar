@@ -44,7 +44,7 @@ type AccountingResult struct {
 
 // updateVaultsV2AccountingWithCursor performs yield accounting with cursor-based pagination.
 // This allows the accounting to be split across multiple message invocations.
-func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPositions uint32, forceRestart bool) (*AccountingResult, error) {
+func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPositions uint32) (*AccountingResult, error) {
 	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
 	if err != nil {
 		return nil, err
@@ -69,16 +69,27 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		return nil, err
 	}
 
-	// Check if we need to initialize or restart the cursor
+	// Determine if we need to start a new accounting session
 	needsInit := !cursor.InProgress ||
-		forceRestart ||
 		cursor.AccountingNav.IsNil() ||
 		!cursor.AccountingNav.Equal(navInfo.CurrentNav) ||
 		!cursor.AccountingNavTimestamp.Equal(navInfo.LastUpdate)
 
 	if needsInit {
-		if cursor.InProgress && !forceRestart {
-			return nil, fmt.Errorf("accounting already in progress, cannot start new session without force_restart")
+		// If accounting is in progress with a different NAV, we have a problem
+		// We cannot start new accounting while old accounting is incomplete
+		// as this would leave some users with old NAV and some with new NAV
+		if cursor.InProgress {
+			return nil, fmt.Errorf(
+				"accounting already in progress for NAV %s (started at %s, %d/%d positions processed). "+
+					"Cannot start new accounting for NAV %s until current session completes. "+
+					"Continue calling this message to complete the current session",
+				cursor.AccountingNav.String(),
+				cursor.StartedAt.String(),
+				cursor.PositionsProcessed,
+				cursor.TotalPositions,
+				navInfo.CurrentNav.String(),
+			)
 		}
 
 		// Count total positions
@@ -90,7 +101,7 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 			return nil, err
 		}
 
-		// Initialize cursor
+		// Initialize new accounting session
 		cursor = vaultsv2.AccountingCursor{
 			LastProcessedUser:        "",
 			AccountingNav:            navInfo.CurrentNav,

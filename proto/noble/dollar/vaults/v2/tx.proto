@@ -909,10 +909,6 @@ message MsgUpdateVaultAccounting {
   // Maximum number of positions to process in this call
   // If 0, will process all remaining positions
   uint32 max_positions = 2;
-
-  // Whether to force restart accounting from the beginning
-  // Only allowed if no accounting is currently in progress
-  bool force_restart = 3;
 }
 
 // MsgUpdateVaultAccountingResponse returns the results of the accounting update

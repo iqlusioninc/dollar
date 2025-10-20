@@ -2195,7 +2195,7 @@ func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.Ms
 	}
 
 	// Execute cursor-based accounting
-	result, err := m.updateVaultsV2AccountingWithCursor(ctx, msg.MaxPositions, msg.ForceRestart)
+	result, err := m.updateVaultsV2AccountingWithCursor(ctx, msg.MaxPositions)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "failed to update vault accounting")
 	}
