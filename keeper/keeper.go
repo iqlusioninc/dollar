@@ -93,6 +93,7 @@ type Keeper struct {
 	VaultsV2WithdrawalNextID              collections.Item[uint64]
 	VaultsV2NAVInfo                       collections.Item[vaultsv2.NAVInfo]
 	VaultsV2VaultState                    collections.Item[vaultsv2.VaultState]
+	VaultsV2AccountingCursor              collections.Item[vaultsv2.AccountingCursor]
 	VaultsV2RemotePositions               collections.Map[uint64, vaultsv2.RemotePosition]
 	VaultsV2RemotePositionNextID          collections.Item[uint64]
 	VaultsV2RemotePositionChains          collections.Map[uint64, uint32]
@@ -200,6 +201,7 @@ func NewKeeper(
 		VaultsV2WithdrawalNextID:              collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
 		VaultsV2NAVInfo:                       collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
 		VaultsV2VaultState:                    collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
+		VaultsV2AccountingCursor:              collections.NewItem(builder, vaultsv2.AccountingCursorKey, "vaults_v2_accounting_cursor", codec.CollValue[vaultsv2.AccountingCursor](cdc)),
 		VaultsV2RemotePositions:               collections.NewMap(builder, vaultsv2.RemotePositionPrefix, "vaults_v2_remote_positions", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePosition](cdc)),
 		VaultsV2RemotePositionNextID:          collections.NewItem(builder, vaultsv2.RemotePositionNextIDKey, "vaults_v2_remote_position_next_id", collections.Uint64Value),
 		VaultsV2RemotePositionChains:          collections.NewMap(builder, vaultsv2.RemotePositionChainPrefix, "vaults_v2_remote_position_chains", collections.Uint64Key, collections.Uint32Value),

@@ -33,6 +33,11 @@ import (
 // updateVaultsV2Accounting synchronises the aggregate vault accounting figures
 // with the latest NAV information and distributes accrued yield across user
 // positions proportionally to their share holdings.
+//
+// DEPRECATED: This function processes all positions in a single call and is no
+// longer used in BeginBlock. Use updateVaultsV2AccountingWithCursor instead,
+// which supports cursor-based pagination for better scalability.
+// This function is kept for reference and backwards compatibility.
 func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
 	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
 	if err != nil {
@@ -184,9 +189,10 @@ func (k *Keeper) updateVaultsV2Accounting(ctx context.Context) error {
 
 // BeginBlocker is called at the beginning of each block.
 func (k *Keeper) BeginBlocker(ctx context.Context) error {
-	if err := k.updateVaultsV2Accounting(ctx); err != nil {
-		return err
-	}
+	// Note: Vault accounting is now triggered via MsgUpdateVaultAccounting
+	// instead of being automatically called in BeginBlock. This allows
+	// the vault manager to control when accounting is performed and enables
+	// cursor-based pagination for large numbers of positions.
 
 	defer func() {
 		if r := recover(); r != nil {

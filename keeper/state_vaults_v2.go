@@ -1110,3 +1110,26 @@ func (k *Keeper) GetVaultsV2BlockDepositVolume(ctx context.Context, blockHeight 
 func (k *Keeper) SetVaultsV2BlockDepositVolume(ctx context.Context, blockHeight int64, volume math.Int) error {
 	return k.VaultsV2BlockDepositVolume.Set(ctx, blockHeight, volume)
 }
+
+// GetVaultsV2AccountingCursor retrieves the current accounting cursor state.
+// Returns a zero-value cursor if not found.
+func (k *Keeper) GetVaultsV2AccountingCursor(ctx context.Context) (vaultsv2.AccountingCursor, error) {
+	cursor, err := k.VaultsV2AccountingCursor.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.AccountingCursor{}, nil
+		}
+		return vaultsv2.AccountingCursor{}, err
+	}
+	return cursor, nil
+}
+
+// SetVaultsV2AccountingCursor sets the accounting cursor state.
+func (k *Keeper) SetVaultsV2AccountingCursor(ctx context.Context, cursor vaultsv2.AccountingCursor) error {
+	return k.VaultsV2AccountingCursor.Set(ctx, cursor)
+}
+
+// ClearVaultsV2AccountingCursor removes the accounting cursor from state.
+func (k *Keeper) ClearVaultsV2AccountingCursor(ctx context.Context) error {
+	return k.VaultsV2AccountingCursor.Remove(ctx)
+}

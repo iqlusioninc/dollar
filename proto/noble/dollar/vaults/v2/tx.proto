@@ -93,6 +93,9 @@ service Msg {
 
   // Cleanup stale inflight fund (authority only)
   rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
+
+  // Update vault accounting for yield distribution (vault manager only)
+  rpc UpdateVaultAccounting(MsgUpdateVaultAccounting) returns (MsgUpdateVaultAccountingResponse);
 }
 
 // MsgDeposit allows users to deposit into a V2 vault
@@ -890,4 +893,58 @@ message MsgCleanupStaleInflightResponse {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+}
+
+// MsgUpdateVaultAccounting triggers vault accounting for yield distribution
+message MsgUpdateVaultAccounting {
+  option (cosmos.msg.v1.signer) = "manager";
+  option (amino.name) = "dollar/vaults/v2/UpdateVaultAccounting";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Vault manager address (authorized to trigger accounting)
+  string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Maximum number of positions to process in this call
+  // If 0, will process all remaining positions
+  uint32 max_positions = 2;
+
+  // Whether to force restart accounting from the beginning
+  // Only allowed if no accounting is currently in progress
+  bool force_restart = 3;
+}
+
+// MsgUpdateVaultAccountingResponse returns the results of the accounting update
+message MsgUpdateVaultAccountingResponse {
+  // Number of positions processed in this call
+  uint64 positions_processed = 1;
+
+  // Total positions processed in this accounting session
+  uint64 total_positions_processed = 2;
+
+  // Total positions in the system
+  uint64 total_positions = 3;
+
+  // Whether accounting is complete for this session
+  bool accounting_complete = 4;
+
+  // NAV value applied in this accounting update
+  string applied_nav = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total yield distributed in this call
+  string yield_distributed = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Next user to process (empty if complete)
+  string next_user = 7 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }

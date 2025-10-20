@@ -221,6 +221,49 @@ message EventNAVUpdated {
   ];
 }
 
+// EventAccountingUpdated is emitted when vault accounting is updated
+message EventAccountingUpdated {
+  // Number of positions processed in this call
+  uint64 positions_processed = 1;
+
+  // Total positions processed in this accounting session
+  uint64 total_positions_processed = 2;
+
+  // Total positions in the system
+  uint64 total_positions = 3;
+
+  // Whether accounting is complete for this session
+  bool complete = 4;
+
+  // NAV value applied in this accounting update
+  string applied_nav = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total yield distributed in this call
+  string yield_distributed = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Manager that triggered the accounting
+  string manager = 7 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Block height
+  int64 block_height = 8;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
 // EventFeeCollected is emitted when fees are collected
 message EventFeeCollected {
   // Fee type (deposit, withdrawal, etc.)

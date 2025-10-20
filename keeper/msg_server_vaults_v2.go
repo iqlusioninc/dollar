@@ -2184,6 +2184,49 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 	}, nil
 }
 
+func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.MsgUpdateVaultAccounting) (*vaultsv2.MsgUpdateVaultAccountingResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+
+	// Verify that the manager is the authority
+	if msg.Manager != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+	}
+
+	// Execute cursor-based accounting
+	result, err := m.updateVaultsV2AccountingWithCursor(ctx, msg.MaxPositions, msg.ForceRestart)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "failed to update vault accounting")
+	}
+
+	// Emit event for accounting progress
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventAccountingUpdated{
+		PositionsProcessed:      result.PositionsProcessed,
+		TotalPositionsProcessed: result.TotalPositionsProcessed,
+		TotalPositions:          result.TotalPositions,
+		Complete:                result.Complete,
+		AppliedNav:              result.AppliedNav,
+		YieldDistributed:        result.YieldDistributed,
+		Manager:                 msg.Manager,
+		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:               headerInfo.Time,
+	}); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to emit accounting updated event")
+	}
+
+	return &vaultsv2.MsgUpdateVaultAccountingResponse{
+		PositionsProcessed:      result.PositionsProcessed,
+		TotalPositionsProcessed: result.TotalPositionsProcessed,
+		TotalPositions:          result.TotalPositions,
+		AccountingComplete:      result.Complete,
+		AppliedNav:              result.AppliedNav,
+		YieldDistributed:        result.YieldDistributed,
+		NextUser:                result.NextUser,
+	}, nil
+}
+
 func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgHandleStaleInflight) (*vaultsv2.MsgHandleStaleInflightResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
