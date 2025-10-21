@@ -91,22 +91,15 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 			return nil, fmt.Errorf("failed to clear old snapshots: %w", err)
 		}
 
-		// Count total positions
-		totalPositions := uint64(0)
-		if err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
-			totalPositions++
-			return false, nil
-		}); err != nil {
-			return nil, err
-		}
-
 		// Initialize new accounting session
+		// Note: We don't count total positions upfront to avoid expensive iteration.
+		// Instead, we detect completion when the iterator returns 0 positions.
 		cursor = vaultsv2.AccountingCursor{
 			LastProcessedUser:      "",
 			AccountingNav:          navInfo.CurrentNav,
 			AccountingNavTimestamp: navInfo.LastUpdate,
 			PositionsProcessed:     0,
-			TotalPositions:         totalPositions,
+			TotalPositions:         0, // Not known upfront, updated as we go
 			InProgress:             true,
 			StartedAt:              k.header.GetHeaderInfo(ctx).Time,
 			AccumulatedResidual:    sdkmath.ZeroInt(),
@@ -160,7 +153,15 @@ func (k *Keeper) accountingWithZeroShares(
 	// Update cursor
 	cursor.PositionsProcessed += uint64(count)
 	cursor.LastProcessedUser = lastProcessed
-	complete := cursor.PositionsProcessed >= cursor.TotalPositions
+
+	// Accounting is complete when we process a batch and get 0 positions back
+	// (meaning there are no more positions to process)
+	complete := count == 0
+
+	// Update total positions to reflect actual count
+	if complete {
+		cursor.TotalPositions = cursor.PositionsProcessed
+	}
 
 	if complete {
 		// Commit all snapshots atomically
@@ -305,7 +306,15 @@ func (k *Keeper) accountingWithCursor(
 	cursor.PositionsProcessed += uint64(count)
 	cursor.LastProcessedUser = lastProcessed
 	cursor.AccumulatedResidual = sdkmath.NewIntFromBigInt(residual)
-	complete := cursor.PositionsProcessed >= cursor.TotalPositions
+
+	// Accounting is complete when we process a batch and get 0 positions back
+	// (meaning there are no more positions to process)
+	complete := count == 0
+
+	// Update total positions to reflect actual count
+	if complete {
+		cursor.TotalPositions = cursor.PositionsProcessed
+	}
 
 	if complete {
 		// Calculate aggregated totals from all snapshots
