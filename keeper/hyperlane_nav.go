@@ -149,9 +149,27 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 }
 
 func (k *Keeper) recalculateVaultsV2NAV(ctx context.Context, timestamp time.Time) (math.Int, error) {
+	// Check if accounting is currently in progress
+	cursor, err := k.GetVaultsV2AccountingCursor(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch accounting cursor")
+	}
+
+	if cursor.InProgress {
+		return math.ZeroInt(), errors.Wrapf(
+			vaultsv2.ErrOperationNotPermitted,
+			"cannot update NAV while accounting is in progress (started at %s, %d/%d positions processed for NAV %s). "+
+				"Complete the current accounting session before processing oracle updates",
+			cursor.StartedAt.String(),
+			cursor.PositionsProcessed,
+			cursor.TotalPositions,
+			cursor.AccountingNav.String(),
+		)
+	}
+
 	total := math.ZeroInt()
 
-	err := k.IterateVaultsV2RemotePositionOracles(ctx, func(_ uint64, oracle vaultsv2.RemotePositionOracle) (bool, error) {
+	err = k.IterateVaultsV2RemotePositionOracles(ctx, func(_ uint64, oracle vaultsv2.RemotePositionOracle) (bool, error) {
 		positionValue := oracle.SharePrice.MulInt(oracle.SharesHeld).TruncateInt()
 
 		var err error
