@@ -23,6 +23,7 @@ package keeper
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"cosmossdk.io/collections"
@@ -169,7 +170,7 @@ func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
 	}
 
 	// Use a range that starts after the startKey
-	var ranger collections.Range[[]byte]
+	var ranger *collections.Range[[]byte]
 	if startKey != nil {
 		// Start from the next key after startKey (exclusive)
 		ranger = new(collections.Range[[]byte]).StartExclusive(startKey)

@@ -43,6 +43,7 @@ const (
 	Msg_HandleStaleInflight_FullMethodName     = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
 	Msg_UpdateDepositLimits_FullMethodName     = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
 	Msg_CleanupStaleInflight_FullMethodName    = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
+	Msg_UpdateVaultAccounting_FullMethodName   = "/noble.dollar.vaults.v2.Msg/UpdateVaultAccounting"
 )
 
 // MsgClient is the client API for Msg service.
@@ -99,6 +100,8 @@ type MsgClient interface {
 	UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error)
 	// Cleanup stale inflight fund (authority only)
 	CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error)
+	// Update vault accounting for yield distribution (vault manager only)
+	UpdateVaultAccounting(ctx context.Context, in *MsgUpdateVaultAccounting, opts ...grpc.CallOption) (*MsgUpdateVaultAccountingResponse, error)
 }
 
 type msgClient struct {
@@ -349,6 +352,16 @@ func (c *msgClient) CleanupStaleInflight(ctx context.Context, in *MsgCleanupStal
 	return out, nil
 }
 
+func (c *msgClient) UpdateVaultAccounting(ctx context.Context, in *MsgUpdateVaultAccounting, opts ...grpc.CallOption) (*MsgUpdateVaultAccountingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgUpdateVaultAccountingResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateVaultAccounting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility.
@@ -403,6 +416,8 @@ type MsgServer interface {
 	UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error)
 	// Cleanup stale inflight fund (authority only)
 	CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error)
+	// Update vault accounting for yield distribution (vault manager only)
+	UpdateVaultAccounting(context.Context, *MsgUpdateVaultAccounting) (*MsgUpdateVaultAccountingResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -484,6 +499,9 @@ func (UnimplementedMsgServer) UpdateDepositLimits(context.Context, *MsgUpdateDep
 }
 func (UnimplementedMsgServer) CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CleanupStaleInflight not implemented")
+}
+func (UnimplementedMsgServer) UpdateVaultAccounting(context.Context, *MsgUpdateVaultAccounting) (*MsgUpdateVaultAccountingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateVaultAccounting not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -938,6 +956,24 @@ func _Msg_CleanupStaleInflight_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateVaultAccounting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateVaultAccounting)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateVaultAccounting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateVaultAccounting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateVaultAccounting(ctx, req.(*MsgUpdateVaultAccounting))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1040,6 +1076,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CleanupStaleInflight",
 			Handler:    _Msg_CleanupStaleInflight_Handler,
+		},
+		{
+			MethodName: "UpdateVaultAccounting",
+			Handler:    _Msg_UpdateVaultAccounting_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
