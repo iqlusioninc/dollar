@@ -526,7 +526,7 @@ message QueryInflightFundsRequest {}
 message InflightFundView {
   uint32 route_id = 1;
   string transaction_id = 2;
-  string type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
+  string operation_type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
   string amount = 4;
   string current_value = 5;
   string source_chain = 6;
@@ -561,7 +561,7 @@ message StaleInflightFundView {
   uint32 route_id = 1;
   string transaction_id = 2;
   string amount = 3;
-  string type = 4;
+  string operation_type = 4;
   string source_chain = 5;
   string destination_chain = 6;
   google.protobuf.Timestamp initiated_at = 7 [
