@@ -2024,12 +2024,6 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 			if err := m.DeleteVaultsV2UserPosition(ctx, claimer); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to delete empty user position")
 			}
-
-			// Prune deposit history now that user has fully exited
-			if _, err := m.PruneUserDepositHistory(ctx, claimer); err != nil {
-				// Log error but don't fail the withdrawal - this is cleanup
-				m.logger.Error("failed to prune deposit history", "user", msg.Claimer, "error", err)
-			}
 		} else {
 			if err := m.SetVaultsV2UserPosition(ctx, claimer, position); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to persist user position")

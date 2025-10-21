@@ -1037,11 +1037,6 @@ func (k *Keeper) GetRecentVaultsV2NAVSnapshots(ctx context.Context, limit int) (
 // This helps keep storage bounded for TWAP calculations.
 func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAge int64, currentTime int64) (int, error) {
 	pruned := 0
-	// Early return if chain is too young to prune
-	if maxAge >= currentTime {
-		return 0, nil // Nothing to prune yet
-	}
-
 	cutoffTime := currentTime - maxAge
 
 	// Get current max ID
@@ -1100,69 +1095,6 @@ func (k *Keeper) GetVaultsV2DepositVelocity(ctx context.Context, user []byte) (v
 // SetVaultsV2DepositVelocity sets the deposit velocity for a user.
 func (k *Keeper) SetVaultsV2DepositVelocity(ctx context.Context, user []byte, velocity vaultsv2.DepositVelocity) error {
 	return k.VaultsV2DepositVelocity.Set(ctx, user, velocity)
-}
-
-// isUserPositionEmpty checks if a user has completely exited the vault.
-// A position is considered empty when all deposits have been withdrawn and no pending operations exist.
-func isUserPositionEmpty(position vaultsv2.UserPosition) bool {
-	return position.DepositAmount.IsZero() &&
-		position.AccruedYield.IsZero() &&
-		position.AmountPendingWithdrawal.IsZero() &&
-		position.ActiveWithdrawalRequests == 0
-}
-
-// PruneUserDepositHistory removes all deposit history entries for a user.
-// This should only be called when the user has fully withdrawn all funds.
-// Returns the number of entries pruned and any error encountered.
-func (k *Keeper) PruneUserDepositHistory(ctx context.Context, userAddr sdk.AccAddress) (int, error) {
-	pruned := 0
-
-	// First, verify the user has no active position
-	position, err := k.VaultsV2UserPositions.Get(ctx, userAddr.Bytes())
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			// No position exists, safe to prune
-		} else {
-			return 0, err
-		}
-	} else if !isUserPositionEmpty(position) {
-		// User still has an active position, don't prune
-		return 0, nil
-	}
-
-	// Collect all deposit history entries for this user
-	var toDelete []collections.Pair[[]byte, int64]
-
-	// Create a range that matches all entries for this user
-	// The key is Pair[userAddr, blockHeight], so we want all entries where K1() == userAddr
-	err = k.VaultsV2UserDepositHistory.Walk(ctx, nil, func(key collections.Pair[[]byte, int64], amount math.Int) (bool, error) {
-		// Check if this entry belongs to our user
-		if sdk.AccAddress(key.K1()).Equals(userAddr) {
-			toDelete = append(toDelete, key)
-		}
-		return false, nil
-	})
-
-	if err != nil {
-		return pruned, err
-	}
-
-	// Delete all marked entries
-	for _, key := range toDelete {
-		if err := k.VaultsV2UserDepositHistory.Remove(ctx, key); err != nil {
-			return pruned, err
-		}
-		pruned++
-	}
-
-	// Also clean up deposit velocity tracking if position is empty
-	if pruned > 0 {
-		if err := k.VaultsV2DepositVelocity.Remove(ctx, userAddr.Bytes()); err != nil && !errors.Is(err, collections.ErrNotFound) {
-			return pruned, err
-		}
-	}
-
-	return pruned, nil
 }
 
 // GetVaultsV2BlockDepositVolume retrieves the total deposit volume for a specific block.
