@@ -1893,8 +1893,6 @@ func TestFlexibleVaultRewardsEarlyExit(t *testing.T) {
 }
 
 func TestVaultsSeasonOneEnd(t *testing.T) {
-	t.Skip("BeginBlocker removed - automatic season one ending no longer exists")
-
 	account := mocks.AccountKeeper{
 		Accounts: make(map[string]sdk.AccountI),
 	}
@@ -2061,8 +2059,6 @@ func TestVaultsSeasonOneEnd(t *testing.T) {
 }
 
 func TestStakedVaultSeasonTwo(t *testing.T) {
-	t.Skip("BeginBlocker removed - automatic season one ending no longer exists")
-
 	account := mocks.AccountKeeper{
 		Accounts: make(map[string]sdk.AccountI),
 	}

@@ -67,6 +67,7 @@ var (
 	_ module.HasGenesis          = AppModule{}
 	_ module.HasGenesisBasics    = AppModuleBasic{}
 	_ module.HasServices         = AppModule{}
+	_ appmodule.HasBeginBlocker  = AppModule{}
 )
 
 //
@@ -171,6 +172,10 @@ func (m AppModule) RegisterServices(cfg module.Configurator) {
 	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
 		panic(fmt.Sprintf("failed to migrate Noble Dollar from version 1 to 2: %v", err))
 	}
+}
+
+func (m AppModule) BeginBlock(ctx context.Context) error {
+	return m.keeper.BeginBlocker(ctx)
 }
 
 //
