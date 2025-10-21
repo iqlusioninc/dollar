@@ -150,6 +150,59 @@ func (k *Keeper) IterateVaultsV2UserPositions(ctx context.Context, fn func(addre
 	})
 }
 
+// IterateVaultsV2UserPositionsPaginated iterates over user positions with pagination support.
+// It starts from startAfter (exclusive) and processes up to maxPositions.
+// Returns the last processed address (to use as next startAfter), the count of positions processed, and any error.
+func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
+	ctx context.Context,
+	startAfter string,
+	maxPositions uint32,
+	fn func(address sdk.AccAddress, position vaultsv2.UserPosition) error,
+) (lastProcessed string, count uint32, err error) {
+	var startKey []byte
+	if startAfter != "" {
+		addr, err := sdk.AccAddressFromBech32(startAfter)
+		if err != nil {
+			return "", 0, fmt.Errorf("invalid startAfter address: %w", err)
+		}
+		startKey = addr.Bytes()
+	}
+
+	// Use a range that starts after the startKey
+	var ranger collections.Range[[]byte]
+	if startKey != nil {
+		// Start from the next key after startKey (exclusive)
+		ranger = new(collections.Range[[]byte]).StartExclusive(startKey)
+	}
+
+	processed := uint32(0)
+	lastAddr := ""
+
+	walkErr := k.VaultsV2UserPositions.Walk(ctx, ranger, func(key []byte, position vaultsv2.UserPosition) (bool, error) {
+		addr := sdk.AccAddress(key)
+
+		if err := fn(addr, position); err != nil {
+			return true, err
+		}
+
+		lastAddr = addr.String()
+		processed++
+
+		// Stop if we've hit the limit
+		if maxPositions > 0 && processed >= maxPositions {
+			return true, nil
+		}
+
+		return false, nil
+	})
+
+	if walkErr != nil {
+		return "", 0, walkErr
+	}
+
+	return lastAddr, processed, nil
+}
+
 // NextVaultsV2WithdrawalID increments and returns the next withdrawal queue
 // identifier. Identifiers start at one for readability when exposed to users.
 func (k *Keeper) NextVaultsV2WithdrawalID(ctx context.Context) (uint64, error) {
@@ -1132,4 +1185,91 @@ func (k *Keeper) SetVaultsV2AccountingCursor(ctx context.Context, cursor vaultsv
 // ClearVaultsV2AccountingCursor removes the accounting cursor from state.
 func (k *Keeper) ClearVaultsV2AccountingCursor(ctx context.Context) error {
 	return k.VaultsV2AccountingCursor.Remove(ctx)
+}
+
+// SetVaultsV2AccountingSnapshot stores a pending accounting update for a user.
+func (k *Keeper) SetVaultsV2AccountingSnapshot(ctx context.Context, snapshot vaultsv2.AccountingSnapshot) error {
+	addr, err := sdk.AccAddressFromBech32(snapshot.User)
+	if err != nil {
+		return fmt.Errorf("invalid user address in snapshot: %w", err)
+	}
+	return k.VaultsV2AccountingSnapshots.Set(ctx, addr.Bytes(), snapshot)
+}
+
+// GetVaultsV2AccountingSnapshot retrieves a pending accounting snapshot for a user.
+func (k *Keeper) GetVaultsV2AccountingSnapshot(ctx context.Context, user sdk.AccAddress) (vaultsv2.AccountingSnapshot, bool, error) {
+	snapshot, err := k.VaultsV2AccountingSnapshots.Get(ctx, user.Bytes())
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.AccountingSnapshot{}, false, nil
+		}
+		return vaultsv2.AccountingSnapshot{}, false, err
+	}
+	return snapshot, true, nil
+}
+
+// DeleteVaultsV2AccountingSnapshot removes a pending accounting snapshot.
+func (k *Keeper) DeleteVaultsV2AccountingSnapshot(ctx context.Context, user sdk.AccAddress) error {
+	return k.VaultsV2AccountingSnapshots.Remove(ctx, user.Bytes())
+}
+
+// IterateVaultsV2AccountingSnapshots walks all pending accounting snapshots.
+func (k *Keeper) IterateVaultsV2AccountingSnapshots(ctx context.Context, fn func(snapshot vaultsv2.AccountingSnapshot) (bool, error)) error {
+	return k.VaultsV2AccountingSnapshots.Walk(ctx, nil, func(key []byte, snapshot vaultsv2.AccountingSnapshot) (bool, error) {
+		return fn(snapshot)
+	})
+}
+
+// ClearAllVaultsV2AccountingSnapshots removes all pending accounting snapshots.
+func (k *Keeper) ClearAllVaultsV2AccountingSnapshots(ctx context.Context) error {
+	var keys [][]byte
+	err := k.VaultsV2AccountingSnapshots.Walk(ctx, nil, func(key []byte, _ vaultsv2.AccountingSnapshot) (bool, error) {
+		keys = append(keys, key)
+		return false, nil
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, key := range keys {
+		if err := k.VaultsV2AccountingSnapshots.Remove(ctx, key); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CommitVaultsV2AccountingSnapshots atomically applies all pending snapshots to actual user positions.
+func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
+	return k.IterateVaultsV2AccountingSnapshots(ctx, func(snapshot vaultsv2.AccountingSnapshot) (bool, error) {
+		addr, err := sdk.AccAddressFromBech32(snapshot.User)
+		if err != nil {
+			return true, fmt.Errorf("invalid user address in snapshot: %w", err)
+		}
+
+		// Get current position
+		position, found, err := k.GetVaultsV2UserPosition(ctx, addr)
+		if err != nil {
+			return true, err
+		}
+		if !found {
+			return true, fmt.Errorf("position not found for user %s during snapshot commit", snapshot.User)
+		}
+
+		// Update only the accounting fields
+		position.DepositAmount = snapshot.DepositAmount
+		position.AccruedYield = snapshot.AccruedYield
+
+		// Save updated position
+		if err := k.SetVaultsV2UserPosition(ctx, addr, position); err != nil {
+			return true, err
+		}
+
+		// Delete the snapshot after successful commit
+		if err := k.DeleteVaultsV2AccountingSnapshot(ctx, addr); err != nil {
+			return true, err
+		}
+
+		return false, nil
+	})
 }

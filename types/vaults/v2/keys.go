@@ -30,6 +30,7 @@ var (
 	NAVInfoKey                       = []byte("vaults/v2/nav_info")
 	VaultStateKey                    = []byte("vaults/v2/vault_state")
 	AccountingCursorKey              = []byte("vaults/v2/accounting_cursor")
+	AccountingSnapshotPrefix         = []byte("vaults/v2/accounting_snapshot/")
 	LastNAVUpdateKey                 = []byte("vaults/v2/last_nav_update")
 	RemotePositionPrefix             = []byte("vaults/v2/remote_position/")
 	InflightFundsPrefix              = []byte("vaults/v2/inflight_funds/")

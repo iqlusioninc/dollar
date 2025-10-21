@@ -68,6 +68,45 @@ message UserPosition {
   int32 active_withdrawal_requests = 7;
 }
 
+// AccountingSnapshot represents a pending update to a user position during accounting.
+// These snapshots are used to stage all accounting changes before atomically committing
+// them when the accounting session completes. This ensures consistency even if accounting
+// is performed across multiple message invocations.
+message AccountingSnapshot {
+  // User address
+  string user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // New deposit amount after accounting
+  string deposit_amount = 2 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // New accrued yield after accounting
+  string accrued_yield = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // NAV value used for this snapshot
+  string accounting_nav = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Timestamp when this snapshot was created
+  google.protobuf.Timestamp created_at = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
 // WithdrawalRequest represents a pending withdrawal request
 message WithdrawalRequest {
   // Unique request ID
