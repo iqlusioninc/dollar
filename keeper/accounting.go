@@ -44,6 +44,7 @@ type AccountingResult struct {
 
 // updateVaultsV2AccountingWithCursor performs yield accounting with cursor-based pagination.
 // This allows the accounting to be split across multiple message invocations.
+// All updates are written to snapshots and only committed atomically when accounting completes.
 func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPositions uint32) (*AccountingResult, error) {
 	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
 	if err != nil {
@@ -52,11 +53,6 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 
 	if navInfo.CurrentNav.IsNil() {
 		return nil, fmt.Errorf("current NAV is not set")
-	}
-
-	state, err := k.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, err
 	}
 
 	totalShares, err := k.GetVaultsV2TotalShares(ctx)
@@ -77,8 +73,6 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 
 	if needsInit {
 		// If accounting is in progress with a different NAV, we have a problem
-		// We cannot start new accounting while old accounting is incomplete
-		// as this would leave some users with old NAV and some with new NAV
 		if cursor.InProgress {
 			return nil, fmt.Errorf(
 				"accounting already in progress for NAV %s (started at %s, %d/%d positions processed). "+
@@ -92,6 +86,11 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 			)
 		}
 
+		// Clear any old snapshots from previous incomplete sessions
+		if err := k.ClearAllVaultsV2AccountingSnapshots(ctx); err != nil {
+			return nil, fmt.Errorf("failed to clear old snapshots: %w", err)
+		}
+
 		// Count total positions
 		totalPositions := uint64(0)
 		if err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
@@ -103,78 +102,80 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 
 		// Initialize new accounting session
 		cursor = vaultsv2.AccountingCursor{
-			LastProcessedUser:        "",
-			AccountingNav:            navInfo.CurrentNav,
-			AccountingNavTimestamp:   navInfo.LastUpdate,
-			PositionsProcessed:       0,
-			TotalPositions:           totalPositions,
-			InProgress:               true,
-			StartedAt:                k.header.GetHeaderInfo(ctx).Time,
-			AccumulatedResidual:      sdkmath.ZeroInt(),
+			LastProcessedUser:      "",
+			AccountingNav:          navInfo.CurrentNav,
+			AccountingNavTimestamp: navInfo.LastUpdate,
+			PositionsProcessed:     0,
+			TotalPositions:         totalPositions,
+			InProgress:             true,
+			StartedAt:              k.header.GetHeaderInfo(ctx).Time,
+			AccumulatedResidual:    sdkmath.ZeroInt(),
+		}
+
+		// Save initial cursor
+		if err := k.SetVaultsV2AccountingCursor(ctx, cursor); err != nil {
+			return nil, err
 		}
 	}
 
-	// When there are no active shares, reset accrued yield and mirror NAV
+	// When there are no active shares, handle specially
 	if totalShares.IsZero() {
-		return k.accountingWithZeroShares(ctx, navInfo, state, cursor)
+		return k.accountingWithZeroShares(ctx, navInfo, cursor, maxPositions)
 	}
 
 	// Perform cursor-based accounting
-	return k.accountingWithCursor(ctx, navInfo, state, totalShares, cursor, maxPositions)
+	return k.accountingWithCursor(ctx, navInfo, totalShares, cursor, maxPositions)
 }
 
 // accountingWithZeroShares handles the case where there are no active shares.
+// Writes zero yield to snapshots for all users.
 func (k *Keeper) accountingWithZeroShares(
 	ctx context.Context,
 	navInfo vaultsv2.NAVInfo,
-	state vaultsv2.VaultState,
 	cursor vaultsv2.AccountingCursor,
+	maxPositions uint32,
 ) (*AccountingResult, error) {
-	positionsProcessed := uint32(0)
-	maxBatch := uint32(100) // Process in batches when resetting yield
-
-	startAfter := cursor.LastProcessedUser
-	complete := true
-
-	if err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
-		addrStr := address.String()
-
-		// Skip until we reach the last processed user
-		if startAfter != "" {
-			if addrStr <= startAfter {
-				return false, nil
+	// Use paginated iterator
+	lastProcessed, count, err := k.IterateVaultsV2UserPositionsPaginated(
+		ctx,
+		cursor.LastProcessedUser,
+		maxPositions,
+		func(address types.AccAddress, position vaultsv2.UserPosition) error {
+			// Create snapshot with zero yield
+			snapshot := vaultsv2.AccountingSnapshot{
+				User:           address.String(),
+				DepositAmount:  position.AmountPendingWithdrawal,
+				AccruedYield:   sdkmath.ZeroInt(),
+				AccountingNav:  navInfo.CurrentNav,
+				CreatedAt:      k.header.GetHeaderInfo(ctx).Time,
 			}
-		}
 
-		if position.AccruedYield.IsZero() {
-			return false, nil
-		}
-
-		position.AccruedYield = sdkmath.ZeroInt()
-		if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
-			return true, err
-		}
-
-		cursor.LastProcessedUser = addrStr
-		cursor.PositionsProcessed++
-		positionsProcessed++
-
-		// Stop if we've hit the batch limit
-		if positionsProcessed >= maxBatch {
-			complete = false
-			return true, nil
-		}
-
-		return false, nil
-	}); err != nil {
+			return k.SetVaultsV2AccountingSnapshot(ctx, snapshot)
+		},
+	)
+	if err != nil {
 		return nil, err
 	}
 
-	// Update vault state
+	// Update cursor
+	cursor.PositionsProcessed += uint64(count)
+	cursor.LastProcessedUser = lastProcessed
+	complete := cursor.PositionsProcessed >= cursor.TotalPositions
+
 	if complete {
+		// Commit all snapshots atomically
+		if err := k.CommitVaultsV2AccountingSnapshots(ctx); err != nil {
+			return nil, fmt.Errorf("failed to commit snapshots: %w", err)
+		}
+
+		// Update vault state
+		state, err := k.GetVaultsV2VaultState(ctx)
+		if err != nil {
+			return nil, err
+		}
+
 		state.TotalNav = navInfo.CurrentNav
 		if !state.TotalDeposits.IsNil() {
-			var err error
 			if state.TotalAccruedYield, err = navInfo.CurrentNav.SafeSub(state.TotalDeposits); err != nil {
 				return nil, err
 			}
@@ -201,27 +202,22 @@ func (k *Keeper) accountingWithZeroShares(
 		}
 	}
 
-	nextUser := ""
-	if !complete {
-		nextUser = cursor.LastProcessedUser
-	}
-
 	return &AccountingResult{
-		PositionsProcessed:      uint64(positionsProcessed),
+		PositionsProcessed:      uint64(count),
 		TotalPositionsProcessed: cursor.PositionsProcessed,
 		TotalPositions:          cursor.TotalPositions,
 		Complete:                complete,
-		NextUser:                nextUser,
+		NextUser:                lastProcessed,
 		AppliedNav:              navInfo.CurrentNav,
 		YieldDistributed:        sdkmath.ZeroInt(),
 	}, nil
 }
 
 // accountingWithCursor performs the main accounting logic with cursor pagination.
+// Writes all updates to snapshots for atomic commit when complete.
 func (k *Keeper) accountingWithCursor(
 	ctx context.Context,
 	navInfo vaultsv2.NAVInfo,
-	state vaultsv2.VaultState,
 	totalShares sdkmath.Int,
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
@@ -232,131 +228,119 @@ func (k *Keeper) accountingWithCursor(
 	// Restore residual from cursor
 	residual := cursor.AccumulatedResidual.BigInt()
 
-	aggregatedYield := sdkmath.ZeroInt()
-	aggregatedDeposits := sdkmath.ZeroInt()
-	positionsProcessed := uint32(0)
 	yieldThisBatch := sdkmath.ZeroInt()
+	headerInfo := k.header.GetHeaderInfo(ctx)
 
-	startAfter := cursor.LastProcessedUser
-	var lastUser string
-	complete := true
-
-	err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
-		addrStr := address.String()
-
-		// Skip until we reach the last processed user
-		if startAfter != "" {
-			if addrStr <= startAfter {
-				return false, nil
+	// Use paginated iterator
+	lastProcessed, count, err := k.IterateVaultsV2UserPositionsPaginated(
+		ctx,
+		cursor.LastProcessedUser,
+		maxPositions,
+		func(address types.AccAddress, position vaultsv2.UserPosition) error {
+			shares, err := k.GetVaultsV2UserShares(ctx, address)
+			if err != nil {
+				return err
 			}
-		}
 
-		shares, err := k.GetVaultsV2UserShares(ctx, address)
-		if err != nil {
-			return true, err
-		}
+			var depositAmount, accruedYield sdkmath.Int
 
-		if !shares.IsPositive() {
-			pending := position.AmountPendingWithdrawal
+			if !shares.IsPositive() {
+				// User has no shares, set to pending withdrawal
+				depositAmount = position.AmountPendingWithdrawal
+				accruedYield = sdkmath.ZeroInt()
+			} else {
+				// Calculate proportional value
+				numerator := new(big.Int).Mul(navBig, shares.BigInt())
+				quotient := new(big.Int)
+				remainder := new(big.Int)
+				quotient.QuoRem(numerator, totalSharesBig, remainder)
 
-			if !position.AccruedYield.IsZero() || position.DepositAmount.IsNil() || !position.DepositAmount.Equal(pending) {
-				position.AccruedYield = sdkmath.ZeroInt()
-				position.DepositAmount = pending
-				if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
-					return true, err
+				// Accumulate remainder for fair distribution
+				residual.Add(residual, remainder)
+				if residual.Cmp(totalSharesBig) >= 0 {
+					extra := new(big.Int).Div(new(big.Int).Set(residual), totalSharesBig)
+					if extra.Sign() > 0 {
+						quotient.Add(quotient, extra)
+						residual.Sub(residual, new(big.Int).Mul(totalSharesBig, extra))
+					}
+				}
+
+				value := sdkmath.NewIntFromBigInt(quotient)
+				accruedYield, err = value.SafeSub(shares)
+				if err != nil {
+					return err
+				}
+
+				depositAmount = shares
+				if position.AmountPendingWithdrawal.IsPositive() {
+					if depositAmount, err = depositAmount.SafeAdd(position.AmountPendingWithdrawal); err != nil {
+						return err
+					}
+				}
+
+				// Track yield for this batch
+				yieldThisBatch, err = yieldThisBatch.SafeAdd(accruedYield)
+				if err != nil {
+					return err
 				}
 			}
 
-			aggregatedDeposits, err = aggregatedDeposits.SafeAdd(pending)
-			if err != nil {
-				return true, err
+			// Write to snapshot instead of directly to position
+			snapshot := vaultsv2.AccountingSnapshot{
+				User:          address.String(),
+				DepositAmount: depositAmount,
+				AccruedYield:  accruedYield,
+				AccountingNav: navInfo.CurrentNav,
+				CreatedAt:     headerInfo.Time,
 			}
 
-			lastUser = addrStr
-			positionsProcessed++
-
-			// Check if we should stop for this batch
-			if maxPositions > 0 && positionsProcessed >= maxPositions {
-				complete = false
-				return true, nil
-			}
-
-			return false, nil
-		}
-
-		// Calculate proportional value
-		numerator := new(big.Int).Mul(navBig, shares.BigInt())
-		quotient := new(big.Int)
-		remainder := new(big.Int)
-		quotient.QuoRem(numerator, totalSharesBig, remainder)
-
-		// Accumulate remainder for fair distribution
-		residual.Add(residual, remainder)
-		if residual.Cmp(totalSharesBig) >= 0 {
-			extra := new(big.Int).Div(new(big.Int).Set(residual), totalSharesBig)
-			if extra.Sign() > 0 {
-				quotient.Add(quotient, extra)
-				residual.Sub(residual, new(big.Int).Mul(totalSharesBig, extra))
-			}
-		}
-
-		value := sdkmath.NewIntFromBigInt(quotient)
-		accruedYield, err := value.SafeSub(shares)
-		if err != nil {
-			return true, err
-		}
-
-		// Update position
-		position.AccruedYield = accruedYield
-		depositAmount := shares
-		if position.AmountPendingWithdrawal.IsPositive() {
-			if depositAmount, err = depositAmount.SafeAdd(position.AmountPendingWithdrawal); err != nil {
-				return true, err
-			}
-		}
-		position.DepositAmount = depositAmount
-		if err := k.SetVaultsV2UserPosition(ctx, address, position); err != nil {
-			return true, err
-		}
-
-		// Aggregate totals
-		aggregatedYield, err = aggregatedYield.SafeAdd(accruedYield)
-		if err != nil {
-			return true, err
-		}
-
-		aggregatedDeposits, err = aggregatedDeposits.SafeAdd(depositAmount)
-		if err != nil {
-			return true, err
-		}
-
-		yieldThisBatch, err = yieldThisBatch.SafeAdd(accruedYield)
-		if err != nil {
-			return true, err
-		}
-
-		lastUser = addrStr
-		positionsProcessed++
-
-		// Check if we should stop for this batch
-		if maxPositions > 0 && positionsProcessed >= maxPositions {
-			complete = false
-			return true, nil
-		}
-
-		return false, nil
-	})
+			return k.SetVaultsV2AccountingSnapshot(ctx, snapshot)
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	// Update cursor
-	cursor.PositionsProcessed += uint64(positionsProcessed)
-	cursor.LastProcessedUser = lastUser
+	cursor.PositionsProcessed += uint64(count)
+	cursor.LastProcessedUser = lastProcessed
 	cursor.AccumulatedResidual = sdkmath.NewIntFromBigInt(residual)
+	complete := cursor.PositionsProcessed >= cursor.TotalPositions
 
-	// If complete, update state and clear cursor
 	if complete {
+		// Calculate aggregated totals from all snapshots
+		aggregatedYield := sdkmath.ZeroInt()
+		aggregatedDeposits := sdkmath.ZeroInt()
+
+		err := k.IterateVaultsV2AccountingSnapshots(ctx, func(snapshot vaultsv2.AccountingSnapshot) (bool, error) {
+			var err error
+			aggregatedYield, err = aggregatedYield.SafeAdd(snapshot.AccruedYield)
+			if err != nil {
+				return true, err
+			}
+
+			aggregatedDeposits, err = aggregatedDeposits.SafeAdd(snapshot.DepositAmount)
+			if err != nil {
+				return true, err
+			}
+
+			return false, nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to aggregate snapshot totals: %w", err)
+		}
+
+		// Commit all snapshots atomically
+		if err := k.CommitVaultsV2AccountingSnapshots(ctx); err != nil {
+			return nil, fmt.Errorf("failed to commit snapshots: %w", err)
+		}
+
+		// Update vault state
+		state, err := k.GetVaultsV2VaultState(ctx)
+		if err != nil {
+			return nil, err
+		}
+
 		state.TotalAccruedYield = aggregatedYield
 		state.TotalDeposits = aggregatedDeposits
 		state.TotalNav = navInfo.CurrentNav
@@ -368,6 +352,7 @@ func (k *Keeper) accountingWithCursor(
 			return nil, err
 		}
 
+		// Clear cursor
 		if err := k.ClearVaultsV2AccountingCursor(ctx); err != nil {
 			return nil, err
 		}
@@ -378,17 +363,12 @@ func (k *Keeper) accountingWithCursor(
 		}
 	}
 
-	nextUser := ""
-	if !complete {
-		nextUser = lastUser
-	}
-
 	return &AccountingResult{
-		PositionsProcessed:      uint64(positionsProcessed),
+		PositionsProcessed:      uint64(count),
 		TotalPositionsProcessed: cursor.PositionsProcessed,
 		TotalPositions:          cursor.TotalPositions,
 		Complete:                complete,
-		NextUser:                nextUser,
+		NextUser:                lastProcessed,
 		AppliedNav:              navInfo.CurrentNav,
 		YieldDistributed:        yieldThisBatch,
 	}, nil
