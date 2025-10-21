@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.2.0
+
+*Oct 21, 2025*
+
+This is a consensus-breaking minor release to the `v2` line.
+
+### IMPROVEMENTS
+
+- Move vaults new configuration values to state. ([#53](https://github.com/noble-assets/dollar/pull/53))
+
 ## v2.1.0
 
 *Jul 30, 2025*
