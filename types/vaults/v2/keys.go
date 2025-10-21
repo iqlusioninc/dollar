@@ -25,6 +25,7 @@ const SubmoduleName = "dollar/vaults/v2"
 var (
 	ParamsKey                        = []byte("vaults/v2/params")
 	VaultConfigurationKey            = []byte("vaults/v2/vault_config")
+	UserPositionSequencePrefix       = []byte("vaults/v2/user_position_seq/")
 	UserPositionPrefix               = []byte("vaults/v2/user_position/")
 	NAVKey                           = []byte("vaults/v2/nav")
 	NAVInfoKey                       = []byte("vaults/v2/nav_info")
@@ -46,8 +47,6 @@ var (
 	WithdrawalQueueSequenceKey       = []byte("vaults/v2/withdrawal_queue_seq")
 	WithdrawalQueueNextIDKey         = []byte("vaults/v2/withdrawal_next_id")
 	PendingWithdrawalsKey            = []byte("vaults/v2/pending_withdrawals")
-	UserSharesPrefix                 = []byte("vaults/v2/user_shares/")
-	TotalSharesKey                   = []byte("vaults/v2/total_shares")
 	DepositLimitsKey                 = []byte("vaults/v2/deposit_limits")
 	UserDepositHistoryPrefix         = []byte("vaults/v2/user_deposit_history/")
 	DepositVelocityPrefix            = []byte("vaults/v2/deposit_velocity/")

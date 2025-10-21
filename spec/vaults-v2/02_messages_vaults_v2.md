@@ -4,7 +4,7 @@
 
 `noble.dollar.vaults.v2.MsgDeposit`
 
-This message allows Noble Dollar users to deposit $USDN into the Noble vault and receive shares representing their proportional ownership. The system implements multiple safeguards against malicious deposit behavior including velocity checks, cooldown periods, and per-block limits.
+This message allows Noble Dollar users to deposit $USDN into the Noble vault and create a new independent position. Each deposit creates a separate position with its own deposit amount, yield tracking, and withdrawal preferences. The system implements multiple safeguards against malicious deposit behavior including velocity checks, cooldown periods, and per-block limits.
 
 ```json
 {
@@ -12,8 +12,9 @@ This message allows Noble Dollar users to deposit $USDN into the Noble vault and
     "messages": [
       {
         "@type": "/noble.dollar.vaults.v2.MsgDeposit",
-        "signer": "noble1user",
-        "amount": "1000000"
+        "depositor": "noble1user",
+        "amount": "1000000",
+        "receive_yield": true
       }
     ],
     "memo": "",
@@ -36,7 +37,9 @@ This message allows Noble Dollar users to deposit $USDN into the Noble vault and
 
 ### Arguments
 
+- `depositor` — The address of the user making the deposit.
 - `amount` — The amount of $USDN to deposit into the Noble vault.
+- `receive_yield` — Whether this position should receive yield distributions.
 
 ### Requirements
 
@@ -47,25 +50,37 @@ This message allows Noble Dollar users to deposit $USDN into the Noble vault and
 - Vault must not be in emergency mode.
 - User's deposit velocity must not trigger suspicious activity flags.
 
+### State Changes
+
 - User's $USDN balance is decreased by the deposit amount.
 - Funds are marked as PENDING_DEPLOYMENT until allocated to remote positions.
-- Shares are minted to the user based on current NAV.
+- A new UserPosition is created with:
+  - Auto-generated `position_id` (unique within the user)
+  - `deposit_amount` set to the deposited amount
+  - `accrued_yield` initialized to zero
+  - `receive_yield` set to the specified preference
+  - `first_deposit_time` set to current block time
 - User's deposit history and velocity metrics are updated.
-- Total Noble vault shares are increased.
+- Total vault deposits and position count are increased.
 - NAV includes pending deployment funds as local assets.
+
+### Response
+
+- `amount_deposited` — Confirmation of the deposited amount.
+- `position_id` — The unique position ID created for this deposit.
 
 ### Anti-Manipulation Mechanisms
 
 - **Velocity Tracking**: Monitors frequency and volume of deposits over rolling time windows.
 - **Cooldown Enforcement**: Prevents rapid successive deposits that could manipulate share prices.
 - **Block Limits**: Caps total deposits per block to prevent flash loan attacks.
-- **Share Price Protection**: Uses time-weighted average NAV for share calculations during high volatility.
+- **Position Independence**: Each deposit creates an independent position, preventing manipulation across positions.
 
 ## RequestWithdrawal
 
 `noble.dollar.vaults.v2.MsgRequestWithdrawal`
 
-This message initiates a withdrawal request that enters a queue for processing. The queued approach prevents manipulation through sandwich attacks and ensures fair NAV-based redemptions.
+This message initiates a withdrawal request from a specific user position that enters a queue for processing. The queued approach prevents manipulation through sandwich attacks and ensures fair value-based redemptions.
 
 ```json
 {
@@ -73,8 +88,9 @@ This message initiates a withdrawal request that enters a queue for processing. 
     "messages": [
       {
         "@type": "/noble.dollar.vaults.v2.MsgRequestWithdrawal",
-        "signer": "noble1user",
-        "shares": "1000"
+        "requester": "noble1user",
+        "amount": "1000000",
+        "position_id": 1
       }
     ],
     "memo": "",
@@ -97,20 +113,81 @@ This message initiates a withdrawal request that enters a queue for processing. 
 
 ### Arguments
 
-- `shares` — The number of shares to redeem from the Noble vault.
+- `requester` — The address of the user requesting the withdrawal.
+- `amount` — The amount of $USDN to withdraw from the position.
+- `position_id` — The specific position ID to withdraw from.
 
 ### Requirements
 
-- User must have sufficient share balance in the vault.
+- User must own the specified position.
+- Position must have sufficient available balance (deposit_amount + accrued_yield - pending_withdrawals).
 - Vault must not be in emergency withdrawal-only mode.
-- Shares are immediately locked and cannot be transferred.
 
 ### State Changes
 
-- User's shares are locked (not burned yet).
+- Position's `amount_pending_withdrawal` is increased by the requested amount.
+- Position's `active_withdrawal_requests` counter is incremented.
 - A withdrawal request is created and added to the queue with PENDING status.
 - Request ID is generated and returned to the user.
-- NAV at time of request is recorded for fair value calculation.
+- Position value at time of request is recorded for fair distribution.
+
+## SetYieldPreference
+
+`noble.dollar.vaults.v2.MsgSetYieldPreference`
+
+This message allows users to update the yield preference for a specific position. Each position can independently choose whether to receive yield distributions.
+
+```json
+{
+  "body": {
+    "messages": [
+      {
+        "@type": "/noble.dollar.vaults.v2.MsgSetYieldPreference",
+        "user": "noble1user",
+        "position_id": 1,
+        "receive_yield": false
+      }
+    ],
+    "memo": "",
+    "timeout_height": "0",
+    "extension_options": [],
+    "non_critical_extension_options": []
+  },
+  "auth_info": {
+    "signer_infos": [],
+    "fee": {
+      "amount": [],
+      "gas_limit": "200000",
+      "payer": "",
+      "granter": ""
+    }
+  },
+  "signatures": []
+}
+```
+
+### Arguments
+
+- `user` — The address of the position owner.
+- `position_id` — The specific position ID to update.
+- `receive_yield` — Whether this position should receive yield distributions.
+
+### Requirements
+
+- User must own the specified position.
+- Position must exist and be active.
+
+### State Changes
+
+- Position's `receive_yield` preference is updated.
+- Position's `last_activity_time` is updated.
+- Future yield distributions will respect the new preference.
+
+### Response
+
+- `previous_preference` — The previous yield preference setting.
+- `new_preference` — The updated yield preference setting.
+- `position_id` — Confirmation of the position that was updated.
 
 ## ClaimWithdrawal
 
@@ -159,7 +236,8 @@ This message allows users to claim fulfilled withdrawal requests from the queue.
 ### State Changes
 
 - $USDN is transferred to the user based on the fulfilled amount.
-- User's shares are burned.
+- Position's deposit amount and/or accrued yield are reduced proportionally.
+- If position becomes empty (both amounts zero), it may be deleted.
 - Request status is updated to CLAIMED.
 - Pending withdrawals counter is decreased.
 

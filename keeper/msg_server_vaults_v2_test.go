@@ -105,7 +105,7 @@ func TestDepositBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
 
 	// ASSERT: User position is created correctly
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
@@ -226,7 +226,7 @@ func TestDepositMultipleDeposits(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
 
 	// ASSERT: User position accumulated correctly
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
@@ -257,36 +257,34 @@ func TestDepositYieldPreference(t *testing.T) {
 	require.NoError(t, err)
 
 	// ASSERT: Position has ReceiveYield = false
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.False(t, position.ReceiveYield)
 
-	// ACT: Second deposit with ReceiveYield = true but no override
+	// ACT: Second deposit with ReceiveYield = false
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:            bob.Address,
-		Amount:               math.NewInt(20 * ONE_V2),
-		ReceiveYield:         true,
-		ReceiveYieldOverride: false, // Don't override existing preference
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(20 * ONE_V2),
+		ReceiveYield: false,
 	})
 	require.NoError(t, err)
 
 	// ASSERT: Position still has ReceiveYield = false (not overridden)
-	position, _, err = k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, _, err = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	assert.False(t, position.ReceiveYield)
 
-	// ACT: Third deposit with ReceiveYield = true and override
+	// ACT: Third deposit with ReceiveYield = true
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:            bob.Address,
-		Amount:               math.NewInt(10 * ONE_V2),
-		ReceiveYield:         true,
-		ReceiveYieldOverride: true, // Override existing preference
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(10 * ONE_V2),
+		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
 	// ASSERT: Position now has ReceiveYield = true (overridden)
-	position, _, err = k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, _, err = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	assert.True(t, position.ReceiveYield)
 }
@@ -319,7 +317,7 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	assert.Equal(t, math.ZeroInt(), bank.Balances[bob.Address].AmountOf("uusdn"))
 
 	// ASSERT: User position updated
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(100*ONE_V2), position.DepositAmount)
@@ -436,7 +434,7 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	assert.NotEqual(t, resp1.RequestId, resp2.RequestId)
 
 	// ASSERT: User position updated correctly
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
@@ -652,7 +650,7 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	assert.False(t, found)
 
 	// ASSERT: User position updated
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
@@ -785,7 +783,7 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 	assert.Equal(t, math.NewInt(160*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
 
 	// ASSERT: Position shows remaining deposit
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(40*ONE_V2), position.DepositAmount)
@@ -921,7 +919,7 @@ func TestCompleteWithdrawalRemovesPosition(t *testing.T) {
 	require.NoError(t, err)
 
 	// ASSERT: Position deleted
-	_, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	_, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	assert.False(t, found)
 
@@ -1038,7 +1036,7 @@ func TestSetYieldPreferenceUpdatesPosition(t *testing.T) {
 	require.True(t, resp.PreviousPreference)
 	require.False(t, resp.NewPreference)
 
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes)
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.False(t, position.ReceiveYield)

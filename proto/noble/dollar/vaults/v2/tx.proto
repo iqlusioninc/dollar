@@ -99,6 +99,7 @@ service Msg {
 }
 
 // MsgDeposit allows users to deposit into a V2 vault
+// Each deposit creates a new independent position with its own yield tracking
 message MsgDeposit {
   option (cosmos.msg.v1.signer) = "depositor";
   option (amino.name) = "dollar/vaults/v2/Deposit";
@@ -117,11 +118,8 @@ message MsgDeposit {
     (amino.dont_omitempty) = true
   ];
 
-  // Whether user wants to receive yield for this deposit.
+  // Whether user wants to receive yield for this position
   bool receive_yield = 3;
-
-  // Set to true when the deposit should override the current preference.
-  bool receive_yield_override = 4;
 }
 
 // MsgDepositResponse returns the results of a deposit
@@ -133,9 +131,12 @@ message MsgDepositResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+
+  // Position ID for the newly created position
+  uint64 position_id = 2;
 }
 
-// MsgSetYieldPreference allows users to set their yield preference
+// MsgSetYieldPreference allows users to set their yield preference for a specific position
 message MsgSetYieldPreference {
   option (cosmos.msg.v1.signer) = "user";
   option (amino.name) = "dollar/vaults/v2/SetYieldPreference";
@@ -148,6 +149,9 @@ message MsgSetYieldPreference {
 
   // Whether to receive yield
   bool receive_yield = 2;
+
+  // Position ID to update preference for
+  uint64 position_id = 3;
 }
 
 // MsgSetYieldPreferenceResponse confirms yield preference update
@@ -157,6 +161,9 @@ message MsgSetYieldPreferenceResponse {
 
   // New yield preference
   bool new_preference = 2;
+
+  // Position ID that was updated
+  uint64 position_id = 3;
 }
 
 // MsgUpdateVaultConfig allows authority to update vault configuration
@@ -518,6 +525,9 @@ message MsgRequestWithdrawal {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+
+  // Position ID to withdraw from
+  uint64 position_id = 3;
 }
 
 // MsgRequestWithdrawalResponse returns the created request details

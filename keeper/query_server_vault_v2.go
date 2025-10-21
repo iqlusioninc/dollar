@@ -111,10 +111,10 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 			view.DestinationChain = destination.VaultAddress.String()
 		}
 		if noble := fund.GetNobleOrigin(); noble != nil {
-			view.Type = noble.OperationType.String()
+			view.OperationType = noble.OperationType.String()
 		}
 		if nobleDest := fund.GetNobleDestination(); nobleDest != nil {
-			view.Type = nobleDest.OperationType.String()
+			view.OperationType = nobleDest.OperationType.String()
 		}
 		if tracking := fund.GetProviderTracking(); tracking != nil {
 			if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
@@ -170,8 +170,9 @@ func (q queryServerV2) UserPosition(ctx context.Context, req *vaultsv2.QueryUser
 		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
 	}
 
-	// Get user position from state
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
+	// TEMPORARY FIX: For now, assume position ID 1 for backward compatibility
+	// TODO: Update this query to support multi-position or remove if deprecated
+	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, 1)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
@@ -584,7 +585,7 @@ func (q queryServerV2) UserPositions(ctx context.Context, req *vaultsv2.QueryUse
 	}
 
 	// Get user position
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
+	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, 1) // TEMPORARY: assume position 1
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
@@ -999,7 +1000,7 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 	}
 
 	// Get user position
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
+	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, 1) // TEMPORARY: assume position 1
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
@@ -1238,7 +1239,7 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 	}
 
 	// Get user position
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
+	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, 1) // TEMPORARY: assume position 1
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
@@ -1365,7 +1366,7 @@ func (q queryServerV2) StaleInflightFunds(ctx context.Context, req *vaultsv2.Que
 				RouteId:           routeID,
 				TransactionId:     fund.TransactionId,
 				Amount:            fund.Amount.String(),
-				Type:              opType,
+				OperationType:     opType,
 				SourceChain:       sourceChain,
 				DestinationChain:  destChain,
 				HoursOverdue:      strconv.FormatInt(int64(hoursOverdue), 10),

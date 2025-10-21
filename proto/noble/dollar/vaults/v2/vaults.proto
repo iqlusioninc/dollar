@@ -24,9 +24,13 @@ option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 // Migration approach: Users must withdraw from V1 and deposit into V2
 
 // UserPosition represents a user's position in the V2 yield-tracking vault system
+// Users can have multiple independent positions, each identified by position_id
 message UserPosition {
+  // Unique position ID for this user (auto-incremented per user)
+  uint64 position_id = 1;
+
   // Current deposit amount (principal)
-  string deposit_amount = 1 [
+  string deposit_amount = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -34,7 +38,7 @@ message UserPosition {
   ];
 
   // Accrued yield on the position
-  string accrued_yield = 2 [
+  string accrued_yield = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -42,22 +46,22 @@ message UserPosition {
   ];
 
   // Timestamp of first deposit
-  google.protobuf.Timestamp first_deposit_time = 3 [
+  google.protobuf.Timestamp first_deposit_time = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
   // Timestamp of last deposit/withdrawal
-  google.protobuf.Timestamp last_activity_time = 4 [
+  google.protobuf.Timestamp last_activity_time = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
   // Whether user wants to receive yield (vs contributing to fee pool)
-  bool receive_yield = 5;
+  bool receive_yield = 6;
 
   // Amount pending withdrawal
-  string amount_pending_withdrawal = 6 [
+  string amount_pending_withdrawal = 7 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -65,7 +69,7 @@ message UserPosition {
   ];
 
   // Number of active withdrawal requests
-  int32 active_withdrawal_requests = 7;
+  int32 active_withdrawal_requests = 8;
 }
 
 // AccountingSnapshot represents a pending update to a user position during accounting.
@@ -76,8 +80,11 @@ message AccountingSnapshot {
   // User address
   string user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
+  // Position ID for this user
+  uint64 position_id = 2;
+
   // New deposit amount after accounting
-  string deposit_amount = 2 [
+  string deposit_amount = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -85,7 +92,7 @@ message AccountingSnapshot {
   ];
 
   // New accrued yield after accounting
-  string accrued_yield = 3 [
+  string accrued_yield = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -93,7 +100,7 @@ message AccountingSnapshot {
   ];
 
   // NAV value used for this snapshot
-  string accounting_nav = 4 [
+  string accounting_nav = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -101,7 +108,7 @@ message AccountingSnapshot {
   ];
 
   // Timestamp when this snapshot was created
-  google.protobuf.Timestamp created_at = 5 [
+  google.protobuf.Timestamp created_at = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
@@ -115,8 +122,11 @@ message WithdrawalRequest {
   // Address of the account that created the request
   string requester = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
+  // Position ID being withdrawn from
+  uint64 position_id = 3;
+
   // Amount to withdraw (including yield)
-  string withdraw_amount = 3 [
+  string withdraw_amount = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -124,22 +134,22 @@ message WithdrawalRequest {
   ];
 
   // When the withdrawal was requested
-  google.protobuf.Timestamp request_time = 4 [
+  google.protobuf.Timestamp request_time = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
   // When the withdrawal can be processed
-  google.protobuf.Timestamp unlock_time = 5 [
+  google.protobuf.Timestamp unlock_time = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
   // Current status of the withdrawal request
-  WithdrawalRequestStatus status = 6;
+  WithdrawalRequestStatus status = 7;
 
   // Estimated amount to receive (calculated at request time)
-  string estimated_amount = 7 [
+  string estimated_amount = 8 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -147,7 +157,7 @@ message WithdrawalRequest {
   ];
 
   // Block height when request was made
-  int64 request_block_height = 8;
+  int64 request_block_height = 9;
 }
 
 // WithdrawalRequestStatus represents the status of a withdrawal request
@@ -217,6 +227,9 @@ message VaultState {
 
   // Number of pending withdrawal requests
   int32 pending_withdrawal_requests = 9;
+
+  // Total number of active positions across all users
+  uint64 total_positions = 10;
 }
 
 // YieldCalculation contains details about yield calculations

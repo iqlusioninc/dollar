@@ -22,7 +22,7 @@ Total NAV = Local Assets
           + Σ(Inflight Funds Values)
           - Pending Withdrawal Liabilities
 
-NAV per Share = Total NAV / Total Outstanding Shares
+NAV per User = (Total NAV * User Position Value) / Total Position Values
 ```
 
 ## LastNAVUpdate
@@ -136,13 +136,14 @@ const WithdrawalQueuePrefix = []byte("vaults/v2/withdrawal_queue/")
 ```go
 type WithdrawalRequest struct {
     RequestID        uint64
-    User             []byte
-    SharesAmount     math.Int
-    RequestedAmount  math.Int  // Amount in $USDN requested
-    NAVAtRequest     math.LegacyDec
-    Timestamp        time.Time
+    Requester        string   // User address as string
+    PositionId       uint64   // Specific position ID being withdrawn from
+    WithdrawAmount   math.Int // Amount in $USDN requested
+    RequestTime      time.Time
+    UnlockTime       time.Time
     Status           WithdrawalStatus // PENDING, PROCESSING, CLAIMABLE, CLAIMED
-    FulfilledAmount  math.Int  // Actual amount available for claim
+    EstimatedAmount  math.Int // Estimated amount available for claim
+    RequestBlockHeight int64   // Block height when request was made
 }
 ```
 
@@ -162,21 +163,51 @@ The `PendingWithdrawals` field is a [`collections.Item`][item] that stores the t
 const PendingWithdrawalsKey = []byte("vaults/v2/pending_withdrawals")
 ```
 
-## UserShares
+## UserPositions
 
-The `UserShares` field is a mapping ([`collections.Map`][map]) between user address (`[]byte`) and their share balance in the vault (`math.Int`).
-
-```go
-const UserSharesPrefix = []byte("vaults/v2/user_shares/")
-```
-
-## TotalShares
-
-The `TotalShares` field is a [`collections.Item`][item] that stores the total outstanding shares for the vault (`math.Int`).
+The `UserPositions` field is a mapping ([`collections.Map`][map]) between a composite key of user address and position ID (`[]byte`, `uint64`) and a `vaults.v2.UserPosition` value. Each user can have multiple independent positions, each tracking their own deposit amount and accrued yield separately.
 
 ```go
-const TotalSharesKey = []byte("vaults/v2/total_shares")
+const UserPositionPrefix = []byte("vaults/v2/user_position/")
 ```
+
+### UserPosition Structure
+
+```go
+type UserPosition struct {
+    PositionId               uint64    // Position ID unique within this user
+    DepositAmount            math.Int  // Principal amount deposited for this position
+    AccruedYield             math.Int  // Yield accumulated for this position
+    FirstDepositTime         time.Time // When this position was created
+    LastActivityTime         time.Time // Last deposit, withdrawal, or yield update
+    ReceiveYield             bool      // Whether this position receives yield
+    AmountPendingWithdrawal  math.Int  // Amount locked for pending withdrawals
+    ActiveWithdrawalRequests uint32    // Number of active withdrawal requests
+}
+```
+
+### Key Design Principles
+
+- **Multiple Positions Per User**: Each user can have unlimited independent positions
+- **Per-Position Yield Tracking**: Each position accumulates yield independently based on its `receive_yield` preference
+- **Composite Key Structure**: Positions are keyed by `(user_address, position_id)` where `position_id` is unique within each user
+- **Independent Withdrawal**: Users can withdraw from specific positions without affecting others
+- **No Shares**: Direct tracking of deposit amounts and accrued yield eliminates share price calculations
+
+## UserPositionSequence
+
+The `UserPositionSequence` field is a mapping ([`collections.Map`][map]) between user address (`[]byte`) and their next position ID (`uint64`). This ensures each user's positions have unique, auto-incrementing IDs.
+
+```go
+const UserPositionSequencePrefix = []byte("vaults/v2/user_position_seq/")
+```
+
+### Position ID Generation
+
+- Position IDs are unique **per user**, not globally unique
+- Each user's first position gets ID 1, second gets ID 2, etc.
+- Auto-increment ensures no conflicts within a user's positions
+- Allows easy enumeration of user's positions: 1, 2, 3, ..., N
 
 ## DepositLimits
 

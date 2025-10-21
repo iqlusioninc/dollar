@@ -80,9 +80,8 @@ type Keeper struct {
 
 	VaultsV2Params                        collections.Item[vaultsv2.Params]
 	VaultsV2Config                        collections.Item[vaultsv2.VaultConfig]
-	VaultsV2UserPositions                 collections.Map[[]byte, vaultsv2.UserPosition]
-	VaultsV2UserShares                    collections.Map[[]byte, math.Int]
-	VaultsV2TotalShares                   collections.Item[math.Int]
+	VaultsV2UserPositionSequence          collections.Map[[]byte, uint64]
+	VaultsV2UserPositions                 collections.Map[collections.Pair[[]byte, uint64], vaultsv2.UserPosition]
 	VaultsV2DepositLimits                 collections.Item[vaultsv2.DepositLimit]
 	VaultsV2UserDepositHistory            collections.Map[collections.Pair[[]byte, int64], math.Int]
 	VaultsV2DepositVelocity               collections.Map[[]byte, vaultsv2.DepositVelocity]
@@ -94,7 +93,7 @@ type Keeper struct {
 	VaultsV2NAVInfo                       collections.Item[vaultsv2.NAVInfo]
 	VaultsV2VaultState                    collections.Item[vaultsv2.VaultState]
 	VaultsV2AccountingCursor              collections.Item[vaultsv2.AccountingCursor]
-	VaultsV2AccountingSnapshots           collections.Map[[]byte, vaultsv2.AccountingSnapshot]
+	VaultsV2AccountingSnapshots           collections.Map[collections.Pair[[]byte, uint64], vaultsv2.AccountingSnapshot]
 	VaultsV2RemotePositions               collections.Map[uint64, vaultsv2.RemotePosition]
 	VaultsV2RemotePositionNextID          collections.Item[uint64]
 	VaultsV2RemotePositionChains          collections.Map[uint64, uint32]
@@ -189,9 +188,8 @@ func NewKeeper(
 
 		VaultsV2Params:                        collections.NewItem(builder, vaultsv2.ParamsKey, "vaults_v2_params", codec.CollValue[vaultsv2.Params](cdc)),
 		VaultsV2Config:                        collections.NewItem(builder, vaultsv2.VaultConfigurationKey, "vaults_v2_config", codec.CollValue[vaultsv2.VaultConfig](cdc)),
-		VaultsV2UserPositions:                 collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
-		VaultsV2UserShares:                    collections.NewMap(builder, vaultsv2.UserSharesPrefix, "vaults_v2_user_shares", collections.BytesKey, sdk.IntValue),
-		VaultsV2TotalShares:                   collections.NewItem(builder, vaultsv2.TotalSharesKey, "vaults_v2_total_shares", sdk.IntValue),
+		VaultsV2UserPositionSequence:          collections.NewMap(builder, vaultsv2.UserPositionSequencePrefix, "vaults_v2_user_position_sequence", collections.BytesKey, collections.Uint64Value),
+		VaultsV2UserPositions:                 collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.PairKeyCodec(collections.BytesKey, collections.Uint64Key), codec.CollValue[vaultsv2.UserPosition](cdc)),
 		VaultsV2DepositLimits:                 collections.NewItem(builder, vaultsv2.DepositLimitsKey, "vaults_v2_deposit_limits", codec.CollValue[vaultsv2.DepositLimit](cdc)),
 		VaultsV2UserDepositHistory:            collections.NewMap(builder, vaultsv2.UserDepositHistoryPrefix, "vaults_v2_user_deposit_history", collections.PairKeyCodec(collections.BytesKey, collections.Int64Key), sdk.IntValue),
 		VaultsV2DepositVelocity:               collections.NewMap(builder, vaultsv2.DepositVelocityPrefix, "vaults_v2_deposit_velocity", collections.BytesKey, codec.CollValue[vaultsv2.DepositVelocity](cdc)),
@@ -203,7 +201,7 @@ func NewKeeper(
 		VaultsV2NAVInfo:                       collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
 		VaultsV2VaultState:                    collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
 		VaultsV2AccountingCursor:              collections.NewItem(builder, vaultsv2.AccountingCursorKey, "vaults_v2_accounting_cursor", codec.CollValue[vaultsv2.AccountingCursor](cdc)),
-		VaultsV2AccountingSnapshots:           collections.NewMap(builder, vaultsv2.AccountingSnapshotPrefix, "vaults_v2_accounting_snapshots", collections.BytesKey, codec.CollValue[vaultsv2.AccountingSnapshot](cdc)),
+		VaultsV2AccountingSnapshots:           collections.NewMap(builder, vaultsv2.AccountingSnapshotPrefix, "vaults_v2_accounting_snapshots", collections.PairKeyCodec(collections.BytesKey, collections.Uint64Key), codec.CollValue[vaultsv2.AccountingSnapshot](cdc)),
 		VaultsV2RemotePositions:               collections.NewMap(builder, vaultsv2.RemotePositionPrefix, "vaults_v2_remote_positions", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePosition](cdc)),
 		VaultsV2RemotePositionNextID:          collections.NewItem(builder, vaultsv2.RemotePositionNextIDKey, "vaults_v2_remote_position_next_id", collections.Uint64Value),
 		VaultsV2RemotePositionChains:          collections.NewMap(builder, vaultsv2.RemotePositionChainPrefix, "vaults_v2_remote_position_chains", collections.Uint64Key, collections.Uint32Value),

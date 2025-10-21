@@ -99,6 +99,20 @@ func (k *Keeper) SetVaultsV2VaultState(ctx context.Context, state vaultsv2.Vault
 	return k.VaultsV2VaultState.Set(ctx, state)
 }
 
+// DEPRECATED: GetVaultsV2UserShares - kept for backward compatibility during migration
+// Remove after all references are updated to use positions
+func (k *Keeper) GetVaultsV2UserShares(ctx context.Context, address sdk.AccAddress) (math.Int, error) {
+	// Legacy function - return zero for now, or calculate from positions
+	return math.ZeroInt(), nil
+}
+
+// DEPRECATED: GetVaultsV2TotalShares - kept for backward compatibility during migration
+// Remove after all references are updated to use positions
+func (k *Keeper) GetVaultsV2TotalShares(ctx context.Context) (math.Int, error) {
+	// Legacy function - return zero for now, or calculate from vault state
+	return math.ZeroInt(), nil
+}
+
 // GetVaultsV2NAVInfo returns the cached NAV information or a zero-value copy
 // when unset.
 func (k *Keeper) GetVaultsV2NAVInfo(ctx context.Context) (vaultsv2.NAVInfo, error) {
@@ -118,10 +132,45 @@ func (k *Keeper) SetVaultsV2NAVInfo(ctx context.Context, nav vaultsv2.NAVInfo) e
 	return k.VaultsV2NAVInfo.Set(ctx, nav)
 }
 
-// GetVaultsV2UserPosition returns the position for the supplied account. The
-// boolean flag indicates whether the position existed in state.
-func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress) (vaultsv2.UserPosition, bool, error) {
-	position, err := k.VaultsV2UserPositions.Get(ctx, address)
+// GetNextUserPositionID gets and increments the position sequence for a user.
+// Position IDs start at 1 for readability.
+func (k *Keeper) GetNextUserPositionID(ctx context.Context, address sdk.AccAddress) (uint64, error) {
+	next, err := k.VaultsV2UserPositionSequence.Get(ctx, address)
+	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, err
+		}
+		next = 1
+	} else {
+		next++
+	}
+
+	if err := k.VaultsV2UserPositionSequence.Set(ctx, address, next); err != nil {
+		return 0, err
+	}
+
+	return next, nil
+}
+
+// GetUserPositionCount returns the number of positions a user has created.
+// This returns the current sequence number, which equals the count of positions
+// ever created (including deleted ones).
+func (k *Keeper) GetUserPositionCount(ctx context.Context, address sdk.AccAddress) (uint64, error) {
+	count, err := k.VaultsV2UserPositionSequence.Get(ctx, address)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return 0, nil
+		}
+		return 0, err
+	}
+	return count, nil
+}
+
+// GetVaultsV2UserPosition returns the position for the supplied account and position ID.
+// The boolean flag indicates whether the position existed in state.
+func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64) (vaultsv2.UserPosition, bool, error) {
+	key := collections.Join(address.Bytes(), positionID)
+	position, err := k.VaultsV2UserPositions.Get(ctx, key)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return vaultsv2.UserPosition{}, false, nil
@@ -133,64 +182,93 @@ func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAdd
 }
 
 // SetVaultsV2UserPosition writes the provided user position to state.
+// The position's PositionId field must be set correctly.
 func (k *Keeper) SetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, position vaultsv2.UserPosition) error {
-	return k.VaultsV2UserPositions.Set(ctx, address, position)
+	key := collections.Join(address.Bytes(), position.PositionId)
+	return k.VaultsV2UserPositions.Set(ctx, key, position)
 }
 
 // DeleteVaultsV2UserPosition removes an existing position entry from state.
-func (k *Keeper) DeleteVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress) error {
-	return k.VaultsV2UserPositions.Remove(ctx, address)
+func (k *Keeper) DeleteVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64) error {
+	key := collections.Join(address.Bytes(), positionID)
+	return k.VaultsV2UserPositions.Remove(ctx, key)
+}
+
+// IterateUserPositions iterates over all positions for a specific user.
+// Returning true from the callback stops the iteration early.
+func (k *Keeper) IterateUserPositions(ctx context.Context, address sdk.AccAddress, fn func(positionID uint64, position vaultsv2.UserPosition) (bool, error)) error {
+	// Create a range that matches this user's address prefix
+	prefix := collections.NewPrefixedPairRange[[]byte, uint64](address.Bytes())
+
+	return k.VaultsV2UserPositions.Walk(ctx, prefix, func(key collections.Pair[[]byte, uint64], position vaultsv2.UserPosition) (bool, error) {
+		positionID := key.K2()
+		return fn(positionID, position)
+	})
+}
+
+// IterateAllPositions iterates over all positions for all users.
+// Returning true from the callback stops the iteration early.
+func (k *Keeper) IterateAllPositions(ctx context.Context, fn func(address sdk.AccAddress, positionID uint64, position vaultsv2.UserPosition) (bool, error)) error {
+	return k.VaultsV2UserPositions.Walk(ctx, nil, func(key collections.Pair[[]byte, uint64], position vaultsv2.UserPosition) (bool, error) {
+		addr := sdk.AccAddress(key.K1())
+		positionID := key.K2()
+		return fn(addr, positionID, position)
+	})
 }
 
 // IterateVaultsV2UserPositions walks every stored user position and invokes
 // the supplied callback. Returning true from the callback stops the iteration
 // early.
+// DEPRECATED: Use IterateAllPositions instead. This is kept for backward compatibility
+// but will need updates in calling code.
 func (k *Keeper) IterateVaultsV2UserPositions(ctx context.Context, fn func(address sdk.AccAddress, position vaultsv2.UserPosition) (bool, error)) error {
-	return k.VaultsV2UserPositions.Walk(ctx, nil, func(key []byte, position vaultsv2.UserPosition) (bool, error) {
-		return fn(sdk.AccAddress(key), position)
+	return k.IterateAllPositions(ctx, func(address sdk.AccAddress, _ uint64, position vaultsv2.UserPosition) (bool, error) {
+		return fn(address, position)
 	})
 }
 
-// IterateVaultsV2UserPositionsPaginated iterates over user positions with pagination support.
-// It starts from startAfter (exclusive) and processes up to maxPositions.
-// Returns the last processed address (to use as next startAfter), the count of positions processed, and any error.
-func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
+// WalkUserPositionsPaginated provides paginated iteration over all positions for all users.
+// Used primarily for accounting operations that need to process positions in batches.
+// It starts from (startAfterUser, startAfterPositionID) exclusive and processes up to limit positions.
+// Returns the last processed user and position ID for use as the next cursor.
+func (k *Keeper) WalkUserPositionsPaginated(
 	ctx context.Context,
-	startAfter string,
-	maxPositions uint32,
-	fn func(address sdk.AccAddress, position vaultsv2.UserPosition) error,
-) (lastProcessed string, count uint32, err error) {
-	var startKey []byte
-	if startAfter != "" {
-		addr, err := sdk.AccAddressFromBech32(startAfter)
-		if err != nil {
-			return "", 0, fmt.Errorf("invalid startAfter address: %w", err)
-		}
-		startKey = addr.Bytes()
-	}
+	startAfterUser string,
+	startAfterPositionID uint64,
+	limit uint32,
+	fn func(address sdk.AccAddress, positionID uint64, position vaultsv2.UserPosition) error,
+) (lastUser string, lastPositionID uint64, count uint32, err error) {
+	var ranger *collections.Range[collections.Pair[[]byte, uint64]]
 
-	// Use a range that starts after the startKey
-	var ranger *collections.Range[[]byte]
-	if startKey != nil {
-		// Start from the next key after startKey (exclusive)
-		ranger = new(collections.Range[[]byte]).StartExclusive(startKey)
+	if startAfterUser != "" {
+		addr, err := sdk.AccAddressFromBech32(startAfterUser)
+		if err != nil {
+			return "", 0, 0, fmt.Errorf("invalid startAfter address: %w", err)
+		}
+
+		// Create a range that starts after the given position
+		startKey := collections.Join(addr.Bytes(), startAfterPositionID)
+		ranger = new(collections.Range[collections.Pair[[]byte, uint64]]).StartExclusive(startKey)
 	}
 
 	processed := uint32(0)
 	lastAddr := ""
+	lastPosID := uint64(0)
 
-	walkErr := k.VaultsV2UserPositions.Walk(ctx, ranger, func(key []byte, position vaultsv2.UserPosition) (bool, error) {
-		addr := sdk.AccAddress(key)
+	walkErr := k.VaultsV2UserPositions.Walk(ctx, ranger, func(key collections.Pair[[]byte, uint64], position vaultsv2.UserPosition) (bool, error) {
+		addr := sdk.AccAddress(key.K1())
+		posID := key.K2()
 
-		if err := fn(addr, position); err != nil {
+		if err := fn(addr, posID, position); err != nil {
 			return true, err
 		}
 
 		lastAddr = addr.String()
+		lastPosID = posID
 		processed++
 
 		// Stop if we've hit the limit
-		if maxPositions > 0 && processed >= maxPositions {
+		if limit > 0 && processed >= limit {
 			return true, nil
 		}
 
@@ -198,10 +276,34 @@ func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
 	})
 
 	if walkErr != nil {
-		return "", 0, walkErr
+		return "", 0, 0, walkErr
 	}
 
-	return lastAddr, processed, nil
+	return lastAddr, lastPosID, processed, nil
+}
+
+// IterateVaultsV2UserPositionsPaginated iterates over user positions with pagination support.
+// It starts from startAfter (exclusive) and processes up to maxPositions.
+// Returns the last processed address (to use as next startAfter), the count of positions processed, and any error.
+// DEPRECATED: This function is kept for backward compatibility but will iterate over all positions
+// for all users, which may not be the intended behavior. Consider using WalkUserPositionsPaginated.
+func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
+	ctx context.Context,
+	startAfter string,
+	maxPositions uint32,
+	fn func(address sdk.AccAddress, position vaultsv2.UserPosition) error,
+) (lastProcessed string, count uint32, err error) {
+	lastUser, _, processed, err := k.WalkUserPositionsPaginated(
+		ctx,
+		startAfter,
+		0, // Start from first position of the user
+		maxPositions,
+		func(address sdk.AccAddress, _ uint64, position vaultsv2.UserPosition) error {
+			return fn(address, position)
+		},
+	)
+
+	return lastUser, processed, err
 }
 
 // NextVaultsV2WithdrawalID increments and returns the next withdrawal queue
@@ -536,8 +638,8 @@ func (k *Keeper) GetAllVaultsV2Withdrawals(ctx context.Context) ([]vaultsv2.With
 
 // ResetVaultsV2UserPosition clears a user position but returns the prior
 // value to the caller so it can be used for downstream processing.
-func (k *Keeper) ResetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress) (vaultsv2.UserPosition, error) {
-	position, found, err := k.GetVaultsV2UserPosition(ctx, address)
+func (k *Keeper) ResetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64) (vaultsv2.UserPosition, error) {
+	position, found, err := k.GetVaultsV2UserPosition(ctx, address, positionID)
 	if err != nil {
 		return vaultsv2.UserPosition{}, err
 	}
@@ -545,7 +647,7 @@ func (k *Keeper) ResetVaultsV2UserPosition(ctx context.Context, address sdk.AccA
 		return vaultsv2.UserPosition{}, nil
 	}
 
-	if err := k.DeleteVaultsV2UserPosition(ctx, address); err != nil {
+	if err := k.DeleteVaultsV2UserPosition(ctx, address, positionID); err != nil {
 		return vaultsv2.UserPosition{}, err
 	}
 
@@ -610,51 +712,6 @@ func (k *Keeper) SubtractAmountFromVaultsV2Totals(ctx context.Context, deposits,
 	}
 
 	return k.SetVaultsV2VaultState(ctx, state)
-}
-
-// GetVaultsV2UserShares returns the share balance for a user. Missing entries
-// are treated as zero without error.
-func (k *Keeper) GetVaultsV2UserShares(ctx context.Context, address sdk.AccAddress) (math.Int, error) {
-	shares, err := k.VaultsV2UserShares.Get(ctx, address)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return shares, nil
-}
-
-// SetVaultsV2UserShares updates the share balance for a user, deleting the
-// entry when the balance reaches zero to keep the store compact.
-func (k *Keeper) SetVaultsV2UserShares(ctx context.Context, address sdk.AccAddress, shares math.Int) error {
-	if !shares.IsPositive() {
-		if err := k.VaultsV2UserShares.Remove(ctx, address); err != nil && !errors.Is(err, collections.ErrNotFound) {
-			return err
-		}
-		return nil
-	}
-
-	return k.VaultsV2UserShares.Set(ctx, address, shares)
-}
-
-// GetVaultsV2TotalShares returns the aggregate share supply recorded on-chain.
-func (k *Keeper) GetVaultsV2TotalShares(ctx context.Context) (math.Int, error) {
-	total, err := k.VaultsV2TotalShares.Get(ctx)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return total, nil
-}
-
-// SetVaultsV2TotalShares overwrites the aggregate share supply in storage.
-func (k *Keeper) SetVaultsV2TotalShares(ctx context.Context, shares math.Int) error {
-	return k.VaultsV2TotalShares.Set(ctx, shares)
 }
 
 // GetVaultsV2PendingDeploymentFunds returns the amount of deposits awaiting
@@ -1188,18 +1245,20 @@ func (k *Keeper) ClearVaultsV2AccountingCursor(ctx context.Context) error {
 	return k.VaultsV2AccountingCursor.Remove(ctx)
 }
 
-// SetVaultsV2AccountingSnapshot stores a pending accounting update for a user.
+// SetVaultsV2AccountingSnapshot stores a pending accounting update for a user position.
 func (k *Keeper) SetVaultsV2AccountingSnapshot(ctx context.Context, snapshot vaultsv2.AccountingSnapshot) error {
 	addr, err := sdk.AccAddressFromBech32(snapshot.User)
 	if err != nil {
 		return fmt.Errorf("invalid user address in snapshot: %w", err)
 	}
-	return k.VaultsV2AccountingSnapshots.Set(ctx, addr.Bytes(), snapshot)
+	key := collections.Join(addr.Bytes(), snapshot.PositionId)
+	return k.VaultsV2AccountingSnapshots.Set(ctx, key, snapshot)
 }
 
-// GetVaultsV2AccountingSnapshot retrieves a pending accounting snapshot for a user.
-func (k *Keeper) GetVaultsV2AccountingSnapshot(ctx context.Context, user sdk.AccAddress) (vaultsv2.AccountingSnapshot, bool, error) {
-	snapshot, err := k.VaultsV2AccountingSnapshots.Get(ctx, user.Bytes())
+// GetVaultsV2AccountingSnapshot retrieves a pending accounting snapshot for a user position.
+func (k *Keeper) GetVaultsV2AccountingSnapshot(ctx context.Context, user sdk.AccAddress, positionID uint64) (vaultsv2.AccountingSnapshot, bool, error) {
+	key := collections.Join(user.Bytes(), positionID)
+	snapshot, err := k.VaultsV2AccountingSnapshots.Get(ctx, key)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return vaultsv2.AccountingSnapshot{}, false, nil
@@ -1210,21 +1269,22 @@ func (k *Keeper) GetVaultsV2AccountingSnapshot(ctx context.Context, user sdk.Acc
 }
 
 // DeleteVaultsV2AccountingSnapshot removes a pending accounting snapshot.
-func (k *Keeper) DeleteVaultsV2AccountingSnapshot(ctx context.Context, user sdk.AccAddress) error {
-	return k.VaultsV2AccountingSnapshots.Remove(ctx, user.Bytes())
+func (k *Keeper) DeleteVaultsV2AccountingSnapshot(ctx context.Context, user sdk.AccAddress, positionID uint64) error {
+	key := collections.Join(user.Bytes(), positionID)
+	return k.VaultsV2AccountingSnapshots.Remove(ctx, key)
 }
 
 // IterateVaultsV2AccountingSnapshots walks all pending accounting snapshots.
 func (k *Keeper) IterateVaultsV2AccountingSnapshots(ctx context.Context, fn func(snapshot vaultsv2.AccountingSnapshot) (bool, error)) error {
-	return k.VaultsV2AccountingSnapshots.Walk(ctx, nil, func(key []byte, snapshot vaultsv2.AccountingSnapshot) (bool, error) {
+	return k.VaultsV2AccountingSnapshots.Walk(ctx, nil, func(key collections.Pair[[]byte, uint64], snapshot vaultsv2.AccountingSnapshot) (bool, error) {
 		return fn(snapshot)
 	})
 }
 
 // ClearAllVaultsV2AccountingSnapshots removes all pending accounting snapshots.
 func (k *Keeper) ClearAllVaultsV2AccountingSnapshots(ctx context.Context) error {
-	var keys [][]byte
-	err := k.VaultsV2AccountingSnapshots.Walk(ctx, nil, func(key []byte, _ vaultsv2.AccountingSnapshot) (bool, error) {
+	var keys []collections.Pair[[]byte, uint64]
+	err := k.VaultsV2AccountingSnapshots.Walk(ctx, nil, func(key collections.Pair[[]byte, uint64], _ vaultsv2.AccountingSnapshot) (bool, error) {
 		keys = append(keys, key)
 		return false, nil
 	})
@@ -1249,12 +1309,12 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 		}
 
 		// Get current position
-		position, found, err := k.GetVaultsV2UserPosition(ctx, addr)
+		position, found, err := k.GetVaultsV2UserPosition(ctx, addr, snapshot.PositionId)
 		if err != nil {
 			return true, err
 		}
 		if !found {
-			return true, fmt.Errorf("position not found for user %s during snapshot commit", snapshot.User)
+			return true, fmt.Errorf("position %d not found for user %s during snapshot commit", snapshot.PositionId, snapshot.User)
 		}
 
 		// Update only the accounting fields
@@ -1267,7 +1327,7 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 		}
 
 		// Delete the snapshot after successful commit
-		if err := k.DeleteVaultsV2AccountingSnapshot(ctx, addr); err != nil {
+		if err := k.DeleteVaultsV2AccountingSnapshot(ctx, addr, snapshot.PositionId); err != nil {
 			return true, err
 		}
 

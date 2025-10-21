@@ -29,9 +29,9 @@ Retrieves the current Net Asset Value and related metrics for the Noble vault.
 ### Response
 
 - `nav` — Total Net Asset Value of the Noble vault in $USDN.
-- `nav_per_share` — Current value per share.
+- `total_position_value` — Combined value of all user positions.
 - `last_update` — Timestamp of the last NAV update.
-- `total_shares` — Total outstanding shares.
+- `total_positions` — Total number of active positions.
 - `local_assets` — Value of assets held locally.
 - `remote_positions_value` — Combined value of all remote positions.
 - `inflight_funds_value` — Total value of funds currently in transit.
@@ -94,23 +94,21 @@ Retrieves the current state of the withdrawal queue for the Noble vault.
   "pending_requests": [
     {
       "request_id": "42",
-      "user": "noble1user1",
-      "shares": "1000",
+      "requester": "noble1user1",
+      "position_id": 1,
       "requested_amount": "1050000",
-      "nav_at_request": "1.050000000000000000",
-      "timestamp": "2024-01-15T12:00:00Z",
-      "status": "PENDING",
-      "position": 1
+      "request_time": "2024-01-15T12:00:00Z",
+      "unlock_time": "2024-01-16T12:00:00Z",
+      "status": "PENDING"
     },
     {
       "request_id": "43",
-      "user": "noble1user2",
-      "shares": "500",
+      "requester": "noble1user2",
+      "position_id": 2,
       "requested_amount": "525000",
-      "nav_at_request": "1.050000000000000000",
-      "timestamp": "2024-01-15T12:30:00Z",
-      "status": "PENDING",
-      "position": 2
+      "request_time": "2024-01-15T12:30:00Z",
+      "unlock_time": "2024-01-16T12:30:00Z",
+      "status": "PENDING"
     }
   ],
   "total_pending": "1575000",
@@ -139,20 +137,20 @@ Retrieves all withdrawal requests for a specific user.
   "withdrawals": [
     {
       "request_id": "42",
-      "shares": "1000",
+      "position_id": 1,
       "requested_amount": "1050000",
       "fulfilled_amount": "1050000",
       "status": "CLAIMABLE",
-      "timestamp": "2024-01-15T12:00:00Z",
-      "claimable_at": "2024-01-16T12:00:00Z"
+      "request_time": "2024-01-15T12:00:00Z",
+      "unlock_time": "2024-01-16T12:00:00Z"
     },
     {
       "request_id": "38",
-      "shares": "500",
+      "position_id": 2,
       "requested_amount": "500000",
       "fulfilled_amount": "500000",
       "status": "CLAIMED",
-      "timestamp": "2024-01-14T10:00:00Z",
+      "request_time": "2024-01-14T10:00:00Z",
       "claimed_at": "2024-01-15T10:00:00Z"
     }
   ],
@@ -173,19 +171,43 @@ Retrieves all withdrawal requests for a specific user.
 - `total_claimable` — Total value ready to claim.
 - `total_claimed` — Total value already claimed.
 
-## UserShares
+## UserPositions
 
-**Endpoint**: `/noble/dollar/vaults/v2/user_shares/{user}`
+**Endpoint**: `/noble/dollar/vaults/v2/user_positions/{user}`
 
-Retrieves share balance and value for a user in the Noble vault.
+Retrieves all positions for a user in the Noble vault.
 
 ```json
 {
-  "shares": "10000",
-  "share_value": "10500000",
-  "nav_per_share": "1.050000000000000000",
-  "unrealized_gain": "500000",
-  "locked_shares": "1000"
+  "positions": [
+    {
+      "position_id": 1,
+      "deposit_amount": "1000000",
+      "accrued_yield": "50000",
+      "total_value": "1050000",
+      "receive_yield": true,
+      "first_deposit_time": "2024-01-10T10:00:00Z",
+      "last_activity_time": "2024-01-15T14:00:00Z",
+      "amount_pending_withdrawal": "0",
+      "active_withdrawal_requests": 0
+    },
+    {
+      "position_id": 2,
+      "deposit_amount": "500000",
+      "accrued_yield": "0",
+      "total_value": "500000",
+      "receive_yield": false,
+      "first_deposit_time": "2024-01-12T15:00:00Z",
+      "last_activity_time": "2024-01-12T15:00:00Z",
+      "amount_pending_withdrawal": "100000",
+      "active_withdrawal_requests": 1
+    }
+  ],
+  "total_positions": 2,
+  "total_deposit_amount": "1500000",
+  "total_accrued_yield": "50000",
+  "total_value": "1550000",
+  "total_pending_withdrawal": "100000"
 }
 ```
 
@@ -195,11 +217,51 @@ Retrieves share balance and value for a user in the Noble vault.
 
 ### Response
 
-- `shares` — User's share balance in the vault.
-- `share_value` — Current value of user's shares.
-- `nav_per_share` — Current NAV per share.
-- `unrealized_gain` — User's unrealized gain.
-- `locked_shares` — Shares locked for pending withdrawals.
+- `positions` — Array of all user's positions.
+- `total_positions` — Number of positions owned by user.
+- `total_deposit_amount` — Sum of deposit amounts across all positions.
+- `total_accrued_yield` — Sum of accrued yield across all positions.
+- `total_value` — Total value of all positions.
+- `total_pending_withdrawal` — Total amount locked for pending withdrawals.
+
+## UserPosition
+
+**Endpoint**: `/noble/dollar/vaults/v2/user_position/{user}/{position_id}`
+
+Retrieves a specific position for a user.
+
+```json
+{
+  "position_id": 1,
+  "deposit_amount": "1000000",
+  "accrued_yield": "50000",
+  "total_value": "1050000",
+  "receive_yield": true,
+  "first_deposit_time": "2024-01-10T10:00:00Z",
+  "last_activity_time": "2024-01-15T14:00:00Z",
+  "amount_pending_withdrawal": "0",
+  "active_withdrawal_requests": 0,
+  "available_for_withdrawal": "1050000"
+}
+```
+
+### Arguments
+
+- `user` — The address of the user.
+- `position_id` — The specific position ID.
+
+### Response
+
+- `position_id` — The position identifier.
+- `deposit_amount` — Principal amount deposited.
+- `accrued_yield` — Yield accumulated for this position.
+- `total_value` — Combined deposit amount and accrued yield.
+- `receive_yield` — Whether this position receives yield.
+- `first_deposit_time` — When this position was created.
+- `last_activity_time` — Last activity on this position.
+- `amount_pending_withdrawal` — Amount locked for pending withdrawals.
+- `active_withdrawal_requests` — Number of active withdrawal requests.
+- `available_for_withdrawal` — Amount available for immediate withdrawal.
 
 ## VaultStats
 
@@ -234,8 +296,8 @@ Retrieves comprehensive statistics for the Noble vault.
 
 - `total_deposits` — Historical total deposits.
 - `total_withdrawals` — Historical total withdrawals.
-- `total_shares` — Current outstanding shares.
-- `unique_depositors` — Number of unique depositors.
+- `total_positions` — Current number of active positions.
+- `unique_users` — Number of unique users with positions.
 - `nav` — Current Net Asset Value.
 - `apy_7d` — 7-day average APY.
 - `apy_30d` — 30-day average APY.
@@ -310,8 +372,8 @@ Simulates a deposit to show expected shares and checks.
 
 ### Response
 
-- `expected_shares` — Number of shares that would be minted.
-- `nav_per_share` — Current NAV per share used in calculation.
+- `position_id` — Position ID that would be created.
+- `estimated_yield_rate` — Current estimated yield rate for new positions.
 - `checks` — Results of various limit and safety checks.
 - `warnings` — Any warnings about the deposit.
 
@@ -336,13 +398,14 @@ Simulates a withdrawal to show expected proceeds and queue time.
 
 ### Query Parameters
 
-- `shares` — The number of shares to simulate redeeming.
+- `amount` — The amount to simulate withdrawing.
+- `position_id` — The position ID to withdraw from.
 - `user` — The user address.
 
 ### Response
 
 - `expected_amount` — Expected $USDN to receive.
-- `nav_per_share` — Current NAV per share.
+- `position_value` — Current value of the specified position.
 - `queue_position` — Position in withdrawal queue.
 - `estimated_fulfillment_time` — Estimated seconds until fulfillment.
 - `available_liquidity` — Current available liquidity.

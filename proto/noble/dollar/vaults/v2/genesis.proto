@@ -70,6 +70,18 @@ message Params {
 
   // TWAP configuration for share pricing
   TWAPConfig twap_config = 8 [(gogoproto.nullable) = false];
+
+  // Maximum number of positions a single user can have
+  uint32 max_positions_per_user = 9;
+
+  // Minimum size for a position (deposit_amount + accrued_yield)
+  // Positions below this threshold may be subject to cleanup
+  string min_position_size = 10 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }
 
 // VaultConfig stores configuration for a specific vault type

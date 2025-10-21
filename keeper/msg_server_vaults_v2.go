@@ -349,97 +349,60 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
-	position, found, err := m.GetVaultsV2UserPosition(ctx, depositor)
+
+	// Get next position ID for this user
+	positionID, err := m.GetNextUserPositionID(ctx, depositor)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
+		return nil, sdkerrors.Wrap(err, "unable to generate position ID")
 	}
-	if !found {
-		position.FirstDepositTime = headerInfo.Time
-		position.DepositAmount = sdkmath.ZeroInt()
-		position.AccruedYield = sdkmath.ZeroInt()
-		position.AmountPendingWithdrawal = sdkmath.ZeroInt()
-	}
-	position.LastActivityTime = headerInfo.Time
-	position.DepositAmount, err = position.DepositAmount.SafeAdd(msg.Amount)
+
+	// Check if this is the user's first position to track total users
+	userPositionCount, err := m.GetUserPositionCount(ctx, depositor)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update position deposit amount")
+		return nil, sdkerrors.Wrap(err, "unable to get user position count")
 	}
-	if !found || msg.ReceiveYieldOverride {
-		position.ReceiveYield = msg.ReceiveYield
+	isFirstPosition := userPositionCount == 1 // Count was just incremented by GetNextUserPositionID
+
+	// Create NEW position (each deposit creates a new independent position)
+	position := vaultsv2.UserPosition{
+		PositionId:               positionID,
+		DepositAmount:            msg.Amount,
+		AccruedYield:             sdkmath.ZeroInt(),
+		FirstDepositTime:         headerInfo.Time,
+		LastActivityTime:         headerInfo.Time,
+		ReceiveYield:             msg.ReceiveYield,
+		AmountPendingWithdrawal:  sdkmath.ZeroInt(),
+		ActiveWithdrawalRequests: 0,
 	}
+
 	if err := m.SetVaultsV2UserPosition(ctx, depositor, position); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to store user position")
 	}
 
-	stateForPricing, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-
-	totalShares, err := m.GetVaultsV2TotalShares(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch total share supply")
-	}
-
-	// Calculate TWAP NAV for share pricing (protects against manipulation)
-	navForPricing := stateForPricing.TotalNav
-	if totalShares.IsPositive() {
-		twapNav, err := m.calculateTWAPNav(ctx, stateForPricing.TotalNav)
-		if err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to calculate TWAP NAV")
-		}
-		navForPricing = twapNav
-	}
-
-	mintedShares := msg.Amount
-	if totalShares.IsPositive() && navForPricing.IsPositive() {
-		priceNumerator := totalShares
-		priceDenominator := navForPricing
-		shares := msg.Amount.Mul(priceNumerator).Quo(priceDenominator)
-		if shares.IsZero() {
-			shares = sdkmath.NewInt(1)
-		}
-		mintedShares = shares
-	}
-
-	currentShares, err := m.GetVaultsV2UserShares(ctx, depositor)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch user shares")
-	}
-	updatedShares, err := currentShares.SafeAdd(mintedShares)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update user shares")
-	}
-	if err := m.SetVaultsV2UserShares(ctx, depositor, updatedShares); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to store user shares")
-	}
-	if currentShares.IsZero() && updatedShares.IsPositive() {
+	// Increment total users if this is their first position
+	if isFirstPosition {
 		if err := m.IncrementVaultsV2TotalUsers(ctx); err != nil {
 			return nil, sdkerrors.Wrap(err, "unable to increment total users")
 		}
 	}
 
-	totalShares, err = totalShares.SafeAdd(mintedShares)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update total share supply")
-	}
-	if err := m.SetVaultsV2TotalShares(ctx, totalShares); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist total share supply")
-	}
-
+	// Update vault totals (total_deposits, total_nav, total_positions)
 	if err := m.AddAmountToVaultsV2Totals(ctx, msg.Amount, sdkmath.ZeroInt()); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update aggregate vault totals")
 	}
+
+	// Increment total positions count
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
+	}
+	state.TotalPositions++
 
 	// Update deposit tracking metrics
 	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
 	}
 
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
 	state.DepositsEnabled = config.Enabled
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
@@ -455,7 +418,10 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to emit deposit event")
 	}
 
-	return &vaultsv2.MsgDepositResponse{AmountDeposited: msg.Amount}, nil
+	return &vaultsv2.MsgDepositResponse{
+		AmountDeposited: msg.Amount,
+		PositionId:      positionID,
+	}, nil
 }
 
 func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgRequestWithdrawal) (*vaultsv2.MsgRequestWithdrawalResponse, error) {
@@ -473,55 +439,32 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	}
 	requester := sdk.AccAddress(addrBz)
 
-	position, found, err := m.GetVaultsV2UserPosition(ctx, requester)
+	// Get the specific position
+	position, found, err := m.GetVaultsV2UserPosition(ctx, requester, msg.PositionId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "no position found for requester")
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for requester", msg.PositionId)
 	}
 
-	available, err := position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
+	// Calculate available = deposit_amount + accrued_yield - amount_pending_withdrawal
+	totalValue, err := position.DepositAmount.SafeAdd(position.AccruedYield)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to calculate total position value")
+	}
+	available, err := totalValue.SafeSub(position.AmountPendingWithdrawal)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to determine available balance")
 	}
 	if available.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient unlocked balance for withdrawal")
-	}
-
-	userShares, err := m.GetVaultsV2UserShares(ctx, requester)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch user shares")
-	}
-	if userShares.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient shares to withdraw")
-	}
-	updatedShares, err := userShares.SafeSub(msg.Amount)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update user shares")
-	}
-	if err := m.SetVaultsV2UserShares(ctx, requester, updatedShares); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist user shares")
-	}
-	if userShares.IsPositive() && updatedShares.IsZero() {
-		if err := m.DecrementVaultsV2TotalUsers(ctx); err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to decrement total users")
-		}
-	}
-
-	totalShares, err := m.GetVaultsV2TotalShares(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch total share supply")
-	}
-	totalShares, err = totalShares.SafeSub(msg.Amount)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update total share supply")
-	}
-	if err := m.SetVaultsV2TotalShares(ctx, totalShares); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist total share supply")
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, "insufficient balance in position %d: available %s, requested %s",
+			msg.PositionId, available.String(), msg.Amount.String())
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	// Update position to mark amount as pending withdrawal
 	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
@@ -567,6 +510,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 
 	request := vaultsv2.WithdrawalRequest{
 		Requester:          msg.Requester,
+		PositionId:         msg.PositionId,
 		WithdrawAmount:     msg.Amount,
 		RequestTime:        headerInfo.Time,
 		UnlockTime:         unlockTime,
@@ -608,28 +552,19 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 	}
 	user := sdk.AccAddress(addrBz)
 
-	position, found, err := m.GetVaultsV2UserPosition(ctx, user)
+	// Get the specific position
+	position, found, err := m.GetVaultsV2UserPosition(ctx, user, msg.PositionId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "user position not found")
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for user", msg.PositionId)
 	}
 
 	previousPreference := position.ReceiveYield
-	if previousPreference == msg.ReceiveYield {
-		headerInfo := m.header.GetHeaderInfo(ctx)
-		position.LastActivityTime = headerInfo.Time
-		if err := m.SetVaultsV2UserPosition(ctx, user, position); err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to persist user position")
-		}
-		return &vaultsv2.MsgSetYieldPreferenceResponse{
-			PreviousPreference: previousPreference,
-			NewPreference:      msg.ReceiveYield,
-		}, nil
-	}
-
 	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	// Update position
 	position.ReceiveYield = msg.ReceiveYield
 	position.LastActivityTime = headerInfo.Time
 
@@ -639,6 +574,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventYieldPreferenceUpdated{
 		User:                    msg.User,
+		PositionId:              msg.PositionId,
 		PreviousYieldPreference: previousPreference,
 		NewYieldPreference:      msg.ReceiveYield,
 		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
@@ -650,6 +586,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 	return &vaultsv2.MsgSetYieldPreferenceResponse{
 		PreviousPreference: previousPreference,
 		NewPreference:      msg.ReceiveYield,
+		PositionId:         msg.PositionId,
 	}, nil
 }
 
@@ -2001,29 +1938,61 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
-	position, found, err := m.GetVaultsV2UserPosition(ctx, claimer)
+	// Update the specific position that this withdrawal request belongs to
+	position, found, err := m.GetVaultsV2UserPosition(ctx, claimer, request.PositionId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
 	}
 	if found {
+		// Deduct from pending withdrawal
 		if position.AmountPendingWithdrawal.IsPositive() {
 			if position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeSub(withdrawAmount); err != nil {
 				position.AmountPendingWithdrawal = sdkmath.ZeroInt()
 			}
 		}
-		if position.DepositAmount.IsPositive() {
-			if position.DepositAmount, err = position.DepositAmount.SafeSub(withdrawAmount); err != nil {
+
+		// Deduct from position value (proportionally from deposit and yield)
+		totalValue, err := position.DepositAmount.SafeAdd(position.AccruedYield)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to calculate position value")
+		}
+
+		if totalValue.IsPositive() && withdrawAmount.IsPositive() {
+			// Calculate proportion to deduct from each
+			if withdrawAmount.GTE(totalValue) {
+				// Withdrawing entire position
 				position.DepositAmount = sdkmath.ZeroInt()
+				position.AccruedYield = sdkmath.ZeroInt()
+			} else {
+				// Proportional deduction: deduct from deposit first, then yield
+				if position.DepositAmount.GTE(withdrawAmount) {
+					position.DepositAmount, _ = position.DepositAmount.SafeSub(withdrawAmount)
+				} else {
+					remaining := withdrawAmount
+					position.DepositAmount = sdkmath.ZeroInt()
+					remaining, _ = remaining.SafeSub(position.DepositAmount)
+					position.AccruedYield, _ = position.AccruedYield.SafeSub(remaining)
+					if position.AccruedYield.IsNegative() {
+						position.AccruedYield = sdkmath.ZeroInt()
+					}
+				}
 			}
 		}
+
 		if position.ActiveWithdrawalRequests > 0 {
 			position.ActiveWithdrawalRequests--
 		}
 		position.LastActivityTime = headerInfo.Time
-		if position.DepositAmount.IsZero() && !position.AmountPendingWithdrawal.IsPositive() && position.ActiveWithdrawalRequests == 0 {
-			if err := m.DeleteVaultsV2UserPosition(ctx, claimer); err != nil {
+
+		// Delete position if it's completely empty
+		if position.DepositAmount.IsZero() && position.AccruedYield.IsZero() &&
+			!position.AmountPendingWithdrawal.IsPositive() && position.ActiveWithdrawalRequests == 0 {
+			if err := m.DeleteVaultsV2UserPosition(ctx, claimer, request.PositionId); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to delete empty user position")
 			}
+
+			// Decrement total positions count
+			state.TotalPositions--
 		} else {
 			if err := m.SetVaultsV2UserPosition(ctx, claimer, position); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to persist user position")
@@ -2147,16 +2116,11 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 	}
 
 	if shouldRecord {
-		totalShares, err := m.GetVaultsV2TotalShares(ctx)
-		if err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to fetch total shares for snapshot")
-		}
-
 		snapshot := vaultsv2.NAVSnapshot{
 			Nav:         msg.NewNav,
 			Timestamp:   headerInfo.Time,
 			BlockHeight: sdk.UnwrapSDKContext(ctx).BlockHeight(),
-			TotalShares: totalShares,
+			TotalShares: sdkmath.ZeroInt(), // Shares no longer used - kept for backwards compatibility
 		}
 
 		if err := m.AddVaultsV2NAVSnapshot(ctx, snapshot); err != nil {
