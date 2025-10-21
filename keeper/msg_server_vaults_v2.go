@@ -2063,6 +2063,24 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
+	// Check if accounting is currently in progress
+	cursor, err := m.GetVaultsV2AccountingCursor(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch accounting cursor")
+	}
+
+	if cursor.InProgress {
+		return nil, sdkerrors.Wrapf(
+			vaultsv2.ErrOperationNotPermitted,
+			"cannot update NAV while accounting is in progress (started at %s, %d/%d positions processed for NAV %s). "+
+				"Complete the current accounting session by calling UpdateVaultAccounting before updating NAV",
+			cursor.StartedAt.String(),
+			cursor.PositionsProcessed,
+			cursor.TotalPositions,
+			cursor.AccountingNav.String(),
+		)
+	}
+
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	navInfo, err := m.GetVaultsV2NAVInfo(ctx)
@@ -2181,6 +2199,49 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 		ChangeBps:            changeBps,
 		Timestamp:            headerInfo.Time,
 		CircuitBreakerActive: msg.CircuitBreakerActive,
+	}, nil
+}
+
+func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.MsgUpdateVaultAccounting) (*vaultsv2.MsgUpdateVaultAccountingResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+
+	// Verify that the manager is the authority
+	if msg.Manager != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Manager)
+	}
+
+	// Execute cursor-based accounting
+	result, err := m.updateVaultsV2AccountingWithCursor(ctx, msg.MaxPositions)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "failed to update vault accounting")
+	}
+
+	// Emit event for accounting progress
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventAccountingUpdated{
+		PositionsProcessed:      result.PositionsProcessed,
+		TotalPositionsProcessed: result.TotalPositionsProcessed,
+		TotalPositions:          result.TotalPositions,
+		Complete:                result.Complete,
+		AppliedNav:              result.AppliedNav,
+		YieldDistributed:        result.YieldDistributed,
+		Manager:                 msg.Manager,
+		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:               headerInfo.Time,
+	}); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to emit accounting updated event")
+	}
+
+	return &vaultsv2.MsgUpdateVaultAccountingResponse{
+		PositionsProcessed:      result.PositionsProcessed,
+		TotalPositionsProcessed: result.TotalPositionsProcessed,
+		TotalPositions:          result.TotalPositions,
+		AccountingComplete:      result.Complete,
+		AppliedNav:              result.AppliedNav,
+		YieldDistributed:        result.YieldDistributed,
+		NextUser:                result.NextUser,
 	}, nil
 }
 
