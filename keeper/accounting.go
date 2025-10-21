@@ -91,14 +91,12 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 			return nil, fmt.Errorf("failed to clear old snapshots: %w", err)
 		}
 
-		// Count total positions
-		totalPositions := uint64(0)
-		if err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
-			totalPositions++
-			return false, nil
-		}); err != nil {
-			return nil, err
+		// Get total positions from vault state instead of counting
+		state, err := k.GetVaultsV2VaultState(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get vault state: %w", err)
 		}
+		totalPositions := state.TotalUsers
 
 		// Initialize new accounting session
 		cursor = vaultsv2.AccountingCursor{
