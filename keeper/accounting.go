@@ -55,7 +55,8 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		return nil, fmt.Errorf("current NAV is not set")
 	}
 
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
+	// Get vault state to access total positions
+	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -111,18 +112,18 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		}
 	}
 
-	// When there are no active shares, handle specially
-	if totalShares.IsZero() {
-		return k.accountingWithZeroShares(ctx, navInfo, cursor, maxPositions)
+	// When there are no active positions, handle specially
+	if vaultState.TotalPositions == 0 {
+		return k.accountingWithZeroPositions(ctx, navInfo, cursor, maxPositions)
 	}
 
 	// Perform cursor-based accounting
-	return k.accountingWithCursor(ctx, navInfo, totalShares, cursor, maxPositions)
+	return k.accountingWithCursor(ctx, navInfo, vaultState, cursor, maxPositions)
 }
 
-// accountingWithZeroShares handles the case where there are no active shares.
+// accountingWithZeroPositions handles the case where there are no active positions.
 // Writes zero yield to snapshots for all users.
-func (k *Keeper) accountingWithZeroShares(
+func (k *Keeper) accountingWithZeroPositions(
 	ctx context.Context,
 	navInfo vaultsv2.NAVInfo,
 	cursor vaultsv2.AccountingCursor,

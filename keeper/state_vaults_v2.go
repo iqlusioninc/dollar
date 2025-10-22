@@ -99,19 +99,6 @@ func (k *Keeper) SetVaultsV2VaultState(ctx context.Context, state vaultsv2.Vault
 	return k.VaultsV2VaultState.Set(ctx, state)
 }
 
-// DEPRECATED: GetVaultsV2UserShares - kept for backward compatibility during migration
-// Remove after all references are updated to use positions
-func (k *Keeper) GetVaultsV2UserShares(ctx context.Context, address sdk.AccAddress) (math.Int, error) {
-	// Legacy function - return zero for now, or calculate from positions
-	return math.ZeroInt(), nil
-}
-
-// DEPRECATED: GetVaultsV2TotalShares - kept for backward compatibility during migration
-// Remove after all references are updated to use positions
-func (k *Keeper) GetVaultsV2TotalShares(ctx context.Context) (math.Int, error) {
-	// Legacy function - return zero for now, or calculate from vault state
-	return math.ZeroInt(), nil
-}
 
 // GetVaultsV2NAVInfo returns the cached NAV information or a zero-value copy
 // when unset.
