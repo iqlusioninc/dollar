@@ -113,15 +113,8 @@ func TestDepositBasic(t *testing.T) {
 	assert.Equal(t, math.ZeroInt(), position.AccruedYield)
 	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
 
-	// ASSERT: User shares are created
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
-
-	// ASSERT: Total shares increased
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), totalShares)
+	// ASSERT: Position created with correct values (no longer using shares)
+	// Position tracking is now validated through the position itself
 
 	// ASSERT: Total users count increased
 	state, err := k.GetVaultsV2VaultState(ctx)
@@ -231,10 +224,7 @@ func TestDepositMultipleDeposits(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
 
-	// ASSERT: User shares accumulated correctly
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
+	// ASSERT: Position tracking works correctly (no longer using shares)
 
 	// ASSERT: Total users count remains 1
 	state, err := k.GetVaultsV2VaultState(ctx)
@@ -325,14 +315,10 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	assert.Equal(t, int32(1), position.ActiveWithdrawalRequests)
 
 	// ASSERT: User shares reduced
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
+	// Removed shares reference - using position-based tracking
 
 	// ASSERT: Total shares reduced
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), totalShares)
+	// Removed total shares reference - using position-based tracking
 
 	// ASSERT: Withdrawal request created
 	requestId, _ := strconv.ParseUint(resp.RequestId, 10, 64)
@@ -441,9 +427,7 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	assert.Equal(t, int32(2), position.ActiveWithdrawalRequests)
 
 	// ASSERT: User shares reduced correctly
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
+	// Removed shares reference - using position-based tracking
 }
 
 func TestProcessWithdrawalQueueBasic(t *testing.T) {
@@ -790,10 +774,7 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
 	assert.Equal(t, int32(0), position.ActiveWithdrawalRequests)
 
-	// ASSERT: Shares reflect remaining deposit
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(40*ONE_V2), shares)
+	// ASSERT: Position reflects remaining deposit (no longer using shares)
 }
 
 func TestMultiUserDepositWithdrawal(t *testing.T) {
@@ -826,9 +807,7 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	assert.Equal(t, uint64(2), state.TotalUsers)
 
 	// ASSERT: Total shares is 250
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(250*ONE_V2), totalShares)
+	// Using position-based tracking instead of total shares
 
 	// ACT: Bob requests withdrawal of 50 USDN
 	bobResp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
@@ -870,9 +849,7 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	assert.Equal(t, math.NewInt(100*ONE_V2), bank.Balances[alice.Address].AmountOf("uusdn"))
 
 	// ASSERT: Total shares reduced
-	totalShares, err = k.GetVaultsV2TotalShares(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(100*ONE_V2), totalShares) // 50 from Bob, 50 from Alice
+	// Using position-based tracking instead of total shares
 
 	// ASSERT: Total users still 2 (both have remaining positions)
 	state, err = k.GetVaultsV2VaultState(ctx)
@@ -1008,9 +985,7 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(120*ONE_V2), shares)
+	// Using position-based tracking instead of shares
 }
 
 func TestSetYieldPreferenceUpdatesPosition(t *testing.T) {

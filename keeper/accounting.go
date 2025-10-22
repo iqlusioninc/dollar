@@ -23,7 +23,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"math/big"
 
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/types"
@@ -220,78 +219,52 @@ func (k *Keeper) accountingWithZeroPositions(
 func (k *Keeper) accountingWithCursor(
 	ctx context.Context,
 	navInfo vaultsv2.NAVInfo,
-	totalShares sdkmath.Int,
+	vaultState vaultsv2.VaultState,
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
 ) (*AccountingResult, error) {
-	navBig := navInfo.CurrentNav.BigInt()
-	totalSharesBig := totalShares.BigInt()
-
-	// Restore residual from cursor
-	residual := cursor.AccumulatedResidual.BigInt()
-
+	// For position-based accounting, we don't need complex NAV calculations
+	// Each position tracks its own yield directly
+	
 	yieldThisBatch := sdkmath.ZeroInt()
 	headerInfo := k.header.GetHeaderInfo(ctx)
 
-	// Use paginated iterator
+	// Use paginated iterator to process positions directly
 	lastProcessed, count, err := k.IterateVaultsV2UserPositionsPaginated(
 		ctx,
 		cursor.LastProcessedUser,
 		maxPositions,
 		func(address types.AccAddress, position vaultsv2.UserPosition) error {
-			shares, err := k.GetVaultsV2UserShares(ctx, address)
-			if err != nil {
-				return err
-			}
-
-			var depositAmount, accruedYield sdkmath.Int
-
-			if !shares.IsPositive() {
-				// User has no shares, set to pending withdrawal
-				depositAmount = position.AmountPendingWithdrawal
-				accruedYield = sdkmath.ZeroInt()
-			} else {
-				// Calculate proportional value
-				numerator := new(big.Int).Mul(navBig, shares.BigInt())
-				quotient := new(big.Int)
-				remainder := new(big.Int)
-				quotient.QuoRem(numerator, totalSharesBig, remainder)
-
-				// Accumulate remainder for fair distribution
-				residual.Add(residual, remainder)
-				if residual.Cmp(totalSharesBig) >= 0 {
-					extra := new(big.Int).Div(new(big.Int).Set(residual), totalSharesBig)
-					if extra.Sign() > 0 {
-						quotient.Add(quotient, extra)
-						residual.Sub(residual, new(big.Int).Mul(totalSharesBig, extra))
+			// In the position-based system, yield calculation is simpler
+			// Each position accumulates yield based on its receive_yield preference
+			
+			// Calculate new yield for this position (simplified logic)
+			newYield := sdkmath.ZeroInt()
+			if position.ReceiveYield && navInfo.CurrentNav.IsPositive() {
+				// Simple yield calculation: could be enhanced with time-based logic
+				// For now, use a basic proportional approach
+				if vaultState.TotalDeposits.IsPositive() {
+					yieldRate := sdkmath.LegacyNewDecFromInt(navInfo.CurrentNav).
+						Quo(sdkmath.LegacyNewDecFromInt(vaultState.TotalDeposits)).
+						Sub(sdkmath.LegacyOneDec())
+					
+					if yieldRate.IsPositive() {
+						newYield = yieldRate.MulInt(position.DepositAmount).TruncateInt()
+						var addErr error
+						yieldThisBatch, addErr = yieldThisBatch.SafeAdd(newYield)
+						if addErr != nil {
+							return addErr
+						}
 					}
-				}
-
-				value := sdkmath.NewIntFromBigInt(quotient)
-				accruedYield, err = value.SafeSub(shares)
-				if err != nil {
-					return err
-				}
-
-				depositAmount = shares
-				if position.AmountPendingWithdrawal.IsPositive() {
-					if depositAmount, err = depositAmount.SafeAdd(position.AmountPendingWithdrawal); err != nil {
-						return err
-					}
-				}
-
-				// Track yield for this batch
-				yieldThisBatch, err = yieldThisBatch.SafeAdd(accruedYield)
-				if err != nil {
-					return err
 				}
 			}
 
 			// Write to snapshot instead of directly to position
 			snapshot := vaultsv2.AccountingSnapshot{
 				User:          address.String(),
-				DepositAmount: depositAmount,
-				AccruedYield:  accruedYield,
+				PositionId:    position.PositionId,
+				DepositAmount: position.DepositAmount,
+				AccruedYield:  position.AccruedYield.Add(newYield),
 				AccountingNav: navInfo.CurrentNav,
 				CreatedAt:     headerInfo.Time,
 			}
@@ -306,7 +279,7 @@ func (k *Keeper) accountingWithCursor(
 	// Update cursor
 	cursor.PositionsProcessed += uint64(count)
 	cursor.LastProcessedUser = lastProcessed
-	cursor.AccumulatedResidual = sdkmath.NewIntFromBigInt(residual)
+	cursor.AccumulatedResidual = sdkmath.ZeroInt() // No longer need residual tracking
 
 	// Accounting is complete when we process a batch and get 0 positions back
 	// (meaning there are no more positions to process)
