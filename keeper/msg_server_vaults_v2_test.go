@@ -1385,25 +1385,8 @@ func TestCreateCrossChainRoute(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, route, stored)
 
-	depResp, err := vaultsV2Server.RemoteDeposit(ctx, &vaultsv2.MsgRemoteDeposit{
-		Depositor:     "noble1depositor",
-		RouteId:       resp.RouteId,
-		Amount:        math.NewInt(25 * ONE_V2),
-		RemoteAddress: "0xrecipient",
-		MinShares:     math.NewInt(20 * ONE_V2),
-	})
-	require.NoError(t, err)
-
-	inflightID := strconv.FormatUint(depResp.Nonce, 10)
-	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
-	require.NoError(t, err)
-	require.True(t, foundFund)
-	assert.Equal(t, math.NewInt(25*ONE_V2), fund.Amount)
-	assert.Equal(t, vaultsv2.INFLIGHT_PENDING, fund.Status)
-
-	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, resp.RouteId)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(25*ONE_V2), routeValue)
+	// Note: RemoteDeposit has been removed as it's now handled by the manager on the remote chain
+	// Test route creation is still valid
 }
 
 func TestUpdateCrossChainRoute(t *testing.T) {
@@ -1451,65 +1434,8 @@ func TestUpdateCrossChainRoute(t *testing.T) {
 	assert.Equal(t, updated, stored)
 }
 
-func TestRemoteWithdrawCreatesInflight(t *testing.T) {
-	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-
-	route := vaultsv2.CrossChainRoute{
-		HyptokenId:            hyperlaneutil.CreateMockHexAddress("route", 5),
-		ReceiverChainHook:     hyperlaneutil.CreateMockHexAddress("hook", 5),
-		RemotePositionAddress: hyperlaneutil.CreateMockHexAddress("remote", 5),
-		MaxInflightValue:      math.NewInt(1_000 * ONE_V2),
-	}
-
-	createResp, err := vaultsV2Server.CreateCrossChainRoute(ctx, &vaultsv2.MsgCreateCrossChainRoute{
-		Authority: "authority",
-		Route:     route,
-	})
-	require.NoError(t, err)
-
-	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
-	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
-		ReceiveYield: true,
-	})
-	require.NoError(t, err)
-
-	targetAddr := route.RemotePositionAddress.String()
-	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: targetAddr,
-		ChainId:      8453,
-		Amount:       math.NewInt(120 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	withdrawResp, err := vaultsV2Server.RemoteWithdraw(ctx, &vaultsv2.MsgRemoteWithdraw{
-		Withdrawer: bob.Address,
-		RouteId:    createResp.RouteId,
-		Shares:     math.NewInt(40 * ONE_V2),
-		MinAmount:  math.NewInt(35 * ONE_V2),
-	})
-	require.NoError(t, err)
-	assert.Equal(t, createResp.RouteId, withdrawResp.RouteId)
-
-	position, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
-	require.NoError(t, err)
-	require.True(t, found)
-	assert.Equal(t, vaultsv2.REMOTE_POSITION_WITHDRAWING, position.Status)
-
-	inflightID := strconv.FormatUint(withdrawResp.Nonce, 10)
-	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
-	require.NoError(t, err)
-	require.True(t, foundFund)
-	assert.Equal(t, math.NewInt(35*ONE_V2), fund.Amount)
-	assert.Equal(t, math.NewInt(40*ONE_V2), fund.ValueAtInitiation)
-
-	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, createResp.RouteId)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(35*ONE_V2), routeValue)
-}
+// TestRemoteWithdrawCreatesInflight has been removed
+// RemoteWithdraw is now handled by the manager on the remote chain
 
 func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
@@ -1545,17 +1471,52 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	withdrawResp, err := vaultsV2Server.RemoteWithdraw(ctx, &vaultsv2.MsgRemoteWithdraw{
-		Withdrawer: bob.Address,
-		RouteId:    createResp.RouteId,
-		Shares:     math.NewInt(30 * ONE_V2),
-		MinAmount:  math.NewInt(25 * ONE_V2),
-	})
+	// Simulate a withdrawal initiated by the remote chain manager
+	// Create an inflight fund entry manually (simulating remote chain manager)
+	withdrawNonce := uint64(12345)
+	// Get the remote position to use as origin
+	pos, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	
+	fund := vaultsv2.InflightFund{
+		Id:                strconv.FormatUint(withdrawNonce, 10),
+		TransactionId:     strconv.FormatUint(withdrawNonce, 10),
+		Amount:            math.NewInt(25 * ONE_V2),
+		ValueAtInitiation: math.NewInt(30 * ONE_V2),
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		InitiatedAt:       time.Now(),
+		ExpectedAt:        time.Now().Add(1 * time.Hour),
+		Origin: &vaultsv2.InflightFund_RemoteOrigin{
+			RemoteOrigin: &pos,
+		},
+		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+					OriginDomain:      createResp.RouteId,
+					DestinationDomain: createResp.RouteId,
+					Nonce:             withdrawNonce,
+				},
+			},
+		},
+	}
+	err = k.SetVaultsV2InflightFund(ctx, fund)
+	require.NoError(t, err)
+	err = k.AddVaultsV2InflightValueByRoute(ctx, createResp.RouteId, fund.Amount)
+	require.NoError(t, err)
+	
+	// Update remote position status to withdrawing
+	position, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
+	require.NoError(t, err)
+	require.True(t, found)
+	position.Status = vaultsv2.REMOTE_POSITION_WITHDRAWING
+	position.SharesHeld = position.SharesHeld.Sub(math.NewInt(30 * ONE_V2))
+	err = k.SetVaultsV2RemotePosition(ctx, posResp.PositionId, position)
 	require.NoError(t, err)
 
 	_, err = vaultsV2Server.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
 		Authority:    "authority",
-		Nonce:        withdrawResp.Nonce,
+		Nonce:        withdrawNonce,
 		ResultStatus: vaultsv2.INFLIGHT_COMPLETED,
 		ResultAmount: math.NewInt(28 * ONE_V2),
 		ErrorMessage: "",
@@ -1569,7 +1530,7 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	assert.Equal(t, math.NewInt(90*ONE_V2), position.SharesHeld)
 	assert.Equal(t, math.NewInt(92*ONE_V2), position.TotalValue)
 
-	inflightID := strconv.FormatUint(withdrawResp.Nonce, 10)
+	inflightID := strconv.FormatUint(withdrawNonce, 10)
 	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
 	require.NoError(t, err)
 	require.True(t, foundFund)
@@ -1845,13 +1806,35 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	depositResp, err := vaultsV2Server.RemoteDeposit(baseCtx, &vaultsv2.MsgRemoteDeposit{
-		Depositor:     "noble1depositor",
-		RouteId:       routeResp.RouteId,
-		Amount:        math.NewInt(30 * ONE_V2),
-		RemoteAddress: "0xrecipient",
-		MinShares:     math.NewInt(25 * ONE_V2),
-	})
+	// Simulate a deposit operation initiated by the remote chain manager
+	// Create an inflight fund entry manually
+	depositNonce := uint64(67890)
+	depositFund := vaultsv2.InflightFund{
+		Id:                strconv.FormatUint(depositNonce, 10),
+		TransactionId:     strconv.FormatUint(depositNonce, 10),
+		Amount:            math.NewInt(30 * ONE_V2),
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		InitiatedAt:       time.Now().Add(-25 * time.Hour), // Very old
+		ExpectedAt:        time.Now().Add(-24 * time.Hour), // Should have completed yesterday
+		ValueAtInitiation: math.NewInt(30 * ONE_V2),
+		Origin: &vaultsv2.InflightFund_NobleOrigin{
+			NobleOrigin: &vaultsv2.NobleEndpoint{
+				OperationType: vaultsv2.OPERATION_TYPE_DEPOSIT,
+			},
+		},
+		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+					OriginDomain:      routeResp.RouteId,
+					DestinationDomain: routeResp.RouteId,
+					Nonce:             depositNonce,
+				},
+			},
+		},
+	}
+	err = k.SetVaultsV2InflightFund(baseCtx, depositFund)
+	require.NoError(t, err)
+	err = k.AddVaultsV2InflightValueByRoute(baseCtx, routeResp.RouteId, depositFund.Amount)
 	require.NoError(t, err)
 
 	beforePending, err := k.GetVaultsV2PendingDeploymentFunds(baseCtx)
@@ -1860,7 +1843,7 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	ctx := baseCtx.WithHeaderInfo(header.Info{Time: time.Date(2024, 5, 5, 0, 0, 0, 0, time.UTC)})
 	handleResp, err := vaultsV2Server.HandleStaleInflight(ctx, &vaultsv2.MsgHandleStaleInflight{
 		Authority:  "authority",
-		InflightId: strconv.FormatUint(depositResp.Nonce, 10),
+		InflightId: strconv.FormatUint(depositNonce, 10),
 		NewStatus:  vaultsv2.INFLIGHT_TIMEOUT,
 		Reason:     "manual timeout",
 	})

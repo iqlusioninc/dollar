@@ -33,16 +33,12 @@ import (
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
-
-// TestInflightFundsFlow tests the complete flow:
-// 1. Strategist initiates remote position redemption
-// 2. Funds are marked as inflight
-// 3. Warp route receives funds and marks them as completed
-func TestInflightFundsFlow(t *testing.T) {
+// TestProcessIncomingWarpFunds tests processing incoming funds from remote chains
+// Note: InitiateRemotePositionRedemption has been removed as it's now handled by the manager on the remote chain
+func TestProcessIncomingWarpFunds(t *testing.T) {
 	keeper, server, _, ctx, _ := setupV2Test(t)
 
-	// Setup test addresses
-	strategistAddr := sdk.AccAddress("strategist_address_1")
+	// Setup test addresses - processor should be the vault manager
 	processorAddr := sdk.AccAddress("processor_address_1")
 
 	// Setup a cross-chain route
@@ -75,38 +71,36 @@ func TestInflightFundsFlow(t *testing.T) {
 	redemptionAmount := math.NewInt(100000 * ONE_V2) // 100K USDN
 	receivedAmount := math.NewInt(99500 * ONE_V2)    // 99.5K USDN (after fees)
 
-	// Step 1: Strategist initiates remote position redemption
-	expectedCompletion := time.Now().Add(1 * time.Hour)
-	initiateMsg := &vaultsv2.MsgInitiateRemotePositionRedemption{
-		Strategist:         strategistAddr.String(),
-		PositionId:         positionID,
-		Amount:             redemptionAmount,
-		RouteId:            routeID,
-		ExpectedCompletion: expectedCompletion,
-		TransactionId:      "test_redemption_123",
+	// Create an inflight fund entry manually (simulating what would have been done by the remote chain manager)
+	fund := vaultsv2.InflightFund{
+		Id:                "test_redemption_123",
+		TransactionId:     "test_redemption_123",
+		Amount:            redemptionAmount,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		InitiatedAt:       time.Now(),
+		ExpectedAt:        time.Now().Add(1 * time.Hour),
+		ValueAtInitiation: redemptionAmount,
+		Origin: &vaultsv2.InflightFund_RemoteOrigin{
+			RemoteOrigin: &position,
+		},
+		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+					OriginDomain:      routeID,
+					DestinationDomain: routeID,
+					Nonce:             1,
+				},
+			},
+		},
 	}
-
-	initiateResp, err := server.InitiateRemotePositionRedemption(ctx, initiateMsg)
+	err = keeper.SetVaultsV2InflightFund(ctx, fund)
 	require.NoError(t, err)
-	assert.Equal(t, "test_redemption_123", initiateResp.TransactionId)
-	assert.Equal(t, routeID, initiateResp.RouteId)
-	assert.Equal(t, redemptionAmount, initiateResp.AmountInflight)
-	assert.Equal(t, positionID, initiateResp.PositionId)
-
-	// Verify inflight fund was created
-	fund, found, err := keeper.GetVaultsV2InflightFund(ctx, "test_redemption_123")
+	
+	// Track the inflight value for the route
+	err = keeper.AddVaultsV2InflightValueByRoute(ctx, routeID, redemptionAmount)
 	require.NoError(t, err)
-	assert.True(t, found)
-	assert.Equal(t, vaultsv2.INFLIGHT_PENDING, fund.Status)
-	assert.Equal(t, redemptionAmount, fund.Amount)
-	assert.NotNil(t, fund.GetRemoteOrigin())
 
-	// Verify route inflight value was updated
-	routeInflight, err := keeper.GetVaultsV2InflightValueByRoute(ctx, routeID)
-	require.NoError(t, err)
-	assert.Equal(t, redemptionAmount, routeInflight)
-
-	// Step 2: Process incoming warp funds (simulating strategist sending funds back)
+	// Process incoming warp funds (simulating funds coming back from remote chain)
 	processMsg := &vaultsv2.MsgProcessIncomingWarpFunds{
 		Processor:           processorAddr.String(),
 		TransactionId:       "test_redemption_123",
@@ -126,13 +120,13 @@ func TestInflightFundsFlow(t *testing.T) {
 	assert.False(t, processResp.AmountMatched) // Should be false due to fees
 
 	// Verify inflight fund was marked completed
-	fund, found, err = keeper.GetVaultsV2InflightFund(ctx, "test_redemption_123")
+	fund, found, err := keeper.GetVaultsV2InflightFund(ctx, "test_redemption_123")
 	require.NoError(t, err)
 	assert.True(t, found)
 	assert.Equal(t, vaultsv2.INFLIGHT_COMPLETED, fund.Status)
 
 	// Verify route inflight value was decremented
-	routeInflight, err = keeper.GetVaultsV2InflightValueByRoute(ctx, routeID)
+	routeInflight, err := keeper.GetVaultsV2InflightValueByRoute(ctx, routeID)
 	require.NoError(t, err)
 	assert.Equal(t, math.ZeroInt(), routeInflight)
 
@@ -152,11 +146,10 @@ func TestInflightFundsFlow(t *testing.T) {
 	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, updatedPosition.Status) // Still active
 }
 
-// TestInflightFundsFlowValidation tests various validation scenarios
-func TestInflightFundsFlowValidation(t *testing.T) {
+// TestProcessIncomingWarpFundsValidation tests validation scenarios
+func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 	keeper, server, _, ctx, _ := setupV2Test(t)
 
-	strategistAddr := sdk.AccAddress("strategist_address_1")
 	processorAddr := sdk.AccAddress("processor_address_1")
 
 	// Setup route and position
@@ -184,34 +177,6 @@ func TestInflightFundsFlowValidation(t *testing.T) {
 	err = keeper.SetVaultsV2RemotePosition(ctx, positionID, position)
 	require.NoError(t, err)
 
-	// Test invalid amounts
-	t.Run("InvalidRedemptionAmount", func(t *testing.T) {
-		msg := &vaultsv2.MsgInitiateRemotePositionRedemption{
-			Strategist:         strategistAddr.String(),
-			PositionId:         positionID,
-			Amount:             math.ZeroInt(), // Invalid: zero amount
-			RouteId:            routeID,
-			ExpectedCompletion: time.Now().Add(1 * time.Hour),
-		}
-		_, err := server.InitiateRemotePositionRedemption(ctx, msg)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "redemption amount must be positive")
-	})
-
-	// Test insufficient position value
-	t.Run("InsufficientPositionValue", func(t *testing.T) {
-		msg := &vaultsv2.MsgInitiateRemotePositionRedemption{
-			Strategist:         strategistAddr.String(),
-			PositionId:         positionID,
-			Amount:             math.NewInt(1000000 * ONE_V2), // More than position value
-			RouteId:            routeID,
-			ExpectedCompletion: time.Now().Add(1 * time.Hour),
-		}
-		_, err := server.InitiateRemotePositionRedemption(ctx, msg)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "insufficient for redemption amount")
-	})
-
 	// Test processing non-existent inflight fund
 	t.Run("ProcessNonExistentInflightFund", func(t *testing.T) {
 		msg := &vaultsv2.MsgProcessIncomingWarpFunds{
@@ -228,18 +193,33 @@ func TestInflightFundsFlowValidation(t *testing.T) {
 		assert.Contains(t, err.Error(), "inflight fund non_existent_123 not found")
 	})
 
-	// Test successful redemption and processing completed fund again
+	// Test processing already completed fund
 	t.Run("ProcessAlreadyCompletedFund", func(t *testing.T) {
-		// First, create a successful redemption
-		initiateMsg := &vaultsv2.MsgInitiateRemotePositionRedemption{
-			Strategist:         strategistAddr.String(),
-			PositionId:         positionID,
-			Amount:             math.NewInt(100000 * ONE_V2),
-			RouteId:            routeID,
-			ExpectedCompletion: time.Now().Add(1 * time.Hour),
-			TransactionId:      "test_redemption_double",
+		// First, create a pending fund
+		fund := vaultsv2.InflightFund{
+			Id:                "test_redemption_double",
+			TransactionId:     "test_redemption_double",
+			Amount:            math.NewInt(100000 * ONE_V2),
+			Status:            vaultsv2.INFLIGHT_PENDING,
+			InitiatedAt:       time.Now(),
+			ExpectedAt:        time.Now().Add(1 * time.Hour),
+			ValueAtInitiation: math.NewInt(100000 * ONE_V2),
+			Origin: &vaultsv2.InflightFund_RemoteOrigin{
+				RemoteOrigin: &position,
+			},
+			ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+				TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+					HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+						OriginDomain:      routeID,
+						DestinationDomain: routeID,
+						Nonce:             2,
+					},
+				},
+			},
 		}
-		_, err := server.InitiateRemotePositionRedemption(ctx, initiateMsg)
+		err := keeper.SetVaultsV2InflightFund(ctx, fund)
+		require.NoError(t, err)
+		err = keeper.AddVaultsV2InflightValueByRoute(ctx, routeID, fund.Amount)
 		require.NoError(t, err)
 
 		// Process it successfully
@@ -248,16 +228,92 @@ func TestInflightFundsFlowValidation(t *testing.T) {
 			TransactionId:      "test_redemption_double",
 			AmountReceived:     math.NewInt(100000 * ONE_V2),
 			RouteId:            routeID,
-			HyperlaneMessageId: "hyperlane_msg_789",
+			HyperlaneMessageId: "hyperlane_msg_456",
 			OriginDomain:       routeID,
 			ReceivedAt:         time.Now(),
 		}
 		_, err = server.ProcessIncomingWarpFunds(ctx, processMsg)
 		require.NoError(t, err)
 
-		// Try to process again - should fail
+		// Try to process it again - should fail
 		_, err = server.ProcessIncomingWarpFunds(ctx, processMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "already completed")
 	})
+}
+
+// TestHandleStaleInflight tests handling of stale inflight funds
+func TestHandleStaleInflight(t *testing.T) {
+	keeper, server, _, ctx, authority := setupV2Test(t)
+
+	// Setup route
+	routeID := uint32(1)
+	route := vaultsv2.CrossChainRoute{
+		HyptokenId:             hyperlaneutil.HexAddress{0x01},
+		ReceiverChainHook:      hyperlaneutil.HexAddress{0x02},
+		RemotePositionAddress:  hyperlaneutil.HexAddress{0x03},
+		MaxInflightValue:       math.NewInt(1000000 * ONE_V2),
+	}
+	err := keeper.SetVaultsV2CrossChainRoute(ctx, routeID, route)
+	require.NoError(t, err)
+
+	// Create a stale inflight fund
+	staleFund := vaultsv2.InflightFund{
+		Id:                "stale_tx_123",
+		TransactionId:     "stale_tx_123",
+		Amount:            math.NewInt(100000 * ONE_V2),
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		InitiatedAt:       time.Now().Add(-2 * time.Hour), // 2 hours ago
+		ExpectedAt:        time.Now().Add(-1 * time.Hour), // Should have completed 1 hour ago
+		ValueAtInitiation: math.NewInt(100000 * ONE_V2),
+		Origin: &vaultsv2.InflightFund_RemoteOrigin{
+			RemoteOrigin: &vaultsv2.RemotePosition{
+				HyptokenId:   route.HyptokenId,
+				VaultAddress: route.RemotePositionAddress,
+				SharesHeld:   math.NewInt(100),
+				Principal:    math.NewInt(100000 * ONE_V2),
+				SharePrice:   math.LegacyNewDec(1000),
+				TotalValue:   math.NewInt(100000 * ONE_V2),
+				LastUpdate:   time.Now(),
+				Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
+			},
+		},
+		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
+			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
+				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
+					OriginDomain:      routeID,
+					DestinationDomain: routeID,
+					Nonce:             3,
+				},
+			},
+		},
+	}
+	err = keeper.SetVaultsV2InflightFund(ctx, staleFund)
+	require.NoError(t, err)
+	err = keeper.AddVaultsV2InflightValueByRoute(ctx, routeID, staleFund.Amount)
+	require.NoError(t, err)
+
+	// Handle stale inflight fund
+	msg := &vaultsv2.MsgHandleStaleInflight{
+		Authority:  authority.Address,
+		InflightId: "stale_tx_123",
+		NewStatus:  vaultsv2.INFLIGHT_TIMEOUT,
+		Reason:     "Transaction exceeded expected completion time",
+	}
+
+	resp, err := server.HandleStaleInflight(ctx, msg)
+	require.NoError(t, err)
+	assert.Equal(t, "stale_tx_123", resp.InflightId)
+	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, resp.FinalStatus)
+
+	// Verify fund was marked as expired
+	fund, found, err := keeper.GetVaultsV2InflightFund(ctx, "stale_tx_123")
+	require.NoError(t, err)
+	assert.True(t, found)
+	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, fund.Status)
+
+	// Verify route inflight value was cleared
+	routeInflight, err := keeper.GetVaultsV2InflightValueByRoute(ctx, routeID)
+	require.NoError(t, err)
+	assert.Equal(t, math.ZeroInt(), routeInflight)
 }

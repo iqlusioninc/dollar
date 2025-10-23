@@ -407,12 +407,16 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	// ACT: Run accounting with small batch size to test pagination
 	totalProcessed := uint64(0)
 	for {
-		result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 3) // Process 3 positions at a time
+		// Process 3 positions at a time
+		resp, err := vaultsV2Server.RunAccounting(ctx, &vaultsv2.MsgRunAccounting{
+			Authority:    params.Authority,
+			MaxPositions: 3,
+		})
 		require.NoError(t, err)
-		totalProcessed += result.PositionsProcessed
+		totalProcessed += resp.PositionsProcessed
 
-		if result.Complete {
-			assert.Equal(t, uint64(10), result.TotalPositionsProcessed)
+		if resp.AccountingComplete {
+			assert.Equal(t, uint64(10), resp.TotalPositions)
 			break
 		}
 	}
