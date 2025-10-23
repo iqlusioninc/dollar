@@ -93,3 +93,19 @@ func ParseUserPositionKey(key []byte) (address []byte, positionID uint64) {
 	positionID = sdk.BigEndianToUint64(keyWithoutPrefix[len(keyWithoutPrefix)-8:])
 	return
 }
+
+// GetAccountingSnapshotKey creates the composite key for an accounting snapshot
+func GetAccountingSnapshotKey(address []byte, positionID uint64) []byte {
+	return append(append(AccountingSnapshotPrefix, address...), sdk.Uint64ToBigEndian(positionID)...)
+}
+
+// ParseAccountingSnapshotKey extracts address and positionID from a composite key
+func ParseAccountingSnapshotKey(key []byte) (address []byte, positionID uint64) {
+	// Remove prefix
+	keyWithoutPrefix := key[len(AccountingSnapshotPrefix):]
+	// Address is all bytes except last 8 (uint64)
+	address = keyWithoutPrefix[:len(keyWithoutPrefix)-8]
+	// Position ID is last 8 bytes
+	positionID = sdk.BigEndianToUint64(keyWithoutPrefix[len(keyWithoutPrefix)-8:])
+	return
+}

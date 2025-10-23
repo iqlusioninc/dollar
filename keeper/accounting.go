@@ -134,10 +134,11 @@ func (k *Keeper) accountingWithZeroPositions(
 		ctx,
 		cursor.LastProcessedUser,
 		maxPositions,
-		func(address types.AccAddress, position vaultsv2.UserPosition) error {
+		func(address types.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
 			// Create snapshot with zero yield
 			snapshot := vaultsv2.AccountingSnapshot{
 				User:           address.String(),
+				PositionId:     positionID,
 				DepositAmount:  position.AmountPendingWithdrawal,
 				AccruedYield:   sdkmath.ZeroInt(),
 				AccountingNav:  navInfo.CurrentNav,
@@ -266,7 +267,7 @@ func (k *Keeper) accountingWithCursor(
 		ctx,
 		cursor.LastProcessedUser,
 		maxPositions,
-		func(address types.AccAddress, position vaultsv2.UserPosition) error {
+		func(address types.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
 			var depositAmount, accruedYield sdkmath.Int
 
 			// Start with the position's deposit amount
@@ -318,7 +319,7 @@ func (k *Keeper) accountingWithCursor(
 			// Write to snapshot instead of directly to position
 			snapshot := vaultsv2.AccountingSnapshot{
 				User:          address.String(),
-				PositionId:    position.PositionId,
+				PositionId:    positionID,
 				DepositAmount: depositAmount,
 				AccruedYield:  accruedYield,
 				AccountingNav: navInfo.CurrentNav,
