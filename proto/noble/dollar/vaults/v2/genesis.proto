@@ -5,10 +5,11 @@ package noble.dollar.vaults.v2;
 import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 import "noble/dollar/vaults/v2/nav.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // GenesisState defines the V2 vaults module's genesis state
 message GenesisState {
@@ -66,6 +67,9 @@ message Params {
 
   // Whether V2 vault are enabled
   bool vault_enabled = 7;
+
+  // TWAP configuration for share pricing
+  TWAPConfig twap_config = 8 [(gogoproto.nullable) = false];
 }
 
 // VaultConfig stores configuration for a specific vault type
