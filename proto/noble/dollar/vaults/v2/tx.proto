@@ -94,11 +94,18 @@ service Msg {
   // Cleanup stale inflight fund (authority only)
   rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
 
+  // Initiate remote position redemption (strategist only)
+  rpc InitiateRemotePositionRedemption(MsgInitiateRemotePositionRedemption) returns (MsgInitiateRemotePositionRedemptionResponse);
+
+  // Process incoming warp route funds (system/hook only)
+  rpc ProcessIncomingWarpFunds(MsgProcessIncomingWarpFunds) returns (MsgProcessIncomingWarpFundsResponse);
+
   // Update vault accounting for yield distribution (vault manager only)
   rpc UpdateVaultAccounting(MsgUpdateVaultAccounting) returns (MsgUpdateVaultAccountingResponse);
 }
 
 // MsgDeposit allows users to deposit into a V2 vault
+// Each deposit creates a new independent position with its own yield tracking
 message MsgDeposit {
   option (cosmos.msg.v1.signer) = "depositor";
   option (amino.name) = "dollar/vaults/v2/Deposit";
@@ -117,11 +124,8 @@ message MsgDeposit {
     (amino.dont_omitempty) = true
   ];
 
-  // Whether user wants to receive yield for this deposit.
+  // Whether user wants to receive yield for this position
   bool receive_yield = 3;
-
-  // Set to true when the deposit should override the current preference.
-  bool receive_yield_override = 4;
 }
 
 // MsgDepositResponse returns the results of a deposit
@@ -133,9 +137,12 @@ message MsgDepositResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+
+  // Position ID for the newly created position
+  uint64 position_id = 2;
 }
 
-// MsgSetYieldPreference allows users to set their yield preference
+// MsgSetYieldPreference allows users to set their yield preference for a specific position
 message MsgSetYieldPreference {
   option (cosmos.msg.v1.signer) = "user";
   option (amino.name) = "dollar/vaults/v2/SetYieldPreference";
@@ -148,6 +155,9 @@ message MsgSetYieldPreference {
 
   // Whether to receive yield
   bool receive_yield = 2;
+
+  // Position ID to update preference for
+  uint64 position_id = 3;
 }
 
 // MsgSetYieldPreferenceResponse confirms yield preference update
@@ -157,6 +167,9 @@ message MsgSetYieldPreferenceResponse {
 
   // New yield preference
   bool new_preference = 2;
+
+  // Position ID that was updated
+  uint64 position_id = 3;
 }
 
 // MsgUpdateVaultConfig allows authority to update vault configuration
@@ -518,6 +531,9 @@ message MsgRequestWithdrawal {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+
+  // Position ID to withdraw from
+  uint64 position_id = 3;
 }
 
 // MsgRequestWithdrawalResponse returns the created request details
@@ -943,4 +959,144 @@ message MsgUpdateVaultAccountingResponse {
 
   // Next user to process (empty if complete)
   string next_user = 7 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// MsgInitiateRemotePositionRedemption allows a strategist to initiate redemption from a remote position
+// This creates an inflight fund record and signals the strategist to begin the redemption process
+message MsgInitiateRemotePositionRedemption {
+  option (cosmos.msg.v1.signer) = "strategist";
+  option (amino.name) = "dollar/vaults/v2/InitiateRemotePositionRedemption";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Strategist address (authorized to initiate redemptions)
+  string strategist = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Remote position ID to redeem from
+  uint64 position_id = 2;
+
+  // Amount to redeem (in USDN equivalent)
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Route ID for the cross-chain transfer back to Noble
+  uint32 route_id = 4;
+
+  // Expected completion time (strategist's estimate)
+  google.protobuf.Timestamp expected_completion = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Optional transaction ID for tracking (can be generated if not provided)
+  string transaction_id = 6;
+}
+
+// MsgInitiateRemotePositionRedemptionResponse returns details of the initiated redemption
+message MsgInitiateRemotePositionRedemptionResponse {
+  // Transaction ID for tracking the inflight redemption
+  string transaction_id = 1;
+
+  // Route ID being used
+  uint32 route_id = 2;
+
+  // Amount marked as inflight
+  string amount_inflight = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Position ID being redeemed from
+  uint64 position_id = 4;
+
+  // Expected completion time
+  google.protobuf.Timestamp expected_completion = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Provider tracking information
+  ProviderTrackingInfo provider_tracking = 6;
+}
+
+// MsgProcessIncomingWarpFunds processes funds received via warp route and marks inflight funds as completed
+// This message should be called when USDN is received from remote positions via warp route
+message MsgProcessIncomingWarpFunds {
+  option (cosmos.msg.v1.signer) = "processor";
+  option (amino.name) = "dollar/vaults/v2/ProcessIncomingWarpFunds";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Processor address (authorized system account or hook)
+  string processor = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Transaction ID of the inflight fund to complete
+  string transaction_id = 2;
+
+  // Amount actually received (may differ from original amount due to fees, slippage, etc.)
+  string amount_received = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Route ID the funds came from
+  uint32 route_id = 4;
+
+  // Hyperlane message ID for cross-referencing
+  string hyperlane_message_id = 5;
+
+  // Origin chain domain for validation
+  uint32 origin_domain = 6;
+
+  // Timestamp when funds were received
+  google.protobuf.Timestamp received_at = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// MsgProcessIncomingWarpFundsResponse returns details of the processed funds
+message MsgProcessIncomingWarpFundsResponse {
+  // Transaction ID that was completed
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Amount marked as completed
+  string amount_completed = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Original inflight amount for comparison
+  string original_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Whether there was a difference between received and expected
+  bool amount_matched = 5;
+
+  // Updated pending withdrawal distribution (if applicable)
+  string updated_pending_distribution = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }

@@ -19,31 +19,33 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Msg_Deposit_FullMethodName                 = "/noble.dollar.vaults.v2.Msg/Deposit"
-	Msg_RequestWithdrawal_FullMethodName       = "/noble.dollar.vaults.v2.Msg/RequestWithdrawal"
-	Msg_SetYieldPreference_FullMethodName      = "/noble.dollar.vaults.v2.Msg/SetYieldPreference"
-	Msg_ProcessWithdrawalQueue_FullMethodName  = "/noble.dollar.vaults.v2.Msg/ProcessWithdrawalQueue"
-	Msg_UpdateVaultConfig_FullMethodName       = "/noble.dollar.vaults.v2.Msg/UpdateVaultConfig"
-	Msg_UpdateParams_FullMethodName            = "/noble.dollar.vaults.v2.Msg/UpdateParams"
-	Msg_CreateCrossChainRoute_FullMethodName   = "/noble.dollar.vaults.v2.Msg/CreateCrossChainRoute"
-	Msg_UpdateCrossChainRoute_FullMethodName   = "/noble.dollar.vaults.v2.Msg/UpdateCrossChainRoute"
-	Msg_DisableCrossChainRoute_FullMethodName  = "/noble.dollar.vaults.v2.Msg/DisableCrossChainRoute"
-	Msg_CreateRemotePosition_FullMethodName    = "/noble.dollar.vaults.v2.Msg/CreateRemotePosition"
-	Msg_CloseRemotePosition_FullMethodName     = "/noble.dollar.vaults.v2.Msg/CloseRemotePosition"
-	Msg_Rebalance_FullMethodName               = "/noble.dollar.vaults.v2.Msg/Rebalance"
-	Msg_RemoteDeposit_FullMethodName           = "/noble.dollar.vaults.v2.Msg/RemoteDeposit"
-	Msg_RemoteWithdraw_FullMethodName          = "/noble.dollar.vaults.v2.Msg/RemoteWithdraw"
-	Msg_ProcessInFlightPosition_FullMethodName = "/noble.dollar.vaults.v2.Msg/ProcessInFlightPosition"
-	Msg_RegisterOracle_FullMethodName          = "/noble.dollar.vaults.v2.Msg/RegisterOracle"
-	Msg_UpdateOracleConfig_FullMethodName      = "/noble.dollar.vaults.v2.Msg/UpdateOracleConfig"
-	Msg_RemoveOracle_FullMethodName            = "/noble.dollar.vaults.v2.Msg/RemoveOracle"
-	Msg_UpdateOracleParams_FullMethodName      = "/noble.dollar.vaults.v2.Msg/UpdateOracleParams"
-	Msg_ClaimWithdrawal_FullMethodName         = "/noble.dollar.vaults.v2.Msg/ClaimWithdrawal"
-	Msg_UpdateNAV_FullMethodName               = "/noble.dollar.vaults.v2.Msg/UpdateNAV"
-	Msg_HandleStaleInflight_FullMethodName     = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
-	Msg_UpdateDepositLimits_FullMethodName     = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
-	Msg_CleanupStaleInflight_FullMethodName    = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
-	Msg_UpdateVaultAccounting_FullMethodName   = "/noble.dollar.vaults.v2.Msg/UpdateVaultAccounting"
+	Msg_Deposit_FullMethodName                          = "/noble.dollar.vaults.v2.Msg/Deposit"
+	Msg_RequestWithdrawal_FullMethodName                = "/noble.dollar.vaults.v2.Msg/RequestWithdrawal"
+	Msg_SetYieldPreference_FullMethodName               = "/noble.dollar.vaults.v2.Msg/SetYieldPreference"
+	Msg_ProcessWithdrawalQueue_FullMethodName           = "/noble.dollar.vaults.v2.Msg/ProcessWithdrawalQueue"
+	Msg_UpdateVaultConfig_FullMethodName                = "/noble.dollar.vaults.v2.Msg/UpdateVaultConfig"
+	Msg_UpdateParams_FullMethodName                     = "/noble.dollar.vaults.v2.Msg/UpdateParams"
+	Msg_CreateCrossChainRoute_FullMethodName            = "/noble.dollar.vaults.v2.Msg/CreateCrossChainRoute"
+	Msg_UpdateCrossChainRoute_FullMethodName            = "/noble.dollar.vaults.v2.Msg/UpdateCrossChainRoute"
+	Msg_DisableCrossChainRoute_FullMethodName           = "/noble.dollar.vaults.v2.Msg/DisableCrossChainRoute"
+	Msg_CreateRemotePosition_FullMethodName             = "/noble.dollar.vaults.v2.Msg/CreateRemotePosition"
+	Msg_CloseRemotePosition_FullMethodName              = "/noble.dollar.vaults.v2.Msg/CloseRemotePosition"
+	Msg_Rebalance_FullMethodName                        = "/noble.dollar.vaults.v2.Msg/Rebalance"
+	Msg_RemoteDeposit_FullMethodName                    = "/noble.dollar.vaults.v2.Msg/RemoteDeposit"
+	Msg_RemoteWithdraw_FullMethodName                   = "/noble.dollar.vaults.v2.Msg/RemoteWithdraw"
+	Msg_ProcessInFlightPosition_FullMethodName          = "/noble.dollar.vaults.v2.Msg/ProcessInFlightPosition"
+	Msg_RegisterOracle_FullMethodName                   = "/noble.dollar.vaults.v2.Msg/RegisterOracle"
+	Msg_UpdateOracleConfig_FullMethodName               = "/noble.dollar.vaults.v2.Msg/UpdateOracleConfig"
+	Msg_RemoveOracle_FullMethodName                     = "/noble.dollar.vaults.v2.Msg/RemoveOracle"
+	Msg_UpdateOracleParams_FullMethodName               = "/noble.dollar.vaults.v2.Msg/UpdateOracleParams"
+	Msg_ClaimWithdrawal_FullMethodName                  = "/noble.dollar.vaults.v2.Msg/ClaimWithdrawal"
+	Msg_UpdateNAV_FullMethodName                        = "/noble.dollar.vaults.v2.Msg/UpdateNAV"
+	Msg_HandleStaleInflight_FullMethodName              = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
+	Msg_UpdateDepositLimits_FullMethodName              = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
+	Msg_CleanupStaleInflight_FullMethodName             = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
+	Msg_InitiateRemotePositionRedemption_FullMethodName = "/noble.dollar.vaults.v2.Msg/InitiateRemotePositionRedemption"
+	Msg_ProcessIncomingWarpFunds_FullMethodName         = "/noble.dollar.vaults.v2.Msg/ProcessIncomingWarpFunds"
+	Msg_UpdateVaultAccounting_FullMethodName            = "/noble.dollar.vaults.v2.Msg/UpdateVaultAccounting"
 )
 
 // MsgClient is the client API for Msg service.
@@ -100,6 +102,10 @@ type MsgClient interface {
 	UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error)
 	// Cleanup stale inflight fund (authority only)
 	CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error)
+	// Initiate remote position redemption (strategist only)
+	InitiateRemotePositionRedemption(ctx context.Context, in *MsgInitiateRemotePositionRedemption, opts ...grpc.CallOption) (*MsgInitiateRemotePositionRedemptionResponse, error)
+	// Process incoming warp route funds (system/hook only)
+	ProcessIncomingWarpFunds(ctx context.Context, in *MsgProcessIncomingWarpFunds, opts ...grpc.CallOption) (*MsgProcessIncomingWarpFundsResponse, error)
 	// Update vault accounting for yield distribution (vault manager only)
 	UpdateVaultAccounting(ctx context.Context, in *MsgUpdateVaultAccounting, opts ...grpc.CallOption) (*MsgUpdateVaultAccountingResponse, error)
 }
@@ -352,6 +358,26 @@ func (c *msgClient) CleanupStaleInflight(ctx context.Context, in *MsgCleanupStal
 	return out, nil
 }
 
+func (c *msgClient) InitiateRemotePositionRedemption(ctx context.Context, in *MsgInitiateRemotePositionRedemption, opts ...grpc.CallOption) (*MsgInitiateRemotePositionRedemptionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgInitiateRemotePositionRedemptionResponse)
+	err := c.cc.Invoke(ctx, Msg_InitiateRemotePositionRedemption_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProcessIncomingWarpFunds(ctx context.Context, in *MsgProcessIncomingWarpFunds, opts ...grpc.CallOption) (*MsgProcessIncomingWarpFundsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgProcessIncomingWarpFundsResponse)
+	err := c.cc.Invoke(ctx, Msg_ProcessIncomingWarpFunds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) UpdateVaultAccounting(ctx context.Context, in *MsgUpdateVaultAccounting, opts ...grpc.CallOption) (*MsgUpdateVaultAccountingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgUpdateVaultAccountingResponse)
@@ -416,6 +442,10 @@ type MsgServer interface {
 	UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error)
 	// Cleanup stale inflight fund (authority only)
 	CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error)
+	// Initiate remote position redemption (strategist only)
+	InitiateRemotePositionRedemption(context.Context, *MsgInitiateRemotePositionRedemption) (*MsgInitiateRemotePositionRedemptionResponse, error)
+	// Process incoming warp route funds (system/hook only)
+	ProcessIncomingWarpFunds(context.Context, *MsgProcessIncomingWarpFunds) (*MsgProcessIncomingWarpFundsResponse, error)
 	// Update vault accounting for yield distribution (vault manager only)
 	UpdateVaultAccounting(context.Context, *MsgUpdateVaultAccounting) (*MsgUpdateVaultAccountingResponse, error)
 	mustEmbedUnimplementedMsgServer()
@@ -499,6 +529,12 @@ func (UnimplementedMsgServer) UpdateDepositLimits(context.Context, *MsgUpdateDep
 }
 func (UnimplementedMsgServer) CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CleanupStaleInflight not implemented")
+}
+func (UnimplementedMsgServer) InitiateRemotePositionRedemption(context.Context, *MsgInitiateRemotePositionRedemption) (*MsgInitiateRemotePositionRedemptionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitiateRemotePositionRedemption not implemented")
+}
+func (UnimplementedMsgServer) ProcessIncomingWarpFunds(context.Context, *MsgProcessIncomingWarpFunds) (*MsgProcessIncomingWarpFundsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProcessIncomingWarpFunds not implemented")
 }
 func (UnimplementedMsgServer) UpdateVaultAccounting(context.Context, *MsgUpdateVaultAccounting) (*MsgUpdateVaultAccountingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVaultAccounting not implemented")
@@ -956,6 +992,42 @@ func _Msg_CleanupStaleInflight_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_InitiateRemotePositionRedemption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgInitiateRemotePositionRedemption)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).InitiateRemotePositionRedemption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_InitiateRemotePositionRedemption_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).InitiateRemotePositionRedemption(ctx, req.(*MsgInitiateRemotePositionRedemption))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProcessIncomingWarpFunds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProcessIncomingWarpFunds)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProcessIncomingWarpFunds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProcessIncomingWarpFunds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProcessIncomingWarpFunds(ctx, req.(*MsgProcessIncomingWarpFunds))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_UpdateVaultAccounting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgUpdateVaultAccounting)
 	if err := dec(in); err != nil {
@@ -1076,6 +1148,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CleanupStaleInflight",
 			Handler:    _Msg_CleanupStaleInflight_Handler,
+		},
+		{
+			MethodName: "InitiateRemotePositionRedemption",
+			Handler:    _Msg_InitiateRemotePositionRedemption_Handler,
+		},
+		{
+			MethodName: "ProcessIncomingWarpFunds",
+			Handler:    _Msg_ProcessIncomingWarpFunds_Handler,
 		},
 		{
 			MethodName: "UpdateVaultAccounting",

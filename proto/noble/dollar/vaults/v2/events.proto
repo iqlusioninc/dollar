@@ -298,17 +298,20 @@ message EventYieldPreferenceUpdated {
   // User address
   string user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
+  // Position ID that was updated
+  uint64 position_id = 2;
+
   // Previous yield preference
-  bool previous_yield_preference = 2;
+  bool previous_yield_preference = 3;
 
   // New yield preference
-  bool new_yield_preference = 3;
+  bool new_yield_preference = 4;
 
   // Block height
-  int64 block_height = 4;
+  int64 block_height = 5;
 
   // Timestamp
-  google.protobuf.Timestamp timestamp = 5 [
+  google.protobuf.Timestamp timestamp = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
@@ -572,6 +575,48 @@ message EventRouteCapacityExceeded {
 
   // Timestamp
   google.protobuf.Timestamp timestamp = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+// EventInflightAmountMismatch is emitted when received amount differs from expected
+message EventInflightAmountMismatch {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Expected amount
+  string expected_amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Received amount
+  string received_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Absolute difference
+  string difference = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height
+  int64 block_height = 6;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
