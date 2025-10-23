@@ -56,12 +56,6 @@ service Msg {
   // Rebalance across remote positions (spec-aligned)
   rpc Rebalance(MsgRebalance) returns (MsgRebalanceResponse);
 
-  // Initiate remote deposit to another chain
-  rpc RemoteDeposit(MsgRemoteDeposit) returns (MsgRemoteDepositResponse);
-
-  // Initiate remote withdrawal from another chain
-  rpc RemoteWithdraw(MsgRemoteWithdraw) returns (MsgRemoteWithdrawResponse);
-
   // Process in-flight position (system operation)
   rpc ProcessInFlightPosition(MsgProcessInFlightPosition) returns (MsgProcessInFlightPositionResponse);
 
@@ -93,9 +87,6 @@ service Msg {
 
   // Cleanup stale inflight fund (authority only)
   rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
-
-  // Initiate remote position redemption (strategist only)
-  rpc InitiateRemotePositionRedemption(MsgInitiateRemotePositionRedemption) returns (MsgInitiateRemotePositionRedemptionResponse);
 
   // Process incoming warp route funds (system/hook only)
   rpc ProcessIncomingWarpFunds(MsgProcessIncomingWarpFunds) returns (MsgProcessIncomingWarpFundsResponse);
@@ -297,161 +288,6 @@ message MsgDisableCrossChainRouteResponse {
 
   // Number of affected positions
   int64 affected_positions = 2;
-}
-
-// MsgRemoteDeposit initiates a deposit to a remote chain
-message MsgRemoteDeposit {
-  option (cosmos.msg.v1.signer) = "depositor";
-  option (amino.name) = "dollar/vaults/v2/RemoteDeposit";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // User making the remote deposit
-  string depositor = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Route ID for the deposit
-  uint32 route_id = 2;
-
-  // Amount to deposit
-  string amount = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Remote address to receive the position
-  string remote_address = 4;
-
-  // Minimum shares to receive (slippage protection)
-  string min_shares = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Gas limit for remote execution (Hyperlane only)
-  uint64 gas_limit = 6;
-
-  // Gas price for remote execution (Hyperlane only)
-  string gas_price = 7 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}
-
-// MsgRemoteDepositResponse returns the results of a remote deposit
-message MsgRemoteDepositResponse {
-  // Operation nonce for tracking
-  uint64 nonce = 1;
-
-  // Route ID used
-  uint32 route_id = 2;
-
-  // Local shares allocated
-  string shares_allocated = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Amount sent to remote chain
-  string amount_sent = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Expected completion time
-  google.protobuf.Timestamp expected_completion = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
-  // Provider-specific tracking information
-  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
-}
-
-// MsgRemoteWithdraw initiates a withdrawal from a remote chain
-message MsgRemoteWithdraw {
-  option (cosmos.msg.v1.signer) = "withdrawer";
-  option (amino.name) = "dollar/vaults/v2/RemoteWithdraw";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // User making the remote withdrawal
-  string withdrawer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Route ID for the withdrawal
-  uint32 route_id = 2;
-
-  // Shares to withdraw from remote position
-  string shares = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Minimum amount to receive (slippage protection)
-  string min_amount = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Gas limit for remote execution (Hyperlane only)
-  uint64 gas_limit = 5;
-
-  // Gas price for remote execution (Hyperlane only)
-  string gas_price = 6 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}
-
-// MsgRemoteWithdrawResponse returns the results of a remote withdrawal
-message MsgRemoteWithdrawResponse {
-  // Operation nonce for tracking
-  uint64 nonce = 1;
-
-  // Route ID used
-  uint32 route_id = 2;
-
-  // Shares being withdrawn
-  string shares_withdrawn = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Expected amount to receive
-  string expected_amount = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Expected completion time
-  google.protobuf.Timestamp expected_completion = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
-  // Provider-specific tracking information
-  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
 }
 
 // MsgProcessInFlightPosition processes an in-flight position
@@ -959,71 +795,6 @@ message MsgUpdateVaultAccountingResponse {
 
   // Next user to process (empty if complete)
   string next_user = 7 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-}
-
-// MsgInitiateRemotePositionRedemption allows a strategist to initiate redemption from a remote position
-// This creates an inflight fund record and signals the strategist to begin the redemption process
-message MsgInitiateRemotePositionRedemption {
-  option (cosmos.msg.v1.signer) = "strategist";
-  option (amino.name) = "dollar/vaults/v2/InitiateRemotePositionRedemption";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // Strategist address (authorized to initiate redemptions)
-  string strategist = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Remote position ID to redeem from
-  uint64 position_id = 2;
-
-  // Amount to redeem (in USDN equivalent)
-  string amount = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Route ID for the cross-chain transfer back to Noble
-  uint32 route_id = 4;
-
-  // Expected completion time (strategist's estimate)
-  google.protobuf.Timestamp expected_completion = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
-  // Optional transaction ID for tracking (can be generated if not provided)
-  string transaction_id = 6;
-}
-
-// MsgInitiateRemotePositionRedemptionResponse returns details of the initiated redemption
-message MsgInitiateRemotePositionRedemptionResponse {
-  // Transaction ID for tracking the inflight redemption
-  string transaction_id = 1;
-
-  // Route ID being used
-  uint32 route_id = 2;
-
-  // Amount marked as inflight
-  string amount_inflight = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Position ID being redeemed from
-  uint64 position_id = 4;
-
-  // Expected completion time
-  google.protobuf.Timestamp expected_completion = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
-  // Provider tracking information
-  ProviderTrackingInfo provider_tracking = 6;
 }
 
 // MsgProcessIncomingWarpFunds processes funds received via warp route and marks inflight funds as completed

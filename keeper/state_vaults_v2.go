@@ -28,6 +28,7 @@ import (
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
@@ -118,37 +119,161 @@ func (k *Keeper) SetVaultsV2NAVInfo(ctx context.Context, nav vaultsv2.NAVInfo) e
 	return k.VaultsV2NAVInfo.Set(ctx, nav)
 }
 
-// GetVaultsV2UserPosition returns the position for the supplied account. The
-// boolean flag indicates whether the position existed in state.
-func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress) (vaultsv2.UserPosition, bool, error) {
-	position, err := k.VaultsV2UserPositions.Get(ctx, address)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return vaultsv2.UserPosition{}, false, nil
-		}
+// GetVaultsV2UserPosition returns a specific position for the supplied account and position ID.
+// The boolean flag indicates whether the position existed in state.
+func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64) (vaultsv2.UserPosition, bool, error) {
+	store := k.store.OpenKVStore(ctx)
+	key := vaultsv2.GetUserPositionKey(address, positionID)
+	
+	bz, _ := store.Get(key)
+	if bz == nil {
+		return vaultsv2.UserPosition{}, false, nil
+	}
+	
+	var position vaultsv2.UserPosition
+	if err := position.Unmarshal(bz); err != nil {
 		return vaultsv2.UserPosition{}, false, err
 	}
-
+	
 	return position, true, nil
 }
 
 // SetVaultsV2UserPosition writes the provided user position to state.
-func (k *Keeper) SetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, position vaultsv2.UserPosition) error {
-	return k.VaultsV2UserPositions.Set(ctx, address, position)
+func (k *Keeper) SetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
+	store := k.store.OpenKVStore(ctx)
+	key := vaultsv2.GetUserPositionKey(address, positionID)
+	
+	// Ensure position ID is set correctly
+	position.PositionId = positionID
+	
+	bz, err := position.Marshal()
+	if err != nil {
+		return err
+	}
+	
+	store.Set(key, bz)
+	return nil
 }
 
 // DeleteVaultsV2UserPosition removes an existing position entry from state.
-func (k *Keeper) DeleteVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress) error {
-	return k.VaultsV2UserPositions.Remove(ctx, address)
+func (k *Keeper) DeleteVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64) error {
+	store := k.store.OpenKVStore(ctx)
+	key := vaultsv2.GetUserPositionKey(address, positionID)
+	store.Delete(key)
+	return nil
+}
+
+// GetVaultsV2UserPositionLegacy returns the first position for backward compatibility
+// TODO: Remove this once all callers are updated to use position IDs
+func (k *Keeper) GetVaultsV2UserPositionLegacy(ctx context.Context, address sdk.AccAddress) (vaultsv2.UserPosition, bool, error) {
+	return k.GetVaultsV2UserPosition(ctx, address, 1)
+}
+
+// GetUserPositionCount returns the number of positions a user has
+func (k *Keeper) GetUserPositionCount(ctx context.Context, address sdk.AccAddress) (uint64, error) {
+	store := k.store.OpenKVStore(ctx)
+	key := vaultsv2.GetUserPositionCountKey(address)
+	
+	bz, _ := store.Get(key)
+	if bz == nil {
+		return 0, nil
+	}
+	
+	return sdk.BigEndianToUint64(bz), nil
+}
+
+// SetUserPositionCount sets the number of positions a user has
+func (k *Keeper) SetUserPositionCount(ctx context.Context, address sdk.AccAddress, count uint64) error {
+	store := k.store.OpenKVStore(ctx)
+	key := vaultsv2.GetUserPositionCountKey(address)
+	store.Set(key, sdk.Uint64ToBigEndian(count))
+	return nil
+}
+
+// GetNextUserPositionID gets the next position ID for a user and increments it
+func (k *Keeper) GetNextUserPositionID(ctx context.Context, address sdk.AccAddress) (uint64, error) {
+	store := k.store.OpenKVStore(ctx)
+	key := vaultsv2.GetUserNextPositionIDKey(address)
+	
+	bz, _ := store.Get(key)
+	var nextID uint64 = 1
+	if bz != nil {
+		nextID = sdk.BigEndianToUint64(bz)
+	}
+	
+	// Increment and save for next time
+	store.Set(key, sdk.Uint64ToBigEndian(nextID+1))
+	
+	// Also increment position count
+	count, err := k.GetUserPositionCount(ctx, address)
+	if err != nil {
+		return 0, err
+	}
+	if err := k.SetUserPositionCount(ctx, address, count+1); err != nil {
+		return 0, err
+	}
+	
+	return nextID, nil
+}
+
+// IterateUserPositions walks all positions for a specific user
+func (k *Keeper) IterateUserPositions(ctx context.Context, address sdk.AccAddress, fn func(positionID uint64, position vaultsv2.UserPosition) (bool, error)) error {
+	store := k.store.OpenKVStore(ctx)
+	prefix := append(vaultsv2.UserPositionPrefix, address...)
+	
+	iterator, _ := store.Iterator(prefix, storetypes.PrefixEndBytes(prefix))
+	defer iterator.Close()
+	
+	for ; iterator.Valid(); iterator.Next() {
+		var position vaultsv2.UserPosition
+		if err := position.Unmarshal(iterator.Value()); err != nil {
+			return err
+		}
+		
+		// Extract position ID from the key
+		fullKey := iterator.Key()
+		_, positionID := vaultsv2.ParseUserPositionKey(fullKey)
+		
+		stop, err := fn(positionID, position)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	
+	return nil
 }
 
 // IterateVaultsV2UserPositions walks every stored user position and invokes
 // the supplied callback. Returning true from the callback stops the iteration
 // early.
 func (k *Keeper) IterateVaultsV2UserPositions(ctx context.Context, fn func(address sdk.AccAddress, position vaultsv2.UserPosition) (bool, error)) error {
-	return k.VaultsV2UserPositions.Walk(ctx, nil, func(key []byte, position vaultsv2.UserPosition) (bool, error) {
-		return fn(sdk.AccAddress(key), position)
-	})
+	store := k.store.OpenKVStore(ctx)
+	iterator, _ := store.Iterator(vaultsv2.UserPositionPrefix, storetypes.PrefixEndBytes(vaultsv2.UserPositionPrefix))
+	defer iterator.Close()
+	
+	for ; iterator.Valid(); iterator.Next() {
+		var position vaultsv2.UserPosition
+		if err := position.Unmarshal(iterator.Value()); err != nil {
+			return err
+		}
+		
+		// Extract address from the key
+		fullKey := iterator.Key()
+		address, _ := vaultsv2.ParseUserPositionKey(fullKey)
+		
+		stop, err := fn(sdk.AccAddress(address), position)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	
+	return nil
 }
 
 // IterateVaultsV2UserPositionsPaginated iterates over user positions with pagination support.
@@ -534,23 +659,7 @@ func (k *Keeper) GetAllVaultsV2Withdrawals(ctx context.Context) ([]vaultsv2.With
 	return requests, err
 }
 
-// ResetVaultsV2UserPosition clears a user position but returns the prior
-// value to the caller so it can be used for downstream processing.
-func (k *Keeper) ResetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress) (vaultsv2.UserPosition, error) {
-	position, found, err := k.GetVaultsV2UserPosition(ctx, address)
-	if err != nil {
-		return vaultsv2.UserPosition{}, err
-	}
-	if !found {
-		return vaultsv2.UserPosition{}, nil
-	}
-
-	if err := k.DeleteVaultsV2UserPosition(ctx, address); err != nil {
-		return vaultsv2.UserPosition{}, err
-	}
-
-	return position, nil
-}
+// ResetVaultsV2UserPosition is deprecated - use DeleteVaultsV2UserPosition with position ID instead
 
 // AddAmountToVaultsV2Totals updates the aggregate vault totals by the supplied
 // delta values. Positive amounts increment totals while negative values are
@@ -1203,13 +1312,13 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 			return true, fmt.Errorf("invalid user address in snapshot: %w", err)
 		}
 
-		// Get current position
-		position, found, err := k.GetVaultsV2UserPosition(ctx, addr)
+		// Get current position using position ID from snapshot
+		position, found, err := k.GetVaultsV2UserPosition(ctx, addr, snapshot.PositionId)
 		if err != nil {
 			return true, err
 		}
 		if !found {
-			return true, fmt.Errorf("position not found for user %s during snapshot commit", snapshot.User)
+			return true, fmt.Errorf("position not found for user %s with ID %d during snapshot commit", snapshot.User, snapshot.PositionId)
 		}
 
 		// Update only the accounting fields
@@ -1217,7 +1326,7 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 		position.AccruedYield = snapshot.AccruedYield
 
 		// Save updated position
-		if err := k.SetVaultsV2UserPosition(ctx, addr, position); err != nil {
+		if err := k.SetVaultsV2UserPosition(ctx, addr, snapshot.PositionId, position); err != nil {
 			return true, err
 		}
 

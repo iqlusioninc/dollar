@@ -20,12 +20,16 @@
 
 package v2
 
+import sdk "github.com/cosmos/cosmos-sdk/types"
+
 const SubmoduleName = "dollar/vaults/v2"
 
 var (
 	ParamsKey                        = []byte("vaults/v2/params")
 	VaultConfigurationKey            = []byte("vaults/v2/vault_config")
 	UserPositionPrefix               = []byte("vaults/v2/user_position/")
+	UserPositionCountPrefix          = []byte("vaults/v2/user_position_count/")
+	UserNextPositionIDPrefix         = []byte("vaults/v2/user_next_position_id/")
 	NAVKey                           = []byte("vaults/v2/nav")
 	NAVInfoKey                       = []byte("vaults/v2/nav_info")
 	VaultStateKey                    = []byte("vaults/v2/vault_state")
@@ -63,3 +67,29 @@ var (
 	NAVSnapshotsPrefix               = []byte("vaults/v2/nav_snapshots/")
 	NAVSnapshotNextIDKey             = []byte("vaults/v2/nav_snapshot_next_id")
 )
+
+// GetUserPositionKey creates the composite key for a user's specific position
+func GetUserPositionKey(address []byte, positionID uint64) []byte {
+	return append(append(UserPositionPrefix, address...), sdk.Uint64ToBigEndian(positionID)...)
+}
+
+// GetUserPositionCountKey creates the key for tracking user's position count
+func GetUserPositionCountKey(address []byte) []byte {
+	return append(UserPositionCountPrefix, address...)
+}
+
+// GetUserNextPositionIDKey creates the key for the next position ID for a user
+func GetUserNextPositionIDKey(address []byte) []byte {
+	return append(UserNextPositionIDPrefix, address...)
+}
+
+// ParseUserPositionKey extracts address and positionID from a composite key
+func ParseUserPositionKey(key []byte) (address []byte, positionID uint64) {
+	// Remove prefix
+	keyWithoutPrefix := key[len(UserPositionPrefix):]
+	// Address is all bytes except last 8 (uint64)
+	address = keyWithoutPrefix[:len(keyWithoutPrefix)-8]
+	// Position ID is last 8 bytes
+	positionID = sdk.BigEndianToUint64(keyWithoutPrefix[len(keyWithoutPrefix)-8:])
+	return
+}

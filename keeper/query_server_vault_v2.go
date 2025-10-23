@@ -111,10 +111,10 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 			view.DestinationChain = destination.VaultAddress.String()
 		}
 		if noble := fund.GetNobleOrigin(); noble != nil {
-			view.Type = noble.OperationType.String()
+			view.OperationType = noble.OperationType.String()
 		}
 		if nobleDest := fund.GetNobleDestination(); nobleDest != nil {
-			view.Type = nobleDest.OperationType.String()
+			view.OperationType = nobleDest.OperationType.String()
 		}
 		if tracking := fund.GetProviderTracking(); tracking != nil {
 			if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
@@ -170,13 +170,13 @@ func (q queryServerV2) UserPosition(ctx context.Context, req *vaultsv2.QueryUser
 		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
 	}
 
-	// Get user position from state
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
+	// Get specific user position by ID
+	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, req.PositionId)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "user position not found")
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "position not found for user %s with ID %d", req.Address, req.PositionId)
 	}
 
 	// If no position exists, return empty position with zero values
@@ -323,7 +323,8 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 			YieldAmount:     sdkmath.ZeroInt().String(),
 			Timestamp:       request.RequestTime,
 			Status:          status,
-			Position:        queueLength + 1,
+			QueuePosition:   queueLength + 1,
+			PositionId:      request.PositionId,
 		}
 
 		items = append(items, item)
@@ -577,28 +578,22 @@ func (q queryServerV2) UserPositions(ctx context.Context, req *vaultsv2.QueryUse
 		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
 	}
 
-	// Get user position
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user position")
-	}
-
 	var positions []vaultsv2.UserPositionWithVault
 
-	if found && position.DepositAmount.IsPositive() {
-		// Get vault state
-		state, err := q.GetVaultsV2VaultState(ctx)
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to fetch vault state")
-		}
-
+	// Iterate through all user positions
+	err = q.IterateUserPositions(ctx, userAddr, func(positionID uint64, position vaultsv2.UserPosition) (bool, error) {
 		// Calculate current value (deposits + yield)
 		currentValue := position.DepositAmount.Add(position.AccruedYield)
 
 		positions = append(positions, vaultsv2.UserPositionWithVault{
+			PositionId:   positionID,
 			Position:     position,
 			CurrentValue: currentValue.String(),
 		})
+		return false, nil
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to iterate user positions")
 	}
 
 	return &vaultsv2.QueryUserPositionsResponse{
@@ -927,6 +922,7 @@ func (q queryServerV2) UserWithdrawals(ctx context.Context, req *vaultsv2.QueryU
 			FulfilledAmount: sdkmath.ZeroInt().String(),
 			Status:          status,
 			Timestamp:       request.RequestTime,
+			PositionId:      request.PositionId,
 		}
 
 		if false {
@@ -982,50 +978,73 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
 	}
 
-	// Get user position
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user position")
-	}
-	if !found {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "user position not found")
+	// If position_id is provided, get specific position; otherwise aggregate all positions
+	if req.PositionId > 0 {
+		// Get specific position
+		position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, req.PositionId)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to fetch user position")
+		}
+		if !found {
+			return nil, errors.Wrapf(types.ErrInvalidRequest, "position not found for user %s with ID %d", req.Address, req.PositionId)
+		}
+
+		// Calculate current value (deposits + yield)
+		currentValue := position.DepositAmount.Add(position.AccruedYield)
+
+		// Locked amount is amount pending withdrawal
+		lockedAmount := position.AmountPendingWithdrawal
+
+		return &vaultsv2.QueryUserBalanceResponse{
+			DepositAmount:  position.DepositAmount.String(),
+			AccruedYield:   position.AccruedYield.String(),
+			TotalValue:     currentValue.String(),
+			UnrealizedGain: position.AccruedYield.String(), // Same as accrued yield
+			LockedAmount:   lockedAmount.String(),
+			PositionCount:  1,
+		}, nil
 	}
 
+	// Aggregate all positions for the user
+	var (
+		totalDeposits  = sdkmath.ZeroInt()
+		totalYield     = sdkmath.ZeroInt()
+		totalLocked    = sdkmath.ZeroInt()
+		positionCount  uint64 = 0
+	)
+
+	err = q.IterateUserPositions(ctx, userAddr, func(positionID uint64, position vaultsv2.UserPosition) (bool, error) {
+		totalDeposits = totalDeposits.Add(position.DepositAmount)
+		totalYield = totalYield.Add(position.AccruedYield)
+		totalLocked = totalLocked.Add(position.AmountPendingWithdrawal)
+		positionCount++
+		return false, nil
+	})
 	if err != nil {
+		return nil, errors.Wrap(err, "unable to iterate user positions")
+	}
+
+	if positionCount == 0 {
 		return &vaultsv2.QueryUserBalanceResponse{
 			DepositAmount:  sdkmath.ZeroInt().String(),
 			AccruedYield:   sdkmath.ZeroInt().String(),
 			TotalValue:     sdkmath.ZeroInt().String(),
 			UnrealizedGain: sdkmath.ZeroInt().String(),
 			LockedAmount:   sdkmath.ZeroInt().String(),
+			PositionCount:  0,
 		}, nil
 	}
 
-	// Get vault state
-	state, err := q.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
-	}
-
-	// Calculate current value (deposits + yield)
-	currentValue := position.DepositAmount.Add(position.AccruedYield)
-
-	// Calculate accrued yield and unrealized gain
-	depositAmount := position.DepositAmount
-	accruedYield := currentValue.Sub(depositAmount)
-	if accruedYield.IsNegative() {
-		accruedYield = sdkmath.ZeroInt()
-	}
-
-	// Locked amount is amount pending withdrawal
-	lockedAmount := position.AmountPendingWithdrawal
+	// Calculate total value
+	totalValue := totalDeposits.Add(totalYield)
 
 	return &vaultsv2.QueryUserBalanceResponse{
-		DepositAmount:  depositAmount.String(),
-		AccruedYield:   accruedYield.String(),
-		TotalValue:     currentValue.String(),
-		UnrealizedGain: accruedYield.String(), // Same as accrued yield
-		LockedAmount:   lockedAmount.String(),
+		DepositAmount:  totalDeposits.String(),
+		AccruedYield:   totalYield.String(),
+		TotalValue:     totalValue.String(),
+		UnrealizedGain: totalYield.String(), // Same as accrued yield
+		LockedAmount:   totalLocked.String(),
+		PositionCount:  positionCount,
 	}, nil
 }
 
@@ -1211,17 +1230,13 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 		return nil, errors.Wrap(types.ErrInvalidRequest, "invalid amount")
 	}
 
-	// Get user position
-	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr)
+	// Get specific user position
+	position, found, err := q.GetVaultsV2UserPosition(ctx, userAddr, req.PositionId)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch user position")
 	}
 	if !found {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "user position not found")
-	}
-
-	if err != nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "user has no position")
+		return nil, errors.Wrapf(types.ErrInvalidRequest, "position not found for user %s with ID %d", req.Address, req.PositionId)
 	}
 
 	// Get vault state
@@ -1329,7 +1344,7 @@ func (q queryServerV2) StaleInflightFunds(ctx context.Context, req *vaultsv2.Que
 				RouteId:           routeID,
 				TransactionId:     fund.TransactionId,
 				Amount:            fund.Amount.String(),
-				Type:              opType,
+				OperationType:     opType,
 				SourceChain:       sourceChain,
 				DestinationChain:  destChain,
 				HoursOverdue:      strconv.FormatInt(int64(hoursOverdue), 10),

@@ -154,6 +154,9 @@ message WithdrawalRequest {
 
   // Block height when request was made
   int64 request_block_height = 8;
+
+  // Position ID this withdrawal is from
+  uint64 position_id = 9;
 }
 
 // WithdrawalRequestStatus represents the status of a withdrawal request

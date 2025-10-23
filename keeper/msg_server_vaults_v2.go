@@ -350,12 +350,12 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
-	// Get next position ID for this user
+	// Get next position ID for this user (creates a new position for each deposit)
 	positionID, err := m.GetNextUserPositionID(ctx, depositor)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to generate position ID")
 	}
-
+	
 	// Check if this is the user's first position to track total users
 	userPositionCount, err := m.GetUserPositionCount(ctx, depositor)
 	if err != nil {
@@ -375,7 +375,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		ActiveWithdrawalRequests: 0,
 	}
 
-	if err := m.SetVaultsV2UserPosition(ctx, depositor, position); err != nil {
+	if err := m.SetVaultsV2UserPosition(ctx, depositor, positionID, position); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to store user position")
 	}
 
@@ -471,7 +471,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	}
 	position.ActiveWithdrawalRequests++
 	position.LastActivityTime = headerInfo.Time
-	if err := m.SetVaultsV2UserPosition(ctx, requester, position); err != nil {
+	if err := m.SetVaultsV2UserPosition(ctx, requester, msg.PositionId, position); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist user position")
 	}
 
@@ -568,7 +568,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 	position.ReceiveYield = msg.ReceiveYield
 	position.LastActivityTime = headerInfo.Time
 
-	if err := m.SetVaultsV2UserPosition(ctx, user, position); err != nil {
+	if err := m.SetVaultsV2UserPosition(ctx, user, msg.PositionId, position); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist user position")
 	}
 
@@ -1330,221 +1330,6 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 	}, nil
 }
 
-func (m msgServerV2) RemoteDeposit(ctx context.Context, msg *vaultsv2.MsgRemoteDeposit) (*vaultsv2.MsgRemoteDepositResponse, error) {
-	if msg == nil {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
-	}
-	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
-	}
-	if msg.MinShares.IsNegative() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum shares cannot be negative")
-	}
-
-	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
-	}
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
-	}
-
-	// Enforce route capacity before creating inflight fund
-	if err := m.EnforceRouteCapacity(ctx, msg.RouteId, msg.Amount); err != nil {
-		return nil, err
-	}
-
-	headerInfo := m.header.GetHeaderInfo(ctx)
-
-	inflightID, err := m.NextVaultsV2InflightID(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
-	}
-
-	sharesAllocated := msg.MinShares
-	if !sharesAllocated.IsPositive() {
-		sharesAllocated = msg.Amount
-	}
-
-	fund := vaultsv2.InflightFund{
-		Id:                strconv.FormatUint(inflightID, 10),
-		TransactionId:     msg.RemoteAddress,
-		Amount:            msg.Amount,
-		ValueAtInitiation: sharesAllocated,
-		InitiatedAt:       headerInfo.Time,
-		ExpectedAt:        headerInfo.Time,
-		Status:            vaultsv2.INFLIGHT_PENDING,
-		Origin: &vaultsv2.InflightFund_NobleOrigin{
-			NobleOrigin: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_DEPOSIT},
-		},
-		Destination: &vaultsv2.InflightFund_RemoteDestination{
-			RemoteDestination: &vaultsv2.RemotePosition{
-				HyptokenId:    route.HyptokenId,
-				VaultAddress:  route.RemotePositionAddress,
-				SharesHeld:    sdkmath.ZeroInt(),
-				Principal:     sdkmath.ZeroInt(),
-				SharePrice:    sdkmath.LegacyOneDec(),
-				TotalValue:    sdkmath.ZeroInt(),
-				Status:        vaultsv2.REMOTE_POSITION_ACTIVE,
-				OracleAddress: "",
-				MaxStaleness:  0,
-				LastUpdate:    headerInfo.Time,
-			},
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					DestinationDomain: msg.RouteId,
-					Nonce:             inflightID,
-					Processed:         false,
-				},
-			},
-		},
-	}
-
-	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to record inflight value for route")
-	}
-
-	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
-	}
-
-	// Emit inflight created event
-	_ = m.EmitInflightCreatedEvent(
-		ctx,
-		fund.TransactionId,
-		msg.RouteId,
-		vaultsv2.OPERATION_TYPE_DEPOSIT,
-		msg.Amount,
-		msg.Depositor, // or derive from context
-		"noble",
-		strconv.FormatUint(uint64(msg.RouteId), 10),
-		headerInfo.Time,
-	)
-
-	return &vaultsv2.MsgRemoteDepositResponse{
-		Nonce:              inflightID,
-		RouteId:            msg.RouteId,
-		SharesAllocated:    sharesAllocated,
-		AmountSent:         msg.Amount,
-		ExpectedCompletion: headerInfo.Time,
-		ProviderTracking:   fund.ProviderTracking,
-	}, nil
-}
-
-func (m msgServerV2) RemoteWithdraw(ctx context.Context, msg *vaultsv2.MsgRemoteWithdraw) (*vaultsv2.MsgRemoteWithdrawResponse, error) {
-	if msg == nil {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
-	}
-	if msg.Shares.IsNil() || !msg.Shares.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdraw shares must be positive")
-	}
-	if msg.MinAmount.IsNegative() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum amount cannot be negative")
-	}
-
-	route, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
-	}
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "cross-chain route %d not found", msg.RouteId)
-	}
-
-	positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, route.RemotePositionAddress)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to lookup remote position")
-	}
-	if !foundPosition {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found for route")
-	}
-	if position.SharesHeld.LT(msg.Shares) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient remote shares for withdrawal")
-	}
-
-	currentInflight, err := m.GetVaultsV2InflightValueByRoute(ctx, msg.RouteId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch route inflight value")
-	}
-	inflightAmount := msg.MinAmount
-	if !inflightAmount.IsPositive() {
-		inflightAmount = msg.Shares
-	}
-	projected, err := currentInflight.SafeAdd(inflightAmount)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to calculate projected inflight value")
-	}
-	if projected.GT(route.MaxInflightValue) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "route inflight cap exceeded")
-	}
-
-	headerInfo := m.header.GetHeaderInfo(ctx)
-	position.Status = vaultsv2.REMOTE_POSITION_WITHDRAWING
-	position.LastUpdate = headerInfo.Time
-	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update remote position status")
-	}
-
-	inflightID, err := m.NextVaultsV2InflightID(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
-	}
-
-	fund := vaultsv2.InflightFund{
-		Id:                strconv.FormatUint(inflightID, 10),
-		TransactionId:     msg.Withdrawer,
-		Amount:            inflightAmount,
-		ValueAtInitiation: msg.Shares,
-		InitiatedAt:       headerInfo.Time,
-		ExpectedAt:        headerInfo.Time,
-		Status:            vaultsv2.INFLIGHT_PENDING,
-		Origin: &vaultsv2.InflightFund_RemoteOrigin{
-			RemoteOrigin: &vaultsv2.RemotePosition{
-				HyptokenId:    route.HyptokenId,
-				VaultAddress:  route.RemotePositionAddress,
-				SharesHeld:    position.SharesHeld,
-				Principal:     position.Principal,
-				SharePrice:    position.SharePrice,
-				TotalValue:    position.TotalValue,
-				LastUpdate:    position.LastUpdate,
-				Status:        position.Status,
-				OracleAddress: position.OracleAddress,
-				MaxStaleness:  position.MaxStaleness,
-			},
-		},
-		Destination: &vaultsv2.InflightFund_NobleDestination{
-			NobleDestination: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_WITHDRAWAL},
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					OriginDomain: msg.RouteId,
-					Nonce:        inflightID,
-					Processed:    false,
-				},
-			},
-		},
-	}
-
-	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, inflightAmount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to record inflight value for route")
-	}
-
-	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
-	}
-
-	return &vaultsv2.MsgRemoteWithdrawResponse{
-		Nonce:              inflightID,
-		RouteId:            msg.RouteId,
-		SharesWithdrawn:    msg.Shares,
-		ExpectedAmount:     inflightAmount,
-		ExpectedCompletion: headerInfo.Time,
-		ProviderTracking:   fund.ProviderTracking,
-	}, nil
-}
-
 func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.MsgProcessInFlightPosition) (*vaultsv2.MsgProcessInFlightPositionResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -1993,8 +1778,16 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 			// Decrement total positions count
 			state.TotalPositions--
+			
+			// Decrement user position count
+			count, _ := m.GetUserPositionCount(ctx, claimer)
+			if count > 0 {
+				if err := m.SetUserPositionCount(ctx, claimer, count-1); err != nil {
+					return nil, sdkerrors.Wrap(err, "unable to update user position count")
+				}
+			}
 		} else {
-			if err := m.SetVaultsV2UserPosition(ctx, claimer, position); err != nil {
+			if err := m.SetVaultsV2UserPosition(ctx, claimer, request.PositionId, position); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to persist user position")
 			}
 		}
@@ -2482,122 +2275,14 @@ func (m msgServerV2) updateDepositTracking(ctx context.Context, depositor sdk.Ac
 	return nil
 }
 
-func (m msgServerV2) InitiateRemotePositionRedemption(ctx context.Context, msg *vaultsv2.MsgInitiateRemotePositionRedemption) (*vaultsv2.MsgInitiateRemotePositionRedemptionResponse, error) {
-	if msg == nil {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
-	}
-
-	// Validate amount
-	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "redemption amount must be positive")
-	}
-
-	// Check route exists and capacity
-	_, found, err := m.GetVaultsV2CrossChainRoute(ctx, msg.RouteId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
-	}
-	if !found {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrRouteNotFound, "route %d not found", msg.RouteId)
-	}
-
-	// Enforce route capacity
-	if err := m.EnforceRouteCapacity(ctx, msg.RouteId, msg.Amount); err != nil {
-		return nil, err
-	}
-
-	// Get remote position to validate
-	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.PositionId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
-	}
-	if !found {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "position %d not found", msg.PositionId)
-	}
-
-	// Validate position has sufficient value
-	if position.TotalValue.LT(msg.Amount) {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, 
-			"position value %s insufficient for redemption amount %s", 
-			position.TotalValue.String(), msg.Amount.String())
-	}
-
-	headerInfo := m.header.GetHeaderInfo(ctx)
-
-	// Generate transaction ID if not provided
-	txID := msg.TransactionId
-	if txID == "" {
-		txID = fmt.Sprintf("redemption_%d_%d", msg.PositionId, headerInfo.Time.Unix())
-	}
-
-	// Check if transaction ID already exists
-	if _, exists, _ := m.GetVaultsV2InflightFund(ctx, txID); exists {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyExists, "transaction ID %s already exists", txID)
-	}
-
-	// Create inflight fund record
-	fund := vaultsv2.InflightFund{
-		Id:                txID,
-		TransactionId:     txID,
-		Amount:            msg.Amount,
-		ValueAtInitiation: msg.Amount,
-		InitiatedAt:       headerInfo.Time,
-		ExpectedAt:        msg.ExpectedCompletion,
-		Status:            vaultsv2.INFLIGHT_PENDING,
-		Origin: &vaultsv2.InflightFund_RemoteOrigin{
-			RemoteOrigin: &position,
-		},
-		Destination: &vaultsv2.InflightFund_NobleDestination{
-			NobleDestination: &vaultsv2.NobleEndpoint{
-				OperationType: vaultsv2.OPERATION_TYPE_WITHDRAWAL,
-			},
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					OriginDomain:      msg.RouteId,
-					DestinationDomain: 0, // Noble's domain, should be configurable
-				},
-			},
-		},
-	}
-
-	// Store inflight fund
-	if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to store inflight fund")
-	}
-
-	// Add to route inflight value tracking
-	if err := m.AddVaultsV2InflightValueByRoute(ctx, msg.RouteId, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to track inflight value for route")
-	}
-
-	// Emit inflight created event
-	_ = m.EmitInflightCreatedEvent(
-		ctx,
-		fund.TransactionId,
-		msg.RouteId,
-		vaultsv2.OPERATION_TYPE_WITHDRAWAL,
-		msg.Amount,
-		msg.Strategist,
-		strconv.FormatUint(uint64(msg.RouteId), 10), // source chain
-		"noble", // destination chain
-		msg.ExpectedCompletion,
-	)
-
-	return &vaultsv2.MsgInitiateRemotePositionRedemptionResponse{
-		TransactionId:        txID,
-		RouteId:              msg.RouteId,
-		AmountInflight:       msg.Amount,
-		PositionId:           msg.PositionId,
-		ExpectedCompletion:   msg.ExpectedCompletion,
-		ProviderTracking:     fund.ProviderTracking,
-	}, nil
-}
-
 func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2.MsgProcessIncomingWarpFunds) (*vaultsv2.MsgProcessIncomingWarpFundsResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+
+	// Validate vault manager permission
+	if msg.Processor != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "only vault manager can process incoming warp funds, expected %s, got %s", m.authority, msg.Processor)
 	}
 
 	// Validate amount received

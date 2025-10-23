@@ -59,9 +59,9 @@ type QueryClient interface {
 	VaultInfo(ctx context.Context, in *QueryVaultInfoRequest, opts ...grpc.CallOption) (*QueryVaultInfoResponse, error)
 	// AllVaults returns information for all vault types
 	AllVaults(ctx context.Context, in *QueryAllVaultsRequest, opts ...grpc.CallOption) (*QueryAllVaultsResponse, error)
-	// UserPosition returns a user's position in a specific vault
+	// UserPosition returns a specific position for a user
 	UserPosition(ctx context.Context, in *QueryUserPositionRequest, opts ...grpc.CallOption) (*QueryUserPositionResponse, error)
-	// UserPositions returns all of a user's positions across vault types
+	// UserPositions returns all of a user's positions
 	UserPositions(ctx context.Context, in *QueryUserPositionsRequest, opts ...grpc.CallOption) (*QueryUserPositionsResponse, error)
 	// YieldInfo returns the current yield information for a vault type
 	YieldInfo(ctx context.Context, in *QueryYieldInfoRequest, opts ...grpc.CallOption) (*QueryYieldInfoResponse, error)
@@ -387,9 +387,9 @@ type QueryServer interface {
 	VaultInfo(context.Context, *QueryVaultInfoRequest) (*QueryVaultInfoResponse, error)
 	// AllVaults returns information for all vault types
 	AllVaults(context.Context, *QueryAllVaultsRequest) (*QueryAllVaultsResponse, error)
-	// UserPosition returns a user's position in a specific vault
+	// UserPosition returns a specific position for a user
 	UserPosition(context.Context, *QueryUserPositionRequest) (*QueryUserPositionResponse, error)
-	// UserPositions returns all of a user's positions across vault types
+	// UserPositions returns all of a user's positions
 	UserPositions(context.Context, *QueryUserPositionsRequest) (*QueryUserPositionsResponse, error)
 	// YieldInfo returns the current yield information for a vault type
 	YieldInfo(context.Context, *QueryYieldInfoRequest) (*QueryYieldInfoResponse, error)
