@@ -81,8 +81,6 @@ type Keeper struct {
 	VaultsV2Params                        collections.Item[vaultsv2.Params]
 	VaultsV2Config                        collections.Item[vaultsv2.VaultConfig]
 	VaultsV2UserPositions                 collections.Map[[]byte, vaultsv2.UserPosition]
-	VaultsV2UserShares                    collections.Map[[]byte, math.Int]
-	VaultsV2TotalShares                   collections.Item[math.Int]
 	VaultsV2DepositLimits                 collections.Item[vaultsv2.DepositLimit]
 	VaultsV2UserDepositHistory            collections.Map[collections.Pair[[]byte, int64], math.Int]
 	VaultsV2DepositVelocity               collections.Map[[]byte, vaultsv2.DepositVelocity]
@@ -190,8 +188,6 @@ func NewKeeper(
 		VaultsV2Params:                        collections.NewItem(builder, vaultsv2.ParamsKey, "vaults_v2_params", codec.CollValue[vaultsv2.Params](cdc)),
 		VaultsV2Config:                        collections.NewItem(builder, vaultsv2.VaultConfigurationKey, "vaults_v2_config", codec.CollValue[vaultsv2.VaultConfig](cdc)),
 		VaultsV2UserPositions:                 collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
-		VaultsV2UserShares:                    collections.NewMap(builder, vaultsv2.UserSharesPrefix, "vaults_v2_user_shares", collections.BytesKey, sdk.IntValue),
-		VaultsV2TotalShares:                   collections.NewItem(builder, vaultsv2.TotalSharesKey, "vaults_v2_total_shares", sdk.IntValue),
 		VaultsV2DepositLimits:                 collections.NewItem(builder, vaultsv2.DepositLimitsKey, "vaults_v2_deposit_limits", codec.CollValue[vaultsv2.DepositLimit](cdc)),
 		VaultsV2UserDepositHistory:            collections.NewMap(builder, vaultsv2.UserDepositHistoryPrefix, "vaults_v2_user_deposit_history", collections.PairKeyCodec(collections.BytesKey, collections.Int64Key), sdk.IntValue),
 		VaultsV2DepositVelocity:               collections.NewMap(builder, vaultsv2.DepositVelocityPrefix, "vaults_v2_deposit_velocity", collections.BytesKey, codec.CollValue[vaultsv2.DepositVelocity](cdc)),

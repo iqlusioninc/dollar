@@ -55,7 +55,8 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		return nil, fmt.Errorf("current NAV is not set")
 	}
 
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
+	// Get vault state to check if we have any positions
+	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -111,18 +112,18 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		}
 	}
 
-	// When there are no active shares, handle specially
-	if totalShares.IsZero() {
-		return k.accountingWithZeroShares(ctx, navInfo, cursor, maxPositions)
+	// When there are no active positions, handle specially
+	if vaultState.TotalPositions == 0 {
+		return k.accountingWithZeroPositions(ctx, navInfo, cursor, maxPositions)
 	}
 
 	// Perform cursor-based accounting
-	return k.accountingWithCursor(ctx, navInfo, totalShares, cursor, maxPositions)
+	return k.accountingWithCursor(ctx, navInfo, vaultState, cursor, maxPositions)
 }
 
-// accountingWithZeroShares handles the case where there are no active shares.
+// accountingWithZeroPositions handles the case where there are no active positions.
 // Writes zero yield to snapshots for all users.
-func (k *Keeper) accountingWithZeroShares(
+func (k *Keeper) accountingWithZeroPositions(
 	ctx context.Context,
 	navInfo vaultsv2.NAVInfo,
 	cursor vaultsv2.AccountingCursor,
@@ -219,76 +220,105 @@ func (k *Keeper) accountingWithZeroShares(
 func (k *Keeper) accountingWithCursor(
 	ctx context.Context,
 	navInfo vaultsv2.NAVInfo,
-	totalShares sdkmath.Int,
+	vaultState vaultsv2.VaultState,
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
 ) (*AccountingResult, error) {
-	navBig := navInfo.CurrentNav.BigInt()
-	totalSharesBig := totalShares.BigInt()
+	// For position-based accounting, we need to calculate the total yield to distribute
+	// Total yield = NAV - Total Deposits
+	totalYieldToDistribute := sdkmath.ZeroInt()
+	if navInfo.CurrentNav.GT(vaultState.TotalDeposits) {
+		totalYieldToDistribute = navInfo.CurrentNav.Sub(vaultState.TotalDeposits)
+	}
 
-	// Restore residual from cursor
+	// First pass: calculate total eligible deposits (positions with receive_yield = true)
+	// We need this to properly distribute yield proportionally
+	totalEligibleDeposits := sdkmath.ZeroInt()
+	err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
+		if position.ReceiveYield && position.DepositAmount.IsPositive() {
+			var addErr error
+			totalEligibleDeposits, addErr = totalEligibleDeposits.SafeAdd(position.DepositAmount)
+			if addErr != nil {
+				return true, addErr
+			}
+		}
+		return false, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to calculate eligible deposits: %w", err)
+	}
+
+	// If no eligible deposits, no yield to distribute
+	if totalEligibleDeposits.IsZero() {
+		return k.accountingWithZeroPositions(ctx, navInfo, cursor, maxPositions)
+	}
+
+	// Setup for proportional distribution with residual tracking
+	totalYieldBig := totalYieldToDistribute.BigInt()
+	totalEligibleBig := totalEligibleDeposits.BigInt()
 	residual := cursor.AccumulatedResidual.BigInt()
 
 	yieldThisBatch := sdkmath.ZeroInt()
 	headerInfo := k.header.GetHeaderInfo(ctx)
 
-	// Use paginated iterator
+	// Use paginated iterator to process positions
 	lastProcessed, count, err := k.IterateVaultsV2UserPositionsPaginated(
 		ctx,
 		cursor.LastProcessedUser,
 		maxPositions,
 		func(address types.AccAddress, position vaultsv2.UserPosition) error {
-			shares, err := k.GetVaultsV2UserShares(ctx, address)
-			if err != nil {
-				return err
-			}
-
 			var depositAmount, accruedYield sdkmath.Int
 
-			if !shares.IsPositive() {
-				// User has no shares, set to pending withdrawal
-				depositAmount = position.AmountPendingWithdrawal
-				accruedYield = sdkmath.ZeroInt()
-			} else {
-				// Calculate proportional value
-				numerator := new(big.Int).Mul(navBig, shares.BigInt())
+			// Start with the position's deposit amount
+			depositAmount = position.DepositAmount
+
+			// Calculate yield for positions that receive yield
+			if position.ReceiveYield && position.DepositAmount.IsPositive() && totalYieldToDistribute.IsPositive() {
+				// Calculate proportional yield: (position_deposit / total_eligible) * total_yield
+				numerator := new(big.Int).Mul(totalYieldBig, position.DepositAmount.BigInt())
 				quotient := new(big.Int)
 				remainder := new(big.Int)
-				quotient.QuoRem(numerator, totalSharesBig, remainder)
+				quotient.QuoRem(numerator, totalEligibleBig, remainder)
 
 				// Accumulate remainder for fair distribution
 				residual.Add(residual, remainder)
-				if residual.Cmp(totalSharesBig) >= 0 {
-					extra := new(big.Int).Div(new(big.Int).Set(residual), totalSharesBig)
+				if residual.Cmp(totalEligibleBig) >= 0 {
+					extra := new(big.Int).Div(new(big.Int).Set(residual), totalEligibleBig)
 					if extra.Sign() > 0 {
 						quotient.Add(quotient, extra)
-						residual.Sub(residual, new(big.Int).Mul(totalSharesBig, extra))
+						residual.Sub(residual, new(big.Int).Mul(totalEligibleBig, extra))
 					}
 				}
 
-				value := sdkmath.NewIntFromBigInt(quotient)
-				accruedYield, err = value.SafeSub(shares)
-				if err != nil {
-					return err
+				newYield := sdkmath.NewIntFromBigInt(quotient)
+				
+				// Add to existing accrued yield
+				accruedYield = position.AccruedYield.Add(newYield)
+				
+				// Track yield distributed in this batch
+				var addErr error
+				yieldThisBatch, addErr = yieldThisBatch.SafeAdd(newYield)
+				if addErr != nil {
+					return addErr
 				}
+			} else {
+				// Position doesn't receive yield, keep existing accrued yield
+				accruedYield = position.AccruedYield
+			}
 
-				depositAmount = shares
-				if position.AmountPendingWithdrawal.IsPositive() {
-					if depositAmount, err = depositAmount.SafeAdd(position.AmountPendingWithdrawal); err != nil {
-						return err
-					}
-				}
-
-				// Track yield for this batch
-				yieldThisBatch, err = yieldThisBatch.SafeAdd(accruedYield)
-				if err != nil {
-					return err
+			// Add pending withdrawal to deposit amount for snapshot
+			if position.AmountPendingWithdrawal.IsPositive() {
+				var addErr error
+				depositAmount, addErr = depositAmount.SafeAdd(position.AmountPendingWithdrawal)
+				if addErr != nil {
+					return addErr
 				}
 			}
 
 			// Write to snapshot instead of directly to position
 			snapshot := vaultsv2.AccountingSnapshot{
 				User:          address.String(),
+				PositionId:    position.PositionId,
 				DepositAmount: depositAmount,
 				AccruedYield:  accruedYield,
 				AccountingNav: navInfo.CurrentNav,

@@ -612,51 +612,6 @@ func (k *Keeper) SubtractAmountFromVaultsV2Totals(ctx context.Context, deposits,
 	return k.SetVaultsV2VaultState(ctx, state)
 }
 
-// GetVaultsV2UserShares returns the share balance for a user. Missing entries
-// are treated as zero without error.
-func (k *Keeper) GetVaultsV2UserShares(ctx context.Context, address sdk.AccAddress) (math.Int, error) {
-	shares, err := k.VaultsV2UserShares.Get(ctx, address)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return shares, nil
-}
-
-// SetVaultsV2UserShares updates the share balance for a user, deleting the
-// entry when the balance reaches zero to keep the store compact.
-func (k *Keeper) SetVaultsV2UserShares(ctx context.Context, address sdk.AccAddress, shares math.Int) error {
-	if !shares.IsPositive() {
-		if err := k.VaultsV2UserShares.Remove(ctx, address); err != nil && !errors.Is(err, collections.ErrNotFound) {
-			return err
-		}
-		return nil
-	}
-
-	return k.VaultsV2UserShares.Set(ctx, address, shares)
-}
-
-// GetVaultsV2TotalShares returns the aggregate share supply recorded on-chain.
-func (k *Keeper) GetVaultsV2TotalShares(ctx context.Context) (math.Int, error) {
-	total, err := k.VaultsV2TotalShares.Get(ctx)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return total, nil
-}
-
-// SetVaultsV2TotalShares overwrites the aggregate share supply in storage.
-func (k *Keeper) SetVaultsV2TotalShares(ctx context.Context, shares math.Int) error {
-	return k.VaultsV2TotalShares.Set(ctx, shares)
-}
-
 // GetVaultsV2PendingDeploymentFunds returns the amount of deposits awaiting
 // deployment to remote positions.
 func (k *Keeper) GetVaultsV2PendingDeploymentFunds(ctx context.Context) (math.Int, error) {

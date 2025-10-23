@@ -113,17 +113,7 @@ func TestDepositBasic(t *testing.T) {
 	assert.Equal(t, math.ZeroInt(), position.AccruedYield)
 	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
 
-	// ASSERT: User shares are created
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
-
-	// ASSERT: Total shares increased
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), totalShares)
-
-	// ASSERT: Total users count increased
+	// ASSERT: Total users count increased and state updated correctly
 	state, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, uint64(1), state.TotalUsers)
@@ -231,10 +221,11 @@ func TestDepositMultipleDeposits(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
 
-	// ASSERT: User shares accumulated correctly
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
+	// ASSERT: User has position with correct deposit amount
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
 
 	// ASSERT: Total users count remains 1
 	state, err := k.GetVaultsV2VaultState(ctx)
@@ -326,15 +317,16 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
 	assert.Equal(t, int32(1), position.ActiveWithdrawalRequests)
 
-	// ASSERT: User shares reduced
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
+	// ASSERT: Position shows correct pending withdrawal
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
 
-	// ASSERT: Total shares reduced
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
+	// ASSERT: Vault state updated
+	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), totalShares)
+	assert.Equal(t, math.NewInt(50*ONE_V2), vaultState.TotalAmountPendingWithdrawal)
 
 	// ASSERT: Withdrawal request created
 	requestId, _ := strconv.ParseUint(resp.RequestId, 10, 64)
@@ -442,10 +434,11 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
 	assert.Equal(t, int32(2), position.ActiveWithdrawalRequests)
 
-	// ASSERT: User shares reduced correctly
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
+	// ASSERT: Position has correct pending withdrawal
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), shares)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
 }
 
 func TestProcessWithdrawalQueueBasic(t *testing.T) {
@@ -792,10 +785,11 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
 	assert.Equal(t, int32(0), position.ActiveWithdrawalRequests)
 
-	// ASSERT: Shares reflect remaining deposit
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
+	// ASSERT: Position reflects remaining deposit
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(40*ONE_V2), shares)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(40*ONE_V2), position.DepositAmount)
 }
 
 func TestMultiUserDepositWithdrawal(t *testing.T) {
@@ -827,10 +821,10 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, uint64(2), state.TotalUsers)
 
-	// ASSERT: Total shares is 250
-	totalShares, err := k.GetVaultsV2TotalShares(ctx)
+	// ASSERT: Total deposits is 250
+	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(250*ONE_V2), totalShares)
+	assert.Equal(t, math.NewInt(250*ONE_V2), vaultState.TotalDeposits)
 
 	// ACT: Bob requests withdrawal of 50 USDN
 	bobResp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
@@ -871,10 +865,10 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
 	assert.Equal(t, math.NewInt(100*ONE_V2), bank.Balances[alice.Address].AmountOf("uusdn"))
 
-	// ASSERT: Total shares reduced
-	totalShares, err = k.GetVaultsV2TotalShares(ctx)
+	// ASSERT: Total deposits reduced
+	vaultState, err = k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(100*ONE_V2), totalShares) // 50 from Bob, 50 from Alice
+	assert.Equal(t, math.NewInt(100*ONE_V2), vaultState.TotalDeposits) // 50 from Bob, 50 from Alice
 
 	// ASSERT: Total users still 2 (both have remaining positions)
 	state, err = k.GetVaultsV2VaultState(ctx)
@@ -1010,9 +1004,10 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	shares, err := k.GetVaultsV2UserShares(ctx, bob.Bytes)
+	// Check total deposits increased
+	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(120*ONE_V2), shares)
+	assert.Equal(t, math.NewInt(120*ONE_V2), vaultState.TotalDeposits)
 }
 
 func TestSetYieldPreferenceUpdatesPosition(t *testing.T) {

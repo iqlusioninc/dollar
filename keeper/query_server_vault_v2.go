@@ -188,12 +188,6 @@ func (q queryServerV2) UserPosition(ctx context.Context, req *vaultsv2.QueryUser
 		}, nil
 	}
 
-	// Get user shares
-	_, err = q.GetVaultsV2UserShares(ctx, userAddr)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user shares")
-	}
-
 	// Get vault state to calculate current value
 	_, err = q.GetVaultsV2VaultState(ctx)
 	if err != nil {
@@ -592,24 +586,14 @@ func (q queryServerV2) UserPositions(ctx context.Context, req *vaultsv2.QueryUse
 	var positions []vaultsv2.UserPositionWithVault
 
 	if found && position.DepositAmount.IsPositive() {
-		// Get user shares to calculate current value
-		userShares, err := q.GetVaultsV2UserShares(ctx, userAddr)
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to fetch user shares")
-		}
-
 		// Get vault state
 		state, err := q.GetVaultsV2VaultState(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to fetch vault state")
 		}
 
-		// Calculate current value
-		currentValue := sdkmath.ZeroInt()
-		if state.TotalDeposits.IsPositive() && userShares.IsPositive() {
-			shareRatio := userShares.ToLegacyDec().Quo(state.TotalDeposits.ToLegacyDec())
-			currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
-		}
+		// Calculate current value (deposits + yield)
+		currentValue := position.DepositAmount.Add(position.AccruedYield)
 
 		positions = append(positions, vaultsv2.UserPositionWithVault{
 			Position:     position,
@@ -1017,24 +1001,14 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 		}, nil
 	}
 
-	// Get user shares
-	userShares, err := q.GetVaultsV2UserShares(ctx, userAddr)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user shares")
-	}
-
 	// Get vault state
 	state, err := q.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	// Calculate current value
-	currentValue := sdkmath.ZeroInt()
-	if state.TotalDeposits.IsPositive() && userShares.IsPositive() {
-		shareRatio := userShares.ToLegacyDec().Quo(state.TotalDeposits.ToLegacyDec())
-		currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
-	}
+	// Calculate current value (deposits + yield)
+	currentValue := position.DepositAmount.Add(position.AccruedYield)
 
 	// Calculate accrued yield and unrealized gain
 	depositAmount := position.DepositAmount
@@ -1250,24 +1224,14 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 		return nil, errors.Wrap(types.ErrInvalidRequest, "user has no position")
 	}
 
-	// Get user shares
-	userShares, err := q.GetVaultsV2UserShares(ctx, userAddr)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch user shares")
-	}
-
 	// Get vault state
 	state, err := q.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	// Calculate current value
-	currentValue := sdkmath.ZeroInt()
-	if state.TotalDeposits.IsPositive() && userShares.IsPositive() {
-		shareRatio := userShares.ToLegacyDec().Quo(state.TotalDeposits.ToLegacyDec())
-		currentValue = shareRatio.MulInt(state.TotalNav).TruncateInt()
-	}
+	// Calculate current value (deposits + yield)
+	currentValue := position.DepositAmount.Add(position.AccruedYield)
 
 	// Split into principal and yield
 	principalPortion := position.DepositAmount
