@@ -11,7 +11,7 @@ import "noble/dollar/vaults/v2/cross_chain.proto";
 import "noble/dollar/vaults/v2/genesis.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
-option go_package = "dollar.noble.xyz/v2/types/vaults/v2";
+option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
 // Query defines the gRPC querier service for V2 vaults
 service Query {
@@ -29,12 +29,12 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/vaults";
   }
 
-  // UserPosition returns a user's position in a specific vault
+  // UserPosition returns a specific position for a user
   rpc UserPosition(QueryUserPositionRequest) returns (QueryUserPositionResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/position/{address}";
+    option (google.api.http).get = "/noble/dollar/vaults/v2/position/{address}/{position_id}";
   }
 
-  // UserPositions returns all of a user's positions across vault types
+  // UserPositions returns all of a user's positions
   rpc UserPositions(QueryUserPositionsRequest) returns (QueryUserPositionsResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/positions/{address}";
   }
@@ -180,9 +180,10 @@ message QueryVaultResponse {
 
 // QueryUserPositionRequest requests a user's position in the vault
 
-// QueryUserPositionRequest requests a user's position in a specific vault
+// QueryUserPositionRequest requests a specific position for a user
 message QueryUserPositionRequest {
   string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 position_id = 2;
 }
 
 // QueryUserPositionResponse returns a user's position
@@ -204,10 +205,11 @@ message QueryUserPositionsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// UserPositionWithVault includes the vault type with the position
+// UserPositionWithVault includes the position ID with the position
 message UserPositionWithVault {
-  UserPosition position = 1 [(gogoproto.nullable) = false];
-  string current_value = 2;
+  uint64 position_id = 1;
+  UserPosition position = 2 [(gogoproto.nullable) = false];
+  string current_value = 3;
 }
 
 // QueryYieldInfoRequest requests the yield information of the vault
@@ -408,7 +410,8 @@ message WithdrawalQueueItem {
     (gogoproto.stdtime) = true
   ];
   string status = 7; // PENDING, PROCESSING, CLAIMABLE, CLAIMED
-  uint64 position = 8; // queue position (optional)
+  uint64 queue_position = 8; // position in withdrawal queue
+  uint64 position_id = 9; // user's position ID this withdrawal is from
 }
 
 message QueryWithdrawalQueueResponse {
@@ -445,6 +448,7 @@ message WithdrawalStatusItem {
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
+  uint64 position_id = 10; // user's position ID
 }
 
 message QueryUserWithdrawalsResponse {
@@ -458,6 +462,8 @@ message QueryUserWithdrawalsResponse {
 // User balance
 message QueryUserBalanceRequest {
   string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // Optional: if not provided, returns aggregate across all positions
+  uint64 position_id = 2;
 }
 
 message QueryUserBalanceResponse {
@@ -466,6 +472,8 @@ message QueryUserBalanceResponse {
   string total_value = 3; // deposit + yield
   string unrealized_gain = 4;
   string locked_amount = 5; // amount in withdrawal queue
+  // If querying aggregate, this shows the position count
+  uint64 position_count = 6;
 }
 
 // Deposit velocity
@@ -508,6 +516,7 @@ message QuerySimulateDepositResponse {
 message QuerySimulateWithdrawalRequest {
   string amount = 1; // amount to withdraw
   string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 position_id = 3; // position to withdraw from
 }
 
 message QuerySimulateWithdrawalResponse {
@@ -526,7 +535,7 @@ message QueryInflightFundsRequest {}
 message InflightFundView {
   uint32 route_id = 1;
   string transaction_id = 2;
-  string type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
+  string operation_type = 3; // DEPOSIT_TO_POSITION, WITHDRAWAL_FROM_POSITION, etc.
   string amount = 4;
   string current_value = 5;
   string source_chain = 6;
@@ -561,7 +570,7 @@ message StaleInflightFundView {
   uint32 route_id = 1;
   string transaction_id = 2;
   string amount = 3;
-  string type = 4;
+  string operation_type = 4;
   string source_chain = 5;
   string destination_chain = 6;
   google.protobuf.Timestamp initiated_at = 7 [
