@@ -31,6 +31,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
+	"dollar.noble.xyz/v3/utils"
 )
 
 // TestAccountingSnapshotSinglePosition tests accounting snapshots for a single position per user
@@ -258,7 +259,11 @@ func TestAccountingSnapshotIteration(t *testing.T) {
 	// Create snapshots for multiple users and positions
 	expectedSnapshots := []vaultsv2.AccountingSnapshot{}
 
-	users := []string{"user1", "user2", "user3"}
+	// Create proper test accounts
+	user1 := utils.TestAccount()
+	user2 := utils.TestAccount() 
+	user3 := utils.TestAccount()
+	users := []string{user1.Address, user2.Address, user3.Address}
 	for _, user := range users {
 		for posID := uint64(1); posID <= 3; posID++ {
 			snapshot := vaultsv2.AccountingSnapshot{
@@ -306,7 +311,11 @@ func TestAccountingSnapshotClearAll(t *testing.T) {
 	keeper, _, _, ctx, _ := setupV2Test(t)
 
 	// Create multiple snapshots
-	users := []string{"user1", "user2", "user3"}
+	// Create proper test accounts
+	user1 := utils.TestAccount()
+	user2 := utils.TestAccount() 
+	user3 := utils.TestAccount()
+	users := []string{user1.Address, user2.Address, user3.Address}
 	for _, user := range users {
 		for posID := uint64(1); posID <= 2; posID++ {
 			snapshot := vaultsv2.AccountingSnapshot{

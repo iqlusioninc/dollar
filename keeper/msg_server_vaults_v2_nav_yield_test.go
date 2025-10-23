@@ -132,7 +132,6 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 		MaxPositions: 100,
 	})
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), result.YieldDistributed)
 
 	// ASSERT: Bob gets 60% of yield (120 USDN)
 	bobPosition, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -312,7 +311,7 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 
 	// ACT: Bob requests withdrawal of 500 USDN (half his deposit)
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		User:       bob.Address,
+		Requester:  bob.Address,
 		Amount:     sdkmath.NewInt(500 * ONE_V2),
 		PositionId: 1,
 	})

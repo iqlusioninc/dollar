@@ -37,10 +37,8 @@ import (
 func TestAccountingMultiPositionFlow(t *testing.T) {
 	keeper, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
-	// Create multiple users with multiple positions each
+	// Create multiple users with multiple positions each  
 	alice := utils.TestAccount()
-	alice.Address = "cosmos1alice_____________"
-	alice.Bytes = sdk.AccAddress("alice_______________")
 
 	// Mint coins for both users
 	require.NoError(t, keeper.Mint(ctx, bob.Bytes, math.NewInt(5000*ONE_V2), nil))
