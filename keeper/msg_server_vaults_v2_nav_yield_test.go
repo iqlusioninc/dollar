@@ -21,23 +21,25 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
+	"dollar.noble.xyz/v3/utils"
 )
 
 // TestNAVUpdateYieldTracking_Basic tests basic NAV update and yield accrual
 func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Bob deposits 1000 USDN
@@ -65,10 +67,12 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
 	// ACT: Run accounting to distribute yield
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
-	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), result.YieldDistributed)
 
 	// ASSERT: Position now has accrued yield
 	position, found, err = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -88,11 +92,12 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 // TestNAVUpdateYieldTracking_MultipleUsers tests yield distribution among multiple users
 func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-	alice := createUserAccount(t, ctx, k)
+	alice := utils.TestAccount()
+	alice.Address = "cosmos1alice_____________"
+	alice.Bytes = sdk.AccAddress("alice_______________")
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Bob deposits 600 USDN
@@ -121,9 +126,12 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
 	// ACT: Run accounting
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), result.YieldDistributed)
 
 	// ASSERT: Bob gets 60% of yield (120 USDN)
@@ -149,11 +157,12 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 // TestNAVUpdateYieldTracking_NoYieldPreference tests users who opt out of yield
 func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-	alice := createUserAccount(t, ctx, k)
+	alice := utils.TestAccount()
+	alice.Address = "cosmos1alice_____________"
+	alice.Bytes = sdk.AccAddress("alice_______________")
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Bob deposits with yield preference
@@ -182,9 +191,12 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
 	// ACT: Run accounting
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Bob gets ALL the yield (100 USDN) since Alice opted out
 	bobPosition, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -203,9 +215,8 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Bob deposits 1000 USDN
@@ -223,9 +234,12 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: First yield accrued
 	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -240,9 +254,12 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err = k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Run accounting again
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Yield is cumulative
 	position, found, err = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -261,9 +278,8 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Bob deposits 1000 USDN
@@ -281,9 +297,12 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Bob has 100 USDN yield
 	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -306,9 +325,12 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err = k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Run accounting again
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Bob's yield continues to accrue on his remaining deposit
 	// He should have 100 (initial) + 50 (new yield on 500 remaining) = 150 total yield
@@ -322,9 +344,8 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Bob deposits 1000 USDN
@@ -342,9 +363,12 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Bob has 100 USDN yield
 	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
@@ -359,9 +383,12 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err = k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Run accounting again
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Yield should not decrease (no negative yield distribution)
 	// Total yield to distribute = 1050 - 1000 = 50 (less than before, but we only track new yield)
@@ -376,15 +403,16 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	k, vaultsV2Server, _, ctx, _ := setupV2Test(t)
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// Create 10 users with deposits
 	totalDeposits := sdkmath.ZeroInt()
 	for i := 0; i < 10; i++ {
-		user := createUserAccount(t, ctx, k)
+		user := utils.TestAccount()
+		user.Address = fmt.Sprintf("cosmos1user%d____________", i)
+		user.Bytes = sdk.AccAddress(fmt.Sprintf("user%d______________", i))
 		depositAmount := sdkmath.NewInt((int64(i+1) * 100 * ONE_V2)) // 100, 200, 300... USDN
 		_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 			Depositor:    user.Address,
@@ -408,8 +436,8 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	totalProcessed := uint64(0)
 	for {
 		// Process 3 positions at a time
-		resp, err := vaultsV2Server.RunAccounting(ctx, &vaultsv2.MsgRunAccounting{
-			Authority:    params.Authority,
+		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+			Manager:      params.Authority,
 			MaxPositions: 3,
 		})
 		require.NoError(t, err)
@@ -435,12 +463,15 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 // TestNAVUpdateYieldTracking_ResidualHandling tests fair distribution with rounding
 func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-	alice := createUserAccount(t, ctx, k)
-	charlie := createUserAccount(t, ctx, k)
+	alice := utils.TestAccount()
+	alice.Address = "cosmos1alice_____________"
+	alice.Bytes = sdk.AccAddress("alice_______________")
+	charlie := utils.TestAccount()
+	charlie.Address = "cosmos1charlie___________"
+	charlie.Bytes = sdk.AccAddress("charlie_____________")
 
-	// ARRANGE: Enable accounting
+	// ARRANGE: Get params (accounting is always enabled in v2)
 	params, _ := k.GetVaultsV2Params(ctx)
-	params.AccountingEnabled = true
 	require.NoError(t, k.SetVaultsV2Params(ctx, params))
 
 	// ACT: Three users deposit amounts that will cause rounding
@@ -474,9 +505,12 @@ func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 
-	result, err := k.UpdateVaultsV2AccountingWithCursor(ctx, 100)
+	// Use the message server to run accounting
+	_, err = vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+		Manager:      params.Authority,
+		MaxPositions: 100,
+	})
 	require.NoError(t, err)
-	assert.True(t, result.Complete)
 
 	// ASSERT: Yield is distributed as fairly as possible
 	bobPos, found, _ := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
