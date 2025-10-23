@@ -579,3 +579,45 @@ message EventRouteCapacityExceeded {
     (gogoproto.stdtime) = true
   ];
 }
+
+// EventInflightAmountMismatch is emitted when received amount differs from expected
+message EventInflightAmountMismatch {
+  // Transaction ID
+  string transaction_id = 1;
+
+  // Route ID
+  uint32 route_id = 2;
+
+  // Expected amount
+  string expected_amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Received amount
+  string received_amount = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Absolute difference
+  string difference = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Block height
+  int64 block_height = 6;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}

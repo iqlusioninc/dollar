@@ -24039,6 +24039,2968 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) ProtoMethods() *protoi
 	}
 }
 
+var (
+	md_MsgInitiateRemotePositionRedemption                     protoreflect.MessageDescriptor
+	fd_MsgInitiateRemotePositionRedemption_strategist          protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemption_position_id         protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemption_amount              protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemption_route_id            protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemption_expected_completion protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemption_transaction_id      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_tx_proto_init()
+	md_MsgInitiateRemotePositionRedemption = File_noble_dollar_vaults_v2_tx_proto.Messages().ByName("MsgInitiateRemotePositionRedemption")
+	fd_MsgInitiateRemotePositionRedemption_strategist = md_MsgInitiateRemotePositionRedemption.Fields().ByName("strategist")
+	fd_MsgInitiateRemotePositionRedemption_position_id = md_MsgInitiateRemotePositionRedemption.Fields().ByName("position_id")
+	fd_MsgInitiateRemotePositionRedemption_amount = md_MsgInitiateRemotePositionRedemption.Fields().ByName("amount")
+	fd_MsgInitiateRemotePositionRedemption_route_id = md_MsgInitiateRemotePositionRedemption.Fields().ByName("route_id")
+	fd_MsgInitiateRemotePositionRedemption_expected_completion = md_MsgInitiateRemotePositionRedemption.Fields().ByName("expected_completion")
+	fd_MsgInitiateRemotePositionRedemption_transaction_id = md_MsgInitiateRemotePositionRedemption.Fields().ByName("transaction_id")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgInitiateRemotePositionRedemption)(nil)
+
+type fastReflection_MsgInitiateRemotePositionRedemption MsgInitiateRemotePositionRedemption
+
+func (x *MsgInitiateRemotePositionRedemption) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgInitiateRemotePositionRedemption)(x)
+}
+
+func (x *MsgInitiateRemotePositionRedemption) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[43]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgInitiateRemotePositionRedemption_messageType fastReflection_MsgInitiateRemotePositionRedemption_messageType
+var _ protoreflect.MessageType = fastReflection_MsgInitiateRemotePositionRedemption_messageType{}
+
+type fastReflection_MsgInitiateRemotePositionRedemption_messageType struct{}
+
+func (x fastReflection_MsgInitiateRemotePositionRedemption_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgInitiateRemotePositionRedemption)(nil)
+}
+func (x fastReflection_MsgInitiateRemotePositionRedemption_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgInitiateRemotePositionRedemption)
+}
+func (x fastReflection_MsgInitiateRemotePositionRedemption_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgInitiateRemotePositionRedemption
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgInitiateRemotePositionRedemption
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Type() protoreflect.MessageType {
+	return _fastReflection_MsgInitiateRemotePositionRedemption_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) New() protoreflect.Message {
+	return new(fastReflection_MsgInitiateRemotePositionRedemption)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Interface() protoreflect.ProtoMessage {
+	return (*MsgInitiateRemotePositionRedemption)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Strategist != "" {
+		value := protoreflect.ValueOfString(x.Strategist)
+		if !f(fd_MsgInitiateRemotePositionRedemption_strategist, value) {
+			return
+		}
+	}
+	if x.PositionId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PositionId)
+		if !f(fd_MsgInitiateRemotePositionRedemption_position_id, value) {
+			return
+		}
+	}
+	if x.Amount != "" {
+		value := protoreflect.ValueOfString(x.Amount)
+		if !f(fd_MsgInitiateRemotePositionRedemption_amount, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_MsgInitiateRemotePositionRedemption_route_id, value) {
+			return
+		}
+	}
+	if x.ExpectedCompletion != nil {
+		value := protoreflect.ValueOfMessage(x.ExpectedCompletion.ProtoReflect())
+		if !f(fd_MsgInitiateRemotePositionRedemption_expected_completion, value) {
+			return
+		}
+	}
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_MsgInitiateRemotePositionRedemption_transaction_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.strategist":
+		return x.Strategist != ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.position_id":
+		return x.PositionId != uint64(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.amount":
+		return x.Amount != ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion":
+		return x.ExpectedCompletion != nil
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.transaction_id":
+		return x.TransactionId != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.strategist":
+		x.Strategist = ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.position_id":
+		x.PositionId = uint64(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.amount":
+		x.Amount = ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion":
+		x.ExpectedCompletion = nil
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.transaction_id":
+		x.TransactionId = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.strategist":
+		value := x.Strategist
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.position_id":
+		value := x.PositionId
+		return protoreflect.ValueOfUint64(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.amount":
+		value := x.Amount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion":
+		value := x.ExpectedCompletion
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.strategist":
+		x.Strategist = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.position_id":
+		x.PositionId = value.Uint()
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.amount":
+		x.Amount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion":
+		x.ExpectedCompletion = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion":
+		if x.ExpectedCompletion == nil {
+			x.ExpectedCompletion = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.ExpectedCompletion.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.strategist":
+		panic(fmt.Errorf("field strategist of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.position_id":
+		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.amount":
+		panic(fmt.Errorf("field amount of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.strategist":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.position_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.transaction_id":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgInitiateRemotePositionRedemption) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgInitiateRemotePositionRedemption)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Strategist)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.PositionId != 0 {
+			n += 1 + runtime.Sov(uint64(x.PositionId))
+		}
+		l = len(x.Amount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		if x.ExpectedCompletion != nil {
+			l = options.Size(x.ExpectedCompletion)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgInitiateRemotePositionRedemption)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.ExpectedCompletion != nil {
+			encoded, err := options.Marshal(x.ExpectedCompletion)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.Amount) > 0 {
+			i -= len(x.Amount)
+			copy(dAtA[i:], x.Amount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.PositionId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PositionId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.Strategist) > 0 {
+			i -= len(x.Strategist)
+			copy(dAtA[i:], x.Strategist)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Strategist)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgInitiateRemotePositionRedemption)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgInitiateRemotePositionRedemption: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgInitiateRemotePositionRedemption: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Strategist", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Strategist = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
+				}
+				x.PositionId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PositionId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Amount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExpectedCompletion", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ExpectedCompletion == nil {
+					x.ExpectedCompletion = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ExpectedCompletion); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgInitiateRemotePositionRedemptionResponse                     protoreflect.MessageDescriptor
+	fd_MsgInitiateRemotePositionRedemptionResponse_transaction_id      protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemptionResponse_route_id            protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemptionResponse_amount_inflight     protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemptionResponse_position_id         protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemptionResponse_expected_completion protoreflect.FieldDescriptor
+	fd_MsgInitiateRemotePositionRedemptionResponse_provider_tracking   protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_tx_proto_init()
+	md_MsgInitiateRemotePositionRedemptionResponse = File_noble_dollar_vaults_v2_tx_proto.Messages().ByName("MsgInitiateRemotePositionRedemptionResponse")
+	fd_MsgInitiateRemotePositionRedemptionResponse_transaction_id = md_MsgInitiateRemotePositionRedemptionResponse.Fields().ByName("transaction_id")
+	fd_MsgInitiateRemotePositionRedemptionResponse_route_id = md_MsgInitiateRemotePositionRedemptionResponse.Fields().ByName("route_id")
+	fd_MsgInitiateRemotePositionRedemptionResponse_amount_inflight = md_MsgInitiateRemotePositionRedemptionResponse.Fields().ByName("amount_inflight")
+	fd_MsgInitiateRemotePositionRedemptionResponse_position_id = md_MsgInitiateRemotePositionRedemptionResponse.Fields().ByName("position_id")
+	fd_MsgInitiateRemotePositionRedemptionResponse_expected_completion = md_MsgInitiateRemotePositionRedemptionResponse.Fields().ByName("expected_completion")
+	fd_MsgInitiateRemotePositionRedemptionResponse_provider_tracking = md_MsgInitiateRemotePositionRedemptionResponse.Fields().ByName("provider_tracking")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgInitiateRemotePositionRedemptionResponse)(nil)
+
+type fastReflection_MsgInitiateRemotePositionRedemptionResponse MsgInitiateRemotePositionRedemptionResponse
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgInitiateRemotePositionRedemptionResponse)(x)
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[44]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType{}
+
+type fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType struct{}
+
+func (x fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgInitiateRemotePositionRedemptionResponse)(nil)
+}
+func (x fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgInitiateRemotePositionRedemptionResponse)
+}
+func (x fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgInitiateRemotePositionRedemptionResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgInitiateRemotePositionRedemptionResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgInitiateRemotePositionRedemptionResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgInitiateRemotePositionRedemptionResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgInitiateRemotePositionRedemptionResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_MsgInitiateRemotePositionRedemptionResponse_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_MsgInitiateRemotePositionRedemptionResponse_route_id, value) {
+			return
+		}
+	}
+	if x.AmountInflight != "" {
+		value := protoreflect.ValueOfString(x.AmountInflight)
+		if !f(fd_MsgInitiateRemotePositionRedemptionResponse_amount_inflight, value) {
+			return
+		}
+	}
+	if x.PositionId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PositionId)
+		if !f(fd_MsgInitiateRemotePositionRedemptionResponse_position_id, value) {
+			return
+		}
+	}
+	if x.ExpectedCompletion != nil {
+		value := protoreflect.ValueOfMessage(x.ExpectedCompletion.ProtoReflect())
+		if !f(fd_MsgInitiateRemotePositionRedemptionResponse_expected_completion, value) {
+			return
+		}
+	}
+	if x.ProviderTracking != nil {
+		value := protoreflect.ValueOfMessage(x.ProviderTracking.ProtoReflect())
+		if !f(fd_MsgInitiateRemotePositionRedemptionResponse_provider_tracking, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.amount_inflight":
+		return x.AmountInflight != ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.position_id":
+		return x.PositionId != uint64(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion":
+		return x.ExpectedCompletion != nil
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking":
+		return x.ProviderTracking != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.amount_inflight":
+		x.AmountInflight = ""
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.position_id":
+		x.PositionId = uint64(0)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion":
+		x.ExpectedCompletion = nil
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking":
+		x.ProviderTracking = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.amount_inflight":
+		value := x.AmountInflight
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.position_id":
+		value := x.PositionId
+		return protoreflect.ValueOfUint64(value)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion":
+		value := x.ExpectedCompletion
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking":
+		value := x.ProviderTracking
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.amount_inflight":
+		x.AmountInflight = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.position_id":
+		x.PositionId = value.Uint()
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion":
+		x.ExpectedCompletion = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking":
+		x.ProviderTracking = value.Message().Interface().(*ProviderTrackingInfo)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion":
+		if x.ExpectedCompletion == nil {
+			x.ExpectedCompletion = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.ExpectedCompletion.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking":
+		if x.ProviderTracking == nil {
+			x.ProviderTracking = new(ProviderTrackingInfo)
+		}
+		return protoreflect.ValueOfMessage(x.ProviderTracking.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.amount_inflight":
+		panic(fmt.Errorf("field amount_inflight of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.position_id":
+		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.amount_inflight":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.position_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking":
+		m := new(ProviderTrackingInfo)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgInitiateRemotePositionRedemptionResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgInitiateRemotePositionRedemptionResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.AmountInflight)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.PositionId != 0 {
+			n += 1 + runtime.Sov(uint64(x.PositionId))
+		}
+		if x.ExpectedCompletion != nil {
+			l = options.Size(x.ExpectedCompletion)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.ProviderTracking != nil {
+			l = options.Size(x.ProviderTracking)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgInitiateRemotePositionRedemptionResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ProviderTracking != nil {
+			encoded, err := options.Marshal(x.ProviderTracking)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.ExpectedCompletion != nil {
+			encoded, err := options.Marshal(x.ExpectedCompletion)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if x.PositionId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PositionId))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.AmountInflight) > 0 {
+			i -= len(x.AmountInflight)
+			copy(dAtA[i:], x.AmountInflight)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AmountInflight)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgInitiateRemotePositionRedemptionResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgInitiateRemotePositionRedemptionResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgInitiateRemotePositionRedemptionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountInflight", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AmountInflight = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
+				}
+				x.PositionId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PositionId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExpectedCompletion", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ExpectedCompletion == nil {
+					x.ExpectedCompletion = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ExpectedCompletion); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProviderTracking", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ProviderTracking == nil {
+					x.ProviderTracking = &ProviderTrackingInfo{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ProviderTracking); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgProcessIncomingWarpFunds                      protoreflect.MessageDescriptor
+	fd_MsgProcessIncomingWarpFunds_processor            protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFunds_transaction_id       protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFunds_amount_received      protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFunds_route_id             protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFunds_hyperlane_message_id protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFunds_origin_domain        protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFunds_received_at          protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_tx_proto_init()
+	md_MsgProcessIncomingWarpFunds = File_noble_dollar_vaults_v2_tx_proto.Messages().ByName("MsgProcessIncomingWarpFunds")
+	fd_MsgProcessIncomingWarpFunds_processor = md_MsgProcessIncomingWarpFunds.Fields().ByName("processor")
+	fd_MsgProcessIncomingWarpFunds_transaction_id = md_MsgProcessIncomingWarpFunds.Fields().ByName("transaction_id")
+	fd_MsgProcessIncomingWarpFunds_amount_received = md_MsgProcessIncomingWarpFunds.Fields().ByName("amount_received")
+	fd_MsgProcessIncomingWarpFunds_route_id = md_MsgProcessIncomingWarpFunds.Fields().ByName("route_id")
+	fd_MsgProcessIncomingWarpFunds_hyperlane_message_id = md_MsgProcessIncomingWarpFunds.Fields().ByName("hyperlane_message_id")
+	fd_MsgProcessIncomingWarpFunds_origin_domain = md_MsgProcessIncomingWarpFunds.Fields().ByName("origin_domain")
+	fd_MsgProcessIncomingWarpFunds_received_at = md_MsgProcessIncomingWarpFunds.Fields().ByName("received_at")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgProcessIncomingWarpFunds)(nil)
+
+type fastReflection_MsgProcessIncomingWarpFunds MsgProcessIncomingWarpFunds
+
+func (x *MsgProcessIncomingWarpFunds) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgProcessIncomingWarpFunds)(x)
+}
+
+func (x *MsgProcessIncomingWarpFunds) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[45]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgProcessIncomingWarpFunds_messageType fastReflection_MsgProcessIncomingWarpFunds_messageType
+var _ protoreflect.MessageType = fastReflection_MsgProcessIncomingWarpFunds_messageType{}
+
+type fastReflection_MsgProcessIncomingWarpFunds_messageType struct{}
+
+func (x fastReflection_MsgProcessIncomingWarpFunds_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgProcessIncomingWarpFunds)(nil)
+}
+func (x fastReflection_MsgProcessIncomingWarpFunds_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgProcessIncomingWarpFunds)
+}
+func (x fastReflection_MsgProcessIncomingWarpFunds_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProcessIncomingWarpFunds
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProcessIncomingWarpFunds
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Type() protoreflect.MessageType {
+	return _fastReflection_MsgProcessIncomingWarpFunds_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) New() protoreflect.Message {
+	return new(fastReflection_MsgProcessIncomingWarpFunds)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Interface() protoreflect.ProtoMessage {
+	return (*MsgProcessIncomingWarpFunds)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Processor != "" {
+		value := protoreflect.ValueOfString(x.Processor)
+		if !f(fd_MsgProcessIncomingWarpFunds_processor, value) {
+			return
+		}
+	}
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_MsgProcessIncomingWarpFunds_transaction_id, value) {
+			return
+		}
+	}
+	if x.AmountReceived != "" {
+		value := protoreflect.ValueOfString(x.AmountReceived)
+		if !f(fd_MsgProcessIncomingWarpFunds_amount_received, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_MsgProcessIncomingWarpFunds_route_id, value) {
+			return
+		}
+	}
+	if x.HyperlaneMessageId != "" {
+		value := protoreflect.ValueOfString(x.HyperlaneMessageId)
+		if !f(fd_MsgProcessIncomingWarpFunds_hyperlane_message_id, value) {
+			return
+		}
+	}
+	if x.OriginDomain != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.OriginDomain)
+		if !f(fd_MsgProcessIncomingWarpFunds_origin_domain, value) {
+			return
+		}
+	}
+	if x.ReceivedAt != nil {
+		value := protoreflect.ValueOfMessage(x.ReceivedAt.ProtoReflect())
+		if !f(fd_MsgProcessIncomingWarpFunds_received_at, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.processor":
+		return x.Processor != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.amount_received":
+		return x.AmountReceived != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.hyperlane_message_id":
+		return x.HyperlaneMessageId != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.origin_domain":
+		return x.OriginDomain != uint32(0)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at":
+		return x.ReceivedAt != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.processor":
+		x.Processor = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.amount_received":
+		x.AmountReceived = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.hyperlane_message_id":
+		x.HyperlaneMessageId = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.origin_domain":
+		x.OriginDomain = uint32(0)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at":
+		x.ReceivedAt = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.processor":
+		value := x.Processor
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.amount_received":
+		value := x.AmountReceived
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.hyperlane_message_id":
+		value := x.HyperlaneMessageId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.origin_domain":
+		value := x.OriginDomain
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at":
+		value := x.ReceivedAt
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.processor":
+		x.Processor = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.amount_received":
+		x.AmountReceived = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.hyperlane_message_id":
+		x.HyperlaneMessageId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.origin_domain":
+		x.OriginDomain = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at":
+		x.ReceivedAt = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at":
+		if x.ReceivedAt == nil {
+			x.ReceivedAt = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.ReceivedAt.ProtoReflect())
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.processor":
+		panic(fmt.Errorf("field processor of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.amount_received":
+		panic(fmt.Errorf("field amount_received of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.hyperlane_message_id":
+		panic(fmt.Errorf("field hyperlane_message_id of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.origin_domain":
+		panic(fmt.Errorf("field origin_domain of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.processor":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.amount_received":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.hyperlane_message_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.origin_domain":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgProcessIncomingWarpFunds) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgProcessIncomingWarpFunds)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Processor)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.AmountReceived)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.HyperlaneMessageId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.OriginDomain != 0 {
+			n += 1 + runtime.Sov(uint64(x.OriginDomain))
+		}
+		if x.ReceivedAt != nil {
+			l = options.Size(x.ReceivedAt)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgProcessIncomingWarpFunds)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ReceivedAt != nil {
+			encoded, err := options.Marshal(x.ReceivedAt)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x3a
+		}
+		if x.OriginDomain != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OriginDomain))
+			i--
+			dAtA[i] = 0x30
+		}
+		if len(x.HyperlaneMessageId) > 0 {
+			i -= len(x.HyperlaneMessageId)
+			copy(dAtA[i:], x.HyperlaneMessageId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.HyperlaneMessageId)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.AmountReceived) > 0 {
+			i -= len(x.AmountReceived)
+			copy(dAtA[i:], x.AmountReceived)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AmountReceived)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Processor) > 0 {
+			i -= len(x.Processor)
+			copy(dAtA[i:], x.Processor)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Processor)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgProcessIncomingWarpFunds)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProcessIncomingWarpFunds: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProcessIncomingWarpFunds: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Processor", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Processor = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountReceived", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AmountReceived = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field HyperlaneMessageId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.HyperlaneMessageId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OriginDomain", wireType)
+				}
+				x.OriginDomain = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OriginDomain |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 7:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReceivedAt", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ReceivedAt == nil {
+					x.ReceivedAt = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ReceivedAt); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgProcessIncomingWarpFundsResponse                              protoreflect.MessageDescriptor
+	fd_MsgProcessIncomingWarpFundsResponse_transaction_id               protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFundsResponse_route_id                     protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFundsResponse_amount_completed             protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFundsResponse_original_amount              protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFundsResponse_amount_matched               protoreflect.FieldDescriptor
+	fd_MsgProcessIncomingWarpFundsResponse_updated_pending_distribution protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_noble_dollar_vaults_v2_tx_proto_init()
+	md_MsgProcessIncomingWarpFundsResponse = File_noble_dollar_vaults_v2_tx_proto.Messages().ByName("MsgProcessIncomingWarpFundsResponse")
+	fd_MsgProcessIncomingWarpFundsResponse_transaction_id = md_MsgProcessIncomingWarpFundsResponse.Fields().ByName("transaction_id")
+	fd_MsgProcessIncomingWarpFundsResponse_route_id = md_MsgProcessIncomingWarpFundsResponse.Fields().ByName("route_id")
+	fd_MsgProcessIncomingWarpFundsResponse_amount_completed = md_MsgProcessIncomingWarpFundsResponse.Fields().ByName("amount_completed")
+	fd_MsgProcessIncomingWarpFundsResponse_original_amount = md_MsgProcessIncomingWarpFundsResponse.Fields().ByName("original_amount")
+	fd_MsgProcessIncomingWarpFundsResponse_amount_matched = md_MsgProcessIncomingWarpFundsResponse.Fields().ByName("amount_matched")
+	fd_MsgProcessIncomingWarpFundsResponse_updated_pending_distribution = md_MsgProcessIncomingWarpFundsResponse.Fields().ByName("updated_pending_distribution")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgProcessIncomingWarpFundsResponse)(nil)
+
+type fastReflection_MsgProcessIncomingWarpFundsResponse MsgProcessIncomingWarpFundsResponse
+
+func (x *MsgProcessIncomingWarpFundsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgProcessIncomingWarpFundsResponse)(x)
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[46]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgProcessIncomingWarpFundsResponse_messageType fastReflection_MsgProcessIncomingWarpFundsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgProcessIncomingWarpFundsResponse_messageType{}
+
+type fastReflection_MsgProcessIncomingWarpFundsResponse_messageType struct{}
+
+func (x fastReflection_MsgProcessIncomingWarpFundsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgProcessIncomingWarpFundsResponse)(nil)
+}
+func (x fastReflection_MsgProcessIncomingWarpFundsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgProcessIncomingWarpFundsResponse)
+}
+func (x fastReflection_MsgProcessIncomingWarpFundsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProcessIncomingWarpFundsResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProcessIncomingWarpFundsResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgProcessIncomingWarpFundsResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgProcessIncomingWarpFundsResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgProcessIncomingWarpFundsResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.TransactionId != "" {
+		value := protoreflect.ValueOfString(x.TransactionId)
+		if !f(fd_MsgProcessIncomingWarpFundsResponse_transaction_id, value) {
+			return
+		}
+	}
+	if x.RouteId != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.RouteId)
+		if !f(fd_MsgProcessIncomingWarpFundsResponse_route_id, value) {
+			return
+		}
+	}
+	if x.AmountCompleted != "" {
+		value := protoreflect.ValueOfString(x.AmountCompleted)
+		if !f(fd_MsgProcessIncomingWarpFundsResponse_amount_completed, value) {
+			return
+		}
+	}
+	if x.OriginalAmount != "" {
+		value := protoreflect.ValueOfString(x.OriginalAmount)
+		if !f(fd_MsgProcessIncomingWarpFundsResponse_original_amount, value) {
+			return
+		}
+	}
+	if x.AmountMatched != false {
+		value := protoreflect.ValueOfBool(x.AmountMatched)
+		if !f(fd_MsgProcessIncomingWarpFundsResponse_amount_matched, value) {
+			return
+		}
+	}
+	if x.UpdatedPendingDistribution != "" {
+		value := protoreflect.ValueOfString(x.UpdatedPendingDistribution)
+		if !f(fd_MsgProcessIncomingWarpFundsResponse_updated_pending_distribution, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.transaction_id":
+		return x.TransactionId != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.route_id":
+		return x.RouteId != uint32(0)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_completed":
+		return x.AmountCompleted != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.original_amount":
+		return x.OriginalAmount != ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_matched":
+		return x.AmountMatched != false
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.updated_pending_distribution":
+		return x.UpdatedPendingDistribution != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.transaction_id":
+		x.TransactionId = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.route_id":
+		x.RouteId = uint32(0)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_completed":
+		x.AmountCompleted = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.original_amount":
+		x.OriginalAmount = ""
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_matched":
+		x.AmountMatched = false
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.updated_pending_distribution":
+		x.UpdatedPendingDistribution = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.transaction_id":
+		value := x.TransactionId
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.route_id":
+		value := x.RouteId
+		return protoreflect.ValueOfUint32(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_completed":
+		value := x.AmountCompleted
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.original_amount":
+		value := x.OriginalAmount
+		return protoreflect.ValueOfString(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_matched":
+		value := x.AmountMatched
+		return protoreflect.ValueOfBool(value)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.updated_pending_distribution":
+		value := x.UpdatedPendingDistribution
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.transaction_id":
+		x.TransactionId = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.route_id":
+		x.RouteId = uint32(value.Uint())
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_completed":
+		x.AmountCompleted = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.original_amount":
+		x.OriginalAmount = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_matched":
+		x.AmountMatched = value.Bool()
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.updated_pending_distribution":
+		x.UpdatedPendingDistribution = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.transaction_id":
+		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.route_id":
+		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_completed":
+		panic(fmt.Errorf("field amount_completed of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.original_amount":
+		panic(fmt.Errorf("field original_amount of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_matched":
+		panic(fmt.Errorf("field amount_matched of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.updated_pending_distribution":
+		panic(fmt.Errorf("field updated_pending_distribution of message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.transaction_id":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.route_id":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_completed":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.original_amount":
+		return protoreflect.ValueOfString("")
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.amount_matched":
+		return protoreflect.ValueOfBool(false)
+	case "noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse.updated_pending_distribution":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse"))
+		}
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgProcessIncomingWarpFundsResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgProcessIncomingWarpFundsResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.TransactionId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RouteId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RouteId))
+		}
+		l = len(x.AmountCompleted)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.OriginalAmount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.AmountMatched {
+			n += 2
+		}
+		l = len(x.UpdatedPendingDistribution)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgProcessIncomingWarpFundsResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.UpdatedPendingDistribution) > 0 {
+			i -= len(x.UpdatedPendingDistribution)
+			copy(dAtA[i:], x.UpdatedPendingDistribution)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.UpdatedPendingDistribution)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.AmountMatched {
+			i--
+			if x.AmountMatched {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x28
+		}
+		if len(x.OriginalAmount) > 0 {
+			i -= len(x.OriginalAmount)
+			copy(dAtA[i:], x.OriginalAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OriginalAmount)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.AmountCompleted) > 0 {
+			i -= len(x.AmountCompleted)
+			copy(dAtA[i:], x.AmountCompleted)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AmountCompleted)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.RouteId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.TransactionId) > 0 {
+			i -= len(x.TransactionId)
+			copy(dAtA[i:], x.TransactionId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgProcessIncomingWarpFundsResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProcessIncomingWarpFundsResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProcessIncomingWarpFundsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TransactionId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+				}
+				x.RouteId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RouteId |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountCompleted", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AmountCompleted = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OriginalAmount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.OriginalAmount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountMatched", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.AmountMatched = bool(v != 0)
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UpdatedPendingDistribution", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.UpdatedPendingDistribution = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -26541,6 +29503,345 @@ func (x *MsgUpdateVaultAccountingResponse) GetNextUser() string {
 	return ""
 }
 
+// MsgInitiateRemotePositionRedemption allows a strategist to initiate redemption from a remote position
+// This creates an inflight fund record and signals the strategist to begin the redemption process
+type MsgInitiateRemotePositionRedemption struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Strategist address (authorized to initiate redemptions)
+	Strategist string `protobuf:"bytes,1,opt,name=strategist,proto3" json:"strategist,omitempty"`
+	// Remote position ID to redeem from
+	PositionId uint64 `protobuf:"varint,2,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
+	// Amount to redeem (in USDN equivalent)
+	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	// Route ID for the cross-chain transfer back to Noble
+	RouteId uint32 `protobuf:"varint,4,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Expected completion time (strategist's estimate)
+	ExpectedCompletion *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expected_completion,json=expectedCompletion,proto3" json:"expected_completion,omitempty"`
+	// Optional transaction ID for tracking (can be generated if not provided)
+	TransactionId string `protobuf:"bytes,6,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+}
+
+func (x *MsgInitiateRemotePositionRedemption) Reset() {
+	*x = MsgInitiateRemotePositionRedemption{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[43]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgInitiateRemotePositionRedemption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgInitiateRemotePositionRedemption) ProtoMessage() {}
+
+// Deprecated: Use MsgInitiateRemotePositionRedemption.ProtoReflect.Descriptor instead.
+func (*MsgInitiateRemotePositionRedemption) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_tx_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *MsgInitiateRemotePositionRedemption) GetStrategist() string {
+	if x != nil {
+		return x.Strategist
+	}
+	return ""
+}
+
+func (x *MsgInitiateRemotePositionRedemption) GetPositionId() uint64 {
+	if x != nil {
+		return x.PositionId
+	}
+	return 0
+}
+
+func (x *MsgInitiateRemotePositionRedemption) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *MsgInitiateRemotePositionRedemption) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *MsgInitiateRemotePositionRedemption) GetExpectedCompletion() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpectedCompletion
+	}
+	return nil
+}
+
+func (x *MsgInitiateRemotePositionRedemption) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+// MsgInitiateRemotePositionRedemptionResponse returns details of the initiated redemption
+type MsgInitiateRemotePositionRedemptionResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID for tracking the inflight redemption
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID being used
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Amount marked as inflight
+	AmountInflight string `protobuf:"bytes,3,opt,name=amount_inflight,json=amountInflight,proto3" json:"amount_inflight,omitempty"`
+	// Position ID being redeemed from
+	PositionId uint64 `protobuf:"varint,4,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
+	// Expected completion time
+	ExpectedCompletion *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expected_completion,json=expectedCompletion,proto3" json:"expected_completion,omitempty"`
+	// Provider tracking information
+	ProviderTracking *ProviderTrackingInfo `protobuf:"bytes,6,opt,name=provider_tracking,json=providerTracking,proto3" json:"provider_tracking,omitempty"`
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) Reset() {
+	*x = MsgInitiateRemotePositionRedemptionResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[44]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgInitiateRemotePositionRedemptionResponse) ProtoMessage() {}
+
+// Deprecated: Use MsgInitiateRemotePositionRedemptionResponse.ProtoReflect.Descriptor instead.
+func (*MsgInitiateRemotePositionRedemptionResponse) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_tx_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) GetAmountInflight() string {
+	if x != nil {
+		return x.AmountInflight
+	}
+	return ""
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) GetPositionId() uint64 {
+	if x != nil {
+		return x.PositionId
+	}
+	return 0
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) GetExpectedCompletion() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpectedCompletion
+	}
+	return nil
+}
+
+func (x *MsgInitiateRemotePositionRedemptionResponse) GetProviderTracking() *ProviderTrackingInfo {
+	if x != nil {
+		return x.ProviderTracking
+	}
+	return nil
+}
+
+// MsgProcessIncomingWarpFunds processes funds received via warp route and marks inflight funds as completed
+// This message should be called when USDN is received from remote positions via warp route
+type MsgProcessIncomingWarpFunds struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Processor address (authorized system account or hook)
+	Processor string `protobuf:"bytes,1,opt,name=processor,proto3" json:"processor,omitempty"`
+	// Transaction ID of the inflight fund to complete
+	TransactionId string `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Amount actually received (may differ from original amount due to fees, slippage, etc.)
+	AmountReceived string `protobuf:"bytes,3,opt,name=amount_received,json=amountReceived,proto3" json:"amount_received,omitempty"`
+	// Route ID the funds came from
+	RouteId uint32 `protobuf:"varint,4,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Hyperlane message ID for cross-referencing
+	HyperlaneMessageId string `protobuf:"bytes,5,opt,name=hyperlane_message_id,json=hyperlaneMessageId,proto3" json:"hyperlane_message_id,omitempty"`
+	// Origin chain domain for validation
+	OriginDomain uint32 `protobuf:"varint,6,opt,name=origin_domain,json=originDomain,proto3" json:"origin_domain,omitempty"`
+	// Timestamp when funds were received
+	ReceivedAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=received_at,json=receivedAt,proto3" json:"received_at,omitempty"`
+}
+
+func (x *MsgProcessIncomingWarpFunds) Reset() {
+	*x = MsgProcessIncomingWarpFunds{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[45]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgProcessIncomingWarpFunds) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgProcessIncomingWarpFunds) ProtoMessage() {}
+
+// Deprecated: Use MsgProcessIncomingWarpFunds.ProtoReflect.Descriptor instead.
+func (*MsgProcessIncomingWarpFunds) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_tx_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetProcessor() string {
+	if x != nil {
+		return x.Processor
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetAmountReceived() string {
+	if x != nil {
+		return x.AmountReceived
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetHyperlaneMessageId() string {
+	if x != nil {
+		return x.HyperlaneMessageId
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetOriginDomain() uint32 {
+	if x != nil {
+		return x.OriginDomain
+	}
+	return 0
+}
+
+func (x *MsgProcessIncomingWarpFunds) GetReceivedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ReceivedAt
+	}
+	return nil
+}
+
+// MsgProcessIncomingWarpFundsResponse returns details of the processed funds
+type MsgProcessIncomingWarpFundsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Transaction ID that was completed
+	TransactionId string `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Route ID
+	RouteId uint32 `protobuf:"varint,2,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// Amount marked as completed
+	AmountCompleted string `protobuf:"bytes,3,opt,name=amount_completed,json=amountCompleted,proto3" json:"amount_completed,omitempty"`
+	// Original inflight amount for comparison
+	OriginalAmount string `protobuf:"bytes,4,opt,name=original_amount,json=originalAmount,proto3" json:"original_amount,omitempty"`
+	// Whether there was a difference between received and expected
+	AmountMatched bool `protobuf:"varint,5,opt,name=amount_matched,json=amountMatched,proto3" json:"amount_matched,omitempty"`
+	// Updated pending withdrawal distribution (if applicable)
+	UpdatedPendingDistribution string `protobuf:"bytes,6,opt,name=updated_pending_distribution,json=updatedPendingDistribution,proto3" json:"updated_pending_distribution,omitempty"`
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) Reset() {
+	*x = MsgProcessIncomingWarpFundsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_noble_dollar_vaults_v2_tx_proto_msgTypes[46]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgProcessIncomingWarpFundsResponse) ProtoMessage() {}
+
+// Deprecated: Use MsgProcessIncomingWarpFundsResponse.ProtoReflect.Descriptor instead.
+func (*MsgProcessIncomingWarpFundsResponse) Descriptor() ([]byte, []int) {
+	return file_noble_dollar_vaults_v2_tx_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) GetRouteId() uint32 {
+	if x != nil {
+		return x.RouteId
+	}
+	return 0
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) GetAmountCompleted() string {
+	if x != nil {
+		return x.AmountCompleted
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) GetOriginalAmount() string {
+	if x != nil {
+		return x.OriginalAmount
+	}
+	return ""
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) GetAmountMatched() bool {
+	if x != nil {
+		return x.AmountMatched
+	}
+	return false
+}
+
+func (x *MsgProcessIncomingWarpFundsResponse) GetUpdatedPendingDistribution() string {
+	if x != nil {
+		return x.UpdatedPendingDistribution
+	}
+	return ""
+}
+
 var File_noble_dollar_vaults_v2_tx_proto protoreflect.FileDescriptor
 
 var file_noble_dollar_vaults_v2_tx_proto_rawDesc = []byte{
@@ -27222,210 +30523,340 @@ var file_noble_dollar_vaults_v2_tx_proto_rawDesc = []byte{
 	0x78, 0x74, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
 	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
 	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6e, 0x65, 0x78, 0x74, 0x55, 0x73, 0x65,
-	0x72, 0x32, 0xd6, 0x17, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x59, 0x0a, 0x07, 0x44, 0x65, 0x70,
-	0x6f, 0x73, 0x69, 0x74, 0x12, 0x22, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x1a, 0x2a, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
-	0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76,
-	0x32, 0x2e, 0x4d, 0x73, 0x67, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x77, 0x0a, 0x11, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x57,
-	0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x12, 0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
-	0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
-	0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x57, 0x69, 0x74,
-	0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x1a, 0x34, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
-	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x57, 0x69, 0x74, 0x68, 0x64,
-	0x72, 0x61, 0x77, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a,
-	0x12, 0x53, 0x65, 0x74, 0x59, 0x69, 0x65, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65,
-	0x6e, 0x63, 0x65, 0x12, 0x2d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
+	0x72, 0x22, 0xb2, 0x03, 0x0a, 0x23, 0x4d, 0x73, 0x67, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x64, 0x65, 0x6d, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x38, 0x0a, 0x0a, 0x73, 0x74, 0x72,
+	0x61, 0x74, 0x65, 0x67, 0x69, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
+	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x61, 0x74, 0x65, 0x67,
+	0x69, 0x73, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69,
+	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x48, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e,
+	0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e,
+	0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x19,
+	0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d,
+	0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x55, 0x0a, 0x13, 0x65, 0x78, 0x70,
+	0x65, 0x63, 0x74, 0x65, 0x64, 0x5f, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x12, 0x65, 0x78,
+	0x70, 0x65, 0x63, 0x74, 0x65, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+	0x69, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x4d, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f,
+	0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x0a, 0x73, 0x74, 0x72, 0x61, 0x74, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x8a, 0xe7, 0xb0, 0x2a, 0x31, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c,
+	0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x52, 0x65,
+	0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x64, 0x65,
+	0x6d, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9d, 0x03, 0x0a, 0x2b, 0x4d, 0x73, 0x67, 0x49, 0x6e,
+	0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x64, 0x65, 0x6d, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d,
+	0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x19, 0x0a,
+	0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52,
+	0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x59, 0x0a, 0x0f, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x5f, 0x69, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74,
+	0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7,
+	0xb0, 0x2a, 0x01, 0x52, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6c, 0x69,
+	0x67, 0x68, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+	0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69,
+	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x55, 0x0a, 0x13, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64,
+	0x5f, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8,
+	0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x12, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65,
+	0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x59, 0x0a, 0x11, 0x70,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x5f, 0x74, 0x72, 0x61, 0x63, 0x6b, 0x69, 0x6e, 0x67,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e,
+	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x54, 0x72, 0x61, 0x63, 0x6b, 0x69, 0x6e, 0x67,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x10, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x54, 0x72,
+	0x61, 0x63, 0x6b, 0x69, 0x6e, 0x67, 0x22, 0xd6, 0x03, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x50, 0x72,
+	0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x63, 0x6f, 0x6d, 0x69, 0x6e, 0x67, 0x57, 0x61, 0x72,
+	0x70, 0x46, 0x75, 0x6e, 0x64, 0x73, 0x12, 0x36, 0x0a, 0x09, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73,
+	0x73, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72,
+	0x69, 0x6e, 0x67, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f, 0x72, 0x12, 0x25,
+	0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x59, 0x0a, 0x0f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x5f,
+	0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
+	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
+	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,
+	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64,
+	0x12, 0x19, 0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x0d, 0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x14, 0x68,
+	0x79, 0x70, 0x65, 0x72, 0x6c, 0x61, 0x6e, 0x65, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x5f, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x68, 0x79, 0x70, 0x65, 0x72,
+	0x6c, 0x61, 0x6e, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x64, 0x12, 0x23, 0x0a,
+	0x0d, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x0d, 0x52, 0x0c, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x44, 0x6f, 0x6d, 0x61,
+	0x69, 0x6e, 0x12, 0x45, 0x0a, 0x0b, 0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x5f, 0x61,
+	0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x72,
+	0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x41, 0x74, 0x3a, 0x44, 0x88, 0xa0, 0x1f, 0x00, 0xe8,
+	0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f,
+	0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x29, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e,
+	0x63, 0x6f, 0x6d, 0x69, 0x6e, 0x67, 0x57, 0x61, 0x72, 0x70, 0x46, 0x75, 0x6e, 0x64, 0x73, 0x22,
+	0xba, 0x03, 0x0a, 0x23, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e,
+	0x63, 0x6f, 0x6d, 0x69, 0x6e, 0x67, 0x57, 0x61, 0x72, 0x70, 0x46, 0x75, 0x6e, 0x64, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73,
+	0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x19,
+	0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d,
+	0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x5b, 0x0a, 0x10, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x5f, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49,
+	0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74,
+	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x43, 0x6f, 0x6d,
+	0x70, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x12, 0x59, 0x0a, 0x0f, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e,
+	0x61, 0x6c, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
+	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4,
+	0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x0e, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x61, 0x6c, 0x41, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x6d, 0x61, 0x74, 0x63,
+	0x68, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0d, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x4d, 0x61, 0x74, 0x63, 0x68, 0x65, 0x64, 0x12, 0x72, 0x0a, 0x1c, 0x75, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x64, 0x5f, 0x70, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x64, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
+	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
+	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,
+	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x1a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x50, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67,
+	0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0x8c, 0x1a, 0x0a,
+	0x03, 0x4d, 0x73, 0x67, 0x12, 0x59, 0x0a, 0x07, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x12,
+	0x22, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x44, 0x65, 0x70, 0x6f,
+	0x73, 0x69, 0x74, 0x1a, 0x2a, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
 	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x65, 0x74, 0x59, 0x69, 0x65, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e,
-	0x63, 0x65, 0x1a, 0x35, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x65, 0x74, 0x59, 0x69, 0x65, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x86, 0x01, 0x0a, 0x16, 0x50, 0x72,
-	0x6f, 0x63, 0x65, 0x73, 0x73, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x51,
-	0x75, 0x65, 0x75, 0x65, 0x12, 0x31, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
+	0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x77, 0x0a, 0x11, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72,
+	0x61, 0x77, 0x61, 0x6c, 0x12, 0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
 	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77,
-	0x61, 0x6c, 0x51, 0x75, 0x65, 0x75, 0x65, 0x1a, 0x39, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
-	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x57, 0x69, 0x74, 0x68, 0x64,
-	0x72, 0x61, 0x77, 0x61, 0x6c, 0x51, 0x75, 0x65, 0x75, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x77, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c,
-	0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
-	0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x1a, 0x34, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d,
-	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x0c, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x27, 0x2e, 0x6e, 0x6f,
-	0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x1a, 0x2f, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x83, 0x01, 0x0a, 0x15, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x12,
-	0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74,
-	0x65, 0x1a, 0x38, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
-	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f,
-	0x75, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x83, 0x01, 0x0a, 0x15,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e,
-	0x52, 0x6f, 0x75, 0x74, 0x65, 0x12, 0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d,
-	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61,
-	0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x1a, 0x38, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
-	0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43,
-	0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x86, 0x01, 0x0a, 0x16, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x72, 0x6f,
-	0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x12, 0x31, 0x2e, 0x6e,
-	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c,
-	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65,
-	0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x1a,
-	0x39, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x44, 0x69, 0x73, 0x61,
-	0x62, 0x6c, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x80, 0x01, 0x0a, 0x14, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x2f, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
-	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x37, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73,
-	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a,
-	0x13, 0x43, 0x6c, 0x6f, 0x73, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x43, 0x6c, 0x6f, 0x73, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x36, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x43, 0x6c, 0x6f, 0x73, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x09,
-	0x52, 0x65, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x24, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
-	0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
-	0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x1a,
-	0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x62, 0x61,
-	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6b, 0x0a,
-	0x0d, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x12, 0x28,
+	0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77,
+	0x61, 0x6c, 0x1a, 0x34, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x12, 0x53, 0x65, 0x74, 0x59,
+	0x69, 0x65, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x2d,
 	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
-	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x74,
-	0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x1a, 0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
-	0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76,
-	0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73,
-	0x69, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x0e, 0x52, 0x65,
-	0x6d, 0x6f, 0x74, 0x65, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x12, 0x29, 0x2e, 0x6e,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74, 0x59, 0x69,
+	0x65, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x1a, 0x35, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74, 0x59, 0x69, 0x65,
+	0x6c, 0x64, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x86, 0x01, 0x0a, 0x16, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73,
+	0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x51, 0x75, 0x65, 0x75, 0x65, 0x12,
+	0x31, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x63,
+	0x65, 0x73, 0x73, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x51, 0x75, 0x65,
+	0x75, 0x65, 0x1a, 0x39, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x50,
+	0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c,
+	0x51, 0x75, 0x65, 0x75, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x77, 0x0a,
+	0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x12, 0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x1a, 0x34, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e,
+	0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x27, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e,
+	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a,
+	0x2f, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x83, 0x01, 0x0a, 0x15, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73,
+	0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x12, 0x30, 0x2e, 0x6e, 0x6f, 0x62,
+	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f,
+	0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x1a, 0x38, 0x2e, 0x6e,
 	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c,
-	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x57,
-	0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x1a, 0x31, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
+	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43,
+	0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x83, 0x01, 0x0a, 0x15, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65,
+	0x12, 0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e,
+	0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75,
+	0x74, 0x65, 0x1a, 0x38, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52,
+	0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x86, 0x01, 0x0a,
+	0x16, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61,
+	0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x12, 0x31, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
+	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
+	0x2e, 0x4d, 0x73, 0x67, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x72, 0x6f, 0x73, 0x73,
+	0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x1a, 0x39, 0x2e, 0x6e, 0x6f, 0x62,
+	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x72,
+	0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x80, 0x01, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2f,
+	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x1a,
+	0x37, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x13, 0x43, 0x6c, 0x6f, 0x73,
+	0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x6c, 0x6f, 0x73,
+	0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x1a,
+	0x36, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x6c, 0x6f, 0x73,
+	0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x09, 0x52, 0x65, 0x62, 0x61, 0x6c,
+	0x61, 0x6e, 0x63, 0x65, 0x12, 0x24, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
+	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
+	0x67, 0x52, 0x65, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x1a, 0x2c, 0x2e, 0x6e, 0x6f, 0x62,
+	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6b, 0x0a, 0x0d, 0x52, 0x65, 0x6d, 0x6f,
+	0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x12, 0x28, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
+	0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
+	0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f,
+	0x73, 0x69, 0x74, 0x1a, 0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
+	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
+	0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x0e, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x57,
+	0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x12, 0x29, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
 	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
 	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72,
-	0x61, 0x77, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x89, 0x01, 0x0a, 0x17, 0x50,
-	0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x46, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x50, 0x6f,
-	0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x32, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
-	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x46, 0x6c, 0x69, 0x67,
-	0x68, 0x74, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x3a, 0x2e, 0x6e, 0x6f, 0x62,
-	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
-	0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e,
-	0x46, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x0e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
-	0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x12, 0x29, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
-	0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76,
-	0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61,
-	0x63, 0x6c, 0x65, 0x1a, 0x31, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
+	0x61, 0x77, 0x1a, 0x31, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x6d, 0x6f, 0x74, 0x65, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x89, 0x01, 0x0a, 0x17, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73,
+	0x73, 0x49, 0x6e, 0x46, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x32, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
+	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72,
+	0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x46, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x50, 0x6f, 0x73,
+	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x3a, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f,
+	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d,
+	0x73, 0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x46, 0x6c, 0x69, 0x67, 0x68,
+	0x74, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x6e, 0x0a, 0x0e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61,
+	0x63, 0x6c, 0x65, 0x12, 0x29, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
 	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
-	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x2d, 0x2e, 0x6e,
+	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x1a, 0x31,
+	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73,
+	0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x7a, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c,
+	0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x2d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
+	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
+	0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x1a, 0x35, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e,
+	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a,
+	0x0c, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x12, 0x27, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65,
+	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x1a, 0x2f, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e,
+	0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x2d, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x35, 0x2e, 0x6e,
 	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c,
 	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f,
-	0x72, 0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x1a, 0x35, 0x2e, 0x6e, 0x6f,
-	0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72,
-	0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x68, 0x0a, 0x0c, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x12, 0x27, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52,
-	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x1a, 0x2f, 0x2e, 0x6e, 0x6f,
-	0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72,
-	0x61, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x12,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61,
-	0x6d, 0x73, 0x12, 0x2d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x1a, 0x35, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
-	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x71, 0x0a, 0x0f, 0x43, 0x6c, 0x61, 0x69,
-	0x6d, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x12, 0x2a, 0x2e, 0x6e, 0x6f,
-	0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x6c, 0x61, 0x69, 0x6d, 0x57, 0x69, 0x74,
-	0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x1a, 0x32, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
-	0x2e, 0x4d, 0x73, 0x67, 0x43, 0x6c, 0x61, 0x69, 0x6d, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61,
-	0x77, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x09, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x41, 0x56, 0x12, 0x24, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
-	0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76,
-	0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x41, 0x56, 0x1a, 0x2c,
-	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
-	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x4e, 0x41, 0x56, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x13,
-	0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69,
-	0x67, 0x68, 0x74, 0x12, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
+	0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x71, 0x0a, 0x0f, 0x43, 0x6c, 0x61, 0x69, 0x6d, 0x57, 0x69, 0x74, 0x68,
+	0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x12, 0x2a, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e,
+	0x4d, 0x73, 0x67, 0x43, 0x6c, 0x61, 0x69, 0x6d, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77,
+	0x61, 0x6c, 0x1a, 0x32, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43,
+	0x6c, 0x61, 0x69, 0x6d, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x09, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x4e, 0x41, 0x56, 0x12, 0x24, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
 	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
-	0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69,
-	0x67, 0x68, 0x74, 0x1a, 0x36, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
-	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
-	0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69,
-	0x67, 0x68, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x13, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69,
-	0x74, 0x73, 0x12, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69,
-	0x74, 0x73, 0x1a, 0x36, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69,
-	0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x80, 0x01, 0x0a, 0x14, 0x43,
-	0x6c, 0x65, 0x61, 0x6e, 0x75, 0x70, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69,
-	0x67, 0x68, 0x74, 0x12, 0x2f, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
-	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67,
-	0x43, 0x6c, 0x65, 0x61, 0x6e, 0x75, 0x70, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c,
-	0x69, 0x67, 0x68, 0x74, 0x1a, 0x37, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73,
-	0x67, 0x43, 0x6c, 0x65, 0x61, 0x6e, 0x75, 0x70, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66,
-	0x6c, 0x69, 0x67, 0x68, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x83, 0x01,
-	0x0a, 0x15, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x63, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x12, 0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
-	0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x41,
-	0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x1a, 0x38, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x41, 0x56, 0x1a, 0x2c, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
 	0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
-	0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c,
-	0x74, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0xd9, 0x01, 0x0a, 0x1a, 0x63,
-	0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e,
-	0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62,
-	0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f,
-	0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02, 0x03,
-	0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c,
-	0x61, 0x72, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16, 0x4e,
-	0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c,
-	0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62,
-	0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c,
-	0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4e, 0x41, 0x56, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x13, 0x48, 0x61, 0x6e, 0x64, 0x6c,
+	0x65, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x12, 0x2e,
+	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x48, 0x61, 0x6e, 0x64, 0x6c,
+	0x65, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x1a, 0x36,
+	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x48, 0x61, 0x6e, 0x64, 0x6c,
+	0x65, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x73, 0x12, 0x2e, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x73, 0x1a, 0x36, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x80, 0x01, 0x0a, 0x14, 0x43, 0x6c, 0x65, 0x61, 0x6e, 0x75,
+	0x70, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x12, 0x2f,
+	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x6c, 0x65, 0x61, 0x6e,
+	0x75, 0x70, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x1a,
+	0x37, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x6c, 0x65, 0x61,
+	0x6e, 0x75, 0x70, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0xa4, 0x01, 0x0a, 0x20, 0x49, 0x6e, 0x69,
+	0x74, 0x69, 0x61, 0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x64, 0x65, 0x6d, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61,
+	0x74, 0x65, 0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x64, 0x65, 0x6d, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x43, 0x2e, 0x6e, 0x6f, 0x62,
+	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x52,
+	0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x64,
+	0x65, 0x6d, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x8c, 0x01, 0x0a, 0x18, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x63, 0x6f, 0x6d,
+	0x69, 0x6e, 0x67, 0x57, 0x61, 0x72, 0x70, 0x46, 0x75, 0x6e, 0x64, 0x73, 0x12, 0x33, 0x2e, 0x6e,
+	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c,
+	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73,
+	0x49, 0x6e, 0x63, 0x6f, 0x6d, 0x69, 0x6e, 0x67, 0x57, 0x61, 0x72, 0x70, 0x46, 0x75, 0x6e, 0x64,
+	0x73, 0x1a, 0x3b, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
+	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72,
+	0x6f, 0x63, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x63, 0x6f, 0x6d, 0x69, 0x6e, 0x67, 0x57, 0x61, 0x72,
+	0x70, 0x46, 0x75, 0x6e, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x83,
+	0x01, 0x0a, 0x15, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x41, 0x63,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x12, 0x30, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65,
+	0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76,
+	0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75, 0x6c, 0x74,
+	0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x1a, 0x38, 0x2e, 0x6e, 0x6f, 0x62,
+	0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73,
+	0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0xd9, 0x01, 0x0a, 0x1a,
+	0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
+	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f,
+	0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e,
+	0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c,
+	0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02,
+	0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c,
+	0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16,
+	0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c,
+	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f,
+	0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -27440,144 +30871,156 @@ func file_noble_dollar_vaults_v2_tx_proto_rawDescGZIP() []byte {
 	return file_noble_dollar_vaults_v2_tx_proto_rawDescData
 }
 
-var file_noble_dollar_vaults_v2_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_noble_dollar_vaults_v2_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
 var file_noble_dollar_vaults_v2_tx_proto_goTypes = []interface{}{
-	(*MsgDeposit)(nil),                         // 0: noble.dollar.vaults.v2.MsgDeposit
-	(*MsgDepositResponse)(nil),                 // 1: noble.dollar.vaults.v2.MsgDepositResponse
-	(*MsgSetYieldPreference)(nil),              // 2: noble.dollar.vaults.v2.MsgSetYieldPreference
-	(*MsgSetYieldPreferenceResponse)(nil),      // 3: noble.dollar.vaults.v2.MsgSetYieldPreferenceResponse
-	(*MsgUpdateVaultConfig)(nil),               // 4: noble.dollar.vaults.v2.MsgUpdateVaultConfig
-	(*MsgUpdateVaultConfigResponse)(nil),       // 5: noble.dollar.vaults.v2.MsgUpdateVaultConfigResponse
-	(*MsgUpdateParams)(nil),                    // 6: noble.dollar.vaults.v2.MsgUpdateParams
-	(*MsgUpdateParamsResponse)(nil),            // 7: noble.dollar.vaults.v2.MsgUpdateParamsResponse
-	(*MsgCreateCrossChainRoute)(nil),           // 8: noble.dollar.vaults.v2.MsgCreateCrossChainRoute
-	(*MsgCreateCrossChainRouteResponse)(nil),   // 9: noble.dollar.vaults.v2.MsgCreateCrossChainRouteResponse
-	(*MsgUpdateCrossChainRoute)(nil),           // 10: noble.dollar.vaults.v2.MsgUpdateCrossChainRoute
-	(*MsgUpdateCrossChainRouteResponse)(nil),   // 11: noble.dollar.vaults.v2.MsgUpdateCrossChainRouteResponse
-	(*MsgDisableCrossChainRoute)(nil),          // 12: noble.dollar.vaults.v2.MsgDisableCrossChainRoute
-	(*MsgDisableCrossChainRouteResponse)(nil),  // 13: noble.dollar.vaults.v2.MsgDisableCrossChainRouteResponse
-	(*MsgRemoteDeposit)(nil),                   // 14: noble.dollar.vaults.v2.MsgRemoteDeposit
-	(*MsgRemoteDepositResponse)(nil),           // 15: noble.dollar.vaults.v2.MsgRemoteDepositResponse
-	(*MsgRemoteWithdraw)(nil),                  // 16: noble.dollar.vaults.v2.MsgRemoteWithdraw
-	(*MsgRemoteWithdrawResponse)(nil),          // 17: noble.dollar.vaults.v2.MsgRemoteWithdrawResponse
-	(*MsgProcessInFlightPosition)(nil),         // 18: noble.dollar.vaults.v2.MsgProcessInFlightPosition
-	(*MsgProcessInFlightPositionResponse)(nil), // 19: noble.dollar.vaults.v2.MsgProcessInFlightPositionResponse
-	(*MsgRequestWithdrawal)(nil),               // 20: noble.dollar.vaults.v2.MsgRequestWithdrawal
-	(*MsgRequestWithdrawalResponse)(nil),       // 21: noble.dollar.vaults.v2.MsgRequestWithdrawalResponse
-	(*MsgProcessWithdrawalQueue)(nil),          // 22: noble.dollar.vaults.v2.MsgProcessWithdrawalQueue
-	(*MsgProcessWithdrawalQueueResponse)(nil),  // 23: noble.dollar.vaults.v2.MsgProcessWithdrawalQueueResponse
-	(*MsgCreateRemotePosition)(nil),            // 24: noble.dollar.vaults.v2.MsgCreateRemotePosition
-	(*MsgCreateRemotePositionResponse)(nil),    // 25: noble.dollar.vaults.v2.MsgCreateRemotePositionResponse
-	(*MsgCloseRemotePosition)(nil),             // 26: noble.dollar.vaults.v2.MsgCloseRemotePosition
-	(*MsgCloseRemotePositionResponse)(nil),     // 27: noble.dollar.vaults.v2.MsgCloseRemotePositionResponse
-	(*TargetAllocation)(nil),                   // 28: noble.dollar.vaults.v2.TargetAllocation
-	(*MsgRebalance)(nil),                       // 29: noble.dollar.vaults.v2.MsgRebalance
-	(*MsgRebalanceResponse)(nil),               // 30: noble.dollar.vaults.v2.MsgRebalanceResponse
-	(*MsgClaimWithdrawal)(nil),                 // 31: noble.dollar.vaults.v2.MsgClaimWithdrawal
-	(*MsgClaimWithdrawalResponse)(nil),         // 32: noble.dollar.vaults.v2.MsgClaimWithdrawalResponse
-	(*MsgUpdateNAV)(nil),                       // 33: noble.dollar.vaults.v2.MsgUpdateNAV
-	(*MsgUpdateNAVResponse)(nil),               // 34: noble.dollar.vaults.v2.MsgUpdateNAVResponse
-	(*MsgHandleStaleInflight)(nil),             // 35: noble.dollar.vaults.v2.MsgHandleStaleInflight
-	(*MsgHandleStaleInflightResponse)(nil),     // 36: noble.dollar.vaults.v2.MsgHandleStaleInflightResponse
-	(*MsgUpdateDepositLimits)(nil),             // 37: noble.dollar.vaults.v2.MsgUpdateDepositLimits
-	(*MsgUpdateDepositLimitsResponse)(nil),     // 38: noble.dollar.vaults.v2.MsgUpdateDepositLimitsResponse
-	(*MsgCleanupStaleInflight)(nil),            // 39: noble.dollar.vaults.v2.MsgCleanupStaleInflight
-	(*MsgCleanupStaleInflightResponse)(nil),    // 40: noble.dollar.vaults.v2.MsgCleanupStaleInflightResponse
-	(*MsgUpdateVaultAccounting)(nil),           // 41: noble.dollar.vaults.v2.MsgUpdateVaultAccounting
-	(*MsgUpdateVaultAccountingResponse)(nil),   // 42: noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse
-	(*VaultConfig)(nil),                        // 43: noble.dollar.vaults.v2.VaultConfig
-	(*Params)(nil),                             // 44: noble.dollar.vaults.v2.Params
-	(*CrossChainRoute)(nil),                    // 45: noble.dollar.vaults.v2.CrossChainRoute
-	(*timestamppb.Timestamp)(nil),              // 46: google.protobuf.Timestamp
-	(*ProviderTrackingInfo)(nil),               // 47: noble.dollar.vaults.v2.ProviderTrackingInfo
-	(InflightStatus)(0),                        // 48: noble.dollar.vaults.v2.InflightStatus
-	(*DepositLimit)(nil),                       // 49: noble.dollar.vaults.v2.DepositLimit
-	(*MsgRegisterOracle)(nil),                  // 50: noble.dollar.vaults.v2.MsgRegisterOracle
-	(*MsgUpdateOracleConfig)(nil),              // 51: noble.dollar.vaults.v2.MsgUpdateOracleConfig
-	(*MsgRemoveOracle)(nil),                    // 52: noble.dollar.vaults.v2.MsgRemoveOracle
-	(*MsgUpdateOracleParams)(nil),              // 53: noble.dollar.vaults.v2.MsgUpdateOracleParams
-	(*MsgRegisterOracleResponse)(nil),          // 54: noble.dollar.vaults.v2.MsgRegisterOracleResponse
-	(*MsgUpdateOracleConfigResponse)(nil),      // 55: noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse
-	(*MsgRemoveOracleResponse)(nil),            // 56: noble.dollar.vaults.v2.MsgRemoveOracleResponse
-	(*MsgUpdateOracleParamsResponse)(nil),      // 57: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse
+	(*MsgDeposit)(nil),                                  // 0: noble.dollar.vaults.v2.MsgDeposit
+	(*MsgDepositResponse)(nil),                          // 1: noble.dollar.vaults.v2.MsgDepositResponse
+	(*MsgSetYieldPreference)(nil),                       // 2: noble.dollar.vaults.v2.MsgSetYieldPreference
+	(*MsgSetYieldPreferenceResponse)(nil),               // 3: noble.dollar.vaults.v2.MsgSetYieldPreferenceResponse
+	(*MsgUpdateVaultConfig)(nil),                        // 4: noble.dollar.vaults.v2.MsgUpdateVaultConfig
+	(*MsgUpdateVaultConfigResponse)(nil),                // 5: noble.dollar.vaults.v2.MsgUpdateVaultConfigResponse
+	(*MsgUpdateParams)(nil),                             // 6: noble.dollar.vaults.v2.MsgUpdateParams
+	(*MsgUpdateParamsResponse)(nil),                     // 7: noble.dollar.vaults.v2.MsgUpdateParamsResponse
+	(*MsgCreateCrossChainRoute)(nil),                    // 8: noble.dollar.vaults.v2.MsgCreateCrossChainRoute
+	(*MsgCreateCrossChainRouteResponse)(nil),            // 9: noble.dollar.vaults.v2.MsgCreateCrossChainRouteResponse
+	(*MsgUpdateCrossChainRoute)(nil),                    // 10: noble.dollar.vaults.v2.MsgUpdateCrossChainRoute
+	(*MsgUpdateCrossChainRouteResponse)(nil),            // 11: noble.dollar.vaults.v2.MsgUpdateCrossChainRouteResponse
+	(*MsgDisableCrossChainRoute)(nil),                   // 12: noble.dollar.vaults.v2.MsgDisableCrossChainRoute
+	(*MsgDisableCrossChainRouteResponse)(nil),           // 13: noble.dollar.vaults.v2.MsgDisableCrossChainRouteResponse
+	(*MsgRemoteDeposit)(nil),                            // 14: noble.dollar.vaults.v2.MsgRemoteDeposit
+	(*MsgRemoteDepositResponse)(nil),                    // 15: noble.dollar.vaults.v2.MsgRemoteDepositResponse
+	(*MsgRemoteWithdraw)(nil),                           // 16: noble.dollar.vaults.v2.MsgRemoteWithdraw
+	(*MsgRemoteWithdrawResponse)(nil),                   // 17: noble.dollar.vaults.v2.MsgRemoteWithdrawResponse
+	(*MsgProcessInFlightPosition)(nil),                  // 18: noble.dollar.vaults.v2.MsgProcessInFlightPosition
+	(*MsgProcessInFlightPositionResponse)(nil),          // 19: noble.dollar.vaults.v2.MsgProcessInFlightPositionResponse
+	(*MsgRequestWithdrawal)(nil),                        // 20: noble.dollar.vaults.v2.MsgRequestWithdrawal
+	(*MsgRequestWithdrawalResponse)(nil),                // 21: noble.dollar.vaults.v2.MsgRequestWithdrawalResponse
+	(*MsgProcessWithdrawalQueue)(nil),                   // 22: noble.dollar.vaults.v2.MsgProcessWithdrawalQueue
+	(*MsgProcessWithdrawalQueueResponse)(nil),           // 23: noble.dollar.vaults.v2.MsgProcessWithdrawalQueueResponse
+	(*MsgCreateRemotePosition)(nil),                     // 24: noble.dollar.vaults.v2.MsgCreateRemotePosition
+	(*MsgCreateRemotePositionResponse)(nil),             // 25: noble.dollar.vaults.v2.MsgCreateRemotePositionResponse
+	(*MsgCloseRemotePosition)(nil),                      // 26: noble.dollar.vaults.v2.MsgCloseRemotePosition
+	(*MsgCloseRemotePositionResponse)(nil),              // 27: noble.dollar.vaults.v2.MsgCloseRemotePositionResponse
+	(*TargetAllocation)(nil),                            // 28: noble.dollar.vaults.v2.TargetAllocation
+	(*MsgRebalance)(nil),                                // 29: noble.dollar.vaults.v2.MsgRebalance
+	(*MsgRebalanceResponse)(nil),                        // 30: noble.dollar.vaults.v2.MsgRebalanceResponse
+	(*MsgClaimWithdrawal)(nil),                          // 31: noble.dollar.vaults.v2.MsgClaimWithdrawal
+	(*MsgClaimWithdrawalResponse)(nil),                  // 32: noble.dollar.vaults.v2.MsgClaimWithdrawalResponse
+	(*MsgUpdateNAV)(nil),                                // 33: noble.dollar.vaults.v2.MsgUpdateNAV
+	(*MsgUpdateNAVResponse)(nil),                        // 34: noble.dollar.vaults.v2.MsgUpdateNAVResponse
+	(*MsgHandleStaleInflight)(nil),                      // 35: noble.dollar.vaults.v2.MsgHandleStaleInflight
+	(*MsgHandleStaleInflightResponse)(nil),              // 36: noble.dollar.vaults.v2.MsgHandleStaleInflightResponse
+	(*MsgUpdateDepositLimits)(nil),                      // 37: noble.dollar.vaults.v2.MsgUpdateDepositLimits
+	(*MsgUpdateDepositLimitsResponse)(nil),              // 38: noble.dollar.vaults.v2.MsgUpdateDepositLimitsResponse
+	(*MsgCleanupStaleInflight)(nil),                     // 39: noble.dollar.vaults.v2.MsgCleanupStaleInflight
+	(*MsgCleanupStaleInflightResponse)(nil),             // 40: noble.dollar.vaults.v2.MsgCleanupStaleInflightResponse
+	(*MsgUpdateVaultAccounting)(nil),                    // 41: noble.dollar.vaults.v2.MsgUpdateVaultAccounting
+	(*MsgUpdateVaultAccountingResponse)(nil),            // 42: noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse
+	(*MsgInitiateRemotePositionRedemption)(nil),         // 43: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption
+	(*MsgInitiateRemotePositionRedemptionResponse)(nil), // 44: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse
+	(*MsgProcessIncomingWarpFunds)(nil),                 // 45: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds
+	(*MsgProcessIncomingWarpFundsResponse)(nil),         // 46: noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse
+	(*VaultConfig)(nil),                                 // 47: noble.dollar.vaults.v2.VaultConfig
+	(*Params)(nil),                                      // 48: noble.dollar.vaults.v2.Params
+	(*CrossChainRoute)(nil),                             // 49: noble.dollar.vaults.v2.CrossChainRoute
+	(*timestamppb.Timestamp)(nil),                       // 50: google.protobuf.Timestamp
+	(*ProviderTrackingInfo)(nil),                        // 51: noble.dollar.vaults.v2.ProviderTrackingInfo
+	(InflightStatus)(0),                                 // 52: noble.dollar.vaults.v2.InflightStatus
+	(*DepositLimit)(nil),                                // 53: noble.dollar.vaults.v2.DepositLimit
+	(*MsgRegisterOracle)(nil),                           // 54: noble.dollar.vaults.v2.MsgRegisterOracle
+	(*MsgUpdateOracleConfig)(nil),                       // 55: noble.dollar.vaults.v2.MsgUpdateOracleConfig
+	(*MsgRemoveOracle)(nil),                             // 56: noble.dollar.vaults.v2.MsgRemoveOracle
+	(*MsgUpdateOracleParams)(nil),                       // 57: noble.dollar.vaults.v2.MsgUpdateOracleParams
+	(*MsgRegisterOracleResponse)(nil),                   // 58: noble.dollar.vaults.v2.MsgRegisterOracleResponse
+	(*MsgUpdateOracleConfigResponse)(nil),               // 59: noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse
+	(*MsgRemoveOracleResponse)(nil),                     // 60: noble.dollar.vaults.v2.MsgRemoveOracleResponse
+	(*MsgUpdateOracleParamsResponse)(nil),               // 61: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse
 }
 var file_noble_dollar_vaults_v2_tx_proto_depIdxs = []int32{
-	43, // 0: noble.dollar.vaults.v2.MsgUpdateVaultConfig.config:type_name -> noble.dollar.vaults.v2.VaultConfig
-	44, // 1: noble.dollar.vaults.v2.MsgUpdateParams.params:type_name -> noble.dollar.vaults.v2.Params
-	45, // 2: noble.dollar.vaults.v2.MsgCreateCrossChainRoute.route:type_name -> noble.dollar.vaults.v2.CrossChainRoute
-	45, // 3: noble.dollar.vaults.v2.MsgUpdateCrossChainRoute.route:type_name -> noble.dollar.vaults.v2.CrossChainRoute
-	46, // 4: noble.dollar.vaults.v2.MsgRemoteDepositResponse.expected_completion:type_name -> google.protobuf.Timestamp
-	47, // 5: noble.dollar.vaults.v2.MsgRemoteDepositResponse.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
-	46, // 6: noble.dollar.vaults.v2.MsgRemoteWithdrawResponse.expected_completion:type_name -> google.protobuf.Timestamp
-	47, // 7: noble.dollar.vaults.v2.MsgRemoteWithdrawResponse.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
-	48, // 8: noble.dollar.vaults.v2.MsgProcessInFlightPosition.result_status:type_name -> noble.dollar.vaults.v2.InflightStatus
-	47, // 9: noble.dollar.vaults.v2.MsgProcessInFlightPosition.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
-	48, // 10: noble.dollar.vaults.v2.MsgProcessInFlightPositionResponse.final_status:type_name -> noble.dollar.vaults.v2.InflightStatus
-	46, // 11: noble.dollar.vaults.v2.MsgRequestWithdrawalResponse.expected_claimable_at:type_name -> google.protobuf.Timestamp
-	46, // 12: noble.dollar.vaults.v2.MsgCreateRemotePositionResponse.expected_completion:type_name -> google.protobuf.Timestamp
-	46, // 13: noble.dollar.vaults.v2.MsgCloseRemotePositionResponse.expected_completion:type_name -> google.protobuf.Timestamp
+	47, // 0: noble.dollar.vaults.v2.MsgUpdateVaultConfig.config:type_name -> noble.dollar.vaults.v2.VaultConfig
+	48, // 1: noble.dollar.vaults.v2.MsgUpdateParams.params:type_name -> noble.dollar.vaults.v2.Params
+	49, // 2: noble.dollar.vaults.v2.MsgCreateCrossChainRoute.route:type_name -> noble.dollar.vaults.v2.CrossChainRoute
+	49, // 3: noble.dollar.vaults.v2.MsgUpdateCrossChainRoute.route:type_name -> noble.dollar.vaults.v2.CrossChainRoute
+	50, // 4: noble.dollar.vaults.v2.MsgRemoteDepositResponse.expected_completion:type_name -> google.protobuf.Timestamp
+	51, // 5: noble.dollar.vaults.v2.MsgRemoteDepositResponse.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
+	50, // 6: noble.dollar.vaults.v2.MsgRemoteWithdrawResponse.expected_completion:type_name -> google.protobuf.Timestamp
+	51, // 7: noble.dollar.vaults.v2.MsgRemoteWithdrawResponse.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
+	52, // 8: noble.dollar.vaults.v2.MsgProcessInFlightPosition.result_status:type_name -> noble.dollar.vaults.v2.InflightStatus
+	51, // 9: noble.dollar.vaults.v2.MsgProcessInFlightPosition.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
+	52, // 10: noble.dollar.vaults.v2.MsgProcessInFlightPositionResponse.final_status:type_name -> noble.dollar.vaults.v2.InflightStatus
+	50, // 11: noble.dollar.vaults.v2.MsgRequestWithdrawalResponse.expected_claimable_at:type_name -> google.protobuf.Timestamp
+	50, // 12: noble.dollar.vaults.v2.MsgCreateRemotePositionResponse.expected_completion:type_name -> google.protobuf.Timestamp
+	50, // 13: noble.dollar.vaults.v2.MsgCloseRemotePositionResponse.expected_completion:type_name -> google.protobuf.Timestamp
 	28, // 14: noble.dollar.vaults.v2.MsgRebalance.target_allocations:type_name -> noble.dollar.vaults.v2.TargetAllocation
-	46, // 15: noble.dollar.vaults.v2.MsgUpdateNAVResponse.timestamp:type_name -> google.protobuf.Timestamp
-	48, // 16: noble.dollar.vaults.v2.MsgHandleStaleInflight.new_status:type_name -> noble.dollar.vaults.v2.InflightStatus
-	48, // 17: noble.dollar.vaults.v2.MsgHandleStaleInflightResponse.final_status:type_name -> noble.dollar.vaults.v2.InflightStatus
-	46, // 18: noble.dollar.vaults.v2.MsgHandleStaleInflightResponse.handled_at:type_name -> google.protobuf.Timestamp
-	49, // 19: noble.dollar.vaults.v2.MsgUpdateDepositLimits.limits:type_name -> noble.dollar.vaults.v2.DepositLimit
-	46, // 20: noble.dollar.vaults.v2.MsgCleanupStaleInflightResponse.cleaned_at:type_name -> google.protobuf.Timestamp
-	0,  // 21: noble.dollar.vaults.v2.Msg.Deposit:input_type -> noble.dollar.vaults.v2.MsgDeposit
-	20, // 22: noble.dollar.vaults.v2.Msg.RequestWithdrawal:input_type -> noble.dollar.vaults.v2.MsgRequestWithdrawal
-	2,  // 23: noble.dollar.vaults.v2.Msg.SetYieldPreference:input_type -> noble.dollar.vaults.v2.MsgSetYieldPreference
-	22, // 24: noble.dollar.vaults.v2.Msg.ProcessWithdrawalQueue:input_type -> noble.dollar.vaults.v2.MsgProcessWithdrawalQueue
-	4,  // 25: noble.dollar.vaults.v2.Msg.UpdateVaultConfig:input_type -> noble.dollar.vaults.v2.MsgUpdateVaultConfig
-	6,  // 26: noble.dollar.vaults.v2.Msg.UpdateParams:input_type -> noble.dollar.vaults.v2.MsgUpdateParams
-	8,  // 27: noble.dollar.vaults.v2.Msg.CreateCrossChainRoute:input_type -> noble.dollar.vaults.v2.MsgCreateCrossChainRoute
-	10, // 28: noble.dollar.vaults.v2.Msg.UpdateCrossChainRoute:input_type -> noble.dollar.vaults.v2.MsgUpdateCrossChainRoute
-	12, // 29: noble.dollar.vaults.v2.Msg.DisableCrossChainRoute:input_type -> noble.dollar.vaults.v2.MsgDisableCrossChainRoute
-	24, // 30: noble.dollar.vaults.v2.Msg.CreateRemotePosition:input_type -> noble.dollar.vaults.v2.MsgCreateRemotePosition
-	26, // 31: noble.dollar.vaults.v2.Msg.CloseRemotePosition:input_type -> noble.dollar.vaults.v2.MsgCloseRemotePosition
-	29, // 32: noble.dollar.vaults.v2.Msg.Rebalance:input_type -> noble.dollar.vaults.v2.MsgRebalance
-	14, // 33: noble.dollar.vaults.v2.Msg.RemoteDeposit:input_type -> noble.dollar.vaults.v2.MsgRemoteDeposit
-	16, // 34: noble.dollar.vaults.v2.Msg.RemoteWithdraw:input_type -> noble.dollar.vaults.v2.MsgRemoteWithdraw
-	18, // 35: noble.dollar.vaults.v2.Msg.ProcessInFlightPosition:input_type -> noble.dollar.vaults.v2.MsgProcessInFlightPosition
-	50, // 36: noble.dollar.vaults.v2.Msg.RegisterOracle:input_type -> noble.dollar.vaults.v2.MsgRegisterOracle
-	51, // 37: noble.dollar.vaults.v2.Msg.UpdateOracleConfig:input_type -> noble.dollar.vaults.v2.MsgUpdateOracleConfig
-	52, // 38: noble.dollar.vaults.v2.Msg.RemoveOracle:input_type -> noble.dollar.vaults.v2.MsgRemoveOracle
-	53, // 39: noble.dollar.vaults.v2.Msg.UpdateOracleParams:input_type -> noble.dollar.vaults.v2.MsgUpdateOracleParams
-	31, // 40: noble.dollar.vaults.v2.Msg.ClaimWithdrawal:input_type -> noble.dollar.vaults.v2.MsgClaimWithdrawal
-	33, // 41: noble.dollar.vaults.v2.Msg.UpdateNAV:input_type -> noble.dollar.vaults.v2.MsgUpdateNAV
-	35, // 42: noble.dollar.vaults.v2.Msg.HandleStaleInflight:input_type -> noble.dollar.vaults.v2.MsgHandleStaleInflight
-	37, // 43: noble.dollar.vaults.v2.Msg.UpdateDepositLimits:input_type -> noble.dollar.vaults.v2.MsgUpdateDepositLimits
-	39, // 44: noble.dollar.vaults.v2.Msg.CleanupStaleInflight:input_type -> noble.dollar.vaults.v2.MsgCleanupStaleInflight
-	41, // 45: noble.dollar.vaults.v2.Msg.UpdateVaultAccounting:input_type -> noble.dollar.vaults.v2.MsgUpdateVaultAccounting
-	1,  // 46: noble.dollar.vaults.v2.Msg.Deposit:output_type -> noble.dollar.vaults.v2.MsgDepositResponse
-	21, // 47: noble.dollar.vaults.v2.Msg.RequestWithdrawal:output_type -> noble.dollar.vaults.v2.MsgRequestWithdrawalResponse
-	3,  // 48: noble.dollar.vaults.v2.Msg.SetYieldPreference:output_type -> noble.dollar.vaults.v2.MsgSetYieldPreferenceResponse
-	23, // 49: noble.dollar.vaults.v2.Msg.ProcessWithdrawalQueue:output_type -> noble.dollar.vaults.v2.MsgProcessWithdrawalQueueResponse
-	5,  // 50: noble.dollar.vaults.v2.Msg.UpdateVaultConfig:output_type -> noble.dollar.vaults.v2.MsgUpdateVaultConfigResponse
-	7,  // 51: noble.dollar.vaults.v2.Msg.UpdateParams:output_type -> noble.dollar.vaults.v2.MsgUpdateParamsResponse
-	9,  // 52: noble.dollar.vaults.v2.Msg.CreateCrossChainRoute:output_type -> noble.dollar.vaults.v2.MsgCreateCrossChainRouteResponse
-	11, // 53: noble.dollar.vaults.v2.Msg.UpdateCrossChainRoute:output_type -> noble.dollar.vaults.v2.MsgUpdateCrossChainRouteResponse
-	13, // 54: noble.dollar.vaults.v2.Msg.DisableCrossChainRoute:output_type -> noble.dollar.vaults.v2.MsgDisableCrossChainRouteResponse
-	25, // 55: noble.dollar.vaults.v2.Msg.CreateRemotePosition:output_type -> noble.dollar.vaults.v2.MsgCreateRemotePositionResponse
-	27, // 56: noble.dollar.vaults.v2.Msg.CloseRemotePosition:output_type -> noble.dollar.vaults.v2.MsgCloseRemotePositionResponse
-	30, // 57: noble.dollar.vaults.v2.Msg.Rebalance:output_type -> noble.dollar.vaults.v2.MsgRebalanceResponse
-	15, // 58: noble.dollar.vaults.v2.Msg.RemoteDeposit:output_type -> noble.dollar.vaults.v2.MsgRemoteDepositResponse
-	17, // 59: noble.dollar.vaults.v2.Msg.RemoteWithdraw:output_type -> noble.dollar.vaults.v2.MsgRemoteWithdrawResponse
-	19, // 60: noble.dollar.vaults.v2.Msg.ProcessInFlightPosition:output_type -> noble.dollar.vaults.v2.MsgProcessInFlightPositionResponse
-	54, // 61: noble.dollar.vaults.v2.Msg.RegisterOracle:output_type -> noble.dollar.vaults.v2.MsgRegisterOracleResponse
-	55, // 62: noble.dollar.vaults.v2.Msg.UpdateOracleConfig:output_type -> noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse
-	56, // 63: noble.dollar.vaults.v2.Msg.RemoveOracle:output_type -> noble.dollar.vaults.v2.MsgRemoveOracleResponse
-	57, // 64: noble.dollar.vaults.v2.Msg.UpdateOracleParams:output_type -> noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse
-	32, // 65: noble.dollar.vaults.v2.Msg.ClaimWithdrawal:output_type -> noble.dollar.vaults.v2.MsgClaimWithdrawalResponse
-	34, // 66: noble.dollar.vaults.v2.Msg.UpdateNAV:output_type -> noble.dollar.vaults.v2.MsgUpdateNAVResponse
-	36, // 67: noble.dollar.vaults.v2.Msg.HandleStaleInflight:output_type -> noble.dollar.vaults.v2.MsgHandleStaleInflightResponse
-	38, // 68: noble.dollar.vaults.v2.Msg.UpdateDepositLimits:output_type -> noble.dollar.vaults.v2.MsgUpdateDepositLimitsResponse
-	40, // 69: noble.dollar.vaults.v2.Msg.CleanupStaleInflight:output_type -> noble.dollar.vaults.v2.MsgCleanupStaleInflightResponse
-	42, // 70: noble.dollar.vaults.v2.Msg.UpdateVaultAccounting:output_type -> noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse
-	46, // [46:71] is the sub-list for method output_type
-	21, // [21:46] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	50, // 15: noble.dollar.vaults.v2.MsgUpdateNAVResponse.timestamp:type_name -> google.protobuf.Timestamp
+	52, // 16: noble.dollar.vaults.v2.MsgHandleStaleInflight.new_status:type_name -> noble.dollar.vaults.v2.InflightStatus
+	52, // 17: noble.dollar.vaults.v2.MsgHandleStaleInflightResponse.final_status:type_name -> noble.dollar.vaults.v2.InflightStatus
+	50, // 18: noble.dollar.vaults.v2.MsgHandleStaleInflightResponse.handled_at:type_name -> google.protobuf.Timestamp
+	53, // 19: noble.dollar.vaults.v2.MsgUpdateDepositLimits.limits:type_name -> noble.dollar.vaults.v2.DepositLimit
+	50, // 20: noble.dollar.vaults.v2.MsgCleanupStaleInflightResponse.cleaned_at:type_name -> google.protobuf.Timestamp
+	50, // 21: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption.expected_completion:type_name -> google.protobuf.Timestamp
+	50, // 22: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.expected_completion:type_name -> google.protobuf.Timestamp
+	51, // 23: noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
+	50, // 24: noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds.received_at:type_name -> google.protobuf.Timestamp
+	0,  // 25: noble.dollar.vaults.v2.Msg.Deposit:input_type -> noble.dollar.vaults.v2.MsgDeposit
+	20, // 26: noble.dollar.vaults.v2.Msg.RequestWithdrawal:input_type -> noble.dollar.vaults.v2.MsgRequestWithdrawal
+	2,  // 27: noble.dollar.vaults.v2.Msg.SetYieldPreference:input_type -> noble.dollar.vaults.v2.MsgSetYieldPreference
+	22, // 28: noble.dollar.vaults.v2.Msg.ProcessWithdrawalQueue:input_type -> noble.dollar.vaults.v2.MsgProcessWithdrawalQueue
+	4,  // 29: noble.dollar.vaults.v2.Msg.UpdateVaultConfig:input_type -> noble.dollar.vaults.v2.MsgUpdateVaultConfig
+	6,  // 30: noble.dollar.vaults.v2.Msg.UpdateParams:input_type -> noble.dollar.vaults.v2.MsgUpdateParams
+	8,  // 31: noble.dollar.vaults.v2.Msg.CreateCrossChainRoute:input_type -> noble.dollar.vaults.v2.MsgCreateCrossChainRoute
+	10, // 32: noble.dollar.vaults.v2.Msg.UpdateCrossChainRoute:input_type -> noble.dollar.vaults.v2.MsgUpdateCrossChainRoute
+	12, // 33: noble.dollar.vaults.v2.Msg.DisableCrossChainRoute:input_type -> noble.dollar.vaults.v2.MsgDisableCrossChainRoute
+	24, // 34: noble.dollar.vaults.v2.Msg.CreateRemotePosition:input_type -> noble.dollar.vaults.v2.MsgCreateRemotePosition
+	26, // 35: noble.dollar.vaults.v2.Msg.CloseRemotePosition:input_type -> noble.dollar.vaults.v2.MsgCloseRemotePosition
+	29, // 36: noble.dollar.vaults.v2.Msg.Rebalance:input_type -> noble.dollar.vaults.v2.MsgRebalance
+	14, // 37: noble.dollar.vaults.v2.Msg.RemoteDeposit:input_type -> noble.dollar.vaults.v2.MsgRemoteDeposit
+	16, // 38: noble.dollar.vaults.v2.Msg.RemoteWithdraw:input_type -> noble.dollar.vaults.v2.MsgRemoteWithdraw
+	18, // 39: noble.dollar.vaults.v2.Msg.ProcessInFlightPosition:input_type -> noble.dollar.vaults.v2.MsgProcessInFlightPosition
+	54, // 40: noble.dollar.vaults.v2.Msg.RegisterOracle:input_type -> noble.dollar.vaults.v2.MsgRegisterOracle
+	55, // 41: noble.dollar.vaults.v2.Msg.UpdateOracleConfig:input_type -> noble.dollar.vaults.v2.MsgUpdateOracleConfig
+	56, // 42: noble.dollar.vaults.v2.Msg.RemoveOracle:input_type -> noble.dollar.vaults.v2.MsgRemoveOracle
+	57, // 43: noble.dollar.vaults.v2.Msg.UpdateOracleParams:input_type -> noble.dollar.vaults.v2.MsgUpdateOracleParams
+	31, // 44: noble.dollar.vaults.v2.Msg.ClaimWithdrawal:input_type -> noble.dollar.vaults.v2.MsgClaimWithdrawal
+	33, // 45: noble.dollar.vaults.v2.Msg.UpdateNAV:input_type -> noble.dollar.vaults.v2.MsgUpdateNAV
+	35, // 46: noble.dollar.vaults.v2.Msg.HandleStaleInflight:input_type -> noble.dollar.vaults.v2.MsgHandleStaleInflight
+	37, // 47: noble.dollar.vaults.v2.Msg.UpdateDepositLimits:input_type -> noble.dollar.vaults.v2.MsgUpdateDepositLimits
+	39, // 48: noble.dollar.vaults.v2.Msg.CleanupStaleInflight:input_type -> noble.dollar.vaults.v2.MsgCleanupStaleInflight
+	43, // 49: noble.dollar.vaults.v2.Msg.InitiateRemotePositionRedemption:input_type -> noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemption
+	45, // 50: noble.dollar.vaults.v2.Msg.ProcessIncomingWarpFunds:input_type -> noble.dollar.vaults.v2.MsgProcessIncomingWarpFunds
+	41, // 51: noble.dollar.vaults.v2.Msg.UpdateVaultAccounting:input_type -> noble.dollar.vaults.v2.MsgUpdateVaultAccounting
+	1,  // 52: noble.dollar.vaults.v2.Msg.Deposit:output_type -> noble.dollar.vaults.v2.MsgDepositResponse
+	21, // 53: noble.dollar.vaults.v2.Msg.RequestWithdrawal:output_type -> noble.dollar.vaults.v2.MsgRequestWithdrawalResponse
+	3,  // 54: noble.dollar.vaults.v2.Msg.SetYieldPreference:output_type -> noble.dollar.vaults.v2.MsgSetYieldPreferenceResponse
+	23, // 55: noble.dollar.vaults.v2.Msg.ProcessWithdrawalQueue:output_type -> noble.dollar.vaults.v2.MsgProcessWithdrawalQueueResponse
+	5,  // 56: noble.dollar.vaults.v2.Msg.UpdateVaultConfig:output_type -> noble.dollar.vaults.v2.MsgUpdateVaultConfigResponse
+	7,  // 57: noble.dollar.vaults.v2.Msg.UpdateParams:output_type -> noble.dollar.vaults.v2.MsgUpdateParamsResponse
+	9,  // 58: noble.dollar.vaults.v2.Msg.CreateCrossChainRoute:output_type -> noble.dollar.vaults.v2.MsgCreateCrossChainRouteResponse
+	11, // 59: noble.dollar.vaults.v2.Msg.UpdateCrossChainRoute:output_type -> noble.dollar.vaults.v2.MsgUpdateCrossChainRouteResponse
+	13, // 60: noble.dollar.vaults.v2.Msg.DisableCrossChainRoute:output_type -> noble.dollar.vaults.v2.MsgDisableCrossChainRouteResponse
+	25, // 61: noble.dollar.vaults.v2.Msg.CreateRemotePosition:output_type -> noble.dollar.vaults.v2.MsgCreateRemotePositionResponse
+	27, // 62: noble.dollar.vaults.v2.Msg.CloseRemotePosition:output_type -> noble.dollar.vaults.v2.MsgCloseRemotePositionResponse
+	30, // 63: noble.dollar.vaults.v2.Msg.Rebalance:output_type -> noble.dollar.vaults.v2.MsgRebalanceResponse
+	15, // 64: noble.dollar.vaults.v2.Msg.RemoteDeposit:output_type -> noble.dollar.vaults.v2.MsgRemoteDepositResponse
+	17, // 65: noble.dollar.vaults.v2.Msg.RemoteWithdraw:output_type -> noble.dollar.vaults.v2.MsgRemoteWithdrawResponse
+	19, // 66: noble.dollar.vaults.v2.Msg.ProcessInFlightPosition:output_type -> noble.dollar.vaults.v2.MsgProcessInFlightPositionResponse
+	58, // 67: noble.dollar.vaults.v2.Msg.RegisterOracle:output_type -> noble.dollar.vaults.v2.MsgRegisterOracleResponse
+	59, // 68: noble.dollar.vaults.v2.Msg.UpdateOracleConfig:output_type -> noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse
+	60, // 69: noble.dollar.vaults.v2.Msg.RemoveOracle:output_type -> noble.dollar.vaults.v2.MsgRemoveOracleResponse
+	61, // 70: noble.dollar.vaults.v2.Msg.UpdateOracleParams:output_type -> noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse
+	32, // 71: noble.dollar.vaults.v2.Msg.ClaimWithdrawal:output_type -> noble.dollar.vaults.v2.MsgClaimWithdrawalResponse
+	34, // 72: noble.dollar.vaults.v2.Msg.UpdateNAV:output_type -> noble.dollar.vaults.v2.MsgUpdateNAVResponse
+	36, // 73: noble.dollar.vaults.v2.Msg.HandleStaleInflight:output_type -> noble.dollar.vaults.v2.MsgHandleStaleInflightResponse
+	38, // 74: noble.dollar.vaults.v2.Msg.UpdateDepositLimits:output_type -> noble.dollar.vaults.v2.MsgUpdateDepositLimitsResponse
+	40, // 75: noble.dollar.vaults.v2.Msg.CleanupStaleInflight:output_type -> noble.dollar.vaults.v2.MsgCleanupStaleInflightResponse
+	44, // 76: noble.dollar.vaults.v2.Msg.InitiateRemotePositionRedemption:output_type -> noble.dollar.vaults.v2.MsgInitiateRemotePositionRedemptionResponse
+	46, // 77: noble.dollar.vaults.v2.Msg.ProcessIncomingWarpFunds:output_type -> noble.dollar.vaults.v2.MsgProcessIncomingWarpFundsResponse
+	42, // 78: noble.dollar.vaults.v2.Msg.UpdateVaultAccounting:output_type -> noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse
+	52, // [52:79] is the sub-list for method output_type
+	25, // [25:52] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_noble_dollar_vaults_v2_tx_proto_init() }
@@ -28106,6 +31549,54 @@ func file_noble_dollar_vaults_v2_tx_proto_init() {
 				return nil
 			}
 		}
+		file_noble_dollar_vaults_v2_tx_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgInitiateRemotePositionRedemption); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_tx_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgInitiateRemotePositionRedemptionResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_tx_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgProcessIncomingWarpFunds); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_noble_dollar_vaults_v2_tx_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgProcessIncomingWarpFundsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -28113,7 +31604,7 @@ func file_noble_dollar_vaults_v2_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_noble_dollar_vaults_v2_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   43,
+			NumMessages:   47,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
