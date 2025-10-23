@@ -43,8 +43,9 @@ import (
 	"dollar.noble.xyz/v3/types"
 	"dollar.noble.xyz/v3/types/portal"
 	"dollar.noble.xyz/v3/types/portal/ntt"
-	"dollar.noble.xyz/v3/types/v2"
+	modulev2 "dollar.noble.xyz/v3/types/v2"
 	"dollar.noble.xyz/v3/types/vaults"
+	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
 type Keeper struct {
@@ -72,10 +73,40 @@ type Keeper struct {
 	Paused             collections.Item[bool]
 	Index              collections.Item[int64]
 	Principal          collections.Map[[]byte, math.Int]
-	Stats              collections.Item[v2.Stats]
+	Stats              collections.Item[modulev2.Stats]
 	TotalExternalYield collections.Map[collections.Pair[int32, string], math.Int]
 	YieldRecipients    collections.Map[collections.Pair[int32, string], string]
 	RetryAmounts       collections.Map[collections.Pair[int32, string], math.Int]
+
+	VaultsV2Params                        collections.Item[vaultsv2.Params]
+	VaultsV2Config                        collections.Item[vaultsv2.VaultConfig]
+	VaultsV2UserPositions                 collections.Map[[]byte, vaultsv2.UserPosition]
+	VaultsV2DepositLimits                 collections.Item[vaultsv2.DepositLimit]
+	VaultsV2UserDepositHistory            collections.Map[collections.Pair[[]byte, int64], math.Int]
+	VaultsV2DepositVelocity               collections.Map[[]byte, vaultsv2.DepositVelocity]
+	VaultsV2BlockDepositVolume            collections.Map[int64, math.Int]
+	VaultsV2PendingDeploymentFunds        collections.Item[math.Int]
+	VaultsV2PendingWithdrawalsAmount      collections.Item[math.Int]
+	VaultsV2WithdrawalQueue               collections.Map[uint64, vaultsv2.WithdrawalRequest]
+	VaultsV2WithdrawalNextID              collections.Item[uint64]
+	VaultsV2NAVInfo                       collections.Item[vaultsv2.NAVInfo]
+	VaultsV2VaultState                    collections.Item[vaultsv2.VaultState]
+	VaultsV2AccountingCursor              collections.Item[vaultsv2.AccountingCursor]
+	VaultsV2AccountingSnapshots           collections.Map[[]byte, vaultsv2.AccountingSnapshot]
+	VaultsV2RemotePositions               collections.Map[uint64, vaultsv2.RemotePosition]
+	VaultsV2RemotePositionNextID          collections.Item[uint64]
+	VaultsV2RemotePositionChains          collections.Map[uint64, uint32]
+	VaultsV2RemotePositionOracles         collections.Map[uint64, vaultsv2.RemotePositionOracle]
+	VaultsV2CrossChainRoutes              collections.Map[uint32, vaultsv2.CrossChainRoute]
+	VaultsV2CrossChainRouteNextID         collections.Item[uint32]
+	VaultsV2InflightFunds                 collections.Map[string, vaultsv2.InflightFund]
+	VaultsV2InflightNextID                collections.Item[uint64]
+	VaultsV2EnrolledOracles               collections.Map[string, vaultsv2.EnrolledOracle]
+	VaultsV2OracleParams                  collections.Item[vaultsv2.OracleGovernanceParams]
+	VaultsV2InflightValueByRoute          collections.Map[uint32, math.Int]
+	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
+	VaultsV2NAVSnapshots                  collections.Map[int64, vaultsv2.NAVSnapshot]
+	VaultsV2NAVSnapshotNextID             collections.Item[int64]
 
 	PortalOwner         collections.Item[string]
 	PortalPaused        collections.Item[bool]
@@ -149,10 +180,40 @@ func NewKeeper(
 		Paused:             collections.NewItem(builder, types.PausedKey, "paused", collections.BoolValue),
 		Index:              collections.NewItem(builder, types.IndexKey, "index", collections.Int64Value),
 		Principal:          collections.NewMap(builder, types.PrincipalPrefix, "principal", collections.BytesKey, sdk.IntValue),
-		Stats:              collections.NewItem(builder, types.StatsKey, "stats", codec.CollValue[v2.Stats](cdc)),
+		Stats:              collections.NewItem(builder, types.StatsKey, "stats", codec.CollValue[modulev2.Stats](cdc)),
 		TotalExternalYield: collections.NewMap(builder, types.TotalExternalYieldPrefix, "total_external_yield", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), sdk.IntValue),
 		YieldRecipients:    collections.NewMap(builder, types.YieldRecipientPrefix, "yield_recipients", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), collections.StringValue),
 		RetryAmounts:       collections.NewMap(builder, types.RetryAmountPrefix, "retry_amounts", collections.PairKeyCodec(collections.Int32Key, collections.StringKey), sdk.IntValue),
+
+		VaultsV2Params:                        collections.NewItem(builder, vaultsv2.ParamsKey, "vaults_v2_params", codec.CollValue[vaultsv2.Params](cdc)),
+		VaultsV2Config:                        collections.NewItem(builder, vaultsv2.VaultConfigurationKey, "vaults_v2_config", codec.CollValue[vaultsv2.VaultConfig](cdc)),
+		VaultsV2UserPositions:                 collections.NewMap(builder, vaultsv2.UserPositionPrefix, "vaults_v2_user_positions", collections.BytesKey, codec.CollValue[vaultsv2.UserPosition](cdc)),
+		VaultsV2DepositLimits:                 collections.NewItem(builder, vaultsv2.DepositLimitsKey, "vaults_v2_deposit_limits", codec.CollValue[vaultsv2.DepositLimit](cdc)),
+		VaultsV2UserDepositHistory:            collections.NewMap(builder, vaultsv2.UserDepositHistoryPrefix, "vaults_v2_user_deposit_history", collections.PairKeyCodec(collections.BytesKey, collections.Int64Key), sdk.IntValue),
+		VaultsV2DepositVelocity:               collections.NewMap(builder, vaultsv2.DepositVelocityPrefix, "vaults_v2_deposit_velocity", collections.BytesKey, codec.CollValue[vaultsv2.DepositVelocity](cdc)),
+		VaultsV2BlockDepositVolume:            collections.NewMap(builder, vaultsv2.BlockDepositVolumePrefix, "vaults_v2_block_deposit_volume", collections.Int64Key, sdk.IntValue),
+		VaultsV2PendingDeploymentFunds:        collections.NewItem(builder, vaultsv2.PendingDeploymentFundsKey, "vaults_v2_pending_deployment", sdk.IntValue),
+		VaultsV2PendingWithdrawalsAmount:      collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
+		VaultsV2WithdrawalQueue:               collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),
+		VaultsV2WithdrawalNextID:              collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
+		VaultsV2NAVInfo:                       collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
+		VaultsV2VaultState:                    collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
+		VaultsV2AccountingCursor:              collections.NewItem(builder, vaultsv2.AccountingCursorKey, "vaults_v2_accounting_cursor", codec.CollValue[vaultsv2.AccountingCursor](cdc)),
+		VaultsV2AccountingSnapshots:           collections.NewMap(builder, vaultsv2.AccountingSnapshotPrefix, "vaults_v2_accounting_snapshots", collections.BytesKey, codec.CollValue[vaultsv2.AccountingSnapshot](cdc)),
+		VaultsV2RemotePositions:               collections.NewMap(builder, vaultsv2.RemotePositionPrefix, "vaults_v2_remote_positions", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePosition](cdc)),
+		VaultsV2RemotePositionNextID:          collections.NewItem(builder, vaultsv2.RemotePositionNextIDKey, "vaults_v2_remote_position_next_id", collections.Uint64Value),
+		VaultsV2RemotePositionChains:          collections.NewMap(builder, vaultsv2.RemotePositionChainPrefix, "vaults_v2_remote_position_chains", collections.Uint64Key, collections.Uint32Value),
+		VaultsV2RemotePositionOracles:         collections.NewMap(builder, vaultsv2.RemotePositionOraclesPrefix, "vaults_v2_remote_position_oracles", collections.Uint64Key, codec.CollValue[vaultsv2.RemotePositionOracle](cdc)),
+		VaultsV2CrossChainRoutes:              collections.NewMap(builder, vaultsv2.CrossChainRoutePrefix, "vaults_v2_cross_chain_routes", collections.Uint32Key, codec.CollValue[vaultsv2.CrossChainRoute](cdc)),
+		VaultsV2CrossChainRouteNextID:         collections.NewItem(builder, vaultsv2.CrossChainRouteNextIDKey, "vaults_v2_cross_chain_route_next_id", collections.Uint32Value),
+		VaultsV2InflightFunds:                 collections.NewMap(builder, vaultsv2.InflightFundsPrefix, "vaults_v2_inflight_funds", collections.StringKey, codec.CollValue[vaultsv2.InflightFund](cdc)),
+		VaultsV2InflightNextID:                collections.NewItem(builder, vaultsv2.InflightNextIDKey, "vaults_v2_inflight_next_id", collections.Uint64Value),
+		VaultsV2EnrolledOracles:               collections.NewMap(builder, vaultsv2.EnrolledOraclePrefix, "vaults_v2_enrolled_oracles", collections.StringKey, codec.CollValue[vaultsv2.EnrolledOracle](cdc)),
+		VaultsV2OracleParams:                  collections.NewItem(builder, vaultsv2.OracleParamsKey, "vaults_v2_oracle_params", codec.CollValue[vaultsv2.OracleGovernanceParams](cdc)),
+		VaultsV2InflightValueByRoute:          collections.NewMap(builder, vaultsv2.InflightValueByRoutePrefix, "vaults_v2_inflight_value_by_route", collections.Uint32Key, sdk.IntValue),
+		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
+		VaultsV2NAVSnapshots:                  collections.NewMap(builder, vaultsv2.NAVSnapshotsPrefix, "vaults_v2_nav_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.NAVSnapshot](cdc)),
+		VaultsV2NAVSnapshotNextID:             collections.NewItem(builder, vaultsv2.NAVSnapshotNextIDKey, "vaults_v2_nav_snapshot_next_id", collections.Int64Value),
 
 		PortalOwner:         collections.NewItem(builder, portal.OwnerKey, "portal_owner", collections.StringValue),
 		PortalPaused:        collections.NewItem(builder, portal.PausedKey, "portal_paused", collections.BoolValue),
