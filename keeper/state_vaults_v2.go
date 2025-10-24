@@ -125,17 +125,17 @@ func (k *Keeper) SetVaultsV2NAVInfo(ctx context.Context, nav vaultsv2.NAVInfo) e
 func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64) (vaultsv2.UserPosition, bool, error) {
 	store := k.store.OpenKVStore(ctx)
 	key := vaultsv2.GetUserPositionKey(address, positionID)
-	
+
 	bz, _ := store.Get(key)
 	if bz == nil {
 		return vaultsv2.UserPosition{}, false, nil
 	}
-	
+
 	var position vaultsv2.UserPosition
 	if err := position.Unmarshal(bz); err != nil {
 		return vaultsv2.UserPosition{}, false, err
 	}
-	
+
 	return position, true, nil
 }
 
@@ -143,15 +143,15 @@ func (k *Keeper) GetVaultsV2UserPosition(ctx context.Context, address sdk.AccAdd
 func (k *Keeper) SetVaultsV2UserPosition(ctx context.Context, address sdk.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
 	store := k.store.OpenKVStore(ctx)
 	key := vaultsv2.GetUserPositionKey(address, positionID)
-	
+
 	// Ensure position ID is set correctly
 	position.PositionId = positionID
-	
+
 	bz, err := position.Marshal()
 	if err != nil {
 		return err
 	}
-	
+
 	store.Set(key, bz)
 	return nil
 }
@@ -174,12 +174,12 @@ func (k *Keeper) GetVaultsV2UserPositionLegacy(ctx context.Context, address sdk.
 func (k *Keeper) GetUserPositionCount(ctx context.Context, address sdk.AccAddress) (uint64, error) {
 	store := k.store.OpenKVStore(ctx)
 	key := vaultsv2.GetUserPositionCountKey(address)
-	
+
 	bz, _ := store.Get(key)
 	if bz == nil {
 		return 0, nil
 	}
-	
+
 	return sdk.BigEndianToUint64(bz), nil
 }
 
@@ -195,16 +195,16 @@ func (k *Keeper) SetUserPositionCount(ctx context.Context, address sdk.AccAddres
 func (k *Keeper) GetNextUserPositionID(ctx context.Context, address sdk.AccAddress) (uint64, error) {
 	store := k.store.OpenKVStore(ctx)
 	key := vaultsv2.GetUserNextPositionIDKey(address)
-	
+
 	bz, _ := store.Get(key)
 	var nextID uint64 = 1
 	if bz != nil {
 		nextID = sdk.BigEndianToUint64(bz)
 	}
-	
+
 	// Increment and save for next time
 	store.Set(key, sdk.Uint64ToBigEndian(nextID+1))
-	
+
 	// Also increment position count
 	count, err := k.GetUserPositionCount(ctx, address)
 	if err != nil {
@@ -213,7 +213,7 @@ func (k *Keeper) GetNextUserPositionID(ctx context.Context, address sdk.AccAddre
 	if err := k.SetUserPositionCount(ctx, address, count+1); err != nil {
 		return 0, err
 	}
-	
+
 	return nextID, nil
 }
 
@@ -221,20 +221,20 @@ func (k *Keeper) GetNextUserPositionID(ctx context.Context, address sdk.AccAddre
 func (k *Keeper) IterateUserPositions(ctx context.Context, address sdk.AccAddress, fn func(positionID uint64, position vaultsv2.UserPosition) (bool, error)) error {
 	store := k.store.OpenKVStore(ctx)
 	prefix := append(vaultsv2.UserPositionPrefix, address...)
-	
+
 	iterator, _ := store.Iterator(prefix, storetypes.PrefixEndBytes(prefix))
 	defer iterator.Close()
-	
+
 	for ; iterator.Valid(); iterator.Next() {
 		var position vaultsv2.UserPosition
 		if err := position.Unmarshal(iterator.Value()); err != nil {
 			return err
 		}
-		
+
 		// Extract position ID from the key
 		fullKey := iterator.Key()
 		_, positionID := vaultsv2.ParseUserPositionKey(fullKey)
-		
+
 		stop, err := fn(positionID, position)
 		if err != nil {
 			return err
@@ -243,7 +243,7 @@ func (k *Keeper) IterateUserPositions(ctx context.Context, address sdk.AccAddres
 			break
 		}
 	}
-	
+
 	return nil
 }
 
@@ -254,17 +254,17 @@ func (k *Keeper) IterateVaultsV2UserPositions(ctx context.Context, fn func(addre
 	store := k.store.OpenKVStore(ctx)
 	iterator, _ := store.Iterator(vaultsv2.UserPositionPrefix, storetypes.PrefixEndBytes(vaultsv2.UserPositionPrefix))
 	defer iterator.Close()
-	
+
 	for ; iterator.Valid(); iterator.Next() {
 		var position vaultsv2.UserPosition
 		if err := position.Unmarshal(iterator.Value()); err != nil {
 			return err
 		}
-		
+
 		// Extract address from the key
 		fullKey := iterator.Key()
 		address, _ := vaultsv2.ParseUserPositionKey(fullKey)
-		
+
 		stop, err := fn(sdk.AccAddress(address), position)
 		if err != nil {
 			return err
@@ -273,7 +273,7 @@ func (k *Keeper) IterateVaultsV2UserPositions(ctx context.Context, fn func(addre
 			break
 		}
 	}
-	
+
 	return nil
 }
 
@@ -287,7 +287,7 @@ func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
 	fn func(address sdk.AccAddress, positionID uint64, position vaultsv2.UserPosition) error,
 ) (lastProcessed string, count uint32, err error) {
 	store := k.store.OpenKVStore(ctx)
-	
+
 	var startKey []byte
 	if startAfter != "" {
 		// Parse the startAfter as "address:positionID" format
@@ -295,17 +295,17 @@ func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
 		if len(parts) != 2 {
 			return "", 0, fmt.Errorf("invalid startAfter format, expected 'address:positionID'")
 		}
-		
+
 		addr, err := sdk.AccAddressFromBech32(parts[0])
 		if err != nil {
 			return "", 0, fmt.Errorf("invalid startAfter address: %w", err)
 		}
-		
+
 		posID, err := strconv.ParseUint(parts[1], 10, 64)
 		if err != nil {
 			return "", 0, fmt.Errorf("invalid startAfter position ID: %w", err)
 		}
-		
+
 		// Create the composite key to start after
 		startKey = vaultsv2.GetUserPositionKey(addr, posID)
 	} else {
@@ -330,7 +330,7 @@ func (k *Keeper) IterateVaultsV2UserPositionsPaginated(
 	for ; iter.Valid(); iter.Next() {
 		// Parse the composite key to get address and position ID
 		addr, positionID := vaultsv2.ParseUserPositionKey(iter.Key())
-		
+
 		var position vaultsv2.UserPosition
 		if err := k.cdc.Unmarshal(iter.Value(), &position); err != nil {
 			return "", 0, fmt.Errorf("failed to unmarshal position: %w", err)
@@ -1177,9 +1177,10 @@ func (k *Keeper) GetRecentVaultsV2NAVSnapshots(ctx context.Context, limit int) (
 
 // PruneOldVaultsV2NAVSnapshots removes snapshots older than the specified age.
 // This helps keep storage bounded for TWAP calculations.
-func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAge int64, currentTime int64) (int, error) {
+// maxAgeInBlocks specifies how many blocks back to keep snapshots
+func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAgeInBlocks int64, currentHeight int64) (int, error) {
 	pruned := 0
-	cutoffTime := currentTime - maxAge
+	cutoffHeight := currentHeight - maxAgeInBlocks
 
 	// Get current max ID
 	currentID, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
@@ -1200,7 +1201,7 @@ func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAge int64,
 			continue
 		}
 
-		if snapshot.Timestamp.Unix() < cutoffTime {
+		if snapshot.BlockHeight < cutoffHeight {
 			if err := k.VaultsV2NAVSnapshots.Remove(ctx, i); err != nil {
 				return pruned, err
 			}

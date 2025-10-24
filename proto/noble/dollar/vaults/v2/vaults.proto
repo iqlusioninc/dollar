@@ -106,11 +106,8 @@ message AccountingSnapshot {
     (amino.dont_omitempty) = true
   ];
 
-  // Timestamp when this snapshot was created
-  google.protobuf.Timestamp created_at = 6 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
+  // Block height when this snapshot was created
+  int64 created_at_height = 6;
 }
 
 // WithdrawalRequest represents a pending withdrawal request
@@ -419,14 +416,8 @@ message NAVSnapshot {
     (amino.dont_omitempty) = true
   ];
 
-  // Timestamp of this snapshot
-  google.protobuf.Timestamp timestamp = 2 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
   // Block height at this snapshot
-  int64 block_height = 3;
+  int64 block_height = 2;
 
   // Total shares at this snapshot (for reference)
   string total_shares = 4 [

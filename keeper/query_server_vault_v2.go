@@ -733,18 +733,12 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
 	}
 
-	// Get current vault state
-	state, err := q.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
-	}
-
 	// Build snapshot of cross-chain positions
 	totalRemoteValue := sdkmath.ZeroInt()
 	activePositions := int64(0)
 	stalePositions := int64(0)
 
-	err = q.IterateVaultsV2RemotePositions(ctx, func(id uint64, position vaultsv2.RemotePosition) (bool, error) {
+	err := q.IterateVaultsV2RemotePositions(ctx, func(id uint64, position vaultsv2.RemotePosition) (bool, error) {
 		_, _, err := q.GetVaultsV2RemotePositionChainID(ctx, id)
 		if err != nil {
 			return true, err
@@ -788,7 +782,7 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 		TotalInflightValue: totalInflight,
 		ActivePositions:    activePositions,
 		StalePositions:     stalePositions,
-		Timestamp:          state.LastNavUpdate,
+		BlockHeight:        sdk.UnwrapSDKContext(ctx).BlockHeight(),
 	}
 
 	return &vaultsv2.QueryCrossChainSnapshotResponse{
@@ -1007,10 +1001,10 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 
 	// Aggregate all positions for the user
 	var (
-		totalDeposits  = sdkmath.ZeroInt()
-		totalYield     = sdkmath.ZeroInt()
-		totalLocked    = sdkmath.ZeroInt()
-		positionCount  uint64 = 0
+		totalDeposits        = sdkmath.ZeroInt()
+		totalYield           = sdkmath.ZeroInt()
+		totalLocked          = sdkmath.ZeroInt()
+		positionCount uint64 = 0
 	)
 
 	err = q.IterateUserPositions(ctx, userAddr, func(positionID uint64, position vaultsv2.UserPosition) (bool, error) {

@@ -88,14 +88,15 @@ func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.In
 		return currentNav, nil
 	}
 
-	headerInfo := m.header.GetHeaderInfo(ctx)
-	currentTime := headerInfo.Time.Unix()
+	currentHeight := sdk.UnwrapSDKContext(ctx).BlockHeight()
 
-	// Filter snapshots by age
+	// Filter snapshots by age (in blocks)
 	validSnapshots := make([]vaultsv2.NAVSnapshot, 0, len(snapshots))
 	for _, snapshot := range snapshots {
-		age := currentTime - snapshot.Timestamp.Unix()
-		if params.TwapConfig.MaxSnapshotAge > 0 && age > params.TwapConfig.MaxSnapshotAge {
+		ageInBlocks := currentHeight - snapshot.BlockHeight
+		// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
+		maxAgeInBlocks := params.TwapConfig.MaxSnapshotAge / 6
+		if params.TwapConfig.MaxSnapshotAge > 0 && ageInBlocks > maxAgeInBlocks {
 			continue
 		}
 		validSnapshots = append(validSnapshots, snapshot)
@@ -155,10 +156,12 @@ func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) 
 		return true, nil // No previous snapshot, record the first one
 	}
 
-	headerInfo := m.header.GetHeaderInfo(ctx)
-	timeSinceLastSnapshot := headerInfo.Time.Unix() - snapshots[0].Timestamp.Unix()
+	currentHeight := sdk.UnwrapSDKContext(ctx).BlockHeight()
+	blocksSinceLastSnapshot := currentHeight - snapshots[0].BlockHeight
+	// Convert MinSnapshotInterval from seconds to blocks (assume ~6 seconds per block)
+	minIntervalInBlocks := params.TwapConfig.MinSnapshotInterval / 6
 
-	return timeSinceLastSnapshot >= params.TwapConfig.MinSnapshotInterval, nil
+	return blocksSinceLastSnapshot >= minIntervalInBlocks, nil
 }
 
 // UpdateDepositLimits updates the deposit limits and risk control configuration.
@@ -355,7 +358,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to generate position ID")
 	}
-	
+
 	// Check if this is the user's first position to track total users
 	userPositionCount, err := m.GetUserPositionCount(ctx, depositor)
 	if err != nil {
@@ -1778,7 +1781,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 			// Decrement total positions count
 			state.TotalPositions--
-			
+
 			// Decrement user position count
 			count, _ := m.GetUserPositionCount(ctx, claimer)
 			if count > 0 {
@@ -1911,7 +1914,6 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 	if shouldRecord {
 		snapshot := vaultsv2.NAVSnapshot{
 			Nav:         msg.NewNav,
-			Timestamp:   headerInfo.Time,
 			BlockHeight: sdk.UnwrapSDKContext(ctx).BlockHeight(),
 			TotalShares: sdkmath.ZeroInt(), // Shares no longer used - kept for backwards compatibility
 		}
@@ -1922,7 +1924,10 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 
 		// Optionally prune old snapshots if max age is configured
 		if params.TwapConfig.MaxSnapshotAge > 0 {
-			_, _ = m.PruneOldVaultsV2NAVSnapshots(ctx, params.TwapConfig.MaxSnapshotAge, headerInfo.Time.Unix())
+			// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
+			maxAgeInBlocks := params.TwapConfig.MaxSnapshotAge / 6
+			currentHeight := sdk.UnwrapSDKContext(ctx).BlockHeight()
+			_, _ = m.PruneOldVaultsV2NAVSnapshots(ctx, maxAgeInBlocks, currentHeight)
 		}
 	}
 
@@ -1999,6 +2004,7 @@ func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.Ms
 		AppliedNav:              result.AppliedNav,
 		YieldDistributed:        result.YieldDistributed,
 		NextUser:                result.NextUser,
+		NegativeYieldWarning:    result.NegativeYieldWarning,
 	}, nil
 }
 
@@ -2311,7 +2317,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	if tracking := fund.GetProviderTracking(); tracking != nil {
 		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
 			if hyperlane.OriginDomain != 0 && hyperlane.OriginDomain != msg.OriginDomain {
-				return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidRoute, 
+				return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidRoute,
 					"origin domain mismatch: expected %d, got %d", hyperlane.OriginDomain, msg.OriginDomain)
 			}
 		}
@@ -2419,13 +2425,13 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	if !amountMatched {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		_ = sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightAmountMismatch{
-			TransactionId:    fund.TransactionId,
-			RouteId:          msg.RouteId,
-			ExpectedAmount:   originalAmount,
-			ReceivedAmount:   msg.AmountReceived,
-			Difference:       originalAmount.Sub(msg.AmountReceived).Abs(),
-			BlockHeight:      sdkCtx.BlockHeight(),
-			Timestamp:        headerInfo.Time,
+			TransactionId:  fund.TransactionId,
+			RouteId:        msg.RouteId,
+			ExpectedAmount: originalAmount,
+			ReceivedAmount: msg.AmountReceived,
+			Difference:     originalAmount.Sub(msg.AmountReceived).Abs(),
+			BlockHeight:    sdkCtx.BlockHeight(),
+			Timestamp:      headerInfo.Time,
 		})
 	}
 

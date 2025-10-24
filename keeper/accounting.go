@@ -40,6 +40,7 @@ type AccountingResult struct {
 	NextUser                string
 	AppliedNav              sdkmath.Int
 	YieldDistributed        sdkmath.Int
+	NegativeYieldWarning    string
 }
 
 // updateVaultsV2AccountingWithCursor performs yield accounting with cursor-based pagination.
@@ -137,12 +138,12 @@ func (k *Keeper) accountingWithZeroPositions(
 		func(address types.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
 			// Create snapshot with zero yield
 			snapshot := vaultsv2.AccountingSnapshot{
-				User:           address.String(),
-				PositionId:     positionID,
-				DepositAmount:  position.AmountPendingWithdrawal,
-				AccruedYield:   sdkmath.ZeroInt(),
-				AccountingNav:  navInfo.CurrentNav,
-				CreatedAt:      k.header.GetHeaderInfo(ctx).Time,
+				User:            address.String(),
+				PositionId:      positionID,
+				DepositAmount:   position.AmountPendingWithdrawal,
+				AccruedYield:    sdkmath.ZeroInt(),
+				AccountingNav:   navInfo.CurrentNav,
+				CreatedAtHeight: k.header.GetHeaderInfo(ctx).Height,
 			}
 
 			return k.SetVaultsV2AccountingSnapshot(ctx, snapshot)
@@ -213,6 +214,7 @@ func (k *Keeper) accountingWithZeroPositions(
 		NextUser:                lastProcessed,
 		AppliedNav:              navInfo.CurrentNav,
 		YieldDistributed:        sdkmath.ZeroInt(),
+		NegativeYieldWarning:    "",
 	}, nil
 }
 
@@ -225,22 +227,65 @@ func (k *Keeper) accountingWithCursor(
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
 ) (*AccountingResult, error) {
-	// For position-based accounting, we need to calculate the total yield to distribute
-	// Total yield = NAV - Total Deposits
+	// For position-based accounting, we need to calculate the NEW yield to distribute
+	// New yield = NAV - Total Deposits - Total Accrued Yield
+	// This gives us only the incremental yield, preventing double-counting
 	totalYieldToDistribute := sdkmath.ZeroInt()
+	negativeYieldWarning := ""
+
+	navMinusDeposits := sdkmath.ZeroInt()
 	if navInfo.CurrentNav.GT(vaultState.TotalDeposits) {
-		totalYieldToDistribute = navInfo.CurrentNav.Sub(vaultState.TotalDeposits)
+		navMinusDeposits = navInfo.CurrentNav.Sub(vaultState.TotalDeposits)
+	} else if navInfo.CurrentNav.LT(vaultState.TotalDeposits) {
+		// NAV is less than deposits - this indicates a loss
+		loss := vaultState.TotalDeposits.Sub(navInfo.CurrentNav)
+		negativeYieldWarning = fmt.Sprintf(
+			"Negative yield detected: NAV (%s) is less than TotalDeposits (%s), indicating a loss of %s. No yield distributed.",
+			navInfo.CurrentNav.String(),
+			vaultState.TotalDeposits.String(),
+			loss.String(),
+		)
 	}
+
+	// Subtract already-distributed yield to get only new yield
+	if navMinusDeposits.GT(vaultState.TotalAccruedYield) {
+		totalYieldToDistribute = navMinusDeposits.Sub(vaultState.TotalAccruedYield)
+	} else if navMinusDeposits.LT(vaultState.TotalAccruedYield) {
+		// Total yield in system is less than what we've already distributed
+		// This indicates negative yield (loss that exceeds available yield buffer)
+		deficit := vaultState.TotalAccruedYield.Sub(navMinusDeposits)
+		negativeYieldWarning = fmt.Sprintf(
+			"Negative yield detected: Total yield in system (%s) is less than distributed yield (%s), deficit of %s. No yield distributed.",
+			navMinusDeposits.String(),
+			vaultState.TotalAccruedYield.String(),
+			deficit.String(),
+		)
+	}
+	// If navMinusDeposits == TotalAccruedYield, then totalYieldToDistribute stays at zero (no new yield)
 
 	// First pass: calculate total eligible deposits (positions with receive_yield = true)
 	// We need this to properly distribute yield proportionally
+	// NOTE: Only active deposits (excluding pending withdrawals) are eligible for yield
 	totalEligibleDeposits := sdkmath.ZeroInt()
 	err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
 		if position.ReceiveYield && position.DepositAmount.IsPositive() {
-			var addErr error
-			totalEligibleDeposits, addErr = totalEligibleDeposits.SafeAdd(position.DepositAmount)
-			if addErr != nil {
-				return true, addErr
+			// Calculate active deposit (excluding pending withdrawals)
+			activeDeposit := position.DepositAmount
+			if position.AmountPendingWithdrawal.IsPositive() {
+				var subErr error
+				activeDeposit, subErr = position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
+				if subErr != nil {
+					// If pending exceeds deposit, no active deposits
+					activeDeposit = sdkmath.ZeroInt()
+				}
+			}
+
+			if activeDeposit.IsPositive() {
+				var addErr error
+				totalEligibleDeposits, addErr = totalEligibleDeposits.SafeAdd(activeDeposit)
+				if addErr != nil {
+					return true, addErr
+				}
 			}
 		}
 		return false, nil
@@ -270,13 +315,27 @@ func (k *Keeper) accountingWithCursor(
 		func(address types.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
 			var depositAmount, accruedYield sdkmath.Int
 
-			// Start with the position's deposit amount
+			// Calculate the active deposit amount (excluding pending withdrawals)
+			// Pending withdrawals do not earn yield
+			activeDepositAmount := position.DepositAmount
+			if position.AmountPendingWithdrawal.IsPositive() {
+				var subErr error
+				activeDepositAmount, subErr = position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
+				if subErr != nil {
+					// If pending withdrawal exceeds deposit, no active deposits remain
+					activeDepositAmount = sdkmath.ZeroInt()
+				}
+			}
+
+			// Snapshot deposit amount remains the position's actual deposit
+			// (not reduced by pending withdrawals)
 			depositAmount = position.DepositAmount
 
 			// Calculate yield for positions that receive yield
-			if position.ReceiveYield && position.DepositAmount.IsPositive() && totalYieldToDistribute.IsPositive() {
-				// Calculate proportional yield: (position_deposit / total_eligible) * total_yield
-				numerator := new(big.Int).Mul(totalYieldBig, position.DepositAmount.BigInt())
+			// Only active deposits (not pending withdrawals) earn yield
+			if position.ReceiveYield && activeDepositAmount.IsPositive() && totalYieldToDistribute.IsPositive() {
+				// Calculate proportional yield: (active_deposit / total_eligible) * total_yield
+				numerator := new(big.Int).Mul(totalYieldBig, activeDepositAmount.BigInt())
 				quotient := new(big.Int)
 				remainder := new(big.Int)
 				quotient.QuoRem(numerator, totalEligibleBig, remainder)
@@ -292,10 +351,10 @@ func (k *Keeper) accountingWithCursor(
 				}
 
 				newYield := sdkmath.NewIntFromBigInt(quotient)
-				
+
 				// Add to existing accrued yield
 				accruedYield = position.AccruedYield.Add(newYield)
-				
+
 				// Track yield distributed in this batch
 				var addErr error
 				yieldThisBatch, addErr = yieldThisBatch.SafeAdd(newYield)
@@ -307,23 +366,14 @@ func (k *Keeper) accountingWithCursor(
 				accruedYield = position.AccruedYield
 			}
 
-			// Add pending withdrawal to deposit amount for snapshot
-			if position.AmountPendingWithdrawal.IsPositive() {
-				var addErr error
-				depositAmount, addErr = depositAmount.SafeAdd(position.AmountPendingWithdrawal)
-				if addErr != nil {
-					return addErr
-				}
-			}
-
 			// Write to snapshot instead of directly to position
 			snapshot := vaultsv2.AccountingSnapshot{
-				User:          address.String(),
-				PositionId:    positionID,
-				DepositAmount: depositAmount,
-				AccruedYield:  accruedYield,
-				AccountingNav: navInfo.CurrentNav,
-				CreatedAt:     headerInfo.Time,
+				User:            address.String(),
+				PositionId:      positionID,
+				DepositAmount:   depositAmount,
+				AccruedYield:    accruedYield,
+				AccountingNav:   navInfo.CurrentNav,
+				CreatedAtHeight: headerInfo.Height,
 			}
 
 			return k.SetVaultsV2AccountingSnapshot(ctx, snapshot)
@@ -411,5 +461,6 @@ func (k *Keeper) accountingWithCursor(
 		NextUser:                lastProcessed,
 		AppliedNav:              navInfo.CurrentNav,
 		YieldDistributed:        yieldThisBatch,
+		NegativeYieldWarning:    negativeYieldWarning,
 	}, nil
 }

@@ -980,9 +980,11 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check total deposits increased
+	// In the position-based system (no shares), deposits are simply additive
+	// First deposit: 100, Second deposit: 40, Total: 140
 	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(120*ONE_V2), vaultState.TotalDeposits)
+	assert.Equal(t, math.NewInt(140*ONE_V2), vaultState.TotalDeposits)
 }
 
 func TestSetYieldPreferenceUpdatesPosition(t *testing.T) {
@@ -1454,7 +1456,7 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	pos, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
 	require.NoError(t, err)
 	require.True(t, found)
-	
+
 	fund := vaultsv2.InflightFund{
 		Id:                strconv.FormatUint(withdrawNonce, 10),
 		TransactionId:     strconv.FormatUint(withdrawNonce, 10),
@@ -1480,7 +1482,7 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	require.NoError(t, err)
 	err = k.AddVaultsV2InflightValueByRoute(ctx, createResp.RouteId, fund.Amount)
 	require.NoError(t, err)
-	
+
 	// Update remote position status to withdrawing
 	position, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
 	require.NoError(t, err)

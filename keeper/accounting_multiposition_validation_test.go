@@ -37,7 +37,7 @@ import (
 func TestAccountingMultiPositionFlow(t *testing.T) {
 	keeper, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
-	// Create multiple users with multiple positions each  
+	// Create multiple users with multiple positions each
 	alice := utils.TestAccount()
 
 	// Mint coins for both users
@@ -84,7 +84,7 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 	assert.Equal(t, math.NewInt(1500*ONE_V2), alicePos1.DepositAmount)
 
 	// Set up NAV for yield distribution
-	totalDeposits := math.NewInt(4500 * ONE_V2) // 1000 + 2000 + 1500
+	totalDeposits := math.NewInt(4500 * ONE_V2)            // 1000 + 2000 + 1500
 	newNAV := totalDeposits.Add(math.NewInt(450 * ONE_V2)) // 10% yield = 450 USDN
 	navInfo := vaultsv2.NAVInfo{
 		CurrentNav: newNAV,
@@ -95,28 +95,28 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 	// Manually create accounting snapshots (simulating accounting process)
 	snapshots := []vaultsv2.AccountingSnapshot{
 		{
-			User:          bob.Address,
-			PositionId:    1,
-			DepositAmount: bobPos1.DepositAmount,
-			AccruedYield:  math.NewInt(100 * ONE_V2), // 1000 * 10% = 100
-			AccountingNav: newNAV,
-			CreatedAt:     time.Now(),
+			User:            bob.Address,
+			PositionId:      1,
+			DepositAmount:   bobPos1.DepositAmount,
+			AccruedYield:    math.NewInt(100 * ONE_V2), // 1000 * 10% = 100
+			AccountingNav:   newNAV,
+			CreatedAtHeight: ctx.BlockHeight(),
 		},
 		{
-			User:          bob.Address,
-			PositionId:    2,
-			DepositAmount: bobPos2.DepositAmount,
-			AccruedYield:  math.NewInt(200 * ONE_V2), // 2000 * 10% = 200
-			AccountingNav: newNAV,
-			CreatedAt:     time.Now(),
+			User:            bob.Address,
+			PositionId:      2,
+			DepositAmount:   bobPos2.DepositAmount,
+			AccruedYield:    math.NewInt(200 * ONE_V2), // 2000 * 10% = 200
+			AccountingNav:   newNAV,
+			CreatedAtHeight: ctx.BlockHeight(),
 		},
 		{
-			User:          alice.Address,
-			PositionId:    1,
-			DepositAmount: alicePos1.DepositAmount,
-			AccruedYield:  math.NewInt(150 * ONE_V2), // 1500 * 10% = 150
-			AccountingNav: newNAV,
-			CreatedAt:     time.Now(),
+			User:            alice.Address,
+			PositionId:      1,
+			DepositAmount:   alicePos1.DepositAmount,
+			AccruedYield:    math.NewInt(150 * ONE_V2), // 1500 * 10% = 150
+			AccountingNav:   newNAV,
+			CreatedAtHeight: ctx.BlockHeight(),
 		},
 	}
 
@@ -130,11 +130,11 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 	for _, expected := range snapshots {
 		addr, err := sdk.AccAddressFromBech32(expected.User)
 		require.NoError(t, err)
-		
+
 		retrieved, found, err := keeper.GetVaultsV2AccountingSnapshot(ctx, addr, expected.PositionId)
 		require.NoError(t, err)
 		require.True(t, found)
-		
+
 		assert.Equal(t, expected.User, retrieved.User)
 		assert.Equal(t, expected.PositionId, retrieved.PositionId)
 		assert.Equal(t, expected.DepositAmount, retrieved.DepositAmount)
@@ -168,7 +168,7 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 	for _, expected := range snapshots {
 		addr, err := sdk.AccAddressFromBech32(expected.User)
 		require.NoError(t, err)
-		
+
 		_, found, err := keeper.GetVaultsV2AccountingSnapshot(ctx, addr, expected.PositionId)
 		require.NoError(t, err)
 		assert.False(t, found, "snapshot should be deleted after commit for user %s position %d", expected.User, expected.PositionId)

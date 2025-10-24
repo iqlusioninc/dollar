@@ -61,12 +61,12 @@ func TestAccountingSnapshotSinglePosition(t *testing.T) {
 
 	// Create accounting snapshot
 	snapshot := vaultsv2.AccountingSnapshot{
-		User:          userAddr.String(),
-		PositionId:    positionID,
-		DepositAmount: depositAmount.Add(math.NewInt(100 * ONE_V2)),
-		AccruedYield:  accruedYield.Add(math.NewInt(25 * ONE_V2)),
-		AccountingNav: math.NewInt(2000 * ONE_V2),
-		CreatedAt:     time.Now(),
+		User:            userAddr.String(),
+		PositionId:      positionID,
+		DepositAmount:   depositAmount.Add(math.NewInt(100 * ONE_V2)),
+		AccruedYield:    accruedYield.Add(math.NewInt(25 * ONE_V2)),
+		AccountingNav:   math.NewInt(2000 * ONE_V2),
+		CreatedAtHeight: ctx.BlockHeight(),
 	}
 
 	// Set the snapshot
@@ -105,7 +105,7 @@ func TestAccountingSnapshotMultiplePositions(t *testing.T) {
 
 	// Create a user with multiple positions
 	userAddr := sdk.AccAddress("user2address______")
-	
+
 	positions := []struct {
 		id            uint64
 		depositAmount math.Int
@@ -136,12 +136,12 @@ func TestAccountingSnapshotMultiplePositions(t *testing.T) {
 	snapshots := make([]vaultsv2.AccountingSnapshot, len(positions))
 	for i, pos := range positions {
 		snapshots[i] = vaultsv2.AccountingSnapshot{
-			User:          userAddr.String(),
-			PositionId:    pos.id,
-			DepositAmount: pos.depositAmount.Add(math.NewInt(100 * ONE_V2)),
-			AccruedYield:  pos.accruedYield.Add(math.NewInt(10 * ONE_V2)),
-			AccountingNav: math.NewInt(2000 * ONE_V2),
-			CreatedAt:     time.Now(),
+			User:            userAddr.String(),
+			PositionId:      pos.id,
+			DepositAmount:   pos.depositAmount.Add(math.NewInt(100 * ONE_V2)),
+			AccruedYield:    pos.accruedYield.Add(math.NewInt(10 * ONE_V2)),
+			AccountingNav:   math.NewInt(2000 * ONE_V2),
+			CreatedAtHeight: ctx.BlockHeight(),
 		}
 		err := keeper.SetVaultsV2AccountingSnapshot(ctx, snapshots[i])
 		require.NoError(t, err)
@@ -214,12 +214,12 @@ func TestAccountingSnapshotCommitMultiPosition(t *testing.T) {
 			updatedYield := originalYield.Add(math.NewInt(25 * ONE_V2))
 
 			snapshot := vaultsv2.AccountingSnapshot{
-				User:          userAddr.String(),
-				PositionId:    posID,
-				DepositAmount: updatedDeposit,
-				AccruedYield:  updatedYield,
-				AccountingNav: math.NewInt(2000 * ONE_V2),
-				CreatedAt:     time.Now(),
+				User:            userAddr.String(),
+				PositionId:      posID,
+				DepositAmount:   updatedDeposit,
+				AccruedYield:    updatedYield,
+				AccountingNav:   math.NewInt(2000 * ONE_V2),
+				CreatedAtHeight: ctx.BlockHeight(),
 			}
 			err = keeper.SetVaultsV2AccountingSnapshot(ctx, snapshot)
 			require.NoError(t, err)
@@ -261,18 +261,18 @@ func TestAccountingSnapshotIteration(t *testing.T) {
 
 	// Create proper test accounts
 	user1 := utils.TestAccount()
-	user2 := utils.TestAccount() 
+	user2 := utils.TestAccount()
 	user3 := utils.TestAccount()
 	users := []string{user1.Address, user2.Address, user3.Address}
 	for _, user := range users {
 		for posID := uint64(1); posID <= 3; posID++ {
 			snapshot := vaultsv2.AccountingSnapshot{
-				User:          user,
-				PositionId:    posID,
-				DepositAmount: math.NewInt(int64(posID) * 1000 * ONE_V2),
-				AccruedYield:  math.NewInt(int64(posID) * 50 * ONE_V2),
-				AccountingNav: math.NewInt(2000 * ONE_V2),
-				CreatedAt:     time.Now(),
+				User:            user,
+				PositionId:      posID,
+				DepositAmount:   math.NewInt(int64(posID) * 1000 * ONE_V2),
+				AccruedYield:    math.NewInt(int64(posID) * 50 * ONE_V2),
+				AccountingNav:   math.NewInt(2000 * ONE_V2),
+				CreatedAtHeight: ctx.BlockHeight(),
 			}
 			err := keeper.SetVaultsV2AccountingSnapshot(ctx, snapshot)
 			require.NoError(t, err)
@@ -313,18 +313,18 @@ func TestAccountingSnapshotClearAll(t *testing.T) {
 	// Create multiple snapshots
 	// Create proper test accounts
 	user1 := utils.TestAccount()
-	user2 := utils.TestAccount() 
+	user2 := utils.TestAccount()
 	user3 := utils.TestAccount()
 	users := []string{user1.Address, user2.Address, user3.Address}
 	for _, user := range users {
 		for posID := uint64(1); posID <= 2; posID++ {
 			snapshot := vaultsv2.AccountingSnapshot{
-				User:          user,
-				PositionId:    posID,
-				DepositAmount: math.NewInt(1000 * ONE_V2),
-				AccruedYield:  math.NewInt(50 * ONE_V2),
-				AccountingNav: math.NewInt(2000 * ONE_V2),
-				CreatedAt:     time.Now(),
+				User:            user,
+				PositionId:      posID,
+				DepositAmount:   math.NewInt(1000 * ONE_V2),
+				AccruedYield:    math.NewInt(50 * ONE_V2),
+				AccountingNav:   math.NewInt(2000 * ONE_V2),
+				CreatedAtHeight: ctx.BlockHeight(),
 			}
 			err := keeper.SetVaultsV2AccountingSnapshot(ctx, snapshot)
 			require.NoError(t, err)

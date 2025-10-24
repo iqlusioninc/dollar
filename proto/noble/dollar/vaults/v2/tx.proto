@@ -795,6 +795,12 @@ message MsgUpdateVaultAccountingResponse {
 
   // Next user to process (empty if complete)
   string next_user = 7 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // Warning message if negative yield was detected
+  // When negative yield is detected, no yield is distributed (yield_distributed = 0)
+  // This indicates NAV decreased below (TotalDeposits + TotalAccruedYield)
+  // Manager should investigate vault losses or accounting discrepancies
+  string negative_yield_warning = 8;
 }
 
 // MsgProcessIncomingWarpFunds processes funds received via warp route and marks inflight funds as completed

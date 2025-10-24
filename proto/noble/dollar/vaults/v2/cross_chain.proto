@@ -335,11 +335,8 @@ message CrossChainPositionSnapshot {
   int64 active_positions = 3;
   // Number of positions with stale data
   int64 stale_positions = 4;
-  // Snapshot timestamp
-  google.protobuf.Timestamp timestamp = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
+  // Snapshot block height
+  int64 block_height = 5;
   // Breakdown by route
   map<uint32, string> value_by_route = 6;
 }

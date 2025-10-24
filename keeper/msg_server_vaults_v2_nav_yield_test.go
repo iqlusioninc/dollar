@@ -528,3 +528,120 @@ func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	assert.InDelta(t, 33, alicePos.AccruedYield.Int64(), 1)
 	assert.InDelta(t, 34, charliePos.AccruedYield.Int64(), 1) // Charlie has slightly more deposit
 }
+
+// TestYieldTraceWithWithdrawal - detailed trace of yield accounting with withdrawal
+func TestYieldTraceWithWithdrawal(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+
+	params, _ := k.GetVaultsV2Params(ctx)
+	require.NoError(t, k.SetVaultsV2Params(ctx, params))
+
+	// Mint funds to Bob
+	require.NoError(t, k.Mint(ctx, bob.Bytes, sdkmath.NewInt(2000*ONE_V2), nil))
+
+	fmt.Println("\n=== STEP 1: Bob deposits 1000 ===")
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       sdkmath.NewInt(1000 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	position, _, _ := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	vaultState, _ := k.GetVaultsV2VaultState(ctx)
+	fmt.Printf("Position: deposit=%s, yield=%s, pending=%s\n",
+		position.DepositAmount, position.AccruedYield, position.AmountPendingWithdrawal)
+	fmt.Printf("Vault: TotalDeposits=%s, TotalYield=%s, TotalNAV=%s\n\n",
+		vaultState.TotalDeposits, vaultState.TotalAccruedYield, vaultState.TotalNav)
+
+	fmt.Println("=== STEP 2: NAV increases to 1100, run accounting ===")
+	navInfo := vaultsv2.NAVInfo{
+		CurrentNav: sdkmath.NewInt(1100 * ONE_V2),
+		LastUpdate: time.Now(),
+	}
+	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+
+	// Call accounting until complete (cursor-based pagination)
+	for {
+		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+			Manager:      params.Authority,
+			MaxPositions: 100,
+		})
+		require.NoError(t, err)
+		fmt.Printf("Accounting iteration: complete=%v, positions=%d/%d\n",
+			resp.AccountingComplete, resp.PositionsProcessed, resp.TotalPositions)
+		if resp.AccountingComplete {
+			break
+		}
+	}
+
+	position, _, _ = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	vaultState, _ = k.GetVaultsV2VaultState(ctx)
+	fmt.Printf("Position: deposit=%s, yield=%s, pending=%s\n",
+		position.DepositAmount, position.AccruedYield, position.AmountPendingWithdrawal)
+	fmt.Printf("Vault: TotalDeposits=%s, TotalYield=%s, TotalNAV=%s\n\n",
+		vaultState.TotalDeposits, vaultState.TotalAccruedYield, vaultState.TotalNav)
+
+	fmt.Println("=== STEP 3: Bob requests withdrawal of 500 ===")
+	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
+		Requester:  bob.Address,
+		Amount:     sdkmath.NewInt(500 * ONE_V2),
+		PositionId: 1,
+	})
+	require.NoError(t, err)
+
+	position, _, _ = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	vaultState, _ = k.GetVaultsV2VaultState(ctx)
+	fmt.Printf("Position: deposit=%s, yield=%s, pending=%s\n",
+		position.DepositAmount, position.AccruedYield, position.AmountPendingWithdrawal)
+	fmt.Printf("Vault: TotalDeposits=%s, TotalYield=%s, TotalNAV=%s\n\n",
+		vaultState.TotalDeposits, vaultState.TotalAccruedYield, vaultState.TotalNav)
+
+	fmt.Println("=== STEP 4: NAV increases to 1150, run accounting ===")
+	navInfo = vaultsv2.NAVInfo{
+		CurrentNav: sdkmath.NewInt(1150 * ONE_V2),
+		LastUpdate: time.Now(),
+	}
+	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+
+	fmt.Println("BEFORE accounting:")
+	fmt.Printf("  CurrentNAV: %s\n", navInfo.CurrentNav)
+	fmt.Printf("  VaultState.TotalDeposits: %s\n", vaultState.TotalDeposits)
+	fmt.Printf("  totalYieldToDistribute = %s - %s = %s\n",
+		navInfo.CurrentNav, vaultState.TotalDeposits,
+		navInfo.CurrentNav.Sub(vaultState.TotalDeposits))
+
+	// Call accounting until complete (cursor-based pagination)
+	for {
+		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+			Manager:      params.Authority,
+			MaxPositions: 100,
+		})
+		require.NoError(t, err)
+		fmt.Printf("Accounting iteration: complete=%v, positions=%d/%d\n",
+			resp.AccountingComplete, resp.PositionsProcessed, resp.TotalPositions)
+		if resp.AccountingComplete {
+			break
+		}
+	}
+
+	position, _, _ = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	vaultState, _ = k.GetVaultsV2VaultState(ctx)
+	fmt.Printf("\nAFTER accounting:\n")
+	fmt.Printf("Position: deposit=%s, yield=%s, pending=%s\n",
+		position.DepositAmount, position.AccruedYield, position.AmountPendingWithdrawal)
+	fmt.Printf("Vault: TotalDeposits=%s, TotalYield=%s, TotalNAV=%s\n",
+		vaultState.TotalDeposits, vaultState.TotalAccruedYield, vaultState.TotalNav)
+
+	fmt.Printf("\n=== ANALYSIS ===\n")
+	fmt.Printf("Expected yield: 150\n")
+	fmt.Printf("Actual yield: %s\n", position.AccruedYield)
+	fmt.Printf("Match: %v\n", position.AccruedYield.Equal(sdkmath.NewInt(150*ONE_V2)))
+
+	// Check invariant
+	invariantSum := vaultState.TotalDeposits.Add(vaultState.TotalAccruedYield)
+	fmt.Printf("\nInvariant check:\n")
+	fmt.Printf("  TotalDeposits + TotalAccruedYield = %s\n", invariantSum)
+	fmt.Printf("  TotalNAV = %s\n", vaultState.TotalNav)
+	fmt.Printf("  Match: %v\n", invariantSum.Equal(vaultState.TotalNav))
+}
