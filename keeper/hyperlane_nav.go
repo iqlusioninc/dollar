@@ -132,7 +132,7 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 		}
 	}
 
-	updatedNav, err := k.recalculateVaultsV2NAV(ctx, payload.Timestamp)
+	updatedNav, err := k.RecalculateVaultsV2NAV(ctx, payload.Timestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,10 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 	}, nil
 }
 
-func (k *Keeper) recalculateVaultsV2NAV(ctx context.Context, timestamp time.Time) (math.Int, error) {
+// RecalculateVaultsV2NAV recalculates the vault NAV from all components:
+// pending deployment funds, remote positions, and inflight funds.
+// This is called when oracle updates remote position values.
+func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time) (math.Int, error) {
 	// Check if accounting is currently in progress
 	cursor, err := k.GetVaultsV2AccountingCursor(ctx)
 	if err != nil {
@@ -167,13 +170,23 @@ func (k *Keeper) recalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 		)
 	}
 
+	// Calculate NAV according to spec: Local Assets + Remote Positions + Inflight Funds
 	total := math.ZeroInt()
 
-	err = k.IterateVaultsV2RemotePositionOracles(ctx, func(_ uint64, oracle vaultsv2.RemotePositionOracle) (bool, error) {
-		positionValue := oracle.SharePrice.MulInt(oracle.SharesHeld).TruncateInt()
+	// 1. Get local vault assets (pending deployment - not yet sent to remote positions)
+	pendingDeployment, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to get pending deployment funds")
+	}
+	total, err = total.SafeAdd(pendingDeployment)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to add pending deployment to NAV")
+	}
 
+	// 2. Add remote position values
+	err = k.IterateVaultsV2RemotePositions(ctx, func(_ uint64, position vaultsv2.RemotePosition) (bool, error) {
 		var err error
-		total, err = total.SafeAdd(positionValue)
+		total, err = total.SafeAdd(position.TotalValue)
 		if err != nil {
 			return true, errors.Wrap(err, "unable to accumulate remote position value")
 		}
@@ -184,9 +197,30 @@ func (k *Keeper) recalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 		return math.ZeroInt(), errors.Wrap(err, "unable to iterate remote position oracles")
 	}
 
+	// 3. Add inflight funds
+	err = k.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+		var err error
+		total, err = total.SafeAdd(fund.Amount)
+		if err != nil {
+			return true, errors.Wrap(err, "unable to accumulate inflight funds")
+		}
+		return false, nil
+	})
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to iterate inflight funds")
+	}
+
 	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to fetch NAV info")
+	}
+
+	// Initialize NAV values if they are nil (first time setup)
+	if navInfo.CurrentNav.IsNil() {
+		navInfo.CurrentNav = math.ZeroInt()
+	}
+	if navInfo.PreviousNav.IsNil() {
+		navInfo.PreviousNav = math.ZeroInt()
 	}
 
 	previousNav := navInfo.CurrentNav
