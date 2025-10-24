@@ -598,6 +598,11 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 	previousPreference := position.ReceiveYield
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
+	// Check if accounting is in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
+	}
+
 	// Update position
 	position.ReceiveYield = msg.ReceiveYield
 	position.LastActivityTime = headerInfo.Time
