@@ -64,6 +64,27 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
+// checkAccountingNotInProgress checks if accounting is currently in progress and returns an error if so.
+// This should be called by operations that modify positions (deposits, withdrawals) to prevent
+// position changes during accounting that could corrupt the accounting cursor state.
+func (m msgServerV2) checkAccountingNotInProgress(ctx context.Context) error {
+	cursor, err := m.GetVaultsV2AccountingCursor(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch accounting cursor")
+	}
+	if cursor.InProgress {
+		return sdkerrors.Wrapf(
+			vaultsv2.ErrOperationNotPermitted,
+			"cannot perform this operation while accounting is in progress (started at %s, %d/%d positions processed). "+
+				"Please wait a few minutes for accounting to complete and retry",
+			cursor.StartedAt.String(),
+			cursor.PositionsProcessed,
+			cursor.TotalPositions,
+		)
+	}
+	return nil
+}
+
 // calculateTWAPNav computes the Time-Weighted Average Price of NAV using recent snapshots.
 // Returns the TWAP value or the current NAV if TWAP is disabled or insufficient data.
 func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.Int) (sdkmath.Int, error) {
@@ -330,6 +351,11 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
 	}
 
+	// Check if accounting is in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
+	}
+
 	// Enforce deposit limits and risk controls
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	currentBlock := sdkCtx.BlockHeight()
@@ -441,6 +467,11 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid requester address: %s", msg.Requester)
 	}
 	requester := sdk.AccAddress(addrBz)
+
+	// Check if accounting is in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
+	}
 
 	// Get the specific position
 	position, found, err := m.GetVaultsV2UserPosition(ctx, requester, msg.PositionId)
@@ -1695,6 +1726,11 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	if headerInfo.Time.Before(request.UnlockTime) {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal is still locked")
+	}
+
+	// Check if accounting is in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
 	}
 
 	withdrawAmount := request.WithdrawAmount
