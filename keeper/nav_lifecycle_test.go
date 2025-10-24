@@ -232,6 +232,54 @@ func TestNAVLifecycle(t *testing.T) {
 		sdkmath.NewInt(0),           // inflight -200 = 0
 		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
 
+	// === STEP 8: Add more funds to existing remote position ===
+	additionalRemoteAmount := sdkmath.NewInt(140 * ONE_V2)
+	require.NoError(t, k.SubtractVaultsV2PendingDeploymentFunds(baseCtx, additionalRemoteAmount))
+
+	secondPosition, found, err := k.GetVaultsV2RemotePosition(baseCtx, 2)
+	require.NoError(t, err)
+	require.True(t, found)
+
+	secondPosition.Principal, err = secondPosition.Principal.SafeAdd(additionalRemoteAmount)
+	require.NoError(t, err)
+	secondPosition.SharesHeld, err = secondPosition.SharesHeld.SafeAdd(additionalRemoteAmount)
+	require.NoError(t, err)
+	secondPosition.TotalValue, err = secondPosition.TotalValue.SafeAdd(additionalRemoteAmount)
+	require.NoError(t, err)
+	secondPosition.LastUpdate = time.Now()
+	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, 2, secondPosition))
+
+	// NAV should stay same: pending decreased, remote increased
+	checkNAV("8-after-remote-top-up",
+		sdkmath.NewInt(360*ONE_V2),  // pending -140 = 360
+		sdkmath.NewInt(1000*ONE_V2), // remote +140 = 1000
+		sdkmath.NewInt(0),           // inflight unchanged
+		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+
+	// === STEP 9: Partial withdrawal from remote position ===
+	partialWithdrawal := sdkmath.NewInt(120 * ONE_V2)
+	require.NoError(t, k.AddVaultsV2PendingDeploymentFunds(baseCtx, partialWithdrawal))
+
+	secondPosition, found, err = k.GetVaultsV2RemotePosition(baseCtx, 2)
+	require.NoError(t, err)
+	require.True(t, found)
+
+	secondPosition.Principal, err = secondPosition.Principal.SafeSub(partialWithdrawal)
+	require.NoError(t, err)
+	secondPosition.SharesHeld, err = secondPosition.SharesHeld.SafeSub(partialWithdrawal)
+	require.NoError(t, err)
+	secondPosition.TotalValue, err = secondPosition.TotalValue.SafeSub(partialWithdrawal)
+	require.NoError(t, err)
+	secondPosition.LastUpdate = time.Now()
+	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, 2, secondPosition))
+
+	// NAV should stay same: pending increased, remote decreased
+	checkNAV("9-after-partial-remote-withdrawal",
+		sdkmath.NewInt(480*ONE_V2),  // pending +120 = 480
+		sdkmath.NewInt(880*ONE_V2),  // remote -120 = 880
+		sdkmath.NewInt(0),           // inflight unchanged
+		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+
 	t.Log("✅ NAV lifecycle test passed - NAV correctly calculated at each step!")
 }
 
@@ -280,27 +328,27 @@ func TestNAVCalculationWithOracleMessage(t *testing.T) {
 	// Simulate oracle NAV message: remote position value increases to 880 (10% gain)
 	// Create NAV payload bytes manually (105 bytes total)
 	payloadBytes := make([]byte, 105)
-	
+
 	// Byte 0: Message type (0x01 for NAV update)
 	payloadBytes[0] = 0x01
-	
+
 	// Bytes 1-32: Position ID (32 bytes, big-endian)
 	positionIDBytes := make([]byte, 32)
 	binary.BigEndian.PutUint64(positionIDBytes[24:], positionID)
 	copy(payloadBytes[1:33], positionIDBytes)
-	
+
 	// Bytes 33-64: Share price (1.1 * 1e18 = 1100000000000000000)
 	sharePriceBig := big.NewInt(1100000000000000000)
 	sharePriceBytes := make([]byte, 32)
 	sharePriceBig.FillBytes(sharePriceBytes)
 	copy(payloadBytes[33:65], sharePriceBytes)
-	
+
 	// Bytes 65-96: Shares held (800 * 1e6 = 800000000)
 	sharesHeldBig := big.NewInt(800 * ONE_V2)
 	sharesHeldBytes := make([]byte, 32)
 	sharesHeldBig.FillBytes(sharesHeldBytes)
 	copy(payloadBytes[65:97], sharesHeldBytes)
-	
+
 	// Bytes 97-104: Timestamp (8 bytes, big-endian)
 	timestamp := time.Now().Unix()
 	binary.BigEndian.PutUint64(payloadBytes[97:105], uint64(timestamp))
