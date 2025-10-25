@@ -966,20 +966,10 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	if msg.VaultAddress == "" {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "vault address must be provided")
 	}
-	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
-	}
-	if msg.MinSharesOut.IsPositive() && msg.Amount.LT(msg.MinSharesOut) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
-	}
 
-	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
-	}
-	if pendingDeployment.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient pending deployment funds")
-	}
+	// NOTE: msg.Amount and msg.MinSharesOut are deprecated fields that should be removed
+	// from the proto. CreateRemotePosition now only registers the vault - it doesn't allocate funds.
+	// Funds are allocated via the Rebalance message instead.
 
 	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
 	if err != nil {
@@ -993,12 +983,14 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to allocate remote position id")
 	}
 
+	// CreateRemotePosition registers a remote vault as a deployment target.
+	// It initializes with ZERO funds - use Rebalance to allocate capital.
 	position := vaultsv2.RemotePosition{
 		VaultAddress: vaultAddress,
-		SharesHeld:   msg.Amount,
-		Principal:    msg.Amount,
+		SharesHeld:   sdkmath.ZeroInt(),
+		Principal:    sdkmath.ZeroInt(),
 		SharePrice:   sdkmath.LegacyOneDec(),
-		TotalValue:   msg.Amount,
+		TotalValue:   sdkmath.ZeroInt(),
 		LastUpdate:   headerInfo.Time,
 		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
 	}
@@ -1011,9 +1003,8 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to store remote position chain id")
 	}
 
-	if err := m.SubtractVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending deployment funds")
-	}
+	// Do NOT subtract from PendingDeploymentFunds - no funds allocated yet.
+	// Funds will be deployed via the Rebalance message.
 
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
@@ -1332,6 +1323,71 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
 			return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
 		}
+
+		// Get cross-chain route configuration for this position
+		route, routeFound, err := m.GetVaultsV2CrossChainRoute(ctx, entry.ChainID)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to fetch cross-chain route")
+		}
+		if !routeFound {
+			return nil, sdkerrors.Wrapf(vaultsv2.ErrRouteNotFound, "route for chain %d not found", entry.ChainID)
+		}
+
+		// Enforce route capacity before bridging
+		if err := m.EnforceRouteCapacity(ctx, entry.ChainID, adj.amount); err != nil {
+			// Rollback inflight fund creation
+			_ = m.DeleteVaultsV2InflightFund(ctx, fund.Id)
+			return nil, err
+		}
+
+		// Track inflight value for this route
+		if err := m.AddVaultsV2InflightValueByRoute(ctx, entry.ChainID, adj.amount); err != nil {
+			_ = m.DeleteVaultsV2InflightFund(ctx, fund.Id)
+			return nil, sdkerrors.Wrap(err, "unable to track inflight value by route")
+		}
+
+		// Actually bridge funds via Hyperlane warp
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		messageID, transferErr := m.warp.RemoteTransferCollateral(
+			sdkCtx,
+			route.HyptokenId,                 // Token ID for USDN on Hyperlane
+			types.ModuleAddress.String(),     // From: dollar module account
+			entry.ChainID,                    // Destination chain (Hyperlane domain)
+			entry.Position.VaultAddress,      // To: Remote ERC-4626 vault address
+			adj.amount,                       // Amount to bridge
+			nil,                              // Metadata (optional)
+			sdkmath.ZeroInt(),                // Hook gas limit (use default)
+			sdk.NewCoin(m.denom, sdkmath.ZeroInt()), // Max Hyperlane fee (0 = use default)
+			nil,                              // Hook metadata (optional)
+		)
+
+		if transferErr != nil {
+			// Rollback state changes on bridge failure
+			_ = m.SubtractVaultsV2InflightValueByRoute(ctx, entry.ChainID, adj.amount)
+			_ = m.DeleteVaultsV2InflightFund(ctx, fund.Id)
+			return nil, sdkerrors.Wrapf(transferErr, "unable to bridge funds to chain %d", entry.ChainID)
+		}
+
+		// Update inflight fund with Hyperlane message ID
+		if hyperlaneTracking := fund.ProviderTracking.GetHyperlaneTracking(); hyperlaneTracking != nil {
+			hyperlaneTracking.MessageId = messageID
+			if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
+				return nil, sdkerrors.Wrap(err, "unable to update inflight fund with message ID")
+			}
+		}
+
+		// Emit inflight fund created event
+		_ = m.EmitInflightCreatedEvent(
+			ctx,
+			fund.Id,
+			entry.ChainID,
+			vaultsv2.OPERATION_TYPE_REBALANCE,
+			adj.amount,
+			msg.Manager,
+			"noble",
+			fmt.Sprintf("chain-%d", entry.ChainID),
+			fund.ExpectedAt,
+		)
 
 		available, err = available.SafeSub(adj.amount)
 		if err != nil {
