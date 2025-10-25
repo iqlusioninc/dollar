@@ -920,27 +920,29 @@ func TestCreateRemotePosition(t *testing.T) {
 
 	vaultAddress := hyperlaneutil.CreateMockHexAddress("vault", 1).String()
 
+	// Note: CreateRemotePosition now only registers the vault, does not allocate funds
+	// Funds are allocated via Rebalance message
 	resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
 		Manager:      "authority",
 		VaultAddress: vaultAddress,
 		ChainId:      8453,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 	assert.Equal(t, uint64(1), resp.PositionId)
 
+	// Pending deployment should be unchanged (no funds allocated yet)
 	pending, err = k.GetVaultsV2PendingDeploymentFunds(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), pending)
+	assert.Equal(t, math.NewInt(200*ONE_V2), pending)
 
+	// Position should be created with zero funds
 	position, found, err := k.GetVaultsV2RemotePosition(ctx, resp.PositionId)
 	require.NoError(t, err)
 	require.True(t, found)
-	assert.Equal(t, math.NewInt(150*ONE_V2), position.TotalValue)
-	assert.Equal(t, math.NewInt(150*ONE_V2), position.SharesHeld)
-	assert.Equal(t, math.NewInt(150*ONE_V2), position.Principal)
+	assert.True(t, position.TotalValue.IsZero())
+	assert.True(t, position.SharesHeld.IsZero())
+	assert.True(t, position.Principal.IsZero())
 
 	chainID, foundChain, err := k.GetVaultsV2RemotePositionChainID(ctx, resp.PositionId)
 	require.NoError(t, err)
@@ -1030,12 +1032,11 @@ func TestCloseRemotePositionPartial(t *testing.T) {
 	require.NoError(t, err)
 
 	vaultAddress := hyperlaneutil.CreateMockHexAddress("vault", 2).String()
+	// Note: CreateRemotePosition now only registers the vault, does not allocate funds
 	createResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
 		Manager:      "authority",
 		VaultAddress: vaultAddress,
 		ChainId:      998,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1079,8 +1080,6 @@ func TestRebalanceAdjustsPositions(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: pos1Addr,
 		ChainId:      8453,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1088,8 +1087,6 @@ func TestRebalanceAdjustsPositions(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: pos2Addr,
 		ChainId:      998,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1151,8 +1148,6 @@ func TestRebalanceInsufficientLiquidity(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: pos1Addr,
 		ChainId:      8453,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1160,8 +1155,6 @@ func TestRebalanceInsufficientLiquidity(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: pos2Addr,
 		ChainId:      998,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1205,8 +1198,6 @@ func TestRebalanceInvalidTargets(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: posAddr,
 		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1249,8 +1240,6 @@ func TestRebalanceInvalidTargets(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: pos2Addr,
 		ChainId:      998,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1444,8 +1433,6 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: targetAddr,
 		ChainId:      8453,
-		Amount:       math.NewInt(120 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1539,8 +1526,6 @@ func TestRegisterOracle(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: remoteAddr.String(),
 		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1585,8 +1570,6 @@ func TestUpdateOracleConfig(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: remoteAddr.String(),
 		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1635,8 +1618,6 @@ func TestRemoveOracle(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: remoteAddr.String(),
 		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1779,8 +1760,6 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: targetAddr,
 		ChainId:      8453,
-		Amount:       math.NewInt(120 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1872,8 +1851,6 @@ func TestDisableCrossChainRoute(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: targetAddr,
 		ChainId:      8453,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 

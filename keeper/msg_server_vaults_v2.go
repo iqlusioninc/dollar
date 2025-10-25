@@ -1346,11 +1346,19 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 			return nil, sdkerrors.Wrap(err, "unable to track inflight value by route")
 		}
 
+		// Fetch the HypToken from warp keeper
+		hypToken, err := m.warp.HypTokens.Get(ctx, route.HyptokenId.GetInternalId())
+		if err != nil {
+			_ = m.SubtractVaultsV2InflightValueByRoute(ctx, entry.ChainID, adj.amount)
+			_ = m.DeleteVaultsV2InflightFund(ctx, fund.Id)
+			return nil, sdkerrors.Wrapf(err, "unable to get HypToken %s", route.HyptokenId.String())
+		}
+
 		// Actually bridge funds via Hyperlane warp
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		messageID, transferErr := m.warp.RemoteTransferCollateral(
 			sdkCtx,
-			route.HyptokenId,                 // Token ID for USDN on Hyperlane
+			hypToken,                         // HypToken for USDN on Hyperlane
 			types.ModuleAddress.String(),     // From: dollar module account
 			entry.ChainID,                    // Destination chain (Hyperlane domain)
 			entry.Position.VaultAddress,      // To: Remote ERC-4626 vault address
@@ -1370,7 +1378,7 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 
 		// Update inflight fund with Hyperlane message ID
 		if hyperlaneTracking := fund.ProviderTracking.GetHyperlaneTracking(); hyperlaneTracking != nil {
-			hyperlaneTracking.MessageId = messageID
+			hyperlaneTracking.MessageId = messageID[:]
 			if err := m.SetVaultsV2InflightFund(ctx, fund); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to update inflight fund with message ID")
 			}
