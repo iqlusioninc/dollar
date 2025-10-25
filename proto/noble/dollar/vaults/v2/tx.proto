@@ -442,7 +442,9 @@ message MsgProcessWithdrawalQueueResponse {
 
 // ========== Spec-aligned Managed Vault Operations ==========
 
-// MsgCreateRemotePosition deploys capital to a remote ERC-4626 position
+// MsgCreateRemotePosition registers a remote ERC-4626 vault as a deployment target.
+// This message only registers the vault address and chain - it does NOT allocate funds.
+// Use MsgRebalance to allocate capital to registered remote positions.
 message MsgCreateRemotePosition {
   option (cosmos.msg.v1.signer) = "manager";
   option (amino.name) = "dollar/vaults/v2/CreateRemotePosition";
@@ -453,27 +455,11 @@ message MsgCreateRemotePosition {
   // Authorized manager address
   string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  // Target ERC-4626 vault address
+  // Target ERC-4626 vault address (hex encoded)
   string vault_address = 2;
 
   // Hyperlane domain ID for destination chain
   uint32 chain_id = 3;
-
-  // Amount of $USDN to deploy
-  string amount = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Minimum acceptable Noble vault shares to receive (slippage protection)
-  string min_shares_out = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }
 
 message MsgCreateRemotePositionResponse {
