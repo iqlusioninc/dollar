@@ -7,10 +7,12 @@ package keeper_test
 import (
 	"encoding/binary"
 	"math/big"
+	"strconv"
 	"testing"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
+	"cosmossdk.io/core/header"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,7 +25,9 @@ import (
 // 2. CreateRemotePosition → PendingDeploymentFunds decreases, RemotePosition created, NAV stays same
 // 3. Funds go inflight → InflightFunds increases, NAV stays same
 // 4. Oracle updates remote position value → RemotePosition value changes, NAV changes
-// 5. Withdrawal → NAV decreases
+// 5. User requests withdrawal → Funds locked in position, NAV stays same
+// 6. Process withdrawal queue → Withdrawal marked ready, NAV stays same
+// 7. User claims withdrawal → Funds leave vault, NAV decreases
 //
 // This test ensures NAV = PendingDeploymentFunds + RemotePositions + InflightFunds is correct at each step
 func TestNAVLifecycle(t *testing.T) {
@@ -280,7 +284,69 @@ func TestNAVLifecycle(t *testing.T) {
 		sdkmath.NewInt(0),           // inflight unchanged
 		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
 
-	t.Log("✅ NAV lifecycle test passed - NAV correctly calculated at each step!")
+	// === STEP 10: User requests withdrawal ===
+	// User wants to withdraw 200 from their position
+	withdrawalResp, err := vaultsV2Server.RequestWithdrawal(baseCtx, &vaultsv2.MsgRequestWithdrawal{
+		Requester:  bob.Address,
+		Amount:     sdkmath.NewInt(200 * ONE_V2),
+		PositionId: 1, // First deposit position
+	})
+	require.NoError(t, err)
+	require.NotNil(t, withdrawalResp)
+
+	// NAV should stay same: funds are locked in user position but still in vault
+	checkNAV("10-after-withdrawal-request",
+		sdkmath.NewInt(480*ONE_V2),  // pending unchanged
+		sdkmath.NewInt(880*ONE_V2),  // remote unchanged
+		sdkmath.NewInt(0),           // inflight unchanged
+		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+
+	// === STEP 11: Process withdrawal queue ===
+	// Move time forward past the withdrawal timeout
+	futureCtx := baseCtx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 2, 1, 0, 0, 0, time.UTC)})
+
+	processResp, err := vaultsV2Server.ProcessWithdrawalQueue(futureCtx, &vaultsv2.MsgProcessWithdrawalQueue{
+		Authority:   "authority",
+		MaxRequests: 10,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, processResp)
+	assert.Equal(t, int32(1), processResp.RequestsProcessed)
+	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), processResp.TotalAmountProcessed)
+
+	// NAV should stay same: funds are marked ready but still in vault
+	checkNAV("11-after-withdrawal-processing",
+		sdkmath.NewInt(480*ONE_V2),  // pending unchanged
+		sdkmath.NewInt(880*ONE_V2),  // remote unchanged
+		sdkmath.NewInt(0),           // inflight unchanged
+		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+
+	// Verify withdrawal is now READY
+	requestID, err := strconv.ParseUint(withdrawalResp.RequestId, 10, 64)
+	require.NoError(t, err)
+	withdrawal, found, err := k.GetVaultsV2Withdrawal(futureCtx, requestID)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, vaultsv2.WITHDRAWAL_REQUEST_STATUS_READY, withdrawal.Status)
+
+	// === STEP 12: User claims withdrawal ===
+	claimResp, err := vaultsV2Server.ClaimWithdrawal(futureCtx, &vaultsv2.MsgClaimWithdrawal{
+		Claimer:   bob.Address,
+		RequestId: withdrawalResp.RequestId,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, claimResp)
+	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), claimResp.AmountClaimed)
+
+	// NAV should decrease by 200: funds have left the vault
+	// The withdrawal comes from pending deployment funds
+	checkNAV("12-after-withdrawal-claimed",
+		sdkmath.NewInt(280*ONE_V2),  // pending -200 = 280
+		sdkmath.NewInt(880*ONE_V2),  // remote unchanged
+		sdkmath.NewInt(0),           // inflight unchanged
+		sdkmath.NewInt(1160*ONE_V2)) // total NAV = 1160
+
+	t.Log("✅ NAV lifecycle test passed - NAV correctly calculated at each step including withdrawals!")
 }
 
 // TestNAVCalculationWithOracleMessage tests the actual oracle message handling
