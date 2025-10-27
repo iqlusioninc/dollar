@@ -126,6 +126,11 @@ func (k *Keeper) accountingWithCursor(
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
 ) (*AccountingResult, error) {
+	// Accounting requires deposits to exist
+	if vaultState.TotalDeposits.IsNil() || vaultState.TotalDeposits.IsZero() {
+		return nil, fmt.Errorf("cannot run accounting: no deposits exist (TotalDeposits not initialized)")
+	}
+
 	// For position-based accounting, we need to calculate the NEW yield to distribute
 	// New yield = NAV - Total Deposits - Total Accrued Yield
 	// This gives us only the incremental yield, preventing double-counting
