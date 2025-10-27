@@ -645,3 +645,166 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	fmt.Printf("  TotalNAV = %s\n", vaultState.TotalNav)
 	fmt.Printf("  Match: %v\n", invariantSum.Equal(vaultState.TotalNav))
 }
+
+// TestAccountingSequentialSessions verifies that accounting can be run multiple times
+// with different NAVs, ensuring the cursor is properly reset between sessions and
+// that yield accumulates correctly across multiple accounting runs.
+func TestAccountingSequentialSessions(t *testing.T) {
+	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
+	alice := utils.TestAccount()
+
+	params, _ := k.GetVaultsV2Params(ctx)
+	require.NoError(t, k.SetVaultsV2Params(ctx, params))
+
+	// ARRANGE: Mint funds for users
+	require.NoError(t, k.Mint(ctx, bob.Bytes, sdkmath.NewInt(1000*ONE_V2), nil))
+	require.NoError(t, k.Mint(ctx, alice.Bytes, sdkmath.NewInt(500*ONE_V2), nil))
+
+	// ARRANGE: Create deposits for two users
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       sdkmath.NewInt(1000 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    alice.Address,
+		Amount:       sdkmath.NewInt(500 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	// Total deposits: 1500 USDN
+
+	// ============================
+	// FIRST ACCOUNTING SESSION
+	// ============================
+
+	// ACT: Set NAV to 1650 (10% yield = 150 USDN)
+	navInfo1 := vaultsv2.NAVInfo{
+		CurrentNav: sdkmath.NewInt(1650 * ONE_V2),
+		LastUpdate: time.Now(),
+	}
+	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo1))
+
+	// ACT: Run first accounting session to completion
+	session1Calls := 0
+	for {
+		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+			Manager:      params.Authority,
+			MaxPositions: 100,
+		})
+		require.NoError(t, err)
+		session1Calls++
+
+		if resp.AccountingComplete {
+			assert.Equal(t, uint64(2), resp.TotalPositions, "should process 2 positions in session 1")
+			break
+		}
+	}
+
+	// ASSERT: First session completed and cursor is cleared
+	cursor, err := k.GetVaultsV2AccountingCursor(ctx)
+	require.NoError(t, err)
+	assert.False(t, cursor.InProgress, "cursor should not be in progress after session 1 completes")
+	assert.Equal(t, "", cursor.LastProcessedUser, "cursor should be cleared after completion")
+
+	// ASSERT: Verify yield was distributed correctly in session 1
+	// Bob: 1000/1500 * 150 = 100 USDN
+	// Alice: 500/1500 * 150 = 50 USDN
+	bobPos1, found, _ := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	require.True(t, found)
+	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2), bobPos1.DepositAmount)
+	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), bobPos1.AccruedYield, "Bob should have 100 USDN yield from session 1")
+
+	alicePos1, found, _ := k.GetVaultsV2UserPosition(ctx, alice.Bytes, 1)
+	require.True(t, found)
+	assert.Equal(t, sdkmath.NewInt(500*ONE_V2), alicePos1.DepositAmount)
+	assert.Equal(t, sdkmath.NewInt(50*ONE_V2), alicePos1.AccruedYield, "Alice should have 50 USDN yield from session 1")
+
+	// ASSERT: Verify vault state after session 1
+	vaultState, err := k.GetVaultsV2VaultState(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits)
+	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield, "total yield should be 150 USDN after session 1")
+	assert.Equal(t, navInfo1.CurrentNav, vaultState.TotalNav)
+
+	// ASSERT: No snapshots should remain after session 1
+	snapshotCount := 0
+	err = k.IterateVaultsV2AccountingSnapshots(ctx, func(snapshot vaultsv2.AccountingSnapshot) (bool, error) {
+		snapshotCount++
+		return false, nil
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 0, snapshotCount, "no snapshots should remain after session 1 completes")
+
+	// ============================
+	// SECOND ACCOUNTING SESSION
+	// ============================
+
+	// ACT: Set new NAV to 1815 (additional 10% yield on 1650 = 165 USDN total new yield)
+	// New yield to distribute = 1815 - 1500 - 150 = 165 USDN
+	navInfo2 := vaultsv2.NAVInfo{
+		CurrentNav: sdkmath.NewInt(1815 * ONE_V2),
+		LastUpdate: time.Now().Add(time.Hour),
+	}
+	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo2))
+
+	// ACT: Run second accounting session to completion
+	session2Calls := 0
+	for {
+		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
+			Manager:      params.Authority,
+			MaxPositions: 100,
+		})
+		require.NoError(t, err)
+		session2Calls++
+
+		if resp.AccountingComplete {
+			assert.Equal(t, uint64(2), resp.TotalPositions, "should process 2 positions in session 2")
+			break
+		}
+	}
+
+	// ASSERT: Second session completed and cursor is cleared
+	cursor, err = k.GetVaultsV2AccountingCursor(ctx)
+	require.NoError(t, err)
+	assert.False(t, cursor.InProgress, "cursor should not be in progress after session 2 completes")
+	assert.Equal(t, "", cursor.LastProcessedUser, "cursor should be cleared after session 2 completion")
+
+	// ASSERT: Verify yield accumulated correctly from both sessions
+	// Bob session 2: 1000/1500 * 165 = 110 USDN additional
+	// Total Bob yield: 100 + 110 = 210 USDN
+	// Alice session 2: 500/1500 * 165 = 55 USDN additional
+	// Total Alice yield: 50 + 55 = 105 USDN
+	bobPos2, found, _ := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	require.True(t, found)
+	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2), bobPos2.DepositAmount)
+	assert.Equal(t, sdkmath.NewInt(210*ONE_V2), bobPos2.AccruedYield, "Bob should have 210 USDN total yield (100 + 110)")
+
+	alicePos2, found, _ := k.GetVaultsV2UserPosition(ctx, alice.Bytes, 1)
+	require.True(t, found)
+	assert.Equal(t, sdkmath.NewInt(500*ONE_V2), alicePos2.DepositAmount)
+	assert.Equal(t, sdkmath.NewInt(105*ONE_V2), alicePos2.AccruedYield, "Alice should have 105 USDN total yield (50 + 55)")
+
+	// ASSERT: Verify final vault state
+	vaultState, err = k.GetVaultsV2VaultState(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits)
+	assert.Equal(t, sdkmath.NewInt(315*ONE_V2), vaultState.TotalAccruedYield, "total yield should be 315 USDN (150 + 165)")
+	assert.Equal(t, navInfo2.CurrentNav, vaultState.TotalNav)
+
+	// ASSERT: Verify accounting invariant holds
+	invariantSum := vaultState.TotalDeposits.Add(vaultState.TotalAccruedYield)
+	assert.Equal(t, vaultState.TotalNav, invariantSum, "TotalDeposits + TotalAccruedYield should equal TotalNav")
+
+	// ASSERT: No snapshots should remain after session 2
+	snapshotCount = 0
+	err = k.IterateVaultsV2AccountingSnapshots(ctx, func(snapshot vaultsv2.AccountingSnapshot) (bool, error) {
+		snapshotCount++
+		return false, nil
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 0, snapshotCount, "no snapshots should remain after session 2 completes")
+}
