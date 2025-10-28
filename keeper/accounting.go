@@ -93,6 +93,36 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 			return nil, fmt.Errorf("failed to clear old snapshots: %w", err)
 		}
 
+		// Calculate total eligible deposits once at session start
+		// This is safe because deposits, withdrawals, and SetYieldPreference are blocked during accounting
+		totalEligibleDeposits := sdkmath.ZeroInt()
+		err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
+			if position.ReceiveYield && position.DepositAmount.IsPositive() {
+				// Calculate active deposit (excluding pending withdrawals)
+				activeDeposit := position.DepositAmount
+				if position.AmountPendingWithdrawal.IsPositive() {
+					var subErr error
+					activeDeposit, subErr = position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
+					if subErr != nil {
+						// If pending exceeds deposit, no active deposits
+						activeDeposit = sdkmath.ZeroInt()
+					}
+				}
+
+				if activeDeposit.IsPositive() {
+					var addErr error
+					totalEligibleDeposits, addErr = totalEligibleDeposits.SafeAdd(activeDeposit)
+					if addErr != nil {
+						return true, addErr
+					}
+				}
+			}
+			return false, nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to calculate eligible deposits at session start: %w", err)
+		}
+
 		// Initialize new accounting session
 		// Note: We don't count total positions upfront to avoid expensive iteration.
 		// Instead, we detect completion when the iterator returns 0 positions.
@@ -105,6 +135,7 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 			InProgress:             true,
 			StartedAt:              k.header.GetHeaderInfo(ctx).Time,
 			AccumulatedResidual:    sdkmath.ZeroInt(),
+			TotalEligibleDeposits:  totalEligibleDeposits, // Cached for entire session
 		}
 
 		// Save initial cursor
@@ -113,109 +144,8 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		}
 	}
 
-	// When there are no active positions, handle specially
-	if vaultState.TotalPositions == 0 {
-		return k.accountingWithZeroPositions(ctx, navInfo, cursor, maxPositions)
-	}
-
 	// Perform cursor-based accounting
 	return k.accountingWithCursor(ctx, navInfo, vaultState, cursor, maxPositions)
-}
-
-// accountingWithZeroPositions handles the case where there are no active positions.
-// Writes zero yield to snapshots for all users.
-func (k *Keeper) accountingWithZeroPositions(
-	ctx context.Context,
-	navInfo vaultsv2.NAVInfo,
-	cursor vaultsv2.AccountingCursor,
-	maxPositions uint32,
-) (*AccountingResult, error) {
-	// Use paginated iterator
-	lastProcessed, count, err := k.IterateVaultsV2UserPositionsPaginated(
-		ctx,
-		cursor.LastProcessedUser,
-		maxPositions,
-		func(address types.AccAddress, positionID uint64, position vaultsv2.UserPosition) error {
-			// Create snapshot with zero yield
-			snapshot := vaultsv2.AccountingSnapshot{
-				User:            address.String(),
-				PositionId:      positionID,
-				DepositAmount:   position.AmountPendingWithdrawal,
-				AccruedYield:    sdkmath.ZeroInt(),
-				AccountingNav:   navInfo.CurrentNav,
-				CreatedAtHeight: k.header.GetHeaderInfo(ctx).Height,
-			}
-
-			return k.SetVaultsV2AccountingSnapshot(ctx, snapshot)
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update cursor
-	cursor.PositionsProcessed += uint64(count)
-	cursor.LastProcessedUser = lastProcessed
-
-	// Accounting is complete when we process a batch and get 0 positions back
-	// (meaning there are no more positions to process)
-	complete := count == 0
-
-	// Update total positions to reflect actual count
-	if complete {
-		cursor.TotalPositions = cursor.PositionsProcessed
-	}
-
-	if complete {
-		// Commit all snapshots atomically
-		if err := k.CommitVaultsV2AccountingSnapshots(ctx); err != nil {
-			return nil, fmt.Errorf("failed to commit snapshots: %w", err)
-		}
-
-		// Update vault state
-		state, err := k.GetVaultsV2VaultState(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		state.TotalNav = navInfo.CurrentNav
-		if !state.TotalDeposits.IsNil() {
-			if state.TotalAccruedYield, err = navInfo.CurrentNav.SafeSub(state.TotalDeposits); err != nil {
-				return nil, err
-			}
-		} else {
-			state.TotalAccruedYield = sdkmath.ZeroInt()
-		}
-
-		if !navInfo.LastUpdate.IsZero() {
-			state.LastNavUpdate = navInfo.LastUpdate
-		}
-
-		if err := k.SetVaultsV2VaultState(ctx, state); err != nil {
-			return nil, err
-		}
-
-		// Clear cursor
-		if err := k.ClearVaultsV2AccountingCursor(ctx); err != nil {
-			return nil, err
-		}
-	} else {
-		// Save cursor for next iteration
-		if err := k.SetVaultsV2AccountingCursor(ctx, cursor); err != nil {
-			return nil, err
-		}
-	}
-
-	return &AccountingResult{
-		PositionsProcessed:      uint64(count),
-		TotalPositionsProcessed: cursor.PositionsProcessed,
-		TotalPositions:          cursor.TotalPositions,
-		Complete:                complete,
-		NextUser:                lastProcessed,
-		AppliedNav:              navInfo.CurrentNav,
-		YieldDistributed:        sdkmath.ZeroInt(),
-		NegativeYieldWarning:    "",
-	}, nil
 }
 
 // accountingWithCursor performs the main accounting logic with cursor pagination.
@@ -227,6 +157,11 @@ func (k *Keeper) accountingWithCursor(
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
 ) (*AccountingResult, error) {
+	// Accounting requires deposits to exist
+	if vaultState.TotalDeposits.IsNil() || vaultState.TotalDeposits.IsZero() {
+		return nil, fmt.Errorf("cannot run accounting: no deposits exist (TotalDeposits not initialized)")
+	}
+
 	// For position-based accounting, we need to calculate the NEW yield to distribute
 	// New yield = NAV - Total Deposits - Total Accrued Yield
 	// This gives us only the incremental yield, preventing double-counting
@@ -263,43 +198,13 @@ func (k *Keeper) accountingWithCursor(
 	}
 	// If navMinusDeposits == TotalAccruedYield, then totalYieldToDistribute stays at zero (no new yield)
 
-	// First pass: calculate total eligible deposits (positions with receive_yield = true)
-	// We need this to properly distribute yield proportionally
-	// NOTE: Only active deposits (excluding pending withdrawals) are eligible for yield
-	totalEligibleDeposits := sdkmath.ZeroInt()
-	err := k.IterateVaultsV2UserPositions(ctx, func(address types.AccAddress, position vaultsv2.UserPosition) (bool, error) {
-		if position.ReceiveYield && position.DepositAmount.IsPositive() {
-			// Calculate active deposit (excluding pending withdrawals)
-			activeDeposit := position.DepositAmount
-			if position.AmountPendingWithdrawal.IsPositive() {
-				var subErr error
-				activeDeposit, subErr = position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
-				if subErr != nil {
-					// If pending exceeds deposit, no active deposits
-					activeDeposit = sdkmath.ZeroInt()
-				}
-			}
-
-			if activeDeposit.IsPositive() {
-				var addErr error
-				totalEligibleDeposits, addErr = totalEligibleDeposits.SafeAdd(activeDeposit)
-				if addErr != nil {
-					return true, addErr
-				}
-			}
-		}
-		return false, nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to calculate eligible deposits: %w", err)
-	}
-
-	// If no eligible deposits, no yield to distribute
-	if totalEligibleDeposits.IsZero() {
-		return k.accountingWithZeroPositions(ctx, navInfo, cursor, maxPositions)
-	}
+	// Use cached totalEligibleDeposits from cursor (calculated once at session start)
+	// This avoids re-iterating all positions on every batch during cursor pagination
+	totalEligibleDeposits := cursor.TotalEligibleDeposits
 
 	// Setup for proportional distribution with residual tracking
+	// Note: If totalEligibleDeposits is zero, we still process positions to update
+	// VaultState, but no yield will be distributed (all positions have ReceiveYield=false)
 	totalYieldBig := totalYieldToDistribute.BigInt()
 	totalEligibleBig := totalEligibleDeposits.BigInt()
 	residual := cursor.AccumulatedResidual.BigInt()

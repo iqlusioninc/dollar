@@ -1695,6 +1695,32 @@ func (m msgServerV2) UpdateOracleParams(ctx context.Context, msg *vaultsv2.MsgUp
 	}, nil
 }
 
+// calculateWithdrawalSplit splits a withdrawal amount between yield and principal.
+// Withdrawals are taken from yield first, then principal (FIFO for yield).
+func calculateWithdrawalSplit(withdrawAmount, accruedYield, depositAmount sdkmath.Int) (yieldWithdrawn, principalWithdrawn sdkmath.Int) {
+	totalValue := depositAmount.Add(accruedYield)
+
+	if !totalValue.IsPositive() || !withdrawAmount.IsPositive() {
+		// No value or no withdrawal, treat as all principal
+		return sdkmath.ZeroInt(), withdrawAmount
+	}
+
+	if withdrawAmount.GTE(totalValue) {
+		// Withdrawing entire position
+		return accruedYield, depositAmount
+	}
+
+	// Withdraw from yield first, then principal
+	if withdrawAmount.LTE(accruedYield) {
+		// Entire withdrawal is from yield
+		return withdrawAmount, sdkmath.ZeroInt()
+	}
+
+	// Withdraw all yield, remainder from principal
+	principalWithdrawn, _ = withdrawAmount.SafeSub(accruedYield)
+	return accruedYield, principalWithdrawn
+}
+
 func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaimWithdrawal) (*vaultsv2.MsgClaimWithdrawalResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -1739,6 +1765,23 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	}
 
 	withdrawAmount := request.WithdrawAmount
+
+	// Get position to calculate yield vs principal split
+	position, found, err := m.GetVaultsV2UserPosition(ctx, claimer, request.PositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for withdrawal", request.PositionId)
+	}
+
+	// Calculate split (yield first, then principal)
+	yieldWithdrawn, principalWithdrawn := calculateWithdrawalSplit(
+		withdrawAmount,
+		position.AccruedYield,
+		position.DepositAmount,
+	)
+
 	if err := m.DeleteVaultsV2Withdrawal(ctx, id); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to remove withdrawal request")
 	}
@@ -1747,7 +1790,8 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
 	}
 
-	if err := m.SubtractAmountFromVaultsV2Totals(ctx, withdrawAmount, sdkmath.ZeroInt()); err != nil {
+	// Update vault totals with correct split
+	if err := m.SubtractAmountFromVaultsV2Totals(ctx, principalWithdrawn, yieldWithdrawn); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update vault totals")
 	}
 
@@ -1767,12 +1811,8 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
 
-	// Update the specific position that this withdrawal request belongs to
-	position, found, err := m.GetVaultsV2UserPosition(ctx, claimer, request.PositionId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
-	}
-	if found {
+	// Update the position (we already fetched it above)
+	{
 		// Deduct from pending withdrawal
 		if position.AmountPendingWithdrawal.IsPositive() {
 			if position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeSub(withdrawAmount); err != nil {
@@ -1787,23 +1827,20 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		}
 
 		if totalValue.IsPositive() && withdrawAmount.IsPositive() {
-			// Calculate proportion to deduct from each
 			if withdrawAmount.GTE(totalValue) {
 				// Withdrawing entire position
 				position.DepositAmount = sdkmath.ZeroInt()
 				position.AccruedYield = sdkmath.ZeroInt()
 			} else {
-				// Proportional deduction: deduct from deposit first, then yield
-				if position.DepositAmount.GTE(withdrawAmount) {
-					position.DepositAmount, _ = position.DepositAmount.SafeSub(withdrawAmount)
+				// Deduct from yield first, then principal
+				if withdrawAmount.LTE(position.AccruedYield) {
+					// Entire withdrawal is from yield
+					position.AccruedYield, _ = position.AccruedYield.SafeSub(withdrawAmount)
 				} else {
-					remaining := withdrawAmount
-					position.DepositAmount = sdkmath.ZeroInt()
-					remaining, _ = remaining.SafeSub(position.DepositAmount)
-					position.AccruedYield, _ = position.AccruedYield.SafeSub(remaining)
-					if position.AccruedYield.IsNegative() {
-						position.AccruedYield = sdkmath.ZeroInt()
-					}
+					// Withdraw all yield, remainder from principal
+					remaining, _ := withdrawAmount.SafeSub(position.AccruedYield)
+					position.AccruedYield = sdkmath.ZeroInt()
+					position.DepositAmount, _ = position.DepositAmount.SafeSub(remaining)
 				}
 			}
 		}
@@ -1843,8 +1880,8 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventWithdraw{
 		Withdrawer:          msg.Claimer,
-		PrincipalWithdrawn:  withdrawAmount,
-		YieldWithdrawn:      sdkmath.ZeroInt(),
+		PrincipalWithdrawn:  principalWithdrawn,
+		YieldWithdrawn:      yieldWithdrawn,
 		TotalAmountReceived: withdrawAmount,
 		FeesPaid:            sdkmath.ZeroInt(),
 		BlockHeight:         sdk.UnwrapSDKContext(ctx).BlockHeight(),
@@ -1855,8 +1892,8 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 	return &vaultsv2.MsgClaimWithdrawalResponse{
 		AmountClaimed:   withdrawAmount,
-		PrincipalAmount: withdrawAmount,
-		YieldAmount:     sdkmath.ZeroInt(),
+		PrincipalAmount: principalWithdrawn,
+		YieldAmount:     yieldWithdrawn,
 		FeesDeducted:    sdkmath.ZeroInt(),
 	}, nil
 }
