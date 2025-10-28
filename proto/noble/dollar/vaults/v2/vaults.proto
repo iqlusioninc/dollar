@@ -469,4 +469,13 @@ message AccountingCursor {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+
+  // Total eligible deposits (positions with receive_yield=true) calculated at session start
+  // This is cached to avoid re-calculating on every batch during cursor pagination
+  string total_eligible_deposits = 9 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }
