@@ -1868,6 +1868,11 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
 	}
 
+	// Deduct from local funds since coins are leaving the module account
+	if err := m.SubtractVaultsV2LocalFunds(ctx, withdrawAmount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update local funds")
+	}
+
 	// Update vault totals with correct split
 	if err := m.SubtractAmountFromVaultsV2Totals(ctx, principalWithdrawn, yieldWithdrawn); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update vault totals")
