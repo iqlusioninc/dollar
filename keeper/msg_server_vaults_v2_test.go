@@ -590,8 +590,9 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		PositionId: 1,
+		Amount:     math.NewInt(50 * ONE_V2),
 	})
 	require.NoError(t, err)
 
@@ -602,6 +603,11 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 		MaxRequests: 10,
 	})
 	require.NoError(t, err)
+
+	// Check LocalFunds before claim (should be 100 from deposit)
+	localFundsBefore, err := k.GetVaultsV2LocalFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(100*ONE_V2), localFundsBefore)
 
 	// ACT: Claim withdrawal
 	claimResp, err := vaultsV2Server.ClaimWithdrawal(ctx, &vaultsv2.MsgClaimWithdrawal{
@@ -632,6 +638,11 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
 	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
 	assert.Equal(t, int32(0), position.ActiveWithdrawalRequests)
+
+	// ASSERT: LocalFunds reduced by withdrawal amount (100 - 50 claimed = 50)
+	localFundsAfter, err := k.GetVaultsV2LocalFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(50*ONE_V2), localFundsAfter)
 }
 
 func TestClaimWithdrawalNotReady(t *testing.T) {
