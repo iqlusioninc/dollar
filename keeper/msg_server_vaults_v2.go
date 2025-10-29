@@ -427,6 +427,14 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	}
 	state.TotalPositions++
 
+	// Update total eligible deposits if receiving yield
+	if msg.ReceiveYield {
+		state.TotalEligibleDeposits, err = state.TotalEligibleDeposits.SafeAdd(msg.Amount)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to update total eligible deposits")
+		}
+	}
+
 	// Update deposit tracking metrics
 	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
@@ -498,6 +506,24 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
+	// Calculate eligible deposits delta if position receives yield
+	// Pending withdrawals don't earn yield, so when we add to pending, reduce eligible deposits
+	var eligibleDepositsDelta sdkmath.Int
+	if position.ReceiveYield {
+		activeDepositBefore := position.DepositAmount
+		if position.AmountPendingWithdrawal.IsPositive() {
+			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
+		}
+
+		activeDepositAfter := position.DepositAmount
+		pendingAfter, _ := position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
+		if pendingAfter.IsPositive() {
+			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
+		}
+
+		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
+	}
+
 	// Update position to mark amount as pending withdrawal
 	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
 	if err != nil {
@@ -522,6 +548,12 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
 	}
+
+	// Update eligible deposits if position receives yield
+	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(eligibleDepositsDelta)
+	}
+
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
@@ -603,12 +635,38 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 		return nil, err
 	}
 
+	// Calculate active deposits (excluding pending withdrawals) for eligible deposits tracking
+	activeDeposit := position.DepositAmount
+	if position.AmountPendingWithdrawal.IsPositive() {
+		activeDeposit, _ = activeDeposit.SafeSub(position.AmountPendingWithdrawal)
+	}
+
 	// Update position
 	position.ReceiveYield = msg.ReceiveYield
 	position.LastActivityTime = headerInfo.Time
 
 	if err := m.SetVaultsV2UserPosition(ctx, user, msg.PositionId, position); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist user position")
+	}
+
+	// Update TotalEligibleDeposits based on preference change
+	if activeDeposit.IsPositive() && previousPreference != msg.ReceiveYield {
+		state, err := m.GetVaultsV2VaultState(ctx)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
+		}
+
+		if msg.ReceiveYield {
+			// Turning ON receive_yield: add to eligible deposits
+			state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(activeDeposit)
+		} else {
+			// Turning OFF receive_yield: subtract from eligible deposits
+			state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(activeDeposit)
+		}
+
+		if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+		}
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventYieldPreferenceUpdated{
@@ -1782,6 +1840,28 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		position.DepositAmount,
 	)
 
+	// Calculate eligible deposits delta if position receives yield
+	// When claiming, we reduce pending and reduce deposit, so eligible deposits change
+	var eligibleDepositsDelta sdkmath.Int
+	if position.ReceiveYield {
+		// Active deposit before claim: deposit - pendingWithdrawal
+		activeDepositBefore := position.DepositAmount
+		if position.AmountPendingWithdrawal.IsPositive() {
+			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
+		}
+
+		// Active deposit after claim: (deposit - principalWithdrawn) - (pendingWithdrawal - withdrawAmount)
+		depositAfter, _ := position.DepositAmount.SafeSub(principalWithdrawn)
+		pendingAfter, _ := position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
+		activeDepositAfter := depositAfter
+		if pendingAfter.IsPositive() {
+			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
+		}
+
+		// Delta (positive = reduction, negative = increase)
+		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
+	}
+
 	if err := m.DeleteVaultsV2Withdrawal(ctx, id); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to remove withdrawal request")
 	}
@@ -1806,6 +1886,12 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
 	}
+
+	// Update eligible deposits if position receives yield
+	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(eligibleDepositsDelta)
+	}
+
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
