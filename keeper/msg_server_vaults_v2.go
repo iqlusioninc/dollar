@@ -657,10 +657,8 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 		}
 
 		if msg.ReceiveYield {
-			// Turning ON receive_yield: add to eligible deposits
 			state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(activeDeposit)
 		} else {
-			// Turning OFF receive_yield: subtract from eligible deposits
 			state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(activeDeposit)
 		}
 
