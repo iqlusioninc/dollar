@@ -914,7 +914,7 @@ func TestCreateRemotePosition(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	pending, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	pending, err := k.GetVaultsV2LocalFunds(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, math.NewInt(200*ONE_V2), pending)
 
@@ -931,7 +931,7 @@ func TestCreateRemotePosition(t *testing.T) {
 	require.NotNil(t, resp)
 	assert.Equal(t, uint64(1), resp.PositionId)
 
-	pending, err = k.GetVaultsV2PendingDeploymentFunds(ctx)
+	pending, err = k.GetVaultsV2LocalFunds(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, math.NewInt(50*ONE_V2), pending)
 
@@ -1117,7 +1117,7 @@ func TestRebalanceAdjustsPositions(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), pos2.TotalValue)
 
-	pending, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	pending, err := k.GetVaultsV2LocalFunds(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, math.NewInt(90*ONE_V2), pending)
 
@@ -1815,7 +1815,7 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	err = k.AddVaultsV2InflightValueByRoute(baseCtx, routeResp.RouteId, depositFund.Amount)
 	require.NoError(t, err)
 
-	beforePending, err := k.GetVaultsV2PendingDeploymentFunds(baseCtx)
+	beforePending, err := k.GetVaultsV2LocalFunds(baseCtx)
 	require.NoError(t, err)
 
 	ctx := baseCtx.WithHeaderInfo(header.Info{Time: time.Date(2024, 5, 5, 0, 0, 0, 0, time.UTC)})
@@ -1837,7 +1837,7 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, routeValue.IsZero())
 
-	pendingDeployment, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	pendingDeployment, err := k.GetVaultsV2LocalFunds(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, beforePending, pendingDeployment)
 }

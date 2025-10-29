@@ -107,12 +107,12 @@ The `InflightValueByRoute` field is a mapping ([`collections.Map`][map]) between
 const InflightValueByRoutePrefix = []byte("vaults/v2/inflight_value_by_route/")
 ```
 
-## PendingDeploymentFunds
+## LocalFunds
 
-The `PendingDeploymentFunds` field is a [`collections.Item`][item] that stores the amount of $USDN received from deposits but not yet deployed to remote positions (`math.Int`).
+The `LocalFunds` field is a [`collections.Item`][item] that stores the amount of $USDN held locally in the vault, available for deployment to remote positions or for paying withdrawals (`math.Int`).
 
 ```go
-const PendingDeploymentFundsKey = []byte("vaults/v2/pending_deployment")
+const LocalFundsKey = []byte("vaults/v2/local_funds")
 ```
 
 ## PendingWithdrawalDistribution

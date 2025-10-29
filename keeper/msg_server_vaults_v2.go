@@ -373,8 +373,8 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to transfer deposit into module account")
 	}
 
-	if err := m.AddVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to record pending deployment funds")
+	if err := m.AddVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to record local funds")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -1029,12 +1029,12 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
 	}
 
-	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
 	}
-	if pendingDeployment.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient pending deployment funds")
+	if localFunds.LT(msg.Amount) {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient local funds")
 	}
 
 	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
@@ -1067,8 +1067,8 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to store remote position chain id")
 	}
 
-	if err := m.SubtractVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending deployment funds")
+	if err := m.SubtractVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update local funds")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
@@ -1230,12 +1230,12 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 	targetDesired := make(map[uint64]sdkmath.Int, len(msg.TargetAllocations))
 	totalTracked := sdkmath.ZeroInt()
 
-	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
 	}
 
-	totalTracked = pendingDeployment
+	totalTracked = localFunds
 	for _, entry := range positions {
 		totalTracked, err = totalTracked.SafeAdd(entry.Position.TotalValue)
 		if err != nil {
@@ -1293,7 +1293,7 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		}
 	}
 
-	available := pendingDeployment
+	available := localFunds
 	operations := 0
 
 	for _, adj := range decreases {
@@ -1403,8 +1403,8 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		}
 	}
 
-	if err := m.VaultsV2PendingDeploymentFunds.Set(ctx, available); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist pending deployment funds")
+	if err := m.VaultsV2LocalFunds.Set(ctx, available); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist local funds")
 	}
 
 	headerInfo = m.header.GetHeaderInfo(ctx)
@@ -1531,7 +1531,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		removeRouteValue(fund.Amount)
 
 		if fund.GetOrigin() == nil && fund.Amount.IsPositive() {
-			_ = m.AddVaultsV2PendingDeploymentFunds(ctx, fund.Amount)
+			_ = m.AddVaultsV2LocalFunds(ctx, fund.Amount)
 		}
 
 		if origin := fund.GetRemoteOrigin(); origin != nil {
