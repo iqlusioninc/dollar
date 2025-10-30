@@ -33,6 +33,9 @@ import (
 func TestNAVLifecycle(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
 
+	inflightID := "1"
+	transactionID := "123"
+
 	// Helper to check NAV invariant
 	checkNAV := func(step string, expectedPending, expectedRemote, expectedInflight, expectedTotal sdkmath.Int) {
 		t.Helper()
@@ -163,8 +166,8 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 5: Create inflight fund (simulating cross-chain transfer) ===
 	inflightFund := vaultsv2.InflightFund{
-		Id:                "inflight-1",
-		TransactionId:     "tx-123",
+		Id:                inflightID,
+		TransactionId:     transactionID,
 		Amount:            sdkmath.NewInt(200 * ONE_V2),
 		Status:            vaultsv2.INFLIGHT_PENDING,
 		InitiatedAt:       time.Now(),
@@ -215,7 +218,7 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 7: Inflight completes - moves to remote position ===
 	// Remove inflight
-	require.NoError(t, k.VaultsV2InflightFunds.Remove(baseCtx, "inflight-1"))
+	require.NoError(t, k.VaultsV2InflightFunds.Remove(baseCtx, inflightID))
 
 	// Create new remote position for inflight destination
 	newPosition := vaultsv2.RemotePosition{
