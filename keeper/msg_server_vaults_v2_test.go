@@ -62,7 +62,7 @@ func setupV2Test(t *testing.T) (*keeper.Keeper, vaultsv2.MsgServer, *mocks.BankK
 
 	// Set up default params
 	params := vaultsv2.Params{
-		Authority:                "authority",
+		Authority:                "address",
 		MinDepositAmount:         math.NewInt(ONE_V2),
 		MinWithdrawalAmount:      math.NewInt(ONE_V2),
 		MaxNavChangeBps:          1000,  // 10%
@@ -1787,7 +1787,7 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 
 	targetAddr := route.RemotePositionAddress.String()
 	_, err = vaultsV2Server.CreateRemotePosition(baseCtx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
+		Manager:      mocks.Authority,
 		VaultAddress: targetAddr,
 		ChainId:      8453,
 		Amount:       math.NewInt(120 * ONE_V2),

@@ -42,8 +42,10 @@ import (
 	"dollar.noble.xyz/v3"
 	"dollar.noble.xyz/v3/keeper"
 	"dollar.noble.xyz/v3/types"
-	"dollar.noble.xyz/v3/types/v2"
+	v2 "dollar.noble.xyz/v3/types/v2"
 )
+
+const Authority = "authority"
 
 func DollarKeeperWithKeepers(t testing.TB, bank BankKeeper, account AccountKeeper) (*keeper.Keeper, *wormholekeeper.Keeper, sdk.Context) {
 	keys := storetypes.NewKVStoreKeys(types.ModuleName, wormholetypes.ModuleName)
@@ -70,7 +72,7 @@ func DollarKeeperWithKeepers(t testing.TB, bank BankKeeper, account AccountKeepe
 
 	k := keeper.NewKeeper(
 		"uusdn",
-		"authority",
+		Authority,
 		1e6,
 		1e6,
 		1893499200,
