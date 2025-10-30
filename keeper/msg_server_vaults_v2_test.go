@@ -215,11 +215,17 @@ func TestDepositMultipleDeposits(t *testing.T) {
 	// ASSERT: Bob's balance is correct
 	assert.Equal(t, math.NewInt(50*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
 
-	// ASSERT: User position accumulated correctly
-	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	// ASSERT: First position has first deposit amount
+	position1, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
-	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
+	assert.Equal(t, math.NewInt(30*ONE_V2), position1.DepositAmount)
+
+	// ASSERT: Second position has second deposit amount
+	position2, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 2)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, math.NewInt(20*ONE_V2), position2.DepositAmount)
 
 	// ASSERT: Total users count remains 1
 	state, err := k.GetVaultsV2VaultState(ctx)
@@ -362,13 +368,14 @@ func TestRequestWithdrawalInsufficientBalance(t *testing.T) {
 
 	// ACT: Request withdrawal of more than deposited
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(100 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(100 * ONE_V2),
+		PositionId: 1,
 	})
 
 	// ASSERT: Error returned
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "insufficient unlocked balance")
+	assert.Contains(t, err.Error(), "insufficient balance in position")
 }
 
 func TestRequestWithdrawalNoPosition(t *testing.T) {
@@ -376,13 +383,14 @@ func TestRequestWithdrawalNoPosition(t *testing.T) {
 
 	// ACT: Request withdrawal without any position
 	_, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 
 	// ASSERT: Error returned
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "no position found")
+	assert.Contains(t, err.Error(), "not found for requester")
 }
 
 func TestRequestWithdrawalMultipleRequests(t *testing.T) {
@@ -399,15 +407,17 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 
 	// ACT: First withdrawal request for 30 USDN
 	resp1, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(30 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(30 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
 	// ACT: Second withdrawal request for 20 USDN
 	resp2, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(20 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(20 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -435,8 +445,9 @@ func TestProcessWithdrawalQueueBasic(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -476,8 +487,9 @@ func TestProcessWithdrawalQueueUnauthorized(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -505,8 +517,9 @@ func TestProcessWithdrawalQueueNotUnlocked(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -544,8 +557,9 @@ func TestProcessWithdrawalQueueWithLimit(t *testing.T) {
 	})
 	require.NoError(t, err)
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -557,8 +571,9 @@ func TestProcessWithdrawalQueueWithLimit(t *testing.T) {
 	})
 	require.NoError(t, err)
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: alice.Address,
-		Amount:    math.NewInt(30 * ONE_V2),
+		Requester:  alice.Address,
+		Amount:     math.NewInt(30 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -658,8 +673,9 @@ func TestClaimWithdrawalNotReady(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -688,8 +704,9 @@ func TestClaimWithdrawalWrongClaimer(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -744,8 +761,9 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 
 	// ACT: Bob requests withdrawal of 60 USDN
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(60 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(60 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -814,15 +832,17 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 
 	// ACT: Bob requests withdrawal of 50 USDN
 	bobResp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(50 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(50 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
 	// ACT: Alice requests withdrawal of 100 USDN
 	aliceResp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: alice.Address,
-		Amount:    math.NewInt(100 * ONE_V2),
+		Requester:  alice.Address,
+		Amount:     math.NewInt(100 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
@@ -876,15 +896,16 @@ func TestCompleteWithdrawalRemovesPosition(t *testing.T) {
 
 	// ACT: Request complete withdrawal
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
-		Requester: bob.Address,
-		Amount:    math.NewInt(100 * ONE_V2),
+		Requester:  bob.Address,
+		Amount:     math.NewInt(100 * ONE_V2),
+		PositionId: 1,
 	})
 	require.NoError(t, err)
 
-	// ASSERT: Total users is 0 (shares went to 0, even though position exists with pending withdrawal)
+	// ASSERT: Total users is still 1 (position exists with pending withdrawal)
 	state, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, uint64(0), state.TotalUsers)
+	assert.Equal(t, uint64(1), state.TotalUsers)
 
 	// ACT: Process and claim
 	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 2, 1, 0, 0, 0, time.UTC)})

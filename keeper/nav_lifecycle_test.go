@@ -218,7 +218,7 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 7: Inflight completes - moves to remote position ===
 	// Remove inflight
-	require.NoError(t, k.VaultsV2InflightFunds.Remove(baseCtx, "inflight-1"))
+	require.NoError(t, k.VaultsV2InflightFunds.Remove(baseCtx, inflightID))
 
 	// Create new remote position for inflight destination
 	newPosition := vaultsv2.RemotePosition{
