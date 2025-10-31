@@ -1952,8 +1952,15 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 			// Decrement user position count
 			count, _ := m.GetUserPositionCount(ctx, claimer)
 			if count > 0 {
+				isLast := count == 1
 				if err := m.SetUserPositionCount(ctx, claimer, count-1); err != nil {
 					return nil, sdkerrors.Wrap(err, "unable to update user position count")
+				}
+
+				if isLast {
+					if err := m.DecrementVaultsV2TotalUsers(ctx); err != nil {
+						return nil, sdkerrors.Wrap(err, "unable to decrement total users")
+					}
 				}
 			}
 		} else {

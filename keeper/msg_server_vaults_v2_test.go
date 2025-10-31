@@ -52,6 +52,7 @@ func setupV2Test(t *testing.T) (*keeper.Keeper, vaultsv2.MsgServer, *mocks.BankK
 	bank := mocks.BankKeeper{
 		Balances: make(map[string]sdk.Coins),
 	}
+
 	k, _, ctx := mocks.DollarKeeperWithKeepers(t, bank, account)
 	bank.Restriction = k.SendRestrictionFn
 	k.SetBankKeeper(bank)
@@ -921,8 +922,12 @@ func TestCompleteWithdrawalRemovesPosition(t *testing.T) {
 	})
 	require.NoError(t, err)
 
+	// ASSERT: Position is empty
+	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	assert.Zero(t, position.AccruedYield)
+	assert.Zero(t, position.DepositAmount)
+
 	// ASSERT: Position deleted
-	_, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	assert.False(t, found)
 
