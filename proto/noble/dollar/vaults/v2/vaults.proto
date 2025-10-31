@@ -226,6 +226,15 @@ message VaultState {
 
   // Total number of positions (since users can have multiple positions)
   uint64 total_positions = 10;
+
+  // Total deposits that are eligible to receive yield (receive_yield=true, excluding pending withdrawals)
+  // This is tracked incrementally and recalculated at accounting completion for accuracy
+  string total_eligible_deposits = 11 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }
 
 // YieldCalculation contains details about yield calculations
@@ -464,15 +473,6 @@ message AccountingCursor {
 
   // Accumulated residual from division precision handling
   string accumulated_residual = 8 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Total eligible deposits (positions with receive_yield=true) calculated at session start
-  // This is cached to avoid re-calculating on every batch during cursor pagination
-  string total_eligible_deposits = 9 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

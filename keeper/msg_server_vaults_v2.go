@@ -373,8 +373,8 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to transfer deposit into module account")
 	}
 
-	if err := m.AddVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to record pending deployment funds")
+	if err := m.AddVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to record local funds")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -426,6 +426,14 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.TotalPositions++
+
+	// Update total eligible deposits if receiving yield
+	if msg.ReceiveYield {
+		state.TotalEligibleDeposits, err = state.TotalEligibleDeposits.SafeAdd(msg.Amount)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to update total eligible deposits")
+		}
+	}
 
 	// Update deposit tracking metrics
 	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
@@ -498,6 +506,24 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
+	// Calculate eligible deposits delta if position receives yield
+	// Pending withdrawals don't earn yield, so when we add to pending, reduce eligible deposits
+	var eligibleDepositsDelta sdkmath.Int
+	if position.ReceiveYield {
+		activeDepositBefore := position.DepositAmount
+		if position.AmountPendingWithdrawal.IsPositive() {
+			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
+		}
+
+		activeDepositAfter := position.DepositAmount
+		pendingAfter, _ := position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
+		if pendingAfter.IsPositive() {
+			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
+		}
+
+		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
+	}
+
 	// Update position to mark amount as pending withdrawal
 	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
 	if err != nil {
@@ -522,6 +548,12 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
 	}
+
+	// Update eligible deposits if position receives yield
+	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(eligibleDepositsDelta)
+	}
+
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
@@ -603,12 +635,36 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 		return nil, err
 	}
 
+	// Calculate active deposits (excluding pending withdrawals) for eligible deposits tracking
+	activeDeposit := position.DepositAmount
+	if position.AmountPendingWithdrawal.IsPositive() {
+		activeDeposit, _ = activeDeposit.SafeSub(position.AmountPendingWithdrawal)
+	}
+
 	// Update position
 	position.ReceiveYield = msg.ReceiveYield
 	position.LastActivityTime = headerInfo.Time
 
 	if err := m.SetVaultsV2UserPosition(ctx, user, msg.PositionId, position); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist user position")
+	}
+
+	// Update TotalEligibleDeposits based on preference change
+	if activeDeposit.IsPositive() && previousPreference != msg.ReceiveYield {
+		state, err := m.GetVaultsV2VaultState(ctx)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
+		}
+
+		if msg.ReceiveYield {
+			state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(activeDeposit)
+		} else {
+			state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(activeDeposit)
+		}
+
+		if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+			return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+		}
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventYieldPreferenceUpdated{
@@ -973,12 +1029,12 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
 	}
 
-	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
 	}
-	if pendingDeployment.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient pending deployment funds")
+	if localFunds.LT(msg.Amount) {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient local funds")
 	}
 
 	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
@@ -1011,8 +1067,8 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to store remote position chain id")
 	}
 
-	if err := m.SubtractVaultsV2PendingDeploymentFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending deployment funds")
+	if err := m.SubtractVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update local funds")
 	}
 
 	state, err := m.GetVaultsV2VaultState(ctx)
@@ -1174,12 +1230,12 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 	targetDesired := make(map[uint64]sdkmath.Int, len(msg.TargetAllocations))
 	totalTracked := sdkmath.ZeroInt()
 
-	pendingDeployment, err := m.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
 	}
 
-	totalTracked = pendingDeployment
+	totalTracked = localFunds
 	for _, entry := range positions {
 		totalTracked, err = totalTracked.SafeAdd(entry.Position.TotalValue)
 		if err != nil {
@@ -1237,7 +1293,7 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		}
 	}
 
-	available := pendingDeployment
+	available := localFunds
 	operations := 0
 
 	for _, adj := range decreases {
@@ -1347,8 +1403,8 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		}
 	}
 
-	if err := m.VaultsV2PendingDeploymentFunds.Set(ctx, available); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist pending deployment funds")
+	if err := m.VaultsV2LocalFunds.Set(ctx, available); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist local funds")
 	}
 
 	headerInfo = m.header.GetHeaderInfo(ctx)
@@ -1475,7 +1531,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		removeRouteValue(fund.Amount)
 
 		if fund.GetOrigin() == nil && fund.Amount.IsPositive() {
-			_ = m.AddVaultsV2PendingDeploymentFunds(ctx, fund.Amount)
+			_ = m.AddVaultsV2LocalFunds(ctx, fund.Amount)
 		}
 
 		if origin := fund.GetRemoteOrigin(); origin != nil {
@@ -1782,12 +1838,39 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		position.DepositAmount,
 	)
 
+	// Calculate eligible deposits delta if position receives yield
+	// When claiming, we reduce pending and reduce deposit, so eligible deposits change
+	var eligibleDepositsDelta sdkmath.Int
+	if position.ReceiveYield {
+		// Active deposit before claim: deposit - pendingWithdrawal
+		activeDepositBefore := position.DepositAmount
+		if position.AmountPendingWithdrawal.IsPositive() {
+			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
+		}
+
+		// Active deposit after claim: (deposit - principalWithdrawn) - (pendingWithdrawal - withdrawAmount)
+		depositAfter, _ := position.DepositAmount.SafeSub(principalWithdrawn)
+		pendingAfter, _ := position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
+		activeDepositAfter := depositAfter
+		if pendingAfter.IsPositive() {
+			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
+		}
+
+		// Delta (positive = reduction, negative = increase)
+		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
+	}
+
 	if err := m.DeleteVaultsV2Withdrawal(ctx, id); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to remove withdrawal request")
 	}
 
 	if err := m.SubtractVaultsV2PendingWithdrawalAmount(ctx, withdrawAmount); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
+	}
+
+	// Deduct from local funds since coins are leaving the module account
+	if err := m.SubtractVaultsV2LocalFunds(ctx, withdrawAmount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update local funds")
 	}
 
 	// Update vault totals with correct split
@@ -1806,6 +1889,12 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
 	}
+
+	// Update eligible deposits if position receives yield
+	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(eligibleDepositsDelta)
+	}
+
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
@@ -1858,13 +1947,22 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 			}
 
 			// Decrement total positions count
-			state.TotalPositions--
+			if err := m.DecrementVaultsV2TotalPositions(ctx); err != nil {
+				return nil, sdkerrors.Wrap(err, "unable to decrement total positions")
+			}
 
 			// Decrement user position count
 			count, _ := m.GetUserPositionCount(ctx, claimer)
 			if count > 0 {
+				isLast := count == 1
 				if err := m.SetUserPositionCount(ctx, claimer, count-1); err != nil {
 					return nil, sdkerrors.Wrap(err, "unable to update user position count")
+				}
+
+				if isLast {
+					if err := m.DecrementVaultsV2TotalUsers(ctx); err != nil {
+						return nil, sdkerrors.Wrap(err, "unable to decrement total users")
+					}
 				}
 			}
 		} else {

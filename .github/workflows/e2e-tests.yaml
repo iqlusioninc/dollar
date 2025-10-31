@@ -1,4 +1,4 @@
-name: End to End Tests
+name: Tests
 
 on:
   pull_request:
@@ -12,7 +12,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Run Unit Tests
+        run: go test -cover -coverprofile=coverage.out -race -v . ./keeper ./types/portal/ntt
+
+      - name: Generate Coverage HTML
+        if: always()
+        run: go tool cover -html coverage.out -o coverage.html
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: |
+            coverage.out
+            coverage.html
+          retention-days: 30
+
+      - name: Display Coverage Summary
+        if: always()
+        run: |
+          echo "## Unit Test Coverage" >> $GITHUB_STEP_SUMMARY
+          go tool cover -func=coverage.out >> $GITHUB_STEP_SUMMARY
+
   build:
+    needs: [unit-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Build Docker Image
@@ -43,6 +78,7 @@ jobs:
           path: ${{ env.TAR_PATH }}
 
   prepare:
+    needs: [unit-tests]
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -62,7 +98,7 @@ jobs:
           TESTS=$(cd e2e && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
           echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
 
-  test:
+  e2e-test:
     needs:
       - build
       - prepare
@@ -90,5 +126,5 @@ jobs:
       - name: Load Docker Image
         run: docker image load -i ${{ env.TAR_PATH }}
 
-      - name: Run Tests
+      - name: Run E2E Tests
         run: cd e2e && go test -race -v -timeout 15m -run ^${{ matrix.test }}$ .

@@ -30,6 +30,7 @@ import (
 
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 	"dollar.noble.xyz/v3/utils"
+	"dollar.noble.xyz/v3/utils/mocks"
 )
 
 // TestNAVUpdateYieldTracking_Basic tests basic NAV update and yield accrual
@@ -69,7 +70,7 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	// Run accounting to initialize VaultState.TotalDeposits
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -89,7 +90,7 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	// ACT: Run accounting to distribute yield
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -154,7 +155,7 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	// Run accounting to initialize VaultState.TotalDeposits
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -173,7 +174,7 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	// ACT: Run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -243,7 +244,7 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	// Run accounting until complete
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -262,7 +263,7 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	// ACT: Run accounting to distribute yield
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -312,7 +313,7 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -331,7 +332,7 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	// Use the message server to run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -356,7 +357,7 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	// Run accounting again
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -406,7 +407,7 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -425,7 +426,7 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	// Use the message server to run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -458,7 +459,7 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	// Run accounting again
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -504,7 +505,7 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	// Use the message server to run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -529,7 +530,7 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	// Run accounting again
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -588,7 +589,7 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	iterations := 0
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: batchSize,
 		})
 		require.NoError(t, err)
@@ -664,7 +665,7 @@ func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -683,7 +684,7 @@ func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	// Use the message server to run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -740,7 +741,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 	for {
 		resp, _ := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager: params.Authority, MaxPositions: 100,
+			Manager: mocks.Authority, MaxPositions: 100,
 		})
 		if resp.AccountingComplete {
 			break
@@ -758,7 +759,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 
 	for {
 		resp, _ := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager: params.Authority, MaxPositions: 100,
+			Manager: mocks.Authority, MaxPositions: 100,
 		})
 		t.Logf("Accounting iteration: complete=%t, positions=%d/%d",
 			resp.AccountingComplete, resp.PositionsProcessed, resp.TotalPositionsProcessed)
@@ -801,7 +802,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 
 	for {
 		resp, _ := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager: params.Authority, MaxPositions: 100,
+			Manager: mocks.Authority, MaxPositions: 100,
 		})
 		t.Logf("Accounting iteration: complete=%t, positions=%d/%d",
 			resp.AccountingComplete, resp.PositionsProcessed, resp.TotalPositionsProcessed)
@@ -875,7 +876,7 @@ func TestAccountingSequentialSessions(t *testing.T) {
 	// Run accounting until complete
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -920,7 +921,7 @@ func TestAccountingSequentialSessions(t *testing.T) {
 	// Run accounting again for session 2
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -991,7 +992,7 @@ func TestAccountingMixedYieldPreference_SameUser(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1010,7 +1011,7 @@ func TestAccountingMixedYieldPreference_SameUser(t *testing.T) {
 	// Run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1064,7 +1065,7 @@ func TestAccountingYieldPreferenceChange(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1083,7 +1084,7 @@ func TestAccountingYieldPreferenceChange(t *testing.T) {
 	// Run accounting
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1116,7 +1117,7 @@ func TestAccountingYieldPreferenceChange(t *testing.T) {
 	// Run accounting again
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1168,7 +1169,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1185,7 +1186,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1225,7 +1226,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	// Alice's deposit as yield. The 100 undistributed yield remains.
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)
@@ -1258,7 +1259,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	// STEP 7: Run accounting - Alice should get ALL 150 yield
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
-			Manager:      params.Authority,
+			Manager:      mocks.Authority,
 			MaxPositions: 100,
 		})
 		require.NoError(t, err)

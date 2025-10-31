@@ -141,9 +141,9 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 		return nil, err
 	}
 
-	pendingDeployment, err := q.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := q.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending deployment funds")
+		return nil, errors.Wrap(err, "unable to fetch local funds")
 	}
 
 	pendingWithdrawalDist, err := q.GetVaultsV2PendingWithdrawalDistribution(ctx)
@@ -154,7 +154,7 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 	return &vaultsv2.QueryInflightFundsResponse{
 		InflightFunds:                 funds,
 		TotalInflight:                 total.String(),
-		PendingDeployment:             pendingDeployment.String(),
+		PendingDeployment:             localFunds.String(),
 		PendingWithdrawalDistribution: pendingWithdrawalDist.String(),
 	}, nil
 }
@@ -353,12 +353,12 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 	// Total withdrawn is not tracked in the new system
 	// Would need to be calculated from historical data if needed
 	localAssets := state.TotalDeposits.Sub(sdkmath.ZeroInt())
-	pendingDeployment, err := q.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := q.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending deployment")
+		return nil, errors.Wrap(err, "unable to fetch local funds")
 	}
 
-	availableLiquidity := localAssets.Sub(pendingDeployment)
+	availableLiquidity := localAssets.Sub(localFunds)
 	if availableLiquidity.IsNegative() {
 		availableLiquidity = sdkmath.ZeroInt()
 	}
@@ -1251,11 +1251,11 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 
 	// Calculate available liquidity
 	localAssets := state.TotalDeposits.Sub(sdkmath.ZeroInt())
-	pendingDeployment, err := q.GetVaultsV2PendingDeploymentFunds(ctx)
+	localFunds, err := q.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		pendingDeployment = sdkmath.ZeroInt()
+		localFunds = sdkmath.ZeroInt()
 	}
-	availableLiquidity := localAssets.Sub(pendingDeployment)
+	availableLiquidity := localAssets.Sub(localFunds)
 	if availableLiquidity.IsNegative() {
 		availableLiquidity = sdkmath.ZeroInt()
 	}
