@@ -135,6 +135,9 @@ message EventWithdrawalCancelled {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // Position ID
+  uint64 position_id = 6;
 }
 
 // EventWithdrawalProcessed is emitted when withdrawal requests are processed

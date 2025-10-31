@@ -30,6 +30,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDeposit{}, "dollar/vaults/v2/Deposit", nil)
 	cdc.RegisterConcrete(&MsgRequestWithdrawal{}, "dollar/vaults/v2/RequestWithdrawal", nil)
 	cdc.RegisterConcrete(&MsgClaimWithdrawal{}, "dollar/vaults/v2/ClaimWithdrawal", nil)
+	cdc.RegisterConcrete(&MsgCancelWithdrawal{}, "dollar/vaults/v2/CancelWithdrawal", nil)
 	cdc.RegisterConcrete(&MsgSetYieldPreference{}, "dollar/vaults/v2/SetYieldPreference", nil)
 	cdc.RegisterConcrete(&MsgProcessWithdrawalQueue{}, "dollar/vaults/v2/ProcessWithdrawalQueue", nil)
 	cdc.RegisterConcrete(&MsgUpdateVaultConfig{}, "dollar/vaults/v2/UpdateVaultConfig", nil)
