@@ -951,6 +951,33 @@ func (k *Keeper) DecrementVaultsV2TotalUsers(ctx context.Context) error {
 	return k.SetVaultsV2VaultState(ctx, state)
 }
 
+// IncrementVaultsV2TotalPositions increases the tracked position count.
+func (k *Keeper) IncrementVaultsV2TotalPositions(ctx context.Context) error {
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return err
+	}
+
+	state.TotalPositions++
+
+	return k.SetVaultsV2VaultState(ctx, state)
+}
+
+// DecrementVaultsV2TotalPositions reduces the tracked position count, guarding against
+// underflow.
+func (k *Keeper) DecrementVaultsV2TotalPositions(ctx context.Context) error {
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return err
+	}
+
+	if state.TotalPositions > 0 {
+		state.TotalPositions--
+	}
+
+	return k.SetVaultsV2VaultState(ctx, state)
+}
+
 func (k *Keeper) getDepositLimits(ctx context.Context) (vaultsv2.DepositLimit, bool, error) {
 	limits, err := k.VaultsV2DepositLimits.Get(ctx)
 	if err != nil {

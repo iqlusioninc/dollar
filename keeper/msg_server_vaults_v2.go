@@ -1947,7 +1947,9 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 			}
 
 			// Decrement total positions count
-			state.TotalPositions--
+			if err := m.DecrementVaultsV2TotalPositions(ctx); err != nil {
+				return nil, sdkerrors.Wrap(err, "unable to decrement total positions")
+			}
 
 			// Decrement user position count
 			count, _ := m.GetUserPositionCount(ctx, claimer)
