@@ -745,10 +745,10 @@ func (k *Keeper) SubtractAmountFromVaultsV2Totals(ctx context.Context, deposits,
 	return k.SetVaultsV2VaultState(ctx, state)
 }
 
-// GetVaultsV2PendingDeploymentFunds returns the amount of deposits awaiting
-// deployment to remote positions.
-func (k *Keeper) GetVaultsV2PendingDeploymentFunds(ctx context.Context) (math.Int, error) {
-	amount, err := k.VaultsV2PendingDeploymentFunds.Get(ctx)
+// GetVaultsV2LocalFunds returns the amount of funds held locally in the vault,
+// available for deployment to remote positions or for paying withdrawals.
+func (k *Keeper) GetVaultsV2LocalFunds(ctx context.Context) (math.Int, error) {
+	amount, err := k.VaultsV2LocalFunds.Get(ctx)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return math.ZeroInt(), nil
@@ -759,14 +759,13 @@ func (k *Keeper) GetVaultsV2PendingDeploymentFunds(ctx context.Context) (math.In
 	return amount, nil
 }
 
-// AddVaultsV2PendingDeploymentFunds increases the tracked pending deployment
-// balance by the supplied amount.
-func (k *Keeper) AddVaultsV2PendingDeploymentFunds(ctx context.Context, amount math.Int) error {
+// AddVaultsV2LocalFunds increases the tracked local funds balance by the supplied amount.
+func (k *Keeper) AddVaultsV2LocalFunds(ctx context.Context, amount math.Int) error {
 	if !amount.IsPositive() {
 		return nil
 	}
 
-	current, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	current, err := k.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
 		return err
 	}
@@ -776,17 +775,16 @@ func (k *Keeper) AddVaultsV2PendingDeploymentFunds(ctx context.Context, amount m
 		return err
 	}
 
-	return k.VaultsV2PendingDeploymentFunds.Set(ctx, current)
+	return k.VaultsV2LocalFunds.Set(ctx, current)
 }
 
-// SubtractVaultsV2PendingDeploymentFunds decreases the pending deployment
-// balance, removing the entry when it reaches zero.
-func (k *Keeper) SubtractVaultsV2PendingDeploymentFunds(ctx context.Context, amount math.Int) error {
+// SubtractVaultsV2LocalFunds decreases the local funds balance, removing the entry when it reaches zero.
+func (k *Keeper) SubtractVaultsV2LocalFunds(ctx context.Context, amount math.Int) error {
 	if !amount.IsPositive() {
 		return nil
 	}
 
-	current, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	current, err := k.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
 		return err
 	}
@@ -797,13 +795,13 @@ func (k *Keeper) SubtractVaultsV2PendingDeploymentFunds(ctx context.Context, amo
 	}
 
 	if !current.IsPositive() {
-		if err := k.VaultsV2PendingDeploymentFunds.Remove(ctx); err != nil && !errors.Is(err, collections.ErrNotFound) {
+		if err := k.VaultsV2LocalFunds.Remove(ctx); err != nil && !errors.Is(err, collections.ErrNotFound) {
 			return err
 		}
 		return nil
 	}
 
-	return k.VaultsV2PendingDeploymentFunds.Set(ctx, current)
+	return k.VaultsV2LocalFunds.Set(ctx, current)
 }
 
 // GetVaultsV2PendingWithdrawalAmount returns the aggregate amount linked to
@@ -948,6 +946,33 @@ func (k *Keeper) DecrementVaultsV2TotalUsers(ctx context.Context) error {
 
 	if state.TotalUsers > 0 {
 		state.TotalUsers--
+	}
+
+	return k.SetVaultsV2VaultState(ctx, state)
+}
+
+// IncrementVaultsV2TotalPositions increases the tracked position count.
+func (k *Keeper) IncrementVaultsV2TotalPositions(ctx context.Context) error {
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return err
+	}
+
+	state.TotalPositions++
+
+	return k.SetVaultsV2VaultState(ctx, state)
+}
+
+// DecrementVaultsV2TotalPositions reduces the tracked position count, guarding against
+// underflow.
+func (k *Keeper) DecrementVaultsV2TotalPositions(ctx context.Context) error {
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return err
+	}
+
+	if state.TotalPositions > 0 {
+		state.TotalPositions--
 	}
 
 	return k.SetVaultsV2VaultState(ctx, state)

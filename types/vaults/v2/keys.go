@@ -44,7 +44,7 @@ var (
 	InflightNextIDKey                = []byte("vaults/v2/inflight_next_id")
 	RemotePositionNextIDKey          = []byte("vaults/v2/remote_position_next_id")
 	RemotePositionChainPrefix        = []byte("vaults/v2/remote_position_chain/")
-	PendingDeploymentFundsKey        = []byte("vaults/v2/pending_deployment")
+	LocalFundsKey                    = []byte("vaults/v2/local_funds")
 	PendingWithdrawalDistributionKey = []byte("vaults/v2/pending_withdrawal_dist")
 	WithdrawalQueuePrefix            = []byte("vaults/v2/withdrawal_queue/")
 	WithdrawalQueueSequenceKey       = []byte("vaults/v2/withdrawal_queue_seq")

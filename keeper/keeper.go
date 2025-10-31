@@ -85,7 +85,7 @@ type Keeper struct {
 	VaultsV2UserDepositHistory            collections.Map[collections.Pair[[]byte, int64], math.Int]
 	VaultsV2DepositVelocity               collections.Map[[]byte, vaultsv2.DepositVelocity]
 	VaultsV2BlockDepositVolume            collections.Map[int64, math.Int]
-	VaultsV2PendingDeploymentFunds        collections.Item[math.Int]
+	VaultsV2LocalFunds                    collections.Item[math.Int]
 	VaultsV2PendingWithdrawalsAmount      collections.Item[math.Int]
 	VaultsV2WithdrawalQueue               collections.Map[uint64, vaultsv2.WithdrawalRequest]
 	VaultsV2WithdrawalNextID              collections.Item[uint64]
@@ -192,7 +192,7 @@ func NewKeeper(
 		VaultsV2UserDepositHistory:            collections.NewMap(builder, vaultsv2.UserDepositHistoryPrefix, "vaults_v2_user_deposit_history", collections.PairKeyCodec(collections.BytesKey, collections.Int64Key), sdk.IntValue),
 		VaultsV2DepositVelocity:               collections.NewMap(builder, vaultsv2.DepositVelocityPrefix, "vaults_v2_deposit_velocity", collections.BytesKey, codec.CollValue[vaultsv2.DepositVelocity](cdc)),
 		VaultsV2BlockDepositVolume:            collections.NewMap(builder, vaultsv2.BlockDepositVolumePrefix, "vaults_v2_block_deposit_volume", collections.Int64Key, sdk.IntValue),
-		VaultsV2PendingDeploymentFunds:        collections.NewItem(builder, vaultsv2.PendingDeploymentFundsKey, "vaults_v2_pending_deployment", sdk.IntValue),
+		VaultsV2LocalFunds:                    collections.NewItem(builder, vaultsv2.LocalFundsKey, "vaults_v2_local_funds", sdk.IntValue),
 		VaultsV2PendingWithdrawalsAmount:      collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
 		VaultsV2WithdrawalQueue:               collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),
 		VaultsV2WithdrawalNextID:              collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),

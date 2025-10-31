@@ -21,30 +21,33 @@ import (
 )
 
 // TestNAVLifecycle tests the complete NAV calculation lifecycle:
-// 1. Deposit → PendingDeploymentFunds increases, NAV increases
-// 2. CreateRemotePosition → PendingDeploymentFunds decreases, RemotePosition created, NAV stays same
+// 1. Deposit → LocalFunds increases, NAV increases
+// 2. CreateRemotePosition → LocalFunds decreases, RemotePosition created, NAV stays same
 // 3. Funds go inflight → InflightFunds increases, NAV stays same
 // 4. Oracle updates remote position value → RemotePosition value changes, NAV changes
 // 5. User requests withdrawal → Funds locked in position, NAV stays same
 // 6. Process withdrawal queue → Withdrawal marked ready, NAV stays same
 // 7. User claims withdrawal → Funds leave vault, NAV decreases
 //
-// This test ensures NAV = PendingDeploymentFunds + RemotePositions + InflightFunds is correct at each step
+// This test ensures NAV = LocalFunds + RemotePositions + InflightFunds is correct at each step
 func TestNAVLifecycle(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
+
+	inflightID := "1"
+	transactionID := "123"
 
 	// Helper to check NAV invariant
 	checkNAV := func(step string, expectedPending, expectedRemote, expectedInflight, expectedTotal sdkmath.Int) {
 		t.Helper()
 		t.Logf("checkNAV: Starting %s", step)
 
-		// Get pending deployment funds
-		t.Logf("checkNAV: Getting pending deployment funds for %s", step)
-		pending, err := k.GetVaultsV2PendingDeploymentFunds(baseCtx)
+		// Get local funds funds
+		t.Logf("checkNAV: Getting local funds funds for %s", step)
+		pending, err := k.GetVaultsV2LocalFunds(baseCtx)
 		require.NoError(t, err, "step: %s", step)
 		t.Logf("checkNAV: Got pending=%s for %s", pending, step)
 		assert.Equal(t, expectedPending.String(), pending.String(),
-			"step %s: PendingDeploymentFunds mismatch", step)
+			"step %s: LocalFunds mismatch", step)
 
 		// Get remote positions total
 		t.Logf("checkNAV: Iterating remote positions for %s", step)
@@ -107,7 +110,7 @@ func TestNAVLifecycle(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// NAV should increase by 1000 (all in PendingDeploymentFunds)
+	// NAV should increase by 1000 (all in LocalFunds)
 	checkNAV("2-after-deposit",
 		sdkmath.NewInt(1000*ONE_V2), // pending +1000
 		sdkmath.NewInt(0),           // remote
@@ -163,8 +166,8 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 5: Create inflight fund (simulating cross-chain transfer) ===
 	inflightFund := vaultsv2.InflightFund{
-		Id:                "inflight-1",
-		TransactionId:     "tx-123",
+		Id:                inflightID,
+		TransactionId:     transactionID,
 		Amount:            sdkmath.NewInt(200 * ONE_V2),
 		Status:            vaultsv2.INFLIGHT_PENDING,
 		InitiatedAt:       time.Now(),
@@ -187,8 +190,8 @@ func TestNAVLifecycle(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2InflightFund(baseCtx, inflightFund))
 
-	// Also subtract from pending deployment to reflect that funds are being deployed
-	require.NoError(t, k.SubtractVaultsV2PendingDeploymentFunds(baseCtx, sdkmath.NewInt(200*ONE_V2)))
+	// Also subtract from local funds to reflect that funds are being deployed
+	require.NoError(t, k.SubtractVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(200*ONE_V2)))
 
 	// NAV stays same: pending decreased, inflight increased
 	checkNAV("5-after-inflight-created",
@@ -215,7 +218,7 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 7: Inflight completes - moves to remote position ===
 	// Remove inflight
-	require.NoError(t, k.VaultsV2InflightFunds.Remove(baseCtx, "inflight-1"))
+	require.NoError(t, k.VaultsV2InflightFunds.Remove(baseCtx, inflightID))
 
 	// Create new remote position for inflight destination
 	newPosition := vaultsv2.RemotePosition{
@@ -238,7 +241,7 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 8: Add more funds to existing remote position ===
 	additionalRemoteAmount := sdkmath.NewInt(140 * ONE_V2)
-	require.NoError(t, k.SubtractVaultsV2PendingDeploymentFunds(baseCtx, additionalRemoteAmount))
+	require.NoError(t, k.SubtractVaultsV2LocalFunds(baseCtx, additionalRemoteAmount))
 
 	secondPosition, found, err := k.GetVaultsV2RemotePosition(baseCtx, 2)
 	require.NoError(t, err)
@@ -262,7 +265,7 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 9: Partial withdrawal from remote position ===
 	partialWithdrawal := sdkmath.NewInt(120 * ONE_V2)
-	require.NoError(t, k.AddVaultsV2PendingDeploymentFunds(baseCtx, partialWithdrawal))
+	require.NoError(t, k.AddVaultsV2LocalFunds(baseCtx, partialWithdrawal))
 
 	secondPosition, found, err = k.GetVaultsV2RemotePosition(baseCtx, 2)
 	require.NoError(t, err)
@@ -339,7 +342,7 @@ func TestNAVLifecycle(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), claimResp.AmountClaimed)
 
 	// NAV should decrease by 200: funds have left the vault
-	// The withdrawal comes from pending deployment funds
+	// The withdrawal comes from local funds funds
 	checkNAV("12-after-withdrawal-claimed",
 		sdkmath.NewInt(280*ONE_V2),  // pending -200 = 280
 		sdkmath.NewInt(880*ONE_V2),  // remote unchanged

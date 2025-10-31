@@ -173,14 +173,14 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 	// Calculate NAV according to spec: Local Assets + Remote Positions + Inflight Funds
 	total := math.ZeroInt()
 
-	// 1. Get local vault assets (pending deployment - not yet sent to remote positions)
-	pendingDeployment, err := k.GetVaultsV2PendingDeploymentFunds(ctx)
+	// 1. Get local vault assets (liquidity available for deployment or withdrawals)
+	localFunds, err := k.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to get pending deployment funds")
+		return math.ZeroInt(), errors.Wrap(err, "unable to get local funds")
 	}
-	total, err = total.SafeAdd(pendingDeployment)
+	total, err = total.SafeAdd(localFunds)
 	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to add pending deployment to NAV")
+		return math.ZeroInt(), errors.Wrap(err, "unable to add local funds to NAV")
 	}
 
 	// 2. Add remote position values

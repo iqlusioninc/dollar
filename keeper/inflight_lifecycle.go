@@ -107,9 +107,9 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID string, reas
 	if origin := fund.GetNobleOrigin(); origin != nil {
 		if origin.OperationType == vaultsv2.OPERATION_TYPE_DEPOSIT ||
 			origin.OperationType == vaultsv2.OPERATION_TYPE_REBALANCE {
-			// Subtract from pending deployment
-			if err := k.SubtractVaultsV2PendingDeploymentFunds(ctx, fund.Amount); err != nil {
-				return errors.Wrap(err, "unable to update pending deployment")
+			// Subtract from local funds
+			if err := k.SubtractVaultsV2LocalFunds(ctx, fund.Amount); err != nil {
+				return errors.Wrap(err, "unable to update local funds")
 			}
 		} else if origin.OperationType == vaultsv2.OPERATION_TYPE_WITHDRAWAL {
 			// Subtract from pending withdrawal distribution
