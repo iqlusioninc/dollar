@@ -76,6 +76,9 @@ service Msg {
   // Claim a processed/claimable withdrawal
   rpc ClaimWithdrawal(MsgClaimWithdrawal) returns (MsgClaimWithdrawalResponse);
 
+  // Cancel a pending withdrawal request
+  rpc CancelWithdrawal(MsgCancelWithdrawal) returns (MsgCancelWithdrawalResponse);
+
   // Update NAV (authority or authorized updater)
   rpc UpdateNAV(MsgUpdateNAV) returns (MsgUpdateNAVResponse);
 
@@ -599,6 +602,33 @@ message MsgClaimWithdrawalResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+}
+
+// MsgCancelWithdrawal allows a user to cancel a pending withdrawal request
+message MsgCancelWithdrawal {
+  option (cosmos.msg.v1.signer) = "requester";
+  option (amino.name) = "dollar/vaults/v2/CancelWithdrawal";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // User canceling the withdrawal
+  string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // Withdrawal request ID to cancel
+  string request_id = 2;
+}
+
+// MsgCancelWithdrawalResponse returns cancel results
+message MsgCancelWithdrawalResponse {
+  // Amount unlocked back to the position
+  string amount_unlocked = 1 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // Position ID the funds were returned to
+  uint64 position_id = 2;
 }
 
 // MsgUpdateNAV updates the NAV values (authority controlled)
