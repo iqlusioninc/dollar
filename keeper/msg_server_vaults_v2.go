@@ -1996,6 +1996,145 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	}, nil
 }
 
+func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCancelWithdrawal) (*vaultsv2.MsgCancelWithdrawalResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+
+	if msg.RequestId == "" {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "request id must be provided")
+	}
+
+	id, err := strconv.ParseUint(msg.RequestId, 10, 64)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid request id: %s", msg.RequestId)
+	}
+
+	addrBz, err := m.address.StringToBytes(msg.Requester)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid requester address: %s", msg.Requester)
+	}
+	requester := sdk.AccAddress(addrBz)
+
+	// Check if accounting is in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
+	}
+
+	// Fetch the withdrawal request
+	request, found, err := m.GetVaultsV2Withdrawal(ctx, id)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch withdrawal request")
+	}
+	if !found {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrWithdrawalNotFound, "withdrawal request not found")
+	}
+	if request.Requester != msg.Requester {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "withdrawal does not belong to requester")
+	}
+
+	// Can only cancel PENDING or READY requests (not already PROCESSED or CANCELLED)
+	if request.Status != vaultsv2.WITHDRAWAL_REQUEST_STATUS_PENDING && request.Status != vaultsv2.WITHDRAWAL_REQUEST_STATUS_READY {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted, "cannot cancel withdrawal with status %s", request.Status.String())
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+	withdrawAmount := request.WithdrawAmount
+
+	// Get the user's position
+	position, found, err := m.GetVaultsV2UserPosition(ctx, requester, request.PositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for requester", request.PositionId)
+	}
+
+	// Calculate eligible deposits delta if position receives yield (reverse of RequestWithdrawal logic)
+	// When canceling, we decrease pending and increase active deposits
+	var eligibleDepositsDelta sdkmath.Int
+	if position.ReceiveYield {
+		// Active deposit before cancel: deposit - pendingWithdrawal
+		activeDepositBefore := position.DepositAmount
+		if position.AmountPendingWithdrawal.IsPositive() {
+			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
+		}
+
+		// Active deposit after cancel: deposit - (pendingWithdrawal - withdrawAmount)
+		pendingAfter, _ := position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
+		activeDepositAfter := position.DepositAmount
+		if pendingAfter.IsPositive() {
+			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
+		}
+
+		// Delta is the increase in active deposits
+		eligibleDepositsDelta, _ = activeDepositAfter.SafeSub(activeDepositBefore)
+	}
+
+	// Update withdrawal request status to CANCELLED
+	request.Status = vaultsv2.WITHDRAWAL_REQUEST_STATUS_CANCELLED
+	if err := m.SetVaultsV2Withdrawal(ctx, id, request); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update withdrawal request status")
+	}
+
+	// Reverse UserPosition changes
+	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
+	}
+	if position.ActiveWithdrawalRequests > 0 {
+		position.ActiveWithdrawalRequests--
+	}
+	position.LastActivityTime = headerInfo.Time
+	if err := m.SetVaultsV2UserPosition(ctx, requester, request.PositionId, position); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist user position")
+	}
+
+	// Reverse the separate pending withdrawal tracking
+	if err := m.SubtractVaultsV2PendingWithdrawalAmount(ctx, withdrawAmount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
+	}
+
+	// Reverse VaultState changes
+	state, err := m.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
+	}
+	if state.PendingWithdrawalRequests > 0 {
+		state.PendingWithdrawalRequests--
+	}
+	state.TotalAmountPendingWithdrawal, err = state.TotalAmountPendingWithdrawal.SafeSub(withdrawAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
+	}
+
+	// Increase eligible deposits if position receives yield (reverse of RequestWithdrawal)
+	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(eligibleDepositsDelta)
+	}
+
+	state.LastNavUpdate = headerInfo.Time
+	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	}
+
+	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventWithdrawalCancelled{
+		Requester:           msg.Requester,
+		WithdrawalRequestId: msg.RequestId,
+		AmountReturned:      withdrawAmount,
+		PositionId:          request.PositionId,
+		BlockHeight:         sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		Timestamp:           headerInfo.Time,
+	}); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to emit withdrawal cancelled event")
+	}
+
+	return &vaultsv2.MsgCancelWithdrawalResponse{
+		AmountUnlocked: withdrawAmount,
+		PositionId:     request.PositionId,
+	}, nil
+}
+
 func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) (*vaultsv2.MsgUpdateNAVResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
