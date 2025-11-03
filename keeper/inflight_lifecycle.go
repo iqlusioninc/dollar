@@ -39,7 +39,7 @@ func (k *Keeper) DetectStaleInflightFunds(ctx context.Context, staleThresholdHou
 
 	var staleFunds []StaleInflightFund
 
-	err := k.IterateVaultsV2InflightFunds(ctx, func(txID string, fund vaultsv2.InflightFund) (bool, error) {
+	err := k.IterateVaultsV2InflightFunds(ctx, func(inflightID uint64, fund vaultsv2.InflightFund) (bool, error) {
 		// Calculate how long past the expected time
 		if currentTime.After(fund.ExpectedAt) {
 			hoursOverdue := int64(currentTime.Sub(fund.ExpectedAt).Hours())
@@ -55,7 +55,7 @@ func (k *Keeper) DetectStaleInflightFunds(ctx context.Context, staleThresholdHou
 				}
 
 				staleFunds = append(staleFunds, StaleInflightFund{
-					TransactionID: txID,
+					TransactionID: fund.TransactionId,
 					RouteID:       routeID,
 					Fund:          fund,
 					HoursOverdue:  hoursOverdue,
@@ -71,14 +71,14 @@ func (k *Keeper) DetectStaleInflightFunds(ctx context.Context, staleThresholdHou
 
 // CleanupStaleInflightFund removes a stale inflight fund and returns its value to the vault.
 // This should be called by governance/authority after manual verification.
-func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID string, reason string, authority string) error {
+func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID uint64, reason string, authority string) error {
 	// Get the fund
 	fund, found, err := k.GetVaultsV2InflightFund(ctx, txID)
 	if err != nil {
 		return errors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", txID)
+		return errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", txID)
 	}
 
 	// Extract route ID for tracking
@@ -127,7 +127,7 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID string, reas
 	// Emit cleanup event
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	if err := sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundCleaned{
-		TransactionId:  txID,
+		TransactionId:  fund.TransactionId,
 		RouteId:        routeID,
 		AmountReturned: fund.Amount,
 		Reason:         reason,
@@ -142,10 +142,11 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID string, reas
 }
 
 // EmitInflightStatusChangeEvent emits an event when an inflight fund's status changes.
-func (k *Keeper) EmitInflightStatusChangeEvent(ctx context.Context, txID string, routeID uint32, prevStatus, newStatus vaultsv2.InflightStatus, amount sdkmath.Int, reason string) error {
+func (k *Keeper) EmitInflightStatusChangeEvent(ctx context.Context, inflightID uint64, txID string, routeID uint32, prevStatus, newStatus vaultsv2.InflightStatus, amount sdkmath.Int, reason string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	return sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundStatusChanged{
+		InflightId:     inflightID,
 		TransactionId:  txID,
 		RouteId:        routeID,
 		PreviousStatus: prevStatus.String(),
@@ -177,13 +178,14 @@ func (k *Keeper) EmitInflightCreatedEvent(ctx context.Context, txID string, rout
 }
 
 // EmitInflightCompletedEvent emits an event when an inflight fund completes.
-func (k *Keeper) EmitInflightCompletedEvent(ctx context.Context, txID string, routeID uint32, opType vaultsv2.OperationType, initialAmount, finalAmount sdkmath.Int, initiatedAt time.Time) error {
+func (k *Keeper) EmitInflightCompletedEvent(ctx context.Context, inflightID uint64, txID string, routeID uint32, opType vaultsv2.OperationType, initialAmount, finalAmount sdkmath.Int, initiatedAt time.Time) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	currentTime := sdkCtx.BlockTime()
 
 	durationSeconds := int64(currentTime.Sub(initiatedAt).Seconds())
 
 	return sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundCompleted{
+		InflightId:      inflightID,
 		TransactionId:   txID,
 		RouteId:         routeID,
 		OperationType:   opType.String(),

@@ -21121,8 +21121,8 @@ func (x *fastReflection_WithdrawalQueueItem) Interface() protoreflect.ProtoMessa
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_WithdrawalQueueItem) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.RequestId != "" {
-		value := protoreflect.ValueOfString(x.RequestId)
+	if x.RequestId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.RequestId)
 		if !f(fd_WithdrawalQueueItem_request_id, value) {
 			return
 		}
@@ -21191,7 +21191,7 @@ func (x *fastReflection_WithdrawalQueueItem) Range(f func(protoreflect.FieldDesc
 func (x *fastReflection_WithdrawalQueueItem) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.request_id":
-		return x.RequestId != ""
+		return x.RequestId != uint64(0)
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.user":
 		return x.User != ""
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.amount":
@@ -21225,7 +21225,7 @@ func (x *fastReflection_WithdrawalQueueItem) Has(fd protoreflect.FieldDescriptor
 func (x *fastReflection_WithdrawalQueueItem) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.request_id":
-		x.RequestId = ""
+		x.RequestId = uint64(0)
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.user":
 		x.User = ""
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.amount":
@@ -21260,7 +21260,7 @@ func (x *fastReflection_WithdrawalQueueItem) Get(descriptor protoreflect.FieldDe
 	switch descriptor.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.request_id":
 		value := x.RequestId
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.user":
 		value := x.User
 		return protoreflect.ValueOfString(value)
@@ -21306,7 +21306,7 @@ func (x *fastReflection_WithdrawalQueueItem) Get(descriptor protoreflect.FieldDe
 func (x *fastReflection_WithdrawalQueueItem) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.request_id":
-		x.RequestId = value.Interface().(string)
+		x.RequestId = value.Uint()
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.user":
 		x.User = value.Interface().(string)
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.amount":
@@ -21378,7 +21378,7 @@ func (x *fastReflection_WithdrawalQueueItem) Mutable(fd protoreflect.FieldDescri
 func (x *fastReflection_WithdrawalQueueItem) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.request_id":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.user":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.WithdrawalQueueItem.amount":
@@ -21465,9 +21465,8 @@ func (x *fastReflection_WithdrawalQueueItem) ProtoMethods() *protoiface.Methods 
 		var n int
 		var l int
 		_ = l
-		l = len(x.RequestId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.RequestId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RequestId))
 		}
 		l = len(x.User)
 		if l > 0 {
@@ -21587,12 +21586,10 @@ func (x *fastReflection_WithdrawalQueueItem) ProtoMethods() *protoiface.Methods 
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.RequestId) > 0 {
-			i -= len(x.RequestId)
-			copy(dAtA[i:], x.RequestId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RequestId)))
+		if x.RequestId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RequestId))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -21644,10 +21641,10 @@ func (x *fastReflection_WithdrawalQueueItem) ProtoMethods() *protoiface.Methods 
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RequestId", wireType)
 				}
-				var stringLen uint64
+				x.RequestId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -21657,24 +21654,11 @@ func (x *fastReflection_WithdrawalQueueItem) ProtoMethods() *protoiface.Methods 
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.RequestId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.RequestId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field User", wireType)
@@ -23350,8 +23334,8 @@ func (x *fastReflection_WithdrawalStatusItem) Interface() protoreflect.ProtoMess
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_WithdrawalStatusItem) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.RequestId != "" {
-		value := protoreflect.ValueOfString(x.RequestId)
+	if x.RequestId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.RequestId)
 		if !f(fd_WithdrawalStatusItem_request_id, value) {
 			return
 		}
@@ -23426,7 +23410,7 @@ func (x *fastReflection_WithdrawalStatusItem) Range(f func(protoreflect.FieldDes
 func (x *fastReflection_WithdrawalStatusItem) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.request_id":
-		return x.RequestId != ""
+		return x.RequestId != uint64(0)
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.amount":
 		return x.Amount != ""
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.principal_amount":
@@ -23462,7 +23446,7 @@ func (x *fastReflection_WithdrawalStatusItem) Has(fd protoreflect.FieldDescripto
 func (x *fastReflection_WithdrawalStatusItem) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.request_id":
-		x.RequestId = ""
+		x.RequestId = uint64(0)
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.amount":
 		x.Amount = ""
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.principal_amount":
@@ -23499,7 +23483,7 @@ func (x *fastReflection_WithdrawalStatusItem) Get(descriptor protoreflect.FieldD
 	switch descriptor.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.request_id":
 		value := x.RequestId
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.amount":
 		value := x.Amount
 		return protoreflect.ValueOfString(value)
@@ -23548,7 +23532,7 @@ func (x *fastReflection_WithdrawalStatusItem) Get(descriptor protoreflect.FieldD
 func (x *fastReflection_WithdrawalStatusItem) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.request_id":
-		x.RequestId = value.Interface().(string)
+		x.RequestId = value.Uint()
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.amount":
 		x.Amount = value.Interface().(string)
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.principal_amount":
@@ -23630,7 +23614,7 @@ func (x *fastReflection_WithdrawalStatusItem) Mutable(fd protoreflect.FieldDescr
 func (x *fastReflection_WithdrawalStatusItem) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.request_id":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.amount":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.WithdrawalStatusItem.principal_amount":
@@ -23721,9 +23705,8 @@ func (x *fastReflection_WithdrawalStatusItem) ProtoMethods() *protoiface.Methods
 		var n int
 		var l int
 		_ = l
-		l = len(x.RequestId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.RequestId != 0 {
+			n += 1 + runtime.Sov(uint64(x.RequestId))
 		}
 		l = len(x.Amount)
 		if l > 0 {
@@ -23871,12 +23854,10 @@ func (x *fastReflection_WithdrawalStatusItem) ProtoMethods() *protoiface.Methods
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.RequestId) > 0 {
-			i -= len(x.RequestId)
-			copy(dAtA[i:], x.RequestId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RequestId)))
+		if x.RequestId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RequestId))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -23928,10 +23909,10 @@ func (x *fastReflection_WithdrawalStatusItem) ProtoMethods() *protoiface.Methods
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RequestId", wireType)
 				}
-				var stringLen uint64
+				x.RequestId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -23941,24 +23922,11 @@ func (x *fastReflection_WithdrawalStatusItem) ProtoMethods() *protoiface.Methods
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.RequestId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.RequestId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -39571,7 +39539,7 @@ type WithdrawalQueueItem struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RequestId       string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	RequestId       uint64                 `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	User            string                 `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	Amount          string                 `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"` // principal + yield
 	PrincipalAmount string                 `protobuf:"bytes,4,opt,name=principal_amount,json=principalAmount,proto3" json:"principal_amount,omitempty"`
@@ -39602,11 +39570,11 @@ func (*WithdrawalQueueItem) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_query_proto_rawDescGZIP(), []int{43}
 }
 
-func (x *WithdrawalQueueItem) GetRequestId() string {
+func (x *WithdrawalQueueItem) GetRequestId() uint64 {
 	if x != nil {
 		return x.RequestId
 	}
-	return ""
+	return 0
 }
 
 func (x *WithdrawalQueueItem) GetUser() string {
@@ -39789,7 +39757,7 @@ type WithdrawalStatusItem struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RequestId       string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	RequestId       uint64                 `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	Amount          string                 `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"` // total amount (principal + yield)
 	PrincipalAmount string                 `protobuf:"bytes,3,opt,name=principal_amount,json=principalAmount,proto3" json:"principal_amount,omitempty"`
 	YieldAmount     string                 `protobuf:"bytes,4,opt,name=yield_amount,json=yieldAmount,proto3" json:"yield_amount,omitempty"`
@@ -39821,11 +39789,11 @@ func (*WithdrawalStatusItem) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_query_proto_rawDescGZIP(), []int{46}
 }
 
-func (x *WithdrawalStatusItem) GetRequestId() string {
+func (x *WithdrawalStatusItem) GetRequestId() uint64 {
 	if x != nil {
 		return x.RequestId
 	}
-	return ""
+	return 0
 }
 
 func (x *WithdrawalStatusItem) GetAmount() string {
@@ -41500,7 +41468,7 @@ var file_noble_dollar_vaults_v2_query_proto_rawDesc = []byte{
 	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xec, 0x02, 0x0a, 0x13, 0x57,
 	0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x51, 0x75, 0x65, 0x75, 0x65, 0x49, 0x74,
 	0x65, 0x6d, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49,
 	0x64, 0x12, 0x2c, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42,
 	0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x12,
@@ -41556,7 +41524,7 @@ var file_noble_dollar_vaults_v2_query_proto_rawDesc = []byte{
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x22, 0xd1, 0x03, 0x0a, 0x14, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61,
 	0x6c, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x49, 0x74, 0x65, 0x6d, 0x12, 0x1d, 0x0a, 0x0a, 0x72,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
 	0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
 	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
 	0x6e, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61, 0x6c, 0x5f,

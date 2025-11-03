@@ -108,7 +108,7 @@ enum RemotePositionStatus {
 // InflightFund represents funds in transit between Noble and remote positions
 message InflightFund {
   // Unique identifier for this inflight transaction
-  string id = 1;
+  uint64 id = 1;
 
   // Transaction ID (Hyperlane message ID or IBC packet sequence)
   string transaction_id = 2;

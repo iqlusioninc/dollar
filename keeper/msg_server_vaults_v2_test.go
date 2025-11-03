@@ -323,7 +323,7 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), vaultState.TotalAmountPendingWithdrawal)
 
 	// ASSERT: Withdrawal request created
-	requestId, _ := strconv.ParseUint(resp.RequestId, 10, 64)
+	requestId := resp.RequestId
 	request, found, err := k.GetVaultsV2Withdrawal(ctx, requestId)
 	require.NoError(t, err)
 	require.True(t, found)
@@ -468,7 +468,7 @@ func TestProcessWithdrawalQueueBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), processResp.TotalAmountProcessed)
 
 	// ASSERT: Withdrawal status updated to READY
-	requestId, _ := strconv.ParseUint(resp.RequestId, 10, 64)
+	requestId := resp.RequestId
 	request, found, err := k.GetVaultsV2Withdrawal(ctx, requestId)
 	require.NoError(t, err)
 	require.True(t, found)
@@ -535,7 +535,7 @@ func TestProcessWithdrawalQueueNotUnlocked(t *testing.T) {
 	assert.Equal(t, int32(0), processResp.RequestsProcessed)
 
 	// ASSERT: Withdrawal status still PENDING
-	requestId, _ := strconv.ParseUint(resp.RequestId, 10, 64)
+	requestId := resp.RequestId
 	request, found, err := k.GetVaultsV2Withdrawal(ctx, requestId)
 	require.NoError(t, err)
 	require.True(t, found)
@@ -642,7 +642,7 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), bank.Balances[bob.Address].AmountOf("uusdn"))
 
 	// ASSERT: Withdrawal request deleted
-	requestId, _ := strconv.ParseUint(resp.RequestId, 10, 64)
+	requestId := resp.RequestId
 	_, found, err := k.GetVaultsV2Withdrawal(ctx, requestId)
 	require.NoError(t, err)
 	assert.False(t, found)
@@ -735,7 +735,7 @@ func TestClaimWithdrawalInvalidRequestId(t *testing.T) {
 	// ACT: Attempt to claim non-existent withdrawal
 	_, err := vaultsV2Server.ClaimWithdrawal(ctx, &vaultsv2.MsgClaimWithdrawal{
 		Claimer:   bob.Address,
-		RequestId: "999",
+		RequestId: 999,
 	})
 
 	// ASSERT: Error returned
@@ -1159,7 +1159,7 @@ func TestRebalanceAdjustsPositions(t *testing.T) {
 	assert.Equal(t, math.NewInt(90*ONE_V2), pending)
 
 	var inflight []vaultsv2.InflightFund
-	err = k.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+	err = k.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		inflight = append(inflight, fund)
 		return false, nil
 	})
@@ -1495,7 +1495,7 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	require.True(t, found)
 
 	fund := vaultsv2.InflightFund{
-		Id:                strconv.FormatUint(withdrawNonce, 10),
+		Id:                withdrawNonce,
 		TransactionId:     strconv.FormatUint(withdrawNonce, 10),
 		Amount:            math.NewInt(25 * ONE_V2),
 		ValueAtInitiation: math.NewInt(30 * ONE_V2),
@@ -1545,8 +1545,7 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	assert.Equal(t, math.NewInt(60*ONE_V2), position.SharesHeld)
 	assert.Equal(t, math.NewInt(92*ONE_V2), position.TotalValue)
 
-	inflightID := strconv.FormatUint(withdrawNonce, 10)
-	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, inflightID)
+	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, withdrawNonce)
 	require.NoError(t, err)
 	require.True(t, foundFund)
 	assert.Equal(t, vaultsv2.INFLIGHT_COMPLETED, fund.Status)
@@ -1825,7 +1824,7 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	// Create an inflight fund entry manually
 	depositNonce := uint64(67890)
 	depositFund := vaultsv2.InflightFund{
-		Id:                strconv.FormatUint(depositNonce, 10),
+		Id:                depositNonce,
 		TransactionId:     strconv.FormatUint(depositNonce, 10),
 		Amount:            math.NewInt(30 * ONE_V2),
 		Status:            vaultsv2.INFLIGHT_PENDING,
@@ -1858,7 +1857,7 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	ctx := baseCtx.WithHeaderInfo(header.Info{Time: time.Date(2024, 5, 5, 0, 0, 0, 0, time.UTC)})
 	handleResp, err := vaultsV2Server.HandleStaleInflight(ctx, &vaultsv2.MsgHandleStaleInflight{
 		Authority:  "authority",
-		InflightId: strconv.FormatUint(depositNonce, 10),
+		InflightId: depositNonce,
 		NewStatus:  vaultsv2.INFLIGHT_TIMEOUT,
 		Reason:     "manual timeout",
 	})

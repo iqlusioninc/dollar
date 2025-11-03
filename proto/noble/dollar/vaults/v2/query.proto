@@ -400,7 +400,7 @@ message QueryWithdrawalQueueRequest {
 }
 
 message WithdrawalQueueItem {
-  string request_id = 1;
+  uint64 request_id = 1;
   string user = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string amount = 3; // principal + yield
   string principal_amount = 4;
@@ -430,7 +430,7 @@ message QueryUserWithdrawalsRequest {
 }
 
 message WithdrawalStatusItem {
-  string request_id = 1;
+  uint64 request_id = 1;
   string amount = 2; // total amount (principal + yield)
   string principal_amount = 3;
   string yield_amount = 4;

@@ -94,7 +94,7 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 		total = sdkmath.ZeroInt()
 	)
 
-	err := q.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+	err := q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		view := vaultsv2.InflightFundView{
 			TransactionId: fund.TransactionId,
 			Amount:        fund.Amount.String(),
@@ -244,7 +244,7 @@ func (q queryServerV2) NAV(ctx context.Context, req *vaultsv2.QueryNAVRequest) (
 
 	// Get inflight funds value
 	inflightFundsValue := sdkmath.ZeroInt()
-	err = q.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+	err = q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		var err error
 		inflightFundsValue, err = inflightFundsValue.SafeAdd(fund.Amount)
 		if err != nil {
@@ -316,7 +316,7 @@ func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryW
 		}
 
 		item := vaultsv2.WithdrawalQueueItem{
-			RequestId:       strconv.FormatUint(id, 10),
+			RequestId:       id,
 			User:            request.Requester,
 			Amount:          totalAmount.String(),
 			PrincipalAmount: request.WithdrawAmount.String(), // For now, all is principal
@@ -670,7 +670,7 @@ func (q queryServerV2) InflightFund(ctx context.Context, req *vaultsv2.QueryInfl
 
 	// Find inflight fund by route_id
 	var foundFund *vaultsv2.InflightFund
-	err := q.IterateVaultsV2InflightFunds(ctx, func(txID string, fund vaultsv2.InflightFund) (bool, error) {
+	err := q.IterateVaultsV2InflightFunds(ctx, func(txID uint64, fund vaultsv2.InflightFund) (bool, error) {
 		// Check if this fund is associated with the requested route
 		if tracking := fund.GetProviderTracking(); tracking != nil {
 			if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
@@ -709,7 +709,7 @@ func (q queryServerV2) InflightFundsUser(ctx context.Context, req *vaultsv2.Quer
 	var funds []vaultsv2.InflightFund
 
 	// Iterate and filter by user
-	err = q.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+	err = q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		// Check if this fund belongs to the user
 		// This depends on the fund structure - checking NobleOrigin for initiator
 		if origin := fund.GetNobleOrigin(); origin != nil {
@@ -765,7 +765,7 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 
 	// Get inflight funds
 	totalInflight := sdkmath.ZeroInt()
-	err = q.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+	err = q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		var err error
 		totalInflight, err = totalInflight.SafeAdd(fund.Amount)
 		if err != nil {
@@ -808,7 +808,7 @@ func (q queryServerV2) StaleInflightAlerts(ctx context.Context, req *vaultsv2.Qu
 	var alerts []vaultsv2.StaleInflightAlertWithDetails
 
 	// Iterate inflight funds to find stale ones
-	err = q.IterateVaultsV2InflightFunds(ctx, func(txID string, fund vaultsv2.InflightFund) (bool, error) {
+	err = q.IterateVaultsV2InflightFunds(ctx, func(txID uint64, fund vaultsv2.InflightFund) (bool, error) {
 		// Check if fund is stale (past expected time)
 		if currentTime.After(fund.ExpectedAt) {
 			// Get route details if filtering by route
@@ -909,7 +909,7 @@ func (q queryServerV2) UserWithdrawals(ctx context.Context, req *vaultsv2.QueryU
 		}
 
 		item := vaultsv2.WithdrawalStatusItem{
-			RequestId:       strconv.FormatUint(id, 10),
+			RequestId:       id,
 			Amount:          request.WithdrawAmount.String(),
 			PrincipalAmount: request.WithdrawAmount.String(),
 			YieldAmount:     sdkmath.ZeroInt().String(),
@@ -1312,7 +1312,7 @@ func (q queryServerV2) StaleInflightFunds(ctx context.Context, req *vaultsv2.Que
 	)
 
 	// Iterate all inflight funds
-	err := q.IterateVaultsV2InflightFunds(ctx, func(txID string, fund vaultsv2.InflightFund) (bool, error) {
+	err := q.IterateVaultsV2InflightFunds(ctx, func(txID uint64, fund vaultsv2.InflightFund) (bool, error) {
 		// Check if stale
 		if currentTime.After(fund.ExpectedAt) {
 			hoursOverdue := currentTime.Sub(fund.ExpectedAt).Hours()

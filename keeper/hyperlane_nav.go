@@ -22,7 +22,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"cosmossdk.io/errors"
@@ -92,8 +91,7 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 		}
 
 		if payload.InflightAckID != 0 {
-			inflightID := strconv.FormatUint(payload.InflightAckID, 10)
-			fund, inflightFound, err := k.GetVaultsV2InflightFund(ctx, inflightID)
+			fund, inflightFound, err := k.GetVaultsV2InflightFund(ctx, payload.InflightAckID)
 			if err != nil {
 				return nil, errors.Wrap(err, "unable to fetch inflight fund for acknowledgement")
 			}
@@ -198,7 +196,7 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 	}
 
 	// 3. Add inflight funds
-	err = k.IterateVaultsV2InflightFunds(ctx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+	err = k.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		var err error
 		total, err = total.SafeAdd(fund.Amount)
 		if err != nil {

@@ -1094,15 +1094,15 @@ func (k *Keeper) NextVaultsV2InflightID(ctx context.Context) (uint64, error) {
 
 // SetVaultsV2InflightFund stores the provided inflight fund under its identifier.
 func (k *Keeper) SetVaultsV2InflightFund(ctx context.Context, fund vaultsv2.InflightFund) error {
-	if fund.Id == "" {
-		return errors.New("inflight fund identifier cannot be empty")
+	if fund.Id == 0 {
+		return errors.New("inflight fund identifier cannot be zero")
 	}
 
 	return k.VaultsV2InflightFunds.Set(ctx, fund.Id, fund)
 }
 
 // GetVaultsV2InflightFund fetches an inflight fund by its identifier.
-func (k *Keeper) GetVaultsV2InflightFund(ctx context.Context, id string) (vaultsv2.InflightFund, bool, error) {
+func (k *Keeper) GetVaultsV2InflightFund(ctx context.Context, id uint64) (vaultsv2.InflightFund, bool, error) {
 	fund, err := k.VaultsV2InflightFunds.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
@@ -1116,12 +1116,12 @@ func (k *Keeper) GetVaultsV2InflightFund(ctx context.Context, id string) (vaults
 }
 
 // DeleteVaultsV2InflightFund removes an inflight fund entry from state.
-func (k *Keeper) DeleteVaultsV2InflightFund(ctx context.Context, id string) error {
+func (k *Keeper) DeleteVaultsV2InflightFund(ctx context.Context, id uint64) error {
 	return k.VaultsV2InflightFunds.Remove(ctx, id)
 }
 
 // IterateVaultsV2InflightFunds walks all inflight fund entries invoking the supplied callback.
-func (k *Keeper) IterateVaultsV2InflightFunds(ctx context.Context, fn func(string, vaultsv2.InflightFund) (bool, error)) error {
+func (k *Keeper) IterateVaultsV2InflightFunds(ctx context.Context, fn func(uint64, vaultsv2.InflightFund) (bool, error)) error {
 	return k.VaultsV2InflightFunds.Walk(ctx, nil, fn)
 }
 

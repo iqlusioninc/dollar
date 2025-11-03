@@ -1711,8 +1711,8 @@ func (x *fastReflection_InflightFund) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_InflightFund) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Id != "" {
-		value := protoreflect.ValueOfString(x.Id)
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
 		if !f(fd_InflightFund_id, value) {
 			return
 		}
@@ -1807,7 +1807,7 @@ func (x *fastReflection_InflightFund) Range(f func(protoreflect.FieldDescriptor,
 func (x *fastReflection_InflightFund) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.InflightFund.id":
-		return x.Id != ""
+		return x.Id != uint64(0)
 	case "noble.dollar.vaults.v2.InflightFund.transaction_id":
 		return x.TransactionId != ""
 	case "noble.dollar.vaults.v2.InflightFund.amount":
@@ -1871,7 +1871,7 @@ func (x *fastReflection_InflightFund) Has(fd protoreflect.FieldDescriptor) bool 
 func (x *fastReflection_InflightFund) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.InflightFund.id":
-		x.Id = ""
+		x.Id = uint64(0)
 	case "noble.dollar.vaults.v2.InflightFund.transaction_id":
 		x.TransactionId = ""
 	case "noble.dollar.vaults.v2.InflightFund.amount":
@@ -1912,7 +1912,7 @@ func (x *fastReflection_InflightFund) Get(descriptor protoreflect.FieldDescripto
 	switch descriptor.FullName() {
 	case "noble.dollar.vaults.v2.InflightFund.id":
 		value := x.Id
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	case "noble.dollar.vaults.v2.InflightFund.transaction_id":
 		value := x.TransactionId
 		return protoreflect.ValueOfString(value)
@@ -1987,7 +1987,7 @@ func (x *fastReflection_InflightFund) Get(descriptor protoreflect.FieldDescripto
 func (x *fastReflection_InflightFund) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.InflightFund.id":
-		x.Id = value.Interface().(string)
+		x.Id = value.Uint()
 	case "noble.dollar.vaults.v2.InflightFund.transaction_id":
 		x.TransactionId = value.Interface().(string)
 	case "noble.dollar.vaults.v2.InflightFund.amount":
@@ -2137,7 +2137,7 @@ func (x *fastReflection_InflightFund) Mutable(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_InflightFund) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.InflightFund.id":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "noble.dollar.vaults.v2.InflightFund.transaction_id":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.InflightFund.amount":
@@ -2256,9 +2256,8 @@ func (x *fastReflection_InflightFund) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.Id)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
 		}
 		l = len(x.TransactionId)
 		if l > 0 {
@@ -2468,12 +2467,10 @@ func (x *fastReflection_InflightFund) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.Id) > 0 {
-			i -= len(x.Id)
-			copy(dAtA[i:], x.Id)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Id)))
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -2525,10 +2522,10 @@ func (x *fastReflection_InflightFund) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 				}
-				var stringLen uint64
+				x.Id = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -2538,24 +2535,11 @@ func (x *fastReflection_InflightFund) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.Id |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Id = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
@@ -9257,7 +9241,7 @@ type InflightFund struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Unique identifier for this inflight transaction
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Transaction ID (Hyperlane message ID or IBC packet sequence)
 	TransactionId string `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
 	// Amount in USDN (always USDN, never shares)
@@ -9308,11 +9292,11 @@ func (*InflightFund) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_cross_chain_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *InflightFund) GetId() string {
+func (x *InflightFund) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
-	return ""
+	return 0
 }
 
 func (x *InflightFund) GetTransactionId() string {
@@ -10167,7 +10151,7 @@ var file_noble_dollar_vaults_v2_cross_chain_proto_rawDesc = []byte{
 	0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x03, 0x52,
 	0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x22, 0xff, 0x06,
 	0x0a, 0x0c, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x46, 0x75, 0x6e, 0x64, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25,
 	0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74,
 	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x48, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18,

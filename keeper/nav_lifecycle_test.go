@@ -7,7 +7,6 @@ package keeper_test
 import (
 	"encoding/binary"
 	"math/big"
-	"strconv"
 	"testing"
 	"time"
 
@@ -33,7 +32,7 @@ import (
 func TestNAVLifecycle(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
 
-	inflightID := "1"
+	inflightID := uint64(1)
 	transactionID := "123"
 
 	// Helper to check NAV invariant
@@ -65,7 +64,7 @@ func TestNAVLifecycle(t *testing.T) {
 		// Get inflight funds total
 		t.Logf("checkNAV: Iterating inflight funds for %s", step)
 		inflightTotal := sdkmath.ZeroInt()
-		err = k.IterateVaultsV2InflightFunds(baseCtx, func(_ string, fund vaultsv2.InflightFund) (bool, error) {
+		err = k.IterateVaultsV2InflightFunds(baseCtx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 			var err error
 			inflightTotal, err = inflightTotal.SafeAdd(fund.Amount)
 			return false, err
@@ -325,9 +324,7 @@ func TestNAVLifecycle(t *testing.T) {
 		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
 
 	// Verify withdrawal is now READY
-	requestID, err := strconv.ParseUint(withdrawalResp.RequestId, 10, 64)
-	require.NoError(t, err)
-	withdrawal, found, err := k.GetVaultsV2Withdrawal(futureCtx, requestID)
+	withdrawal, found, err := k.GetVaultsV2Withdrawal(futureCtx, withdrawalResp.RequestId)
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, vaultsv2.WITHDRAWAL_REQUEST_STATUS_READY, withdrawal.Status)
