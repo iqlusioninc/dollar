@@ -378,7 +378,7 @@ message MsgRequestWithdrawal {
 // MsgRequestWithdrawalResponse returns the created request details
 message MsgRequestWithdrawalResponse {
   // Withdrawal request ID
-  string request_id = 1;
+  uint64 request_id = 1;
 
   // Amount locked for withdrawal
   string amount_locked = 2 [
@@ -569,7 +569,7 @@ message MsgClaimWithdrawal {
   // User claiming the withdrawal
   string claimer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // Withdrawal request ID
-  string request_id = 2;
+  uint64 request_id = 2;
 }
 
 // MsgClaimWithdrawalResponse returns claim results
@@ -615,7 +615,7 @@ message MsgCancelWithdrawal {
   // User canceling the withdrawal
   string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // Withdrawal request ID to cancel
-  string request_id = 2;
+  uint64 request_id = 2;
 }
 
 // MsgCancelWithdrawalResponse returns cancel results
@@ -692,7 +692,7 @@ message MsgHandleStaleInflight {
   // Authority performing the action
   string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // Inflight fund ID
-  string inflight_id = 2;
+  uint64 inflight_id = 2;
   // New status to apply (e.g., TIMEOUT, FAILED)
   noble.dollar.vaults.v2.InflightStatus new_status = 3;
   // Reason / notes
@@ -702,7 +702,7 @@ message MsgHandleStaleInflight {
 // MsgHandleStaleInflightResponse returns updated status info
 message MsgHandleStaleInflightResponse {
   // Inflight fund ID
-  string inflight_id = 1;
+  uint64 inflight_id = 1;
   // Final status
   noble.dollar.vaults.v2.InflightStatus final_status = 2;
   // Time handled
@@ -747,20 +747,26 @@ message MsgCleanupStaleInflight {
   // Authority address (must match module authority)
   string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
+  // Inflight fund ID
+  uint64 inflight_id = 2;
+
   // Transaction ID of the stale inflight fund
-  string transaction_id = 2;
+  string transaction_id = 3;
 
   // Reason for cleanup (for audit trail)
-  string reason = 3;
+  string reason = 4;
 }
 
 // MsgCleanupStaleInflightResponse returns details of the cleanup
 message MsgCleanupStaleInflightResponse {
+  // Inflight fund ID that was cleaned up
+  uint64 inflight_id = 1;
+
   // Transaction ID that was cleaned up
-  string transaction_id = 1;
+  string transaction_id = 2;
 
   // Amount returned to vault
-  string amount_returned = 2 [
+  string amount_returned = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -768,10 +774,10 @@ message MsgCleanupStaleInflightResponse {
   ];
 
   // Route ID
-  uint32 route_id = 3;
+  uint32 route_id = 4;
 
   // Timestamp of cleanup
-  google.protobuf.Timestamp cleaned_at = 4 [
+  google.protobuf.Timestamp cleaned_at = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
@@ -870,6 +876,9 @@ message MsgProcessIncomingWarpFunds {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // ID of the inflight funds to process
+  uint64 inflight_id = 8;
 }
 
 // MsgProcessIncomingWarpFundsResponse returns details of the processed funds
@@ -906,4 +915,7 @@ message MsgProcessIncomingWarpFundsResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+
+  // ID of the inflight funds to process
+  uint64 inflight_id = 7;
 }

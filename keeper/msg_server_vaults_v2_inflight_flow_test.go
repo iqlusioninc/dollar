@@ -38,7 +38,7 @@ import (
 func TestProcessIncomingWarpFunds(t *testing.T) {
 	keeper, server, _, ctx, _ := setupV2Test(t)
 
-	inflightID := "1"
+	inflightID := uint64(1)
 
 	// Setup a cross-chain route
 	routeID := uint32(1)
@@ -73,7 +73,7 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	// Create an inflight fund entry manually (simulating what would have been done by the remote chain manager)
 	fund := vaultsv2.InflightFund{
 		Id:                inflightID,
-		TransactionId:     inflightID,
+		TransactionId:     "",
 		Amount:            redemptionAmount,
 		Status:            vaultsv2.INFLIGHT_PENDING,
 		InitiatedAt:       time.Now(),
@@ -102,7 +102,8 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	// Process incoming warp funds (simulating funds coming back from remote chain)
 	processMsg := &vaultsv2.MsgProcessIncomingWarpFunds{
 		Processor:          mocks.Authority,
-		TransactionId:      inflightID,
+		InflightId:         inflightID,
+		TransactionId:      "hyperlane_msg_456",
 		AmountReceived:     receivedAmount,
 		RouteId:            routeID,
 		HyperlaneMessageId: "hyperlane_msg_456",
@@ -112,7 +113,7 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 
 	processResp, err := server.ProcessIncomingWarpFunds(ctx, processMsg)
 	require.NoError(t, err)
-	assert.Equal(t, inflightID, processResp.TransactionId)
+	assert.Equal(t, "hyperlane_msg_456", processResp.TransactionId)
 	assert.Equal(t, routeID, processResp.RouteId)
 	assert.Equal(t, receivedAmount, processResp.AmountCompleted)
 	assert.Equal(t, redemptionAmount, processResp.OriginalAmount)
@@ -176,10 +177,11 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 
 	// Test processing non-existent inflight fund
 	t.Run("ProcessNonExistentInflightFund", func(t *testing.T) {
-		nonExistentID := "999"
+		nonExistentID := uint64(999)
 		msg := &vaultsv2.MsgProcessIncomingWarpFunds{
 			Processor:          mocks.Authority,
-			TransactionId:      nonExistentID,
+			InflightId:         nonExistentID,
+			TransactionId:      "nonexistent_tx",
 			AmountReceived:     math.NewInt(100000 * ONE_V2),
 			RouteId:            routeID,
 			HyperlaneMessageId: "hyperlane_msg_456",
@@ -188,16 +190,16 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 		}
 		_, err := server.ProcessIncomingWarpFunds(ctx, msg)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "inflight fund "+nonExistentID+" not found")
+		assert.Contains(t, err.Error(), "inflight fund 999 not found")
 	})
 
 	// Test processing already completed fund
 	t.Run("ProcessAlreadyCompletedFund", func(t *testing.T) {
-		doubleProcessID := "2"
+		doubleProcessID := uint64(2)
 		// First, create a pending fund
 		fund := vaultsv2.InflightFund{
 			Id:                doubleProcessID,
-			TransactionId:     doubleProcessID,
+			TransactionId:     "",
 			Amount:            math.NewInt(100000 * ONE_V2),
 			Status:            vaultsv2.INFLIGHT_PENDING,
 			InitiatedAt:       time.Now(),
@@ -224,7 +226,8 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 		// Process it successfully
 		processMsg := &vaultsv2.MsgProcessIncomingWarpFunds{
 			Processor:          mocks.Authority,
-			TransactionId:      doubleProcessID,
+			InflightId:         doubleProcessID,
+			TransactionId:      "hyperlane_double_process",
 			AmountReceived:     math.NewInt(100000 * ONE_V2),
 			RouteId:            routeID,
 			HyperlaneMessageId: "hyperlane_msg_456",
@@ -245,7 +248,7 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 func TestHandleStaleInflight(t *testing.T) {
 	keeper, server, _, ctx, _ := setupV2Test(t)
 
-	staleInflightID := "3"
+	staleInflightID := uint64(3)
 
 	// Setup route
 	routeID := uint32(1)
@@ -261,7 +264,7 @@ func TestHandleStaleInflight(t *testing.T) {
 	// Create a stale inflight fund
 	staleFund := vaultsv2.InflightFund{
 		Id:                staleInflightID,
-		TransactionId:     staleInflightID,
+		TransactionId:     "",
 		Amount:            math.NewInt(100000 * ONE_V2),
 		Status:            vaultsv2.INFLIGHT_PENDING,
 		InitiatedAt:       time.Now().Add(-2 * time.Hour), // 2 hours ago

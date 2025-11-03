@@ -93,7 +93,7 @@ message EventWithdrawlRequested {
   ];
 
   // Withdrawal request ID
-  string withdrawal_request_id = 3;
+  uint64 withdrawal_request_id = 3;
 
   // Expected unlock time
   google.protobuf.Timestamp expected_unlock_time = 4 [
@@ -117,7 +117,7 @@ message EventWithdrawalCancelled {
   string requester = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // Withdrawal request ID that was cancelled
-  string withdrawal_request_id = 2;
+  uint64 withdrawal_request_id = 2;
 
   // Amount returned to active position
   string amount_returned = 3 [
@@ -394,6 +394,9 @@ message EventInflightFundCreated {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // ID of the inflight funds
+  uint64 inflight_id = 12;
 }
 
 // EventInflightFundStatusChanged is emitted when an inflight fund's status changes
@@ -429,6 +432,9 @@ message EventInflightFundStatusChanged {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // Inflight fund internal ID
+  uint64 inflight_id = 9;
 }
 
 // EventInflightFundCompleted is emitted when an inflight fund operation completes
@@ -469,6 +475,9 @@ message EventInflightFundCompleted {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // Inflight fund internal ID
+  uint64 inflight_id = 9;
 }
 
 // EventInflightFundStale is emitted when an inflight fund is detected as stale
@@ -510,6 +519,9 @@ message EventInflightFundStale {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // ID of the inflight funds
+  uint64 inflight_id = 10;
 }
 
 // EventInflightFundCleaned is emitted when a stale inflight fund is cleaned up
@@ -542,6 +554,9 @@ message EventInflightFundCleaned {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // ID of the inflight funds
+  uint64 inflight_id = 8;
 }
 
 // EventRouteCapacityExceeded is emitted when a route's capacity limit is reached
@@ -623,4 +638,7 @@ message EventInflightAmountMismatch {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // ID of the inflight funds
+  uint64 inflight_id = 8;
 }

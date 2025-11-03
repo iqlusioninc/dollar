@@ -591,7 +591,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventWithdrawlRequested{
 		Requester:           msg.Requester,
 		AmountToWithdraw:    msg.Amount,
-		WithdrawalRequestId: strconv.FormatUint(id, 10),
+		WithdrawalRequestId: id,
 		ExpectedUnlockTime:  unlockTime,
 		BlockHeight:         request.RequestBlockHeight,
 		Timestamp:           headerInfo.Time,
@@ -600,7 +600,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	}
 
 	return &vaultsv2.MsgRequestWithdrawalResponse{
-		RequestId:           strconv.FormatUint(id, 10),
+		RequestId:           id,
 		AmountLocked:        msg.Amount,
 		YieldPortion:        sdkmath.ZeroInt(),
 		ExpectedClaimableAt: unlockTime,
@@ -1367,7 +1367,7 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 		}
 
 		fund := vaultsv2.InflightFund{
-			Id:                strconv.FormatUint(inflightID, 10),
+			Id:                inflightID,
 			TransactionId:     fmt.Sprintf("rebalance:%d", entry.ID),
 			Amount:            adj.amount,
 			ValueAtInitiation: adj.amount,
@@ -1433,8 +1433,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
-	inflightID := strconv.FormatUint(msg.Nonce, 10)
-	fund, found, err := m.GetVaultsV2InflightFund(ctx, inflightID)
+	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.Nonce)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
@@ -1554,7 +1553,8 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 	if previousStatus != msg.ResultStatus {
 		_ = m.EmitInflightStatusChangeEvent(
 			ctx,
-			inflightID,
+			msg.Nonce,
+			fund.TransactionId,
 			routeID,
 			previousStatus,
 			msg.ResultStatus,
@@ -1571,7 +1571,8 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		}
 		_ = m.EmitInflightCompletedEvent(
 			ctx,
-			inflightID,
+			msg.Nonce,
+			fund.TransactionId,
 			routeID,
 			opType,
 			fund.Amount,
@@ -1781,14 +1782,6 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
-	if msg.RequestId == "" {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "request id must be provided")
-	}
-
-	id, err := strconv.ParseUint(msg.RequestId, 10, 64)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid request id: %s", msg.RequestId)
-	}
 
 	addrBz, err := m.address.StringToBytes(msg.Claimer)
 	if err != nil {
@@ -1796,7 +1789,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	}
 	claimer := sdk.AccAddress(addrBz)
 
-	request, found, err := m.GetVaultsV2Withdrawal(ctx, id)
+	request, found, err := m.GetVaultsV2Withdrawal(ctx, msg.RequestId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch withdrawal request")
 	}
@@ -1860,7 +1853,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
 	}
 
-	if err := m.DeleteVaultsV2Withdrawal(ctx, id); err != nil {
+	if err := m.DeleteVaultsV2Withdrawal(ctx, msg.RequestId); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to remove withdrawal request")
 	}
 
@@ -2001,15 +1994,6 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 
-	if msg.RequestId == "" {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "request id must be provided")
-	}
-
-	id, err := strconv.ParseUint(msg.RequestId, 10, 64)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid request id: %s", msg.RequestId)
-	}
-
 	addrBz, err := m.address.StringToBytes(msg.Requester)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid requester address: %s", msg.Requester)
@@ -2022,7 +2006,7 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 	}
 
 	// Fetch the withdrawal request
-	request, found, err := m.GetVaultsV2Withdrawal(ctx, id)
+	request, found, err := m.GetVaultsV2Withdrawal(ctx, msg.RequestId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch withdrawal request")
 	}
@@ -2073,7 +2057,7 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 
 	// Update withdrawal request status to CANCELLED
 	request.Status = vaultsv2.WITHDRAWAL_REQUEST_STATUS_CANCELLED
-	if err := m.SetVaultsV2Withdrawal(ctx, id, request); err != nil {
+	if err := m.SetVaultsV2Withdrawal(ctx, msg.RequestId, request); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update withdrawal request status")
 	}
 
@@ -2330,28 +2314,20 @@ func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgH
 	if msg.Authority != m.authority {
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
-	if msg.InflightId == "" {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "inflight id must be provided")
-	}
-
-	nonce, err := strconv.ParseUint(msg.InflightId, 10, 64)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid inflight id: %s", msg.InflightId)
-	}
 
 	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.InflightId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.InflightId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", msg.InflightId)
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	returned, err := m.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
 		Authority:        msg.Authority,
-		Nonce:            nonce,
+		Nonce:            msg.InflightId,
 		ResultStatus:     msg.NewStatus,
 		ResultAmount:     fund.Amount,
 		ErrorMessage:     msg.Reason,
@@ -2375,20 +2351,20 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 	if msg.Authority != m.authority {
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
-	if msg.TransactionId == "" {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "transaction id must be provided")
+	if msg.InflightId == 0 {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "inflight id must be provided")
 	}
 	if msg.Reason == "" {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "reason must be provided for audit trail")
 	}
 
 	// Get the fund before cleanup to return details
-	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.TransactionId)
+	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.InflightId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.TransactionId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", msg.InflightId)
 	}
 
 	// Extract route ID
@@ -2400,14 +2376,15 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 	}
 
 	// Perform cleanup
-	if err := m.CleanupStaleInflightFund(ctx, msg.TransactionId, msg.Reason, msg.Authority); err != nil {
+	if err := m.CleanupStaleInflightFund(ctx, fund.Id, msg.Reason, msg.Authority); err != nil {
 		return nil, err
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	return &vaultsv2.MsgCleanupStaleInflightResponse{
-		TransactionId:  msg.TransactionId,
+		InflightId:     fund.Id,
+		TransactionId:  fund.TransactionId,
 		AmountReturned: fund.Amount,
 		RouteId:        routeID,
 		CleanedAt:      headerInfo.Time,
@@ -2612,20 +2589,20 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	}
 
 	// Get the inflight fund record
-	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.TransactionId)
+	fund, found, err := m.GetVaultsV2InflightFund(ctx, msg.InflightId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch inflight fund")
 	}
 	if !found {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %s not found", msg.TransactionId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", msg.InflightId)
 	}
 
 	// Verify the fund is in a state that can be completed
 	if fund.Status == vaultsv2.INFLIGHT_COMPLETED {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyCompleted, "inflight fund %s already completed", msg.TransactionId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyCompleted, "inflight fund %d already completed", msg.InflightId)
 	}
 	if fund.Status == vaultsv2.INFLIGHT_FAILED || fund.Status == vaultsv2.INFLIGHT_TIMEOUT {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyProcessed, "inflight fund %s already failed/timed out", msg.TransactionId)
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyProcessed, "inflight fund %d already failed/timed out", msg.InflightId)
 	}
 
 	// Verify route ID matches
@@ -2728,6 +2705,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	// Emit completion event
 	_ = m.EmitInflightCompletedEvent(
 		ctx,
+		fund.Id,
 		fund.TransactionId,
 		msg.RouteId,
 		vaultsv2.OPERATION_TYPE_WITHDRAWAL,
@@ -2747,6 +2725,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 			Difference:     originalAmount.Sub(msg.AmountReceived).Abs(),
 			BlockHeight:    sdkCtx.BlockHeight(),
 			Timestamp:      headerInfo.Time,
+			InflightId:     msg.InflightId,
 		})
 	}
 
@@ -2757,5 +2736,6 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 		OriginalAmount:             originalAmount,
 		AmountMatched:              amountMatched,
 		UpdatedPendingDistribution: updatedPending,
+		InflightId:                 msg.InflightId,
 	}, nil
 }
