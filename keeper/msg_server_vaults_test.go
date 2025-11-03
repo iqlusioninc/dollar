@@ -29,12 +29,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
-	vaultsv1 "dollar.noble.xyz/v2/api/vaults/v1"
-	"dollar.noble.xyz/v2/keeper"
-	"dollar.noble.xyz/v2/types"
-	"dollar.noble.xyz/v2/types/vaults"
-	"dollar.noble.xyz/v2/utils"
-	"dollar.noble.xyz/v2/utils/mocks"
+	vaultsv1 "dollar.noble.xyz/v3/api/vaults/v1"
+	"dollar.noble.xyz/v3/keeper"
+	"dollar.noble.xyz/v3/types"
+	"dollar.noble.xyz/v3/types/vaults"
+	"dollar.noble.xyz/v3/utils"
+	"dollar.noble.xyz/v3/utils/mocks"
 )
 
 const ONE = 1_000_000

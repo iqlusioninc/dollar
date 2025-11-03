@@ -39,11 +39,14 @@ import (
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
-	"dollar.noble.xyz/v2"
-	"dollar.noble.xyz/v2/keeper"
-	"dollar.noble.xyz/v2/types"
-	"dollar.noble.xyz/v2/types/v2"
+	"dollar.noble.xyz/v3"
+	"dollar.noble.xyz/v3/keeper"
+	"dollar.noble.xyz/v3/types"
+	v2 "dollar.noble.xyz/v3/types/v2"
+	"dollar.noble.xyz/v3/types/vaults"
 )
+
+const Authority = "authority"
 
 func DollarKeeperWithKeepers(t testing.TB, bank BankKeeper, account AccountKeeper) (*keeper.Keeper, *wormholekeeper.Keeper, sdk.Context) {
 	keys := storetypes.NewKVStoreKeys(types.ModuleName, wormholetypes.ModuleName)
@@ -69,7 +72,7 @@ func DollarKeeperWithKeepers(t testing.TB, bank BankKeeper, account AccountKeepe
 
 	k := keeper.NewKeeper(
 		"uusdn",
-		"authority",
+		Authority,
 		1e6,
 		1e6,
 		cfg.Codec,
@@ -94,7 +97,12 @@ func DollarKeeperWithKeepers(t testing.TB, bank BankKeeper, account AccountKeepe
 		GovChain:   uint16(vaautils.GovernanceChain),
 		GovAddress: vaautils.GovernanceEmitter.Bytes(),
 	})
-	dollar.InitGenesis(ctx, k, addressCdc, *v2.DefaultGenesisState())
+
+	genesis := v2.DefaultGenesisState()
+	genesis.Vaults = vaults.GenesisState{
+		SeasonTwoYieldCollector: "noble1zw7vatnx0vla7gzxucgypz0kfr6965akpvzw69",
+	}
+	dollar.InitGenesis(ctx, k, addressCdc, *genesis)
 
 	return k, wormholeKeeper, ctx
 }

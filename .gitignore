@@ -5,3 +5,6 @@ coverage.out
 coverage.html
 go.work
 go.work.sum
+.gocache
+.aider*
+tmux*
