@@ -31,7 +31,6 @@ import (
 
 const (
 	navPayloadSize       = 105
-	navPayloadWithAck    = 113
 	navUpdateMessageType = 0x01
 	navDecimalPrecision  = int64(1_000_000_000_000_000_000) // 1e18 precision
 )
@@ -39,20 +38,19 @@ const (
 // NAVUpdatePayload represents the decoded NAV oracle update carried inside a
 // Hyperlane message body.
 type NAVUpdatePayload struct {
-	MessageType   uint8
-	PositionID    uint64
-	SharePrice    math.LegacyDec
-	SharesHeld    math.Int
-	Timestamp     time.Time
-	InflightAckID uint64
+	MessageType uint8
+	PositionID  uint64
+	SharePrice  math.LegacyDec
+	SharesHeld  math.Int
+	Timestamp   time.Time
 }
 
 // ParseNAVPayload decodes the fixed-length NAV oracle payload into a strongly
 // typed representation. All numeric values are expected to be big-endian
 // encoded.
 func ParseNAVPayload(body []byte) (NAVUpdatePayload, error) {
-	if len(body) != navPayloadSize && len(body) != navPayloadWithAck {
-		return NAVUpdatePayload{}, fmt.Errorf("invalid NAV payload size: expected %d or %d, got %d", navPayloadSize, navPayloadWithAck, len(body))
+	if len(body) != navPayloadSize {
+		return NAVUpdatePayload{}, fmt.Errorf("invalid NAV payload size: expected %d, got %d", navPayloadSize, len(body))
 	}
 
 	if body[0] != navUpdateMessageType {
@@ -67,21 +65,15 @@ func ParseNAVPayload(body []byte) (NAVUpdatePayload, error) {
 	sharePriceBig := new(big.Int).SetBytes(body[33:65])
 	sharesHeldBig := new(big.Int).SetBytes(body[65:97])
 	timestamp := int64(binary.BigEndian.Uint64(body[97:105]))
-	var ackID uint64
-	if len(body) == navPayloadWithAck {
-		ackID = binary.BigEndian.Uint64(body[105:113])
-	}
-
 	scale := math.NewInt(navDecimalPrecision)
 	sharePrice := math.LegacyNewDecFromBigInt(sharePriceBig).QuoInt(scale)
 	sharesHeld := math.NewIntFromBigInt(sharesHeldBig)
 
 	return NAVUpdatePayload{
-		MessageType:   body[0],
-		PositionID:    positionBig.Uint64(),
-		SharePrice:    sharePrice,
-		SharesHeld:    sharesHeld,
-		Timestamp:     time.Unix(timestamp, 0).UTC(),
-		InflightAckID: ackID,
+		MessageType: body[0],
+		PositionID:  positionBig.Uint64(),
+		SharePrice:  sharePrice,
+		SharesHeld:  sharesHeld,
+		Timestamp:   time.Unix(timestamp, 0).UTC(),
 	}, nil
 }

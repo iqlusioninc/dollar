@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"math/big"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/types"
 
@@ -41,6 +42,27 @@ type AccountingResult struct {
 	AppliedNav              sdkmath.Int
 	YieldDistributed        sdkmath.Int
 	NegativeYieldWarning    string
+}
+
+// checkAccountingNotInProgress checks if accounting is currently in progress and returns an error if so.
+// This should be called by operations that modify positions (deposits, withdrawals) to prevent
+// position changes during accounting that could corrupt the accounting cursor state.
+func (k *Keeper) checkAccountingNotInProgress(ctx context.Context) error {
+	cursor, err := k.GetVaultsV2AccountingCursor(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch accounting cursor")
+	}
+	if cursor.InProgress {
+		return sdkerrors.Wrapf(
+			vaultsv2.ErrOperationNotPermitted,
+			"cannot perform this operation while accounting is in progress (started at %s, %d/%d positions processed). "+
+				"Please wait a few minutes for accounting to complete and retry",
+			cursor.StartedAt.String(),
+			cursor.PositionsProcessed,
+			cursor.TotalPositions,
+		)
+	}
+	return nil
 }
 
 // updateVaultsV2AccountingWithCursor performs yield accounting with cursor-based pagination.
