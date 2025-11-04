@@ -64,27 +64,6 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
-// checkAccountingNotInProgress checks if accounting is currently in progress and returns an error if so.
-// This should be called by operations that modify positions (deposits, withdrawals) to prevent
-// position changes during accounting that could corrupt the accounting cursor state.
-func (m msgServerV2) checkAccountingNotInProgress(ctx context.Context) error {
-	cursor, err := m.GetVaultsV2AccountingCursor(ctx)
-	if err != nil {
-		return sdkerrors.Wrap(err, "unable to fetch accounting cursor")
-	}
-	if cursor.InProgress {
-		return sdkerrors.Wrapf(
-			vaultsv2.ErrOperationNotPermitted,
-			"cannot perform this operation while accounting is in progress (started at %s, %d/%d positions processed). "+
-				"Please wait a few minutes for accounting to complete and retry",
-			cursor.StartedAt.String(),
-			cursor.PositionsProcessed,
-			cursor.TotalPositions,
-		)
-	}
-	return nil
-}
-
 // calculateTWAPNav computes the Time-Weighted Average Price of NAV using recent snapshots.
 // Returns the TWAP value or the current NAV if TWAP is disabled or insufficient data.
 func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.Int) (sdkmath.Int, error) {
@@ -440,6 +419,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
 	}
 
+	// TODO(Collin): We don't need this line setting DepositsEnabled
 	state.DepositsEnabled = config.Enabled
 	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
@@ -2127,22 +2107,9 @@ func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) 
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
 	}
 
-	// Check if accounting is currently in progress
-	cursor, err := m.GetVaultsV2AccountingCursor(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch accounting cursor")
-	}
-
-	if cursor.InProgress {
-		return nil, sdkerrors.Wrapf(
-			vaultsv2.ErrOperationNotPermitted,
-			"cannot update NAV while accounting is in progress (started at %s, %d/%d positions processed for NAV %s). "+
-				"Complete the current accounting session by calling UpdateVaultAccounting before updating NAV",
-			cursor.StartedAt.String(),
-			cursor.PositionsProcessed,
-			cursor.TotalPositions,
-			cursor.AccountingNav.String(),
-		)
+	// Check if accounting is in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)

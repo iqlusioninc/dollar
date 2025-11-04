@@ -90,41 +90,6 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 			position.Status = vaultsv2.REMOTE_POSITION_CLOSED
 		}
 
-		if payload.InflightAckID != 0 {
-			fund, inflightFound, err := k.GetVaultsV2InflightFund(ctx, payload.InflightAckID)
-			if err != nil {
-				return nil, errors.Wrap(err, "unable to fetch inflight fund for acknowledgement")
-			}
-
-			if inflightFound {
-				fund.Status = vaultsv2.INFLIGHT_COMPLETED
-				fund.ExpectedAt = payload.Timestamp
-				if fund.ProviderTracking != nil {
-					if tracking := fund.ProviderTracking.GetHyperlaneTracking(); tracking != nil {
-						tracking.Processed = true
-					}
-				}
-
-				if err := k.SetVaultsV2InflightFund(ctx, fund); err != nil {
-					return nil, errors.Wrap(err, "unable to persist inflight fund acknowledgement")
-				}
-
-				if fund.GetRemoteDestination() != nil {
-					principal, err := position.Principal.SafeAdd(fund.Amount)
-					if err != nil {
-						return nil, errors.Wrap(err, "unable to add inflight amount to remote position principal")
-					}
-					position.Principal = principal
-				} else if fund.GetRemoteOrigin() != nil {
-					principal, err := position.Principal.SafeSub(fund.Amount)
-					if err != nil {
-						return nil, errors.Wrap(err, "unable to subtract inflight amount from remote position principal")
-					}
-					position.Principal = principal
-				}
-			}
-		}
-
 		if err := k.SetVaultsV2RemotePosition(ctx, payload.PositionID, position); err != nil {
 			return nil, errors.Wrap(err, "unable to persist remote position")
 		}
@@ -147,26 +112,11 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 }
 
 // RecalculateVaultsV2NAV recalculates the vault NAV from all components:
-// pending deployment funds, remote positions, and inflight funds.
+// local (pending deployment or withdrawal) funds, remote positions, and inflight funds.
 // This is called when oracle updates remote position values.
 func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time) (math.Int, error) {
 	// Check if accounting is currently in progress
-	cursor, err := k.GetVaultsV2AccountingCursor(ctx)
-	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to fetch accounting cursor")
-	}
-
-	if cursor.InProgress {
-		return math.ZeroInt(), errors.Wrapf(
-			vaultsv2.ErrOperationNotPermitted,
-			"cannot update NAV while accounting is in progress (started at %s, %d/%d positions processed for NAV %s). "+
-				"Complete the current accounting session before processing oracle updates",
-			cursor.StartedAt.String(),
-			cursor.PositionsProcessed,
-			cursor.TotalPositions,
-			cursor.AccountingNav.String(),
-		)
-	}
+	k.checkAccountingNotInProgress(ctx)
 
 	// Calculate NAV according to spec: Local Assets + Remote Positions + Inflight Funds
 	total := math.ZeroInt()
@@ -197,10 +147,12 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 
 	// 3. Add inflight funds
 	err = k.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
-		var err error
-		total, err = total.SafeAdd(fund.Amount)
-		if err != nil {
-			return true, errors.Wrap(err, "unable to accumulate inflight funds")
+		if fund.Status == vaultsv2.INFLIGHT_PENDING {
+			var err error
+			total, err = total.SafeAdd(fund.Amount)
+			if err != nil {
+				return true, errors.Wrap(err, "unable to accumulate inflight funds")
+			}
 		}
 		return false, nil
 	})
@@ -235,18 +187,6 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 
 	if err := k.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to persist NAV info")
-	}
-
-	state, err := k.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault state")
-	}
-
-	state.TotalNav = total
-	state.LastNavUpdate = timestamp
-
-	if err := k.SetVaultsV2VaultState(ctx, state); err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to persist vault state")
 	}
 
 	return total, nil

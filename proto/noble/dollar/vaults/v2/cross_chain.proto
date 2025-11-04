@@ -231,14 +231,12 @@ enum InflightStatus {
 
   // Transaction is pending
   INFLIGHT_PENDING = 0;
-  // Transaction is confirmed by provider
-  INFLIGHT_CONFIRMED = 1;
   // Transaction completed successfully
-  INFLIGHT_COMPLETED = 2;
+  INFLIGHT_COMPLETED = 1;
   // Transaction failed
-  INFLIGHT_FAILED = 3;
+  INFLIGHT_FAILED = 2;
   // Transaction timed out
-  INFLIGHT_TIMEOUT = 4;
+  INFLIGHT_TIMEOUT = 3;
 }
 
 // NAVOracleUpdate represents an oracle price update received via cross-chain messaging

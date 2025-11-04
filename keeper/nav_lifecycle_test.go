@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	sdkmath "cosmossdk.io/math"
 	"cosmossdk.io/core/header"
+	sdkmath "cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -439,11 +439,6 @@ func TestNAVCalculationWithOracleMessage(t *testing.T) {
 	navInfo, err := k.GetVaultsV2NAVInfo(baseCtx)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), navInfo.CurrentNav.String())
-
-	// Verify vault state
-	vaultState, err := k.GetVaultsV2VaultState(baseCtx)
-	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), vaultState.TotalNav.String())
 
 	t.Log("✅ Oracle NAV message correctly updated NAV through recalculateVaultsV2NAV()")
 }
