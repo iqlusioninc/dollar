@@ -1498,6 +1498,7 @@ func (k *Keeper) handleUserPositionForDeposit(ctx context.Context, depositor sdk
 // - Updates NAV and deposit totals by the deposit amount
 func (k *Keeper) handleVaultStateForDeposit(ctx context.Context, depositor sdk.AccAddress, amount math.Int, isFirstPosition bool, receiveYield bool, time time.Time) error {
 	if isFirstPosition {
+		// TODO (Collin): Idiosyncratic way of updating state compared to others (just use state.TotalUsers++?)
 		if err := k.IncrementVaultsV2TotalUsers(ctx); err != nil {
 			return sdkerrors.Wrap(err, "unable to increment total users")
 		}
