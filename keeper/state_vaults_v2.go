@@ -26,9 +26,12 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"cosmossdk.io/collections"
+	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
+	sdkmath "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -1391,4 +1394,143 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 
 		return false, nil
 	})
+}
+
+//
+// Complex state change helpers
+//
+
+// updateDepositTracking updates all deposit tracking metrics after a successful deposit.
+// This should be called after the deposit has been processed and coins transferred.
+func (k *Keeper) updateDepositTracking(ctx context.Context, depositor sdk.AccAddress, amount sdkmath.Int, currentBlock int64) error {
+	limits, hasLimits, err := k.getDepositLimits(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch deposit limits")
+	}
+
+	if !hasLimits {
+		return nil
+	}
+
+	// Update block volume
+	if err := k.incrementBlockDeposit(ctx, currentBlock, amount); err != nil {
+		return sdkerrors.Wrap(err, "unable to update block deposit volume")
+	}
+
+	// Update user deposit history
+	if err := k.recordUserDeposit(ctx, depositor, currentBlock, amount); err != nil {
+		return sdkerrors.Wrap(err, "unable to record user deposit")
+	}
+
+	// Update user velocity
+	velocity, hasVelocity, err := k.getDepositVelocity(ctx, depositor)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch deposit velocity")
+	}
+
+	if !hasVelocity {
+		velocity.TimeWindowBlocks = limits.VelocityWindowBlocks
+		velocity.RecentDepositVolume = sdkmath.ZeroInt()
+		velocity.RecentDepositCount = 0
+	}
+
+	// Check if we need to reset the window
+	if limits.VelocityWindowBlocks > 0 && velocity.LastDepositBlock > 0 {
+		blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
+		if blocksSinceLastDeposit >= limits.VelocityWindowBlocks {
+			// Window expired, reset counters
+			velocity.RecentDepositCount = 0
+			velocity.RecentDepositVolume = sdkmath.ZeroInt()
+		}
+	}
+
+	velocity.LastDepositBlock = currentBlock
+	velocity.RecentDepositCount++
+	velocity.RecentDepositVolume, err = velocity.RecentDepositVolume.SafeAdd(amount)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to update velocity volume")
+	}
+
+	if err := k.setDepositVelocity(ctx, depositor, velocity); err != nil {
+		return sdkerrors.Wrap(err, "unable to persist deposit velocity")
+	}
+
+	return nil
+}
+
+func (k *Keeper) handleUserPositionForDeposit(ctx context.Context, depositor sdk.AccAddress, amount sdkmath.Int, receiveYield bool, time time.Time) (positionId uint64, isFirstPosition bool, err error) {
+	// Get next position ID for this user (creates a new position for each deposit)
+	positionId, err = k.GetNextUserPositionID(ctx, depositor)
+	if err != nil {
+		return 0, false, sdkerrors.Wrap(err, "unable to generate position ID")
+	}
+
+	// Check if this is the user's first position to track total users
+	userPositionCount, err := k.GetUserPositionCount(ctx, depositor)
+	if err != nil {
+		return 0, false, sdkerrors.Wrap(err, "unable to get user position count")
+	}
+	isFirstPosition = userPositionCount == 1 // Count was just incremented by GetNextUserPositionID
+
+	// Create NEW position (each deposit creates a new independent position)
+	position := vaultsv2.UserPosition{
+		PositionId:               positionId,
+		DepositAmount:            amount,
+		AccruedYield:             sdkmath.ZeroInt(),
+		FirstDepositTime:         time,
+		LastActivityTime:         time,
+		ReceiveYield:             receiveYield,
+		AmountPendingWithdrawal:  sdkmath.ZeroInt(),
+		ActiveWithdrawalRequests: 0,
+	}
+
+	if err := k.SetVaultsV2UserPosition(ctx, depositor, positionId, position); err != nil {
+		return 0, false, sdkerrors.Wrap(err, "unable to store user position")
+	}
+
+	return
+}
+
+// HandleVaultStateDeposit make the appropriate state changes to VaultState for a user deposit
+func (k *Keeper) handleVaultStateForDeposit(ctx context.Context, depositor sdk.AccAddress, amount math.Int, isFirstPosition bool, receiveYield bool, time time.Time) error {
+	// Increment total users if this is their first position
+	if isFirstPosition {
+		if err := k.IncrementVaultsV2TotalUsers(ctx); err != nil {
+			return sdkerrors.Wrap(err, "unable to increment total users")
+		}
+	}
+
+	// Update vault totals (total_deposits, total_nav, total_positions)
+	if err := k.AddAmountToVaultsV2Totals(ctx, amount, sdkmath.ZeroInt()); err != nil {
+		return sdkerrors.Wrap(err, "unable to update aggregate vault totals")
+	}
+
+	// Increment total positions count
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch vault state")
+	}
+	state.TotalPositions++
+
+	// Update total eligible deposits if receiving yield
+	if receiveYield {
+		state.TotalEligibleDeposits, err = state.TotalEligibleDeposits.SafeAdd(amount)
+		if err != nil {
+			return sdkerrors.Wrap(err, "unable to update total eligible deposits")
+		}
+	}
+
+	// Update deposit tracking metrics
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	currentBlock := sdkCtx.BlockHeight()
+	if err := k.updateDepositTracking(ctx, depositor, amount, currentBlock); err != nil {
+		return sdkerrors.Wrap(err, "unable to update deposit tracking")
+	}
+
+	state.LastNavUpdate = time
+	if err := k.SetVaultsV2VaultState(ctx, state); err != nil {
+		return sdkerrors.Wrap(err, "unable to persist vault state")
+	}
+
+	return nil
 }

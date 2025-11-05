@@ -296,13 +296,74 @@ func NewMsgServerV2(keeper *Keeper) vaultsv2.MsgServer {
 	return &msgServerV2{Keeper: keeper}
 }
 
-func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*vaultsv2.MsgDepositResponse, error) {
+// validateDeposit validates the deposit message including basic checks and
+// minimum deposit amount requirement from params.
+func (m msgServerV2) validateDeposit(ctx context.Context, msg *vaultsv2.MsgDeposit) error {
+	// Nil check
 	if msg == nil {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+		return sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
 	}
 
+	// Amount validation
 	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
+		return sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "deposit amount must be positive")
+	}
+
+	// MinDepositAmount check
+	params, err := m.GetVaultsV2Params(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch vault parameters")
+	}
+	if params.MinDepositAmount.IsPositive() && msg.Amount.LT(params.MinDepositAmount) {
+		return sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, "deposit below minimum of %s", params.MinDepositAmount.String())
+	}
+
+	return nil
+}
+
+// depositsEnabled checks if deposit operations are currently allowed by validating
+// vault enabled flags in params and config, and ensuring accounting is not in progress.
+func (m msgServerV2) depositsEnabled(ctx context.Context) error {
+	// Check params VaultEnabled
+	params, err := m.GetVaultsV2Params(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch vault parameters")
+	}
+	if !params.VaultEnabled {
+		return sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault deposits are disabled")
+	}
+
+	// Check config Enabled
+	config, err := m.GetVaultsV2Config(ctx)
+	if err != nil {
+		return sdkerrors.Wrap(err, "unable to fetch vault configuration")
+	}
+	if !config.Enabled {
+		return sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
+	}
+
+	// Check accounting not in progress
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Deposit results in the following state changes:
+// 1. Transfers deposit amount from msg.Depositor to the module account
+// 2. Creates a new UserPosition for the user corresponding to the Deposit
+// 3a. Increments the VaultState total positions count
+// 3b. If this is the user's first position, increments the VaultState total users count
+// 3c. If the position has ReceiveYield == true, adds the amount to the VaultState total eligible deposits amount
+// 4. Updates NAV and deposit totals by the deposit amount
+func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*vaultsv2.MsgDepositResponse, error) {
+	if err := m.validateDeposit(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	if err := m.depositsEnabled(ctx); err != nil {
+		return nil, err
 	}
 
 	addrBz, err := m.address.StringToBytes(msg.Depositor)
@@ -310,30 +371,6 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "invalid depositor address: %s", msg.Depositor)
 	}
 	depositor := sdk.AccAddress(addrBz)
-
-	params, err := m.GetVaultsV2Params(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault parameters")
-	}
-	if !params.VaultEnabled {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault deposits are disabled")
-	}
-	if params.MinDepositAmount.IsPositive() && msg.Amount.LT(params.MinDepositAmount) {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, "deposit below minimum of %s", params.MinDepositAmount.String())
-	}
-
-	config, err := m.GetVaultsV2Config(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault configuration")
-	}
-	if !config.Enabled {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
-	}
-
-	// Check if accounting is in progress
-	if err := m.checkAccountingNotInProgress(ctx); err != nil {
-		return nil, err
-	}
 
 	// Enforce deposit limits and risk controls
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -352,84 +389,28 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to transfer deposit into module account")
 	}
 
+	// TODO (Collin): Should this be included in VaultState?
 	if err := m.AddVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to record local funds")
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
-	// Get next position ID for this user (creates a new position for each deposit)
-	positionID, err := m.GetNextUserPositionID(ctx, depositor)
+	// Create UserPosition
+	positionId, isFirstPosition, err := m.handleUserPositionForDeposit(ctx, depositor, msg.Amount, msg.ReceiveYield, headerInfo.Time)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to generate position ID")
+		return nil, sdkerrors.Wrap(err, "unable to create UserPosition")
 	}
 
-	// Check if this is the user's first position to track total users
-	userPositionCount, err := m.GetUserPositionCount(ctx, depositor)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to get user position count")
-	}
-	isFirstPosition := userPositionCount == 1 // Count was just incremented by GetNextUserPositionID
-
-	// Create NEW position (each deposit creates a new independent position)
-	position := vaultsv2.UserPosition{
-		PositionId:               positionID,
-		DepositAmount:            msg.Amount,
-		AccruedYield:             sdkmath.ZeroInt(),
-		FirstDepositTime:         headerInfo.Time,
-		LastActivityTime:         headerInfo.Time,
-		ReceiveYield:             msg.ReceiveYield,
-		AmountPendingWithdrawal:  sdkmath.ZeroInt(),
-		ActiveWithdrawalRequests: 0,
-	}
-
-	if err := m.SetVaultsV2UserPosition(ctx, depositor, positionID, position); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to store user position")
-	}
-
-	// Increment total users if this is their first position
-	if isFirstPosition {
-		if err := m.IncrementVaultsV2TotalUsers(ctx); err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to increment total users")
-		}
-	}
-
-	// Update vault totals (total_deposits, total_nav, total_positions)
-	if err := m.AddAmountToVaultsV2Totals(ctx, msg.Amount, sdkmath.ZeroInt()); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update aggregate vault totals")
-	}
-
-	// Increment total positions count
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.TotalPositions++
-
-	// Update total eligible deposits if receiving yield
-	if msg.ReceiveYield {
-		state.TotalEligibleDeposits, err = state.TotalEligibleDeposits.SafeAdd(msg.Amount)
-		if err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to update total eligible deposits")
-		}
-	}
-
-	// Update deposit tracking metrics
-	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
-	}
-
-	// TODO(Collin): We don't need this line setting DepositsEnabled
-	state.DepositsEnabled = config.Enabled
-	state.LastNavUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	// Update VaultState
+	if err := m.handleVaultStateForDeposit(ctx, depositor, msg.Amount, isFirstPosition, msg.ReceiveYield, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to process deposit")
 	}
 
 	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventDeposit{
 		Depositor:       msg.Depositor,
 		AmountDeposited: msg.Amount,
-		BlockHeight:     sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		BlockHeight:     sdkCtx.BlockHeight(),
 		Timestamp:       headerInfo.Time,
 	}); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to emit deposit event")
@@ -437,7 +418,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	return &vaultsv2.MsgDepositResponse{
 		AmountDeposited: msg.Amount,
-		PositionId:      positionID,
+		PositionId:      positionId,
 	}, nil
 }
 
@@ -2477,64 +2458,6 @@ func (m msgServerV2) enforceDepositLimits(ctx context.Context, depositor sdk.Acc
 					velocity.RecentDepositVolume.String())
 			}
 		}
-	}
-
-	return nil
-}
-
-// updateDepositTracking updates all deposit tracking metrics after a successful deposit.
-// This should be called after the deposit has been processed and coins transferred.
-func (m msgServerV2) updateDepositTracking(ctx context.Context, depositor sdk.AccAddress, amount sdkmath.Int, currentBlock int64) error {
-	limits, hasLimits, err := m.getDepositLimits(ctx)
-	if err != nil {
-		return sdkerrors.Wrap(err, "unable to fetch deposit limits")
-	}
-
-	if !hasLimits {
-		return nil
-	}
-
-	// Update block volume
-	if err := m.incrementBlockDeposit(ctx, currentBlock, amount); err != nil {
-		return sdkerrors.Wrap(err, "unable to update block deposit volume")
-	}
-
-	// Update user deposit history
-	if err := m.recordUserDeposit(ctx, depositor, currentBlock, amount); err != nil {
-		return sdkerrors.Wrap(err, "unable to record user deposit")
-	}
-
-	// Update user velocity
-	velocity, hasVelocity, err := m.getDepositVelocity(ctx, depositor)
-	if err != nil {
-		return sdkerrors.Wrap(err, "unable to fetch deposit velocity")
-	}
-
-	if !hasVelocity {
-		velocity.TimeWindowBlocks = limits.VelocityWindowBlocks
-		velocity.RecentDepositVolume = sdkmath.ZeroInt()
-		velocity.RecentDepositCount = 0
-	}
-
-	// Check if we need to reset the window
-	if limits.VelocityWindowBlocks > 0 && velocity.LastDepositBlock > 0 {
-		blocksSinceLastDeposit := currentBlock - velocity.LastDepositBlock
-		if blocksSinceLastDeposit >= limits.VelocityWindowBlocks {
-			// Window expired, reset counters
-			velocity.RecentDepositCount = 0
-			velocity.RecentDepositVolume = sdkmath.ZeroInt()
-		}
-	}
-
-	velocity.LastDepositBlock = currentBlock
-	velocity.RecentDepositCount++
-	velocity.RecentDepositVolume, err = velocity.RecentDepositVolume.SafeAdd(amount)
-	if err != nil {
-		return sdkerrors.Wrap(err, "unable to update velocity volume")
-	}
-
-	if err := m.setDepositVelocity(ctx, depositor, velocity); err != nil {
-		return sdkerrors.Wrap(err, "unable to persist deposit velocity")
 	}
 
 	return nil
