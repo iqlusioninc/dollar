@@ -350,19 +350,17 @@ func (m msgServerV2) depositsEnabled(ctx context.Context) error {
 	return nil
 }
 
-// Deposit results in the following state changes:
+// Deposit handles a user deposit to the V2 Vault
 // 1. Transfers deposit amount from msg.Depositor to the module account
-// 2. Creates a new UserPosition for the user corresponding to the Deposit
-// 3a. Increments the VaultState total positions count
-// 3b. If this is the user's first position, increments the VaultState total users count
-// 3c. If the position has ReceiveYield == true, adds the amount to the VaultState total eligible deposits amount
-// 4. Updates NAV and deposit totals by the deposit amount
+// 2. Creates a new UserPosition
+// 3. Adds amount to LocalFunds
+// 4. Updates VaultState
 func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*vaultsv2.MsgDepositResponse, error) {
-	if err := m.validateDeposit(ctx, msg); err != nil {
+	if err := m.depositsEnabled(ctx); err != nil {
 		return nil, err
 	}
 
-	if err := m.depositsEnabled(ctx); err != nil {
+	if err := m.validateDeposit(ctx, msg); err != nil {
 		return nil, err
 	}
 
@@ -372,7 +370,6 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	}
 	depositor := sdk.AccAddress(addrBz)
 
-	// Enforce deposit limits and risk controls
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	currentBlock := sdkCtx.BlockHeight()
 	if err := m.enforceDepositLimits(ctx, depositor, msg.Amount, currentBlock); err != nil {

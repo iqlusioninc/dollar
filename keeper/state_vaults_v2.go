@@ -1492,20 +1492,21 @@ func (k *Keeper) handleUserPositionForDeposit(ctx context.Context, depositor sdk
 }
 
 // HandleVaultStateDeposit make the appropriate state changes to VaultState for a user deposit
+// - Increments total positions count
+// - If this is the user's first position, increments total users count
+// - If the position has ReceiveYield == true, adds the amount to total eligible deposits amount
+// - Updates NAV and deposit totals by the deposit amount
 func (k *Keeper) handleVaultStateForDeposit(ctx context.Context, depositor sdk.AccAddress, amount math.Int, isFirstPosition bool, receiveYield bool, time time.Time) error {
-	// Increment total users if this is their first position
 	if isFirstPosition {
 		if err := k.IncrementVaultsV2TotalUsers(ctx); err != nil {
 			return sdkerrors.Wrap(err, "unable to increment total users")
 		}
 	}
 
-	// Update vault totals (total_deposits, total_nav, total_positions)
 	if err := k.AddAmountToVaultsV2Totals(ctx, amount, sdkmath.ZeroInt()); err != nil {
 		return sdkerrors.Wrap(err, "unable to update aggregate vault totals")
 	}
 
-	// Increment total positions count
 	state, err := k.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return sdkerrors.Wrap(err, "unable to fetch vault state")
