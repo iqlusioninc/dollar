@@ -987,7 +987,7 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 		currentValue := position.DepositAmount.Add(position.AccruedYield)
 
 		// Locked amount is amount pending withdrawal
-		lockedAmount := position.AmountPendingWithdrawal
+		lockedAmount := position.TotalPendingWithdrawal
 
 		return &vaultsv2.QueryUserBalanceResponse{
 			DepositAmount:  position.DepositAmount.String(),
@@ -1010,7 +1010,7 @@ func (q queryServerV2) UserBalance(ctx context.Context, req *vaultsv2.QueryUserB
 	err = q.IterateUserPositions(ctx, userAddr, func(positionID uint64, position vaultsv2.UserPosition) (bool, error) {
 		totalDeposits = totalDeposits.Add(position.DepositAmount)
 		totalYield = totalYield.Add(position.AccruedYield)
-		totalLocked = totalLocked.Add(position.AmountPendingWithdrawal)
+		totalLocked = totalLocked.Add(position.TotalPendingWithdrawal)
 		positionCount++
 		return false, nil
 	})

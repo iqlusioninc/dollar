@@ -56,8 +56,24 @@ message UserPosition {
   // Whether user wants to receive yield (vs contributing to fee pool)
   bool receive_yield = 5;
 
-  // Amount pending withdrawal
-  string amount_pending_withdrawal = 6 [
+  // Deposit amount pending withdrawal
+  string deposit_pending_withdrawal = 6 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Yield amount pending withdrawal
+  string yield_pending_withdrawal = 7 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total amount pending withdrawal (deposit + yield)
+  string total_pending_withdrawal = 8 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -65,10 +81,10 @@ message UserPosition {
   ];
 
   // Number of active withdrawal requests
-  int32 active_withdrawal_requests = 7;
+  int32 active_withdrawal_requests = 9;
 
   // Position ID (unique per user)
-  uint64 position_id = 8;
+  uint64 position_id = 10;
 }
 
 // AccountingSnapshot represents a pending update to a user position during accounting.
@@ -154,6 +170,22 @@ message WithdrawalRequest {
 
   // Position ID this withdrawal is from
   uint64 position_id = 9;
+
+  // Amount withdrawn from accrued yield
+  string yield_amount = 10 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Amount withdrawn from principal deposits
+  string principal_amount = 11 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }
 
 // WithdrawalRequestStatus represents the status of a withdrawal request
@@ -213,8 +245,8 @@ message VaultState {
     (gogoproto.stdtime) = true
   ];
 
-  // Total amount pending withdrawal
-  string total_amount_pending_withdrawal = 8 [
+  // Total deposit amount pending withdrawal
+  string total_deposit_pending_withdrawal = 8 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -230,6 +262,22 @@ message VaultState {
   // Total deposits that are eligible to receive yield (receive_yield=true, excluding pending withdrawals)
   // This is tracked incrementally and recalculated at accounting completion for accuracy
   string total_eligible_deposits = 11 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total yield amount pending withdrawal
+  string total_yield_pending_withdrawal = 12 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Total pending withdrawal (deposit + yield)
+  string total_pending_withdrawal = 13 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

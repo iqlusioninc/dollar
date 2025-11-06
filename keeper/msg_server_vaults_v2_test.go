@@ -112,7 +112,7 @@ func TestDepositBasic(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
 	assert.True(t, position.ReceiveYield)
 	assert.Equal(t, math.ZeroInt(), position.AccruedYield)
-	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
+	assert.Equal(t, math.ZeroInt(), position.TotalPendingWithdrawal)
 
 	// ASSERT: Total users count increased and state updated correctly
 	state, err := k.GetVaultsV2VaultState(ctx)
@@ -314,13 +314,13 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(100*ONE_V2), position.DepositAmount)
-	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.TotalPendingWithdrawal)
 	assert.Equal(t, int32(1), position.ActiveWithdrawalRequests)
 
 	// ASSERT: Vault state updated
 	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(50*ONE_V2), vaultState.TotalAmountPendingWithdrawal)
+	assert.Equal(t, math.NewInt(50*ONE_V2), vaultState.TotalPendingWithdrawal)
 
 	// ASSERT: Withdrawal request created
 	requestId := resp.RequestId
@@ -429,7 +429,7 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	position, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	require.NoError(t, err)
 	require.True(t, found)
-	assert.Equal(t, math.NewInt(50*ONE_V2), position.AmountPendingWithdrawal)
+	assert.Equal(t, math.NewInt(50*ONE_V2), position.TotalPendingWithdrawal)
 	assert.Equal(t, int32(2), position.ActiveWithdrawalRequests)
 }
 
@@ -652,7 +652,7 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.DepositAmount)
-	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
+	assert.Equal(t, math.ZeroInt(), position.TotalPendingWithdrawal)
 	assert.Equal(t, int32(0), position.ActiveWithdrawalRequests)
 
 	// ASSERT: LocalFunds reduced by withdrawal amount (100 - 50 claimed = 50)
@@ -793,7 +793,7 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(40*ONE_V2), position.DepositAmount)
-	assert.Equal(t, math.ZeroInt(), position.AmountPendingWithdrawal)
+	assert.Equal(t, math.ZeroInt(), position.TotalPendingWithdrawal)
 	assert.Equal(t, int32(0), position.ActiveWithdrawalRequests)
 }
 

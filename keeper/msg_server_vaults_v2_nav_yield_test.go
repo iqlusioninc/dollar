@@ -734,7 +734,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 
 	position, _, _ := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
-		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.AmountPendingWithdrawal.Int64())
+		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
 
 	// Initialize accounting
 	navInfo := vaultsv2.NAVInfo{CurrentNav: sdkmath.NewInt(1000 * ONE_V2), LastUpdate: time.Now()}
@@ -771,7 +771,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	position, _, _ = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	vaultState, _ = k.GetVaultsV2VaultState(ctx)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
-		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.AmountPendingWithdrawal.Int64())
+		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
 	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
 		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
 
@@ -785,7 +785,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	position, _, _ = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	vaultState, _ = k.GetVaultsV2VaultState(ctx)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
-		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.AmountPendingWithdrawal.Int64())
+		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
 	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
 		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
 
@@ -815,7 +815,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	position, _, _ = k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
 	vaultState, _ = k.GetVaultsV2VaultState(ctx)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
-		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.AmountPendingWithdrawal.Int64())
+		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
 	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
 		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
 

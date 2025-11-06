@@ -50,7 +50,9 @@ func TestAccountingSnapshotSinglePosition(t *testing.T) {
 		FirstDepositTime:         time.Now(),
 		LastActivityTime:         time.Now(),
 		ReceiveYield:             true,
-		AmountPendingWithdrawal:  math.ZeroInt(),
+		DepositPendingWithdrawal: math.ZeroInt(),
+		YieldPendingWithdrawal:   math.ZeroInt(),
+		TotalPendingWithdrawal:   math.ZeroInt(),
 		ActiveWithdrawalRequests: 0,
 		PositionId:               positionID,
 	}
@@ -124,7 +126,9 @@ func TestAccountingSnapshotMultiplePositions(t *testing.T) {
 			FirstDepositTime:         time.Now(),
 			LastActivityTime:         time.Now(),
 			ReceiveYield:             true,
-			AmountPendingWithdrawal:  math.ZeroInt(),
+			DepositPendingWithdrawal: math.ZeroInt(),
+		YieldPendingWithdrawal:   math.ZeroInt(),
+		TotalPendingWithdrawal:   math.ZeroInt(),
 			ActiveWithdrawalRequests: 0,
 			PositionId:               pos.id,
 		}
@@ -202,7 +206,9 @@ func TestAccountingSnapshotCommitMultiPosition(t *testing.T) {
 				FirstDepositTime:         time.Now(),
 				LastActivityTime:         time.Now(),
 				ReceiveYield:             true,
-				AmountPendingWithdrawal:  math.ZeroInt(),
+				DepositPendingWithdrawal: math.ZeroInt(),
+		YieldPendingWithdrawal:   math.ZeroInt(),
+		TotalPendingWithdrawal:   math.ZeroInt(),
 				ActiveWithdrawalRequests: 0,
 				PositionId:               posID,
 			}
@@ -374,7 +380,9 @@ func TestAccountingSnapshotPaginatedIteration(t *testing.T) {
 				FirstDepositTime:         time.Now(),
 				LastActivityTime:         time.Now(),
 				ReceiveYield:             true,
-				AmountPendingWithdrawal:  math.ZeroInt(),
+				DepositPendingWithdrawal: math.ZeroInt(),
+		YieldPendingWithdrawal:   math.ZeroInt(),
+		TotalPendingWithdrawal:   math.ZeroInt(),
 				ActiveWithdrawalRequests: 0,
 				PositionId:               posID,
 			}
