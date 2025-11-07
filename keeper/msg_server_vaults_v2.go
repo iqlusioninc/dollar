@@ -296,6 +296,7 @@ func NewMsgServerV2(keeper *Keeper) vaultsv2.MsgServer {
 	return &msgServerV2{Keeper: keeper}
 }
 
+// Deposit creates a position for the user with the given amount that may or may not receive yield
 func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*vaultsv2.MsgDepositResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -330,12 +331,10 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(vaultsv2.ErrOperationNotPermitted, "vault is disabled")
 	}
 
-	// Check if accounting is in progress
 	if err := m.checkAccountingNotInProgress(ctx); err != nil {
 		return nil, err
 	}
 
-	// Enforce deposit limits and risk controls
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	currentBlock := sdkCtx.BlockHeight()
 	if err := m.enforceDepositLimits(ctx, depositor, msg.Amount, currentBlock); err != nil {
@@ -358,20 +357,17 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
-	// Get next position ID for this user (creates a new position for each deposit)
 	positionID, err := m.GetNextUserPositionID(ctx, depositor)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to generate position ID")
 	}
 
-	// Check if this is the user's first position to track total users
 	userPositionCount, err := m.GetUserPositionCount(ctx, depositor)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to get user position count")
 	}
-	isFirstPosition := userPositionCount == 1 // Count was just incremented by GetNextUserPositionID
+	isFirstPosition := userPositionCount == 1
 
-	// Create NEW position (each deposit creates a new independent position)
 	position := vaultsv2.UserPosition{
 		PositionId:               positionID,
 		DepositAmount:            msg.Amount,
@@ -379,7 +375,9 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		FirstDepositTime:         headerInfo.Time,
 		LastActivityTime:         headerInfo.Time,
 		ReceiveYield:             msg.ReceiveYield,
-		AmountPendingWithdrawal:  sdkmath.ZeroInt(),
+		DepositPendingWithdrawal: sdkmath.ZeroInt(),
+		YieldPendingWithdrawal:   sdkmath.ZeroInt(),
+		TotalPendingWithdrawal:   sdkmath.ZeroInt(),
 		ActiveWithdrawalRequests: 0,
 	}
 
@@ -387,26 +385,22 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to store user position")
 	}
 
-	// Increment total users if this is their first position
 	if isFirstPosition {
 		if err := m.IncrementVaultsV2TotalUsers(ctx); err != nil {
 			return nil, sdkerrors.Wrap(err, "unable to increment total users")
 		}
 	}
 
-	// Update vault totals (total_deposits, total_nav, total_positions)
 	if err := m.AddAmountToVaultsV2Totals(ctx, msg.Amount, sdkmath.ZeroInt()); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update aggregate vault totals")
 	}
 
-	// Increment total positions count
 	state, err := m.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.TotalPositions++
 
-	// Update total eligible deposits if receiving yield
 	if msg.ReceiveYield {
 		state.TotalEligibleDeposits, err = state.TotalEligibleDeposits.SafeAdd(msg.Amount)
 		if err != nil {
@@ -414,7 +408,6 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		}
 	}
 
-	// Update deposit tracking metrics
 	if err := m.updateDepositTracking(ctx, depositor, msg.Amount, currentBlock); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
 	}
@@ -441,6 +434,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 	}, nil
 }
 
+// RequestWithdrawal creates a pending withdrawal request containing the principle + yield needed to service it
 func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgRequestWithdrawal) (*vaultsv2.MsgRequestWithdrawalResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -456,12 +450,10 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	}
 	requester := sdk.AccAddress(addrBz)
 
-	// Check if accounting is in progress
 	if err := m.checkAccountingNotInProgress(ctx); err != nil {
 		return nil, err
 	}
 
-	// Get the specific position
 	position, found, err := m.GetVaultsV2UserPosition(ctx, requester, msg.PositionId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
@@ -470,12 +462,11 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for requester", msg.PositionId)
 	}
 
-	// Calculate available = deposit_amount + accrued_yield - amount_pending_withdrawal
 	totalValue, err := position.DepositAmount.SafeAdd(position.AccruedYield)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to calculate total position value")
 	}
-	available, err := totalValue.SafeSub(position.AmountPendingWithdrawal)
+	available, err := totalValue.SafeSub(position.TotalPendingWithdrawal)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to determine available balance")
 	}
@@ -486,28 +477,23 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
-	// Calculate eligible deposits delta if position receives yield
-	// Pending withdrawals don't earn yield, so when we add to pending, reduce eligible deposits
-	var eligibleDepositsDelta sdkmath.Int
-	if position.ReceiveYield {
-		activeDepositBefore := position.DepositAmount
-		if position.AmountPendingWithdrawal.IsPositive() {
-			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
-		}
+	yieldAmount, principalAmount := calculateWithdrawalSplit(
+		msg.Amount,
+		position.AccruedYield,
+		position.DepositAmount,
+	)
 
-		activeDepositAfter := position.DepositAmount
-		pendingAfter, _ := position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
-		if pendingAfter.IsPositive() {
-			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
-		}
-
-		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
-	}
-
-	// Update position to mark amount as pending withdrawal
-	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeAdd(msg.Amount)
+	position.DepositPendingWithdrawal, err = position.DepositPendingWithdrawal.SafeAdd(principalAmount)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
+		return nil, sdkerrors.Wrap(err, "unable to update deposit pending withdrawal amount")
+	}
+	position.YieldPendingWithdrawal, err = position.YieldPendingWithdrawal.SafeAdd(yieldAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update yield pending withdrawal amount")
+	}
+	position.TotalPendingWithdrawal, err = position.TotalPendingWithdrawal.SafeAdd(msg.Amount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal amount")
 	}
 	position.ActiveWithdrawalRequests++
 	position.LastActivityTime = headerInfo.Time
@@ -515,6 +501,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		return nil, sdkerrors.Wrap(err, "unable to persist user position")
 	}
 
+	// TODO (Collin): Why do we record PendingWithdrawAmount in VaultState and in an Int store?
 	if err := m.AddVaultsV2PendingWithdrawalAmount(ctx, msg.Amount); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to record pending withdrawal amount")
 	}
@@ -524,14 +511,21 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
 	state.PendingWithdrawalRequests++
-	state.TotalAmountPendingWithdrawal, err = state.TotalAmountPendingWithdrawal.SafeAdd(msg.Amount)
+	state.TotalDepositPendingWithdrawal, err = state.TotalDepositPendingWithdrawal.SafeAdd(principalAmount)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
+		return nil, sdkerrors.Wrap(err, "unable to update total deposit pending withdrawal")
+	}
+	state.TotalYieldPendingWithdrawal, err = state.TotalYieldPendingWithdrawal.SafeAdd(yieldAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total yield pending withdrawal")
+	}
+	state.TotalPendingWithdrawal, err = state.TotalPendingWithdrawal.SafeAdd(msg.Amount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal")
 	}
 
-	// Update eligible deposits if position receives yield
-	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
-		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(eligibleDepositsDelta)
+	if position.ReceiveYield && principalAmount.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(principalAmount)
 	}
 
 	state.LastNavUpdate = headerInfo.Time
@@ -563,6 +557,8 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		Status:             vaultsv2.WITHDRAWAL_REQUEST_STATUS_PENDING,
 		EstimatedAmount:    msg.Amount,
 		RequestBlockHeight: sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		YieldAmount:        yieldAmount,
+		PrincipalAmount:    principalAmount,
 	}
 	if err := m.SetVaultsV2Withdrawal(ctx, id, request); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist withdrawal request")
@@ -582,7 +578,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 	return &vaultsv2.MsgRequestWithdrawalResponse{
 		RequestId:           id,
 		AmountLocked:        msg.Amount,
-		YieldPortion:        sdkmath.ZeroInt(),
+		YieldPortion:        yieldAmount,
 		ExpectedClaimableAt: unlockTime,
 	}, nil
 }
@@ -617,8 +613,8 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 
 	// Calculate active deposits (excluding pending withdrawals) for eligible deposits tracking
 	activeDeposit := position.DepositAmount
-	if position.AmountPendingWithdrawal.IsPositive() {
-		activeDeposit, _ = activeDeposit.SafeSub(position.AmountPendingWithdrawal)
+	if position.DepositPendingWithdrawal.IsPositive() {
+		activeDeposit, _ = activeDeposit.SafeSub(position.DepositPendingWithdrawal)
 	}
 
 	// Update position
@@ -1733,7 +1729,7 @@ func (m msgServerV2) UpdateOracleParams(ctx context.Context, msg *vaultsv2.MsgUp
 }
 
 // calculateWithdrawalSplit splits a withdrawal amount between yield and principal.
-// Withdrawals are taken from yield first, then principal (FIFO for yield).
+// Withdrawals are taken from yield first, then principal.
 func calculateWithdrawalSplit(withdrawAmount, accruedYield, depositAmount sdkmath.Int) (yieldWithdrawn, principalWithdrawn sdkmath.Int) {
 	totalValue := depositAmount.Add(accruedYield)
 
@@ -1758,6 +1754,8 @@ func calculateWithdrawalSplit(withdrawAmount, accruedYield, depositAmount sdkmat
 	return accruedYield, principalWithdrawn
 }
 
+// ClaimWithdrawal transfers the amount in the specified withdrawal request from the module account to the user
+// and updates the accounting state
 func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaimWithdrawal) (*vaultsv2.MsgClaimWithdrawalResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -1793,6 +1791,18 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, err
 	}
 
+	// Rather than enforcing that the sum of funds ready for withdrawal is less than LocalFunds
+	// in ProcessWithdrawalQueue, we assume the manager has done their due diligence. However,
+	// It's possible for LocalFunds to be reduced between the time ProcessWithdrawalQueue marks
+	// a request as Ready and when it is claimed, thus this check.
+	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
+	}
+	if localFunds.LT(request.WithdrawAmount) {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInsufficientLocalFunds, "unable to service withdrawal")
+	}
+
 	withdrawAmount := request.WithdrawAmount
 
 	// Get position to calculate yield vs principal split
@@ -1804,34 +1814,8 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for withdrawal", request.PositionId)
 	}
 
-	// Calculate split (yield first, then principal)
-	yieldWithdrawn, principalWithdrawn := calculateWithdrawalSplit(
-		withdrawAmount,
-		position.AccruedYield,
-		position.DepositAmount,
-	)
-
-	// Calculate eligible deposits delta if position receives yield
-	// When claiming, we reduce pending and reduce deposit, so eligible deposits change
-	var eligibleDepositsDelta sdkmath.Int
-	if position.ReceiveYield {
-		// Active deposit before claim: deposit - pendingWithdrawal
-		activeDepositBefore := position.DepositAmount
-		if position.AmountPendingWithdrawal.IsPositive() {
-			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
-		}
-
-		// Active deposit after claim: (deposit - principalWithdrawn) - (pendingWithdrawal - withdrawAmount)
-		depositAfter, _ := position.DepositAmount.SafeSub(principalWithdrawn)
-		pendingAfter, _ := position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
-		activeDepositAfter := depositAfter
-		if pendingAfter.IsPositive() {
-			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
-		}
-
-		// Delta (positive = reduction, negative = increase)
-		eligibleDepositsDelta, _ = activeDepositBefore.SafeSub(activeDepositAfter)
-	}
+	yieldWithdrawn := request.YieldAmount
+	principalWithdrawn := request.PrincipalAmount
 
 	if err := m.DeleteVaultsV2Withdrawal(ctx, msg.RequestId); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to remove withdrawal request")
@@ -1858,14 +1842,17 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	if state.PendingWithdrawalRequests > 0 {
 		state.PendingWithdrawalRequests--
 	}
-	state.TotalAmountPendingWithdrawal, err = state.TotalAmountPendingWithdrawal.SafeSub(withdrawAmount)
+	state.TotalDepositPendingWithdrawal, err = state.TotalDepositPendingWithdrawal.SafeSub(principalWithdrawn)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
+		return nil, sdkerrors.Wrap(err, "unable to update total deposit pending withdrawal")
 	}
-
-	// Update eligible deposits if position receives yield
-	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
-		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(eligibleDepositsDelta)
+	state.TotalYieldPendingWithdrawal, err = state.TotalYieldPendingWithdrawal.SafeSub(yieldWithdrawn)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total yield pending withdrawal")
+	}
+	state.TotalPendingWithdrawal, err = state.TotalPendingWithdrawal.SafeSub(withdrawAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal")
 	}
 
 	state.LastNavUpdate = headerInfo.Time
@@ -1875,37 +1862,24 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 	// Update the position (we already fetched it above)
 	{
-		// Deduct from pending withdrawal
-		if position.AmountPendingWithdrawal.IsPositive() {
-			if position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeSub(withdrawAmount); err != nil {
-				position.AmountPendingWithdrawal = sdkmath.ZeroInt()
+		if position.DepositPendingWithdrawal.IsPositive() {
+			if position.DepositPendingWithdrawal, err = position.DepositPendingWithdrawal.SafeSub(principalWithdrawn); err != nil {
+				position.DepositPendingWithdrawal = sdkmath.ZeroInt()
+			}
+		}
+		if position.YieldPendingWithdrawal.IsPositive() {
+			if position.YieldPendingWithdrawal, err = position.YieldPendingWithdrawal.SafeSub(yieldWithdrawn); err != nil {
+				position.YieldPendingWithdrawal = sdkmath.ZeroInt()
+			}
+		}
+		if position.TotalPendingWithdrawal.IsPositive() {
+			if position.TotalPendingWithdrawal, err = position.TotalPendingWithdrawal.SafeSub(withdrawAmount); err != nil {
+				position.TotalPendingWithdrawal = sdkmath.ZeroInt()
 			}
 		}
 
-		// Deduct from position value (proportionally from deposit and yield)
-		totalValue, err := position.DepositAmount.SafeAdd(position.AccruedYield)
-		if err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to calculate position value")
-		}
-
-		if totalValue.IsPositive() && withdrawAmount.IsPositive() {
-			if withdrawAmount.GTE(totalValue) {
-				// Withdrawing entire position
-				position.DepositAmount = sdkmath.ZeroInt()
-				position.AccruedYield = sdkmath.ZeroInt()
-			} else {
-				// Deduct from yield first, then principal
-				if withdrawAmount.LTE(position.AccruedYield) {
-					// Entire withdrawal is from yield
-					position.AccruedYield, _ = position.AccruedYield.SafeSub(withdrawAmount)
-				} else {
-					// Withdraw all yield, remainder from principal
-					remaining, _ := withdrawAmount.SafeSub(position.AccruedYield)
-					position.AccruedYield = sdkmath.ZeroInt()
-					position.DepositAmount, _ = position.DepositAmount.SafeSub(remaining)
-				}
-			}
-		}
+		position.AccruedYield, _ = position.AccruedYield.SafeSub(yieldWithdrawn)
+		position.DepositAmount, _ = position.DepositAmount.SafeSub(principalWithdrawn)
 
 		if position.ActiveWithdrawalRequests > 0 {
 			position.ActiveWithdrawalRequests--
@@ -1914,7 +1888,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 
 		// Delete position if it's completely empty
 		if position.DepositAmount.IsZero() && position.AccruedYield.IsZero() &&
-			!position.AmountPendingWithdrawal.IsPositive() && position.ActiveWithdrawalRequests == 0 {
+			!position.TotalPendingWithdrawal.IsPositive() && position.ActiveWithdrawalRequests == 0 {
 			if err := m.DeleteVaultsV2UserPosition(ctx, claimer, request.PositionId); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to delete empty user position")
 			}
@@ -2005,7 +1979,9 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	withdrawAmount := request.WithdrawAmount
 
-	// Get the user's position
+	yieldAmount := request.YieldAmount
+	principalAmount := request.PrincipalAmount
+
 	position, found, err := m.GetVaultsV2UserPosition(ctx, requester, request.PositionId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch user position")
@@ -2014,37 +1990,22 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidVaultState, "position %d not found for requester", request.PositionId)
 	}
 
-	// Calculate eligible deposits delta if position receives yield (reverse of RequestWithdrawal logic)
-	// When canceling, we decrease pending and increase active deposits
-	var eligibleDepositsDelta sdkmath.Int
-	if position.ReceiveYield {
-		// Active deposit before cancel: deposit - pendingWithdrawal
-		activeDepositBefore := position.DepositAmount
-		if position.AmountPendingWithdrawal.IsPositive() {
-			activeDepositBefore, _ = activeDepositBefore.SafeSub(position.AmountPendingWithdrawal)
-		}
-
-		// Active deposit after cancel: deposit - (pendingWithdrawal - withdrawAmount)
-		pendingAfter, _ := position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
-		activeDepositAfter := position.DepositAmount
-		if pendingAfter.IsPositive() {
-			activeDepositAfter, _ = activeDepositAfter.SafeSub(pendingAfter)
-		}
-
-		// Delta is the increase in active deposits
-		eligibleDepositsDelta, _ = activeDepositAfter.SafeSub(activeDepositBefore)
-	}
-
-	// Update withdrawal request status to CANCELLED
 	request.Status = vaultsv2.WITHDRAWAL_REQUEST_STATUS_CANCELLED
 	if err := m.SetVaultsV2Withdrawal(ctx, msg.RequestId, request); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to update withdrawal request status")
 	}
 
-	// Reverse UserPosition changes
-	position.AmountPendingWithdrawal, err = position.AmountPendingWithdrawal.SafeSub(withdrawAmount)
+	position.DepositPendingWithdrawal, err = position.DepositPendingWithdrawal.SafeSub(principalAmount)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal amount")
+		return nil, sdkerrors.Wrap(err, "unable to update deposit pending withdrawal amount")
+	}
+	position.YieldPendingWithdrawal, err = position.YieldPendingWithdrawal.SafeSub(yieldAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update yield pending withdrawal amount")
+	}
+	position.TotalPendingWithdrawal, err = position.TotalPendingWithdrawal.SafeSub(withdrawAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal amount")
 	}
 	if position.ActiveWithdrawalRequests > 0 {
 		position.ActiveWithdrawalRequests--
@@ -2067,14 +2028,21 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 	if state.PendingWithdrawalRequests > 0 {
 		state.PendingWithdrawalRequests--
 	}
-	state.TotalAmountPendingWithdrawal, err = state.TotalAmountPendingWithdrawal.SafeSub(withdrawAmount)
+	state.TotalDepositPendingWithdrawal, err = state.TotalDepositPendingWithdrawal.SafeSub(principalAmount)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal totals")
+		return nil, sdkerrors.Wrap(err, "unable to update total deposit pending withdrawal")
+	}
+	state.TotalYieldPendingWithdrawal, err = state.TotalYieldPendingWithdrawal.SafeSub(yieldAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total yield pending withdrawal")
+	}
+	state.TotalPendingWithdrawal, err = state.TotalPendingWithdrawal.SafeSub(withdrawAmount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal")
 	}
 
-	// Increase eligible deposits if position receives yield (reverse of RequestWithdrawal)
-	if position.ReceiveYield && eligibleDepositsDelta.IsPositive() {
-		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(eligibleDepositsDelta)
+	if position.ReceiveYield && principalAmount.IsPositive() {
+		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(principalAmount)
 	}
 
 	state.LastNavUpdate = headerInfo.Time

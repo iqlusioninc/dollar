@@ -208,11 +208,10 @@ func (k *Keeper) accountingWithCursor(
 			var depositAmount, accruedYield sdkmath.Int
 
 			// Calculate the active deposit amount (excluding pending withdrawals)
-			// Pending withdrawals do not earn yield
 			activeDepositAmount := position.DepositAmount
-			if position.AmountPendingWithdrawal.IsPositive() {
+			if position.DepositPendingWithdrawal.IsPositive() {
 				var subErr error
-				activeDepositAmount, subErr = position.DepositAmount.SafeSub(position.AmountPendingWithdrawal)
+				activeDepositAmount, subErr = position.DepositAmount.SafeSub(position.DepositPendingWithdrawal)
 				if subErr != nil {
 					// If pending withdrawal exceeds deposit, no active deposits remain
 					activeDepositAmount = sdkmath.ZeroInt()
