@@ -53,6 +53,8 @@ message RemotePositionOracle {
   ];
 }
 
+// TODO (Collin): Remove this as it's unused and RemotePositionOracle
+// contains these fields already.
 // OracleMapping defines the mapping between an oracle and its position
 message OracleMapping {
   // Oracle contract address
@@ -68,6 +70,7 @@ message OracleMapping {
   uint64 position_id = 3;
 }
 
+// TODO (Collin): Also remove..?
 // EnrolledOracleRouter represents an enrolled oracle router
 message EnrolledOracleRouter {
   // Position identifier

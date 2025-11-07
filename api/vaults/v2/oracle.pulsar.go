@@ -12246,6 +12246,8 @@ func (x *RemotePositionOracle) GetLastUpdate() *timestamppb.Timestamp {
 	return nil
 }
 
+// TODO (Collin): Remove this as it's unused and RemotePositionOracle
+// contains these fields already.
 // OracleMapping defines the mapping between an oracle and its position
 type OracleMapping struct {
 	state         protoimpl.MessageState
@@ -12301,6 +12303,7 @@ func (x *OracleMapping) GetPositionId() uint64 {
 	return 0
 }
 
+// TODO (Collin): Also remove..?
 // EnrolledOracleRouter represents an enrolled oracle router
 type EnrolledOracleRouter struct {
 	state         protoimpl.MessageState

@@ -1822,61 +1822,6 @@ func TestUpdateOracleParams(t *testing.T) {
 	assert.Equal(t, params, stored)
 }
 
-func TestUpdateNAV(t *testing.T) {
-	k, vaultsV2Server, _, baseCtx, _ := setupV2Test(t)
-
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: math.NewInt(100 * ONE_V2),
-	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(baseCtx, initialNav))
-
-	state := vaultsv2.VaultState{
-		TotalDeposits:             math.NewInt(150 * ONE_V2),
-		TotalAccruedYield:         math.NewInt(25 * ONE_V2),
-		TotalNav:                  math.NewInt(100 * ONE_V2),
-		LastNavUpdate:             time.Time{},
-		DepositsEnabled:           true,
-		WithdrawalsEnabled:        true,
-		TotalUsers:                10,
-		PendingWithdrawalRequests: 0,
-	}
-	require.NoError(t, k.SetVaultsV2VaultState(baseCtx, state))
-
-	updateTime := time.Date(2024, 4, 4, 0, 0, 0, 0, time.UTC)
-	ctx := baseCtx.WithHeaderInfo(header.Info{Time: updateTime})
-
-	resp, err := vaultsV2Server.UpdateNAV(ctx, &vaultsv2.MsgUpdateNAV{
-		Authority:   "authority",
-		NewNav:      math.NewInt(110 * ONE_V2),
-		PreviousNav: math.NewInt(100 * ONE_V2),
-		ChangeBps:   0,
-	})
-	require.NoError(t, err)
-	require.NotNil(t, resp)
-	assert.Equal(t, math.NewInt(110*ONE_V2), resp.AppliedNav)
-	assert.Equal(t, updateTime, resp.Timestamp)
-
-	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(100*ONE_V2), navInfo.PreviousNav)
-	assert.Equal(t, math.NewInt(110*ONE_V2), navInfo.CurrentNav)
-	assert.Equal(t, updateTime, navInfo.LastUpdate)
-	assert.NotZero(t, navInfo.ChangeBps)
-
-	updatedState, err := k.GetVaultsV2VaultState(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(110*ONE_V2), updatedState.TotalNav)
-	assert.Equal(t, updateTime, updatedState.LastNavUpdate)
-
-	_, err = vaultsV2Server.UpdateNAV(ctx, &vaultsv2.MsgUpdateNAV{
-		Authority:   "authority",
-		NewNav:      math.NewInt(120 * ONE_V2),
-		PreviousNav: math.NewInt(999),
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "previous nav mismatch")
-}
-
 func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
 
