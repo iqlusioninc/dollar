@@ -743,6 +743,97 @@ func TestClaimWithdrawalInvalidRequestId(t *testing.T) {
 	assert.Contains(t, err.Error(), "not found")
 }
 
+func TestClaimWithdrawalInsufficientLocalFunds(t *testing.T) {
+	k, vaultsV2Server, bank, ctx, bob := setupV2Test(t)
+
+	// ARRANGE: Deposit and request withdrawal
+	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
+	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
+		Depositor:    bob.Address,
+		Amount:       math.NewInt(100 * ONE_V2),
+		ReceiveYield: true,
+	})
+	require.NoError(t, err)
+
+	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
+		Requester:  bob.Address,
+		PositionId: 1,
+		Amount:     math.NewInt(50 * ONE_V2),
+	})
+	require.NoError(t, err)
+
+	// ARRANGE: Move time forward and process queue to mark withdrawal as READY
+	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 2, 1, 0, 0, 0, time.UTC)})
+	_, err = vaultsV2Server.ProcessWithdrawalQueue(ctx, &vaultsv2.MsgProcessWithdrawalQueue{
+		Authority:   "authority",
+		MaxRequests: 10,
+	})
+	require.NoError(t, err)
+
+	// ARRANGE: Store initial state before reducing LocalFunds
+	positionBefore, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	require.NoError(t, err)
+	require.True(t, found)
+
+	requestBefore, found, err := k.GetVaultsV2Withdrawal(ctx, resp.RequestId)
+	require.NoError(t, err)
+	require.True(t, found)
+
+	stateBefore, err := k.GetVaultsV2VaultState(ctx)
+	require.NoError(t, err)
+
+	// ARRANGE: Reduce LocalFunds to be less than withdrawal amount
+	// LocalFunds is currently 100, reduce by 70 to leave only 30 (< 50 withdrawal amount)
+	require.NoError(t, k.SubtractVaultsV2LocalFunds(ctx, math.NewInt(70*ONE_V2)))
+	localFundsBeforeClaim, err := k.GetVaultsV2LocalFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(30*ONE_V2), localFundsBeforeClaim)
+
+	// ACT: Attempt to claim withdrawal with insufficient LocalFunds
+	_, err = vaultsV2Server.ClaimWithdrawal(ctx, &vaultsv2.MsgClaimWithdrawal{
+		Claimer:   bob.Address,
+		RequestId: resp.RequestId,
+	})
+
+	// ASSERT: Claim fails with ErrInsufficientLocalFunds
+	require.Error(t, err)
+	require.ErrorIs(t, err, vaultsv2.ErrInsufficientLocalFunds)
+
+	// ASSERT: Withdrawal request still exists and is still READY
+	requestAfter, found, err := k.GetVaultsV2Withdrawal(ctx, resp.RequestId)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, requestBefore.Status, requestAfter.Status)
+	assert.Equal(t, vaultsv2.WITHDRAWAL_REQUEST_STATUS_READY, requestAfter.Status)
+
+	// ASSERT: User position unchanged
+	positionAfter, found, err := k.GetVaultsV2UserPosition(ctx, bob.Bytes, 1)
+	require.NoError(t, err)
+	require.True(t, found)
+	assert.Equal(t, positionBefore.DepositPendingWithdrawal, positionAfter.DepositPendingWithdrawal)
+	assert.Equal(t, positionBefore.YieldPendingWithdrawal, positionAfter.YieldPendingWithdrawal)
+	assert.Equal(t, positionBefore.TotalPendingWithdrawal, positionAfter.TotalPendingWithdrawal)
+	assert.Equal(t, positionBefore.ActiveWithdrawalRequests, positionAfter.ActiveWithdrawalRequests)
+	assert.Equal(t, positionBefore.DepositAmount, positionAfter.DepositAmount)
+	assert.Equal(t, positionBefore.AccruedYield, positionAfter.AccruedYield)
+
+	// ASSERT: LocalFunds unchanged (still 30)
+	localFundsAfter, err := k.GetVaultsV2LocalFunds(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, math.NewInt(30*ONE_V2), localFundsAfter)
+
+	// ASSERT: No coins transferred to user
+	assert.Equal(t, math.ZeroInt(), bank.Balances[bob.Address].AmountOf("uusdn"))
+
+	// ASSERT: Vault state unchanged
+	stateAfter, err := k.GetVaultsV2VaultState(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, stateBefore.PendingWithdrawalRequests, stateAfter.PendingWithdrawalRequests)
+	assert.Equal(t, stateBefore.TotalDepositPendingWithdrawal, stateAfter.TotalDepositPendingWithdrawal)
+	assert.Equal(t, stateBefore.TotalYieldPendingWithdrawal, stateAfter.TotalYieldPendingWithdrawal)
+	assert.Equal(t, stateBefore.TotalPendingWithdrawal, stateAfter.TotalPendingWithdrawal)
+}
+
 func TestFullDepositWithdrawalCycle(t *testing.T) {
 	k, vaultsV2Server, bank, ctx, bob := setupV2Test(t)
 
