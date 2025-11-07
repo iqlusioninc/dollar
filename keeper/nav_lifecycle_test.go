@@ -32,6 +32,12 @@ import (
 func TestNAVLifecycle(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
 
+	// Increase MaxNavChangeBps for this test since we have large NAV swings
+	params, err := k.GetVaultsV2Params(baseCtx)
+	require.NoError(t, err)
+	params.MaxNavChangeBps = 5000 // 50% to allow large test changes
+	require.NoError(t, k.SetVaultsV2Params(baseCtx, params))
+
 	inflightID := uint64(1)
 	transactionID := "123"
 
@@ -102,7 +108,7 @@ func TestNAVLifecycle(t *testing.T) {
 
 	// === STEP 2: User deposits 1000 ===
 	require.NoError(t, k.Mint(baseCtx, bob.Bytes, sdkmath.NewInt(1000*ONE_V2), nil))
-	_, err := vaultsV2Server.Deposit(baseCtx, &vaultsv2.MsgDeposit{
+	_, err = vaultsV2Server.Deposit(baseCtx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
 		Amount:       sdkmath.NewInt(1000 * ONE_V2),
 		ReceiveYield: true,

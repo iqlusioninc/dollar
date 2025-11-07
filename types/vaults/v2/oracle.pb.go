@@ -147,6 +147,8 @@ func (m *RemotePositionOracle) GetLastUpdate() time.Time {
 	return time.Time{}
 }
 
+// TODO (Collin): Remove this as it's unused and RemotePositionOracle
+// contains these fields already.
 // OracleMapping defines the mapping between an oracle and its position
 type OracleMapping struct {
 	// Oracle contract address
@@ -204,6 +206,7 @@ func (m *OracleMapping) GetPositionId() uint64 {
 	return 0
 }
 
+// TODO (Collin): Also remove..?
 // EnrolledOracleRouter represents an enrolled oracle router
 type EnrolledOracleRouter struct {
 	// Position identifier

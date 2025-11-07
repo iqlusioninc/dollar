@@ -24,12 +24,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 
 	"cosmossdk.io/collections"
 	sdkerrors "cosmossdk.io/errors"
-	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -263,7 +263,7 @@ func (m msgServerV2) getDepositLimits(ctx context.Context) (vaultsv2.DepositLimi
 	return limits, true, nil
 }
 
-func (m msgServerV2) updateDepositVelocity(ctx context.Context, addr sdk.AccAddress, amount math.Int, block int64, params vaultsv2.DepositLimit) (vaultsv2.DepositVelocity, error) {
+func (m msgServerV2) updateDepositVelocity(ctx context.Context, addr sdk.AccAddress, amount sdkmath.Int, block int64, params vaultsv2.DepositLimit) (vaultsv2.DepositVelocity, error) {
 	velocity, found, err := m.getDepositVelocity(ctx, addr)
 	if err != nil {
 		return vaultsv2.DepositVelocity{}, err
@@ -661,6 +661,7 @@ func (m msgServerV2) SetYieldPreference(ctx context.Context, msg *vaultsv2.MsgSe
 	}, nil
 }
 
+// ProcessWithdrawalQueue marks eligible withdrawal requests as ready to be claimed
 func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.MsgProcessWithdrawalQueue) (*vaultsv2.MsgProcessWithdrawalQueueResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -671,7 +672,7 @@ func (m msgServerV2) ProcessWithdrawalQueue(ctx context.Context, msg *vaultsv2.M
 
 	limit := msg.MaxRequests
 	if limit <= 0 {
-		limit = int32(^uint32(0) >> 1)
+		limit = math.MaxInt32
 	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
@@ -835,6 +836,7 @@ func (m msgServerV2) UpdateParams(ctx context.Context, msg *vaultsv2.MsgUpdatePa
 	}
 
 	state.DepositsEnabled = params.VaultEnabled && config.Enabled
+	// TODO (Collin): This isn't used anywhere
 	state.WithdrawalsEnabled = params.VaultEnabled
 
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
@@ -1943,6 +1945,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 	}, nil
 }
 
+// CancelWithdrawal marks the withdrawal request as cancelled and resets the UserPosition and ErrInvalidVaultState accounting
 func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCancelWithdrawal) (*vaultsv2.MsgCancelWithdrawalResponse, error) {
 	if msg == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
@@ -2064,137 +2067,6 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 	return &vaultsv2.MsgCancelWithdrawalResponse{
 		AmountUnlocked: withdrawAmount,
 		PositionId:     request.PositionId,
-	}, nil
-}
-
-func (m msgServerV2) UpdateNAV(ctx context.Context, msg *vaultsv2.MsgUpdateNAV) (*vaultsv2.MsgUpdateNAVResponse, error) {
-	if msg == nil {
-		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
-	}
-	if msg.Authority != m.authority {
-		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
-	}
-
-	// Check if accounting is in progress
-	if err := m.checkAccountingNotInProgress(ctx); err != nil {
-		return nil, err
-	}
-
-	headerInfo := m.header.GetHeaderInfo(ctx)
-
-	navInfo, err := m.GetVaultsV2NAVInfo(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch nav info")
-	}
-
-	previousNav := navInfo.CurrentNav
-
-	if msg.PreviousNav.IsPositive() && !previousNav.Equal(msg.PreviousNav) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "previous nav mismatch")
-	}
-
-	changeBps := msg.ChangeBps
-	if changeBps == 0 && previousNav.IsPositive() {
-		previousDec := previousNav.ToLegacyDec()
-		if !previousDec.IsZero() {
-			delta := msg.NewNav.ToLegacyDec().Sub(previousDec)
-			changeDec := delta.MulInt(sdkmath.NewInt(navBasisPointsMultiplier)).Quo(previousDec)
-			changeBps = int32(changeDec.TruncateInt64())
-		}
-	}
-
-	// Circuit breaker: Check if NAV change exceeds maximum allowed threshold
-	params, err := m.GetVaultsV2Params(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault parameters")
-	}
-
-	circuitBreakerTriggered := false
-	if params.MaxNavChangeBps > 0 && previousNav.IsPositive() {
-		// Calculate absolute value of change
-		absChangeBps := changeBps
-		if absChangeBps < 0 {
-			absChangeBps = -absChangeBps
-		}
-
-		if absChangeBps > params.MaxNavChangeBps {
-			circuitBreakerTriggered = true
-
-			// If circuit breaker was not explicitly overridden by authority, reject the update
-			if !msg.CircuitBreakerActive {
-				return nil, sdkerrors.Wrapf(vaultsv2.ErrOperationNotPermitted,
-					"NAV change of %d bps exceeds maximum allowed %d bps (use CircuitBreakerActive=true to override)",
-					absChangeBps, params.MaxNavChangeBps)
-			}
-		}
-	}
-
-	navInfo.PreviousNav = previousNav
-	navInfo.CurrentNav = msg.NewNav
-	navInfo.LastUpdate = headerInfo.Time
-	navInfo.ChangeBps = changeBps
-	navInfo.CircuitBreakerActive = circuitBreakerTriggered || msg.CircuitBreakerActive
-
-	if err := m.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist nav info")
-	}
-
-	// Record NAV snapshot for TWAP if conditions are met
-	shouldRecord, err := m.shouldRecordNAVSnapshot(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to check snapshot recording conditions")
-	}
-
-	if shouldRecord {
-		snapshot := vaultsv2.NAVSnapshot{
-			Nav:         msg.NewNav,
-			BlockHeight: sdk.UnwrapSDKContext(ctx).BlockHeight(),
-			TotalShares: sdkmath.ZeroInt(), // Shares no longer used - kept for backwards compatibility
-		}
-
-		if err := m.AddVaultsV2NAVSnapshot(ctx, snapshot); err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to record NAV snapshot")
-		}
-
-		// Optionally prune old snapshots if max age is configured
-		if params.TwapConfig.MaxSnapshotAge > 0 {
-			// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
-			maxAgeInBlocks := params.TwapConfig.MaxSnapshotAge / 6
-			currentHeight := sdk.UnwrapSDKContext(ctx).BlockHeight()
-			_, _ = m.PruneOldVaultsV2NAVSnapshots(ctx, maxAgeInBlocks, currentHeight)
-		}
-	}
-
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-
-	state.TotalNav = msg.NewNav
-	state.LastNavUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
-	}
-
-	if err := m.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventNAVUpdated{
-		PreviousNav:       previousNav,
-		NewNav:            msg.NewNav,
-		ChangeBps:         changeBps,
-		TotalDeposits:     state.TotalDeposits,
-		TotalAccruedYield: state.TotalAccruedYield,
-		Authority:         msg.Authority,
-		Reason:            "",
-		BlockHeight:       sdk.UnwrapSDKContext(ctx).BlockHeight(),
-		Timestamp:         headerInfo.Time,
-	}); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to emit nav updated event")
-	}
-
-	return &vaultsv2.MsgUpdateNAVResponse{
-		AppliedNav:           msg.NewNav,
-		ChangeBps:            changeBps,
-		Timestamp:            headerInfo.Time,
-		CircuitBreakerActive: msg.CircuitBreakerActive,
 	}, nil
 }
 

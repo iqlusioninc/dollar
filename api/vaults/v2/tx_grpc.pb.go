@@ -38,7 +38,6 @@ const (
 	Msg_UpdateOracleParams_FullMethodName       = "/noble.dollar.vaults.v2.Msg/UpdateOracleParams"
 	Msg_ClaimWithdrawal_FullMethodName          = "/noble.dollar.vaults.v2.Msg/ClaimWithdrawal"
 	Msg_CancelWithdrawal_FullMethodName         = "/noble.dollar.vaults.v2.Msg/CancelWithdrawal"
-	Msg_UpdateNAV_FullMethodName                = "/noble.dollar.vaults.v2.Msg/UpdateNAV"
 	Msg_HandleStaleInflight_FullMethodName      = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
 	Msg_UpdateDepositLimits_FullMethodName      = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
 	Msg_CleanupStaleInflight_FullMethodName     = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
@@ -90,8 +89,6 @@ type MsgClient interface {
 	ClaimWithdrawal(ctx context.Context, in *MsgClaimWithdrawal, opts ...grpc.CallOption) (*MsgClaimWithdrawalResponse, error)
 	// Cancel a pending withdrawal request
 	CancelWithdrawal(ctx context.Context, in *MsgCancelWithdrawal, opts ...grpc.CallOption) (*MsgCancelWithdrawalResponse, error)
-	// Update NAV (authority or authorized updater)
-	UpdateNAV(ctx context.Context, in *MsgUpdateNAV, opts ...grpc.CallOption) (*MsgUpdateNAVResponse, error)
 	// Handle stale inflight fund record (authority only)
 	HandleStaleInflight(ctx context.Context, in *MsgHandleStaleInflight, opts ...grpc.CallOption) (*MsgHandleStaleInflightResponse, error)
 	// Update deposit limits (authority only)
@@ -302,16 +299,6 @@ func (c *msgClient) CancelWithdrawal(ctx context.Context, in *MsgCancelWithdrawa
 	return out, nil
 }
 
-func (c *msgClient) UpdateNAV(ctx context.Context, in *MsgUpdateNAV, opts ...grpc.CallOption) (*MsgUpdateNAVResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgUpdateNAVResponse)
-	err := c.cc.Invoke(ctx, Msg_UpdateNAV_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) HandleStaleInflight(ctx context.Context, in *MsgHandleStaleInflight, opts ...grpc.CallOption) (*MsgHandleStaleInflightResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgHandleStaleInflightResponse)
@@ -406,8 +393,6 @@ type MsgServer interface {
 	ClaimWithdrawal(context.Context, *MsgClaimWithdrawal) (*MsgClaimWithdrawalResponse, error)
 	// Cancel a pending withdrawal request
 	CancelWithdrawal(context.Context, *MsgCancelWithdrawal) (*MsgCancelWithdrawalResponse, error)
-	// Update NAV (authority or authorized updater)
-	UpdateNAV(context.Context, *MsgUpdateNAV) (*MsgUpdateNAVResponse, error)
 	// Handle stale inflight fund record (authority only)
 	HandleStaleInflight(context.Context, *MsgHandleStaleInflight) (*MsgHandleStaleInflightResponse, error)
 	// Update deposit limits (authority only)
@@ -484,9 +469,6 @@ func (UnimplementedMsgServer) ClaimWithdrawal(context.Context, *MsgClaimWithdraw
 }
 func (UnimplementedMsgServer) CancelWithdrawal(context.Context, *MsgCancelWithdrawal) (*MsgCancelWithdrawalResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelWithdrawal not implemented")
-}
-func (UnimplementedMsgServer) UpdateNAV(context.Context, *MsgUpdateNAV) (*MsgUpdateNAVResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateNAV not implemented")
 }
 func (UnimplementedMsgServer) HandleStaleInflight(context.Context, *MsgHandleStaleInflight) (*MsgHandleStaleInflightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleStaleInflight not implemented")
@@ -866,24 +848,6 @@ func _Msg_CancelWithdrawal_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateNAV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateNAV)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).UpdateNAV(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_UpdateNAV_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateNAV(ctx, req.(*MsgUpdateNAV))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_HandleStaleInflight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgHandleStaleInflight)
 	if err := dec(in); err != nil {
@@ -1056,10 +1020,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CancelWithdrawal",
 			Handler:    _Msg_CancelWithdrawal_Handler,
-		},
-		{
-			MethodName: "UpdateNAV",
-			Handler:    _Msg_UpdateNAV_Handler,
 		},
 		{
 			MethodName: "HandleStaleInflight",

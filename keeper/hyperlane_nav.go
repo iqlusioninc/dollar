@@ -174,20 +174,128 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 	}
 
 	previousNav := navInfo.CurrentNav
+
+	// Calculate change basis points
+	changeBps := int32(0)
+	if previousNav.IsPositive() {
+		previousDec := previousNav.ToLegacyDec()
+		if !previousDec.IsZero() {
+			delta := total.ToLegacyDec().Sub(previousDec)
+			changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousNav)
+			changeBps = int32(changeDec.TruncateInt64())
+		}
+	}
+
+	// Circuit breaker: Check if NAV change exceeds maximum allowed threshold
+	// TODO: Revisit circuit breaker behavior for oracle updates
+	params, err := k.GetVaultsV2Params(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault parameters")
+	}
+
+	if params.MaxNavChangeBps > 0 && previousNav.IsPositive() {
+		// Calculate absolute value of change
+		absChangeBps := changeBps
+		if absChangeBps < 0 {
+			absChangeBps = -absChangeBps
+		}
+
+		if absChangeBps > params.MaxNavChangeBps {
+			return math.ZeroInt(), errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				"NAV change of %d bps exceeds maximum allowed %d bps",
+				absChangeBps, params.MaxNavChangeBps)
+		}
+	}
+
 	navInfo.PreviousNav = previousNav
 	navInfo.CurrentNav = total
 	navInfo.LastUpdate = timestamp
-	navInfo.ChangeBps = 0
-
-	if previousNav.IsPositive() {
-		change := total.ToLegacyDec().Sub(previousNav.ToLegacyDec())
-		changeBps := change.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousNav).TruncateInt64()
-		navInfo.ChangeBps = int32(changeBps)
-	}
+	navInfo.ChangeBps = changeBps
 
 	if err := k.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to persist NAV info")
 	}
 
+	// Record NAV snapshot for TWAP if conditions are met
+	shouldRecord, err := k.shouldRecordNAVSnapshot(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to check snapshot recording conditions")
+	}
+
+	if shouldRecord {
+		snapshot := vaultsv2.NAVSnapshot{
+			Nav:         total,
+			BlockHeight: k.header.GetHeaderInfo(ctx).Height,
+			TotalShares: math.ZeroInt(), // Shares no longer used - kept for backwards compatibility
+		}
+
+		if err := k.AddVaultsV2NAVSnapshot(ctx, snapshot); err != nil {
+			return math.ZeroInt(), errors.Wrap(err, "unable to record NAV snapshot")
+		}
+
+		// Optionally prune old snapshots if max age is configured
+		if params.TwapConfig.MaxSnapshotAge > 0 {
+			// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
+			maxAgeInBlocks := params.TwapConfig.MaxSnapshotAge / 6
+			currentHeight := k.header.GetHeaderInfo(ctx).Height
+			_, _ = k.PruneOldVaultsV2NAVSnapshots(ctx, maxAgeInBlocks, currentHeight)
+		}
+	}
+
+	// Emit NAV updated event
+	state, err := k.GetVaultsV2VaultState(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault state")
+	}
+
+	// TODO: Add reason field for oracle updates (e.g., position ID)
+	if err := k.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventNAVUpdated{
+		PreviousNav:       previousNav,
+		NewNav:            total,
+		ChangeBps:         changeBps,
+		TotalDeposits:     state.TotalDeposits,
+		TotalAccruedYield: state.TotalAccruedYield,
+		Reason:            "",
+		BlockHeight:       k.header.GetHeaderInfo(ctx).Height,
+		Timestamp:         timestamp,
+	}); err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to emit nav updated event")
+	}
+
 	return total, nil
+}
+
+// shouldRecordNAVSnapshot determines if a new NAV snapshot should be recorded for TWAP calculations.
+func (k *Keeper) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
+	params, err := k.GetVaultsV2Params(ctx)
+	if err != nil {
+		return false, errors.Wrap(err, "unable to fetch params")
+	}
+
+	// If TWAP is disabled, don't record snapshots
+	if !params.TwapConfig.Enabled {
+		return false, nil
+	}
+
+	// Check minimum interval
+	if params.TwapConfig.MinSnapshotInterval <= 0 {
+		return true, nil // No minimum interval
+	}
+
+	// Get most recent snapshot
+	snapshots, err := k.GetRecentVaultsV2NAVSnapshots(ctx, 1)
+	if err != nil {
+		return false, errors.Wrap(err, "unable to fetch recent snapshots")
+	}
+
+	if len(snapshots) == 0 {
+		return true, nil // No previous snapshot, record the first one
+	}
+
+	currentHeight := k.header.GetHeaderInfo(ctx).Height
+	blocksSinceLastSnapshot := currentHeight - snapshots[0].BlockHeight
+	// Convert MinSnapshotInterval from seconds to blocks (assume ~6 seconds per block)
+	minIntervalInBlocks := params.TwapConfig.MinSnapshotInterval / 6
+
+	return blocksSinceLastSnapshot >= minIntervalInBlocks, nil
 }
