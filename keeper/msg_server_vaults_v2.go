@@ -1791,6 +1791,18 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, err
 	}
 
+	// Rather than enforcing that the sum of funds ready for withdrawal is less than LocalFunds
+	// in ProcessWithdrawalQueue, we assume the manager has done their due diligence. However,
+	// It's possible for LocalFunds to be reduced between the time ProcessWithdrawalQueue marks
+	// a request as Ready and when it is claimed, thus this check.
+	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
+	}
+	if localFunds.LT(request.WithdrawAmount) {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInsufficientLocalFunds, "unable to service withdrawal")
+	}
+
 	withdrawAmount := request.WithdrawAmount
 
 	// Get position to calculate yield vs principal split
