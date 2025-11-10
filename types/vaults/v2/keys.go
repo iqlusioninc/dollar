@@ -66,6 +66,9 @@ var (
 	BlockDepositVolumePrefix         = []byte("vaults/v2/block_deposit_volume/")
 	NAVSnapshotsPrefix               = []byte("vaults/v2/nav_snapshots/")
 	NAVSnapshotNextIDKey             = []byte("vaults/v2/nav_snapshot_next_id")
+	CircuitBreakerActiveKey          = []byte("vaults/v2/circuit_breaker_active")
+	CircuitBreakerTripsPrefix        = []byte("vaults/v2/circuit_breaker_trips/")
+	CircuitBreakerNextIDKey          = []byte("vaults/v2/circuit_breaker_next_id")
 )
 
 // GetUserPositionKey creates the composite key for a user's specific position

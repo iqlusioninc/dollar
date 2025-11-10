@@ -89,7 +89,7 @@ func TestNAVLifecycle(t *testing.T) {
 		// If we call recalculateVaultsV2NAV, it should match
 		t.Logf("checkNAV: Calling RecalculateVaultsV2NAV for %s", step)
 		timestamp := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
-		calculatedByFunc, err := k.RecalculateVaultsV2NAV(baseCtx, timestamp)
+		calculatedByFunc, err := k.RecalculateVaultsV2NAV(baseCtx, timestamp, 0)
 		require.NoError(t, err, "step: %s", step)
 		t.Logf("checkNAV: RecalculateVaultsV2NAV returned %s for %s", calculatedByFunc, step)
 		assert.Equal(t, calculatedNAV.String(), calculatedByFunc.String(),
@@ -393,7 +393,7 @@ func TestNAVCalculationWithOracleMessage(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2RemotePositionOracle(baseCtx, positionID, oracle))
 
 	// Initial NAV should be 1000 (200 pending + 800 remote)
-	initialNAV, err := k.RecalculateVaultsV2NAV(baseCtx, time.Now())
+	initialNAV, err := k.RecalculateVaultsV2NAV(baseCtx, time.Now(), positionID)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2).String(), initialNAV.String())
 

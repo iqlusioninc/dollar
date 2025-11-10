@@ -22,16 +22,16 @@ package keeper
 
 import (
 	"context"
+	stderrors "errors"
 	"time"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
-
-const basisPointsMultiplier = 10_000
 
 // HandleHyperlaneNAVMessage processes a Hyperlane message containing NAV data
 // for a remote position oracle. The function performs basic authentication by
@@ -95,7 +95,7 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 		}
 	}
 
-	updatedNav, err := k.RecalculateVaultsV2NAV(ctx, payload.Timestamp)
+	updatedNav, err := k.RecalculateVaultsV2NAV(ctx, payload.Timestamp, payload.PositionID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 // RecalculateVaultsV2NAV recalculates the vault NAV from all components:
 // local (pending deployment or withdrawal) funds, remote positions, and inflight funds.
 // This is called when oracle updates remote position values.
-func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time) (math.Int, error) {
+func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time, triggeringPositionID uint64) (math.Int, error) {
 	// Check if accounting is currently in progress
 	k.checkAccountingNotInProgress(ctx)
 
@@ -201,8 +201,42 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 		}
 
 		if absChangeBps > params.MaxNavChangeBps {
+			// Record the circuit breaker trip
+			trip := vaultsv2.CircuitBreakerTrip{
+				ChangeBps:        changeBps,
+				RemotePositionId: triggeringPositionID,
+				TriggeredAt:      timestamp,
+				PreviousNav:      previousNav,
+				AttemptedNav:     total,
+			}
+
+			// Get next trip ID
+			nextID, err := k.VaultsV2CircuitBreakerNextID.Get(ctx)
+			if err != nil {
+				if !stderrors.Is(err, collections.ErrNotFound) {
+					return math.ZeroInt(), errors.Wrap(err, "unable to get circuit breaker next ID")
+				}
+				// First trip, start at 0
+				nextID = 0
+			}
+
+			// Store the trip
+			if err := k.VaultsV2CircuitBreakerTrips.Set(ctx, nextID, trip); err != nil {
+				return math.ZeroInt(), errors.Wrap(err, "unable to record circuit breaker trip")
+			}
+
+			// Increment next ID
+			if err := k.VaultsV2CircuitBreakerNextID.Set(ctx, nextID+1); err != nil {
+				return math.ZeroInt(), errors.Wrap(err, "unable to update circuit breaker next ID")
+			}
+
+			// Activate circuit breaker
+			if err := k.VaultsV2CircuitBreakerActive.Set(ctx, true); err != nil {
+				return math.ZeroInt(), errors.Wrap(err, "unable to activate circuit breaker")
+			}
+
 			return math.ZeroInt(), errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
-				"NAV change of %d bps exceeds maximum allowed %d bps",
+				"NAV change of %d bps exceeds maximum allowed %d bps - circuit breaker activated",
 				absChangeBps, params.MaxNavChangeBps)
 		}
 	}
@@ -210,7 +244,6 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 	navInfo.PreviousNav = previousNav
 	navInfo.CurrentNav = total
 	navInfo.LastUpdate = timestamp
-	navInfo.ChangeBps = changeBps
 
 	if err := k.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to persist NAV info")

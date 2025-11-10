@@ -105,6 +105,9 @@ type Keeper struct {
 	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
 	VaultsV2NAVSnapshots                  collections.Map[int64, vaultsv2.NAVSnapshot]
 	VaultsV2NAVSnapshotNextID             collections.Item[int64]
+	VaultsV2CircuitBreakerActive          collections.Item[bool]
+	VaultsV2CircuitBreakerTrips           collections.Map[uint64, vaultsv2.CircuitBreakerTrip]
+	VaultsV2CircuitBreakerNextID          collections.Item[uint64]
 
 	PortalOwner         collections.Item[string]
 	PortalPaused        collections.Item[bool]
@@ -209,6 +212,9 @@ func NewKeeper(
 		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
 		VaultsV2NAVSnapshots:                  collections.NewMap(builder, vaultsv2.NAVSnapshotsPrefix, "vaults_v2_nav_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.NAVSnapshot](cdc)),
 		VaultsV2NAVSnapshotNextID:             collections.NewItem(builder, vaultsv2.NAVSnapshotNextIDKey, "vaults_v2_nav_snapshot_next_id", collections.Int64Value),
+		VaultsV2CircuitBreakerActive:          collections.NewItem(builder, vaultsv2.CircuitBreakerActiveKey, "vaults_v2_circuit_breaker_active", collections.BoolValue),
+		VaultsV2CircuitBreakerTrips:           collections.NewMap(builder, vaultsv2.CircuitBreakerTripsPrefix, "vaults_v2_circuit_breaker_trips", collections.Uint64Key, codec.CollValue[vaultsv2.CircuitBreakerTrip](cdc)),
+		VaultsV2CircuitBreakerNextID:          collections.NewItem(builder, vaultsv2.CircuitBreakerNextIDKey, "vaults_v2_circuit_breaker_next_id", collections.Uint64Value),
 
 		PortalOwner:         collections.NewItem(builder, portal.OwnerKey, "portal_owner", collections.StringValue),
 		PortalPaused:        collections.NewItem(builder, portal.PausedKey, "portal_paused", collections.BoolValue),

@@ -54,12 +54,37 @@ message NAVInfo {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+}
 
-  // NAV change since last update (basis points)
-  int32 change_bps = 4;
+// CircuitBreakerTrip records when a circuit breaker was triggered
+message CircuitBreakerTrip {
+  // NAV change that triggered the circuit breaker (basis points)
+  int32 change_bps = 1;
 
-  // Whether circuit breaker is active
-  bool circuit_breaker_active = 5;
+  // Remote position ID that caused the circuit breaker to trigger
+  uint64 remote_position_id = 2;
+
+  // Timestamp when circuit breaker was triggered
+  google.protobuf.Timestamp triggered_at = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
+  // Previous NAV before the change
+  string previous_nav = 4 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // Attempted new NAV that triggered the breaker
+  string attempted_nav = 5 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }
 
 // NAVUpdate represents a NAV update event

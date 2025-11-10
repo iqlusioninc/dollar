@@ -1392,3 +1392,52 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 		return false, nil
 	})
 }
+
+// IsCircuitBreakerActive returns whether the circuit breaker is currently active
+func (k *Keeper) IsCircuitBreakerActive(ctx context.Context) (bool, error) {
+	active, err := k.VaultsV2CircuitBreakerActive.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return active, nil
+}
+
+// GetLatestCircuitBreakerTrip returns the most recent circuit breaker trip
+func (k *Keeper) GetLatestCircuitBreakerTrip(ctx context.Context) (vaultsv2.CircuitBreakerTrip, bool, error) {
+	// Get the next ID to be used
+	nextID, err := k.VaultsV2CircuitBreakerNextID.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.CircuitBreakerTrip{}, false, nil
+		}
+		return vaultsv2.CircuitBreakerTrip{}, false, err
+	}
+
+	if nextID == 0 {
+		return vaultsv2.CircuitBreakerTrip{}, false, nil
+	}
+
+	// Get the last trip (nextID - 1)
+	trip, err := k.VaultsV2CircuitBreakerTrips.Get(ctx, nextID-1)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.CircuitBreakerTrip{}, false, nil
+		}
+		return vaultsv2.CircuitBreakerTrip{}, false, err
+	}
+
+	return trip, true, nil
+}
+
+// ClearCircuitBreaker deactivates the circuit breaker (requires governance)
+func (k *Keeper) ClearCircuitBreaker(ctx context.Context) error {
+	return k.VaultsV2CircuitBreakerActive.Remove(ctx)
+}
+
+// IterateCircuitBreakerTrips iterates over all circuit breaker trips in chronological order
+func (k *Keeper) IterateCircuitBreakerTrips(ctx context.Context, fn func(id uint64, trip vaultsv2.CircuitBreakerTrip) (bool, error)) error {
+	return k.VaultsV2CircuitBreakerTrips.Walk(ctx, nil, fn)
+}
