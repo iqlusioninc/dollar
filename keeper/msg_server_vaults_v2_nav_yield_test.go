@@ -111,7 +111,6 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, depositAmount, vaultState.TotalDeposits)
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), vaultState.TotalAccruedYield)
-	assert.Equal(t, newNAV, vaultState.TotalNav)
 }
 
 // TestNAVUpdateYieldTracking_MultipleUsers tests yield distribution among multiple users
@@ -376,7 +375,6 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield)
-	assert.Equal(t, sdkmath.NewInt(1150*ONE_V2), vaultState.TotalNav)
 }
 
 // TestNAVUpdateYieldTracking_WithWithdrawals tests yield tracking with withdrawals
@@ -615,7 +613,6 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, expectedYield, vaultState.TotalAccruedYield)
-	assert.Equal(t, newNav, vaultState.TotalNav)
 }
 
 // TestNAVUpdateYieldTracking_ResidualHandling tests fair distribution with rounding
@@ -749,8 +746,8 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	}
 
 	vaultState, _ := k.GetVaultsV2VaultState(ctx)
-	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
-		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
+	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d",
+		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64())
 
 	// === STEP 2: NAV increases to 1100, run accounting ===
 	t.Log("\n=== STEP 2: NAV increases to 1100, run accounting ===")
@@ -772,8 +769,8 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	vaultState, _ = k.GetVaultsV2VaultState(ctx)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
 		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
-	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
-		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
+	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d",
+		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64())
 
 	// === STEP 3: Bob requests withdrawal of 500 ===
 	t.Log("\n=== STEP 3: Bob requests withdrawal of 500 ===")
@@ -786,8 +783,8 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	vaultState, _ = k.GetVaultsV2VaultState(ctx)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
 		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
-	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
-		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
+	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d",
+		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64())
 
 	// === STEP 4: NAV increases to 1150, run accounting ===
 	t.Log("\n=== STEP 4: NAV increases to 1150, run accounting ===")
@@ -816,8 +813,8 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	vaultState, _ = k.GetVaultsV2VaultState(ctx)
 	t.Logf("Position: deposit=%d, yield=%d, pending=%d",
 		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
-	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d, TotalNAV=%d",
-		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64(), vaultState.TotalNav.Int64())
+	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d",
+		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64())
 
 	// === ANALYSIS ===
 	t.Log("\n=== ANALYSIS ===")
@@ -830,9 +827,6 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	t.Log("\nInvariant check:")
 	t.Logf("  TotalDeposits + TotalAccruedYield = %d",
 		vaultState.TotalDeposits.Add(vaultState.TotalAccruedYield).Int64())
-	t.Logf("  TotalNAV = %d", vaultState.TotalNav.Int64())
-	t.Logf("  Match: %t",
-		vaultState.TotalDeposits.Add(vaultState.TotalAccruedYield).Equal(vaultState.TotalNav))
 }
 
 // TestAccountingSequentialSessions tests running accounting twice with different NAVs
@@ -909,7 +903,6 @@ func TestAccountingSequentialSessions(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "total deposits should be 1500")
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield, "total yield should be 150")
-	assert.Equal(t, sdkmath.NewInt(1650*ONE_V2), vaultState.TotalNav, "total NAV should be 1650")
 
 	// === SESSION 2: NAV = 1815 (additional 165 yield to distribute) ===
 	navInfo2 := vaultsv2.NAVInfo{
@@ -955,7 +948,6 @@ func TestAccountingSequentialSessions(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "total deposits should still be 1500")
 	assert.Equal(t, sdkmath.NewInt(315*ONE_V2), vaultState.TotalAccruedYield, "total yield should be 315 (150 + 165)")
-	assert.Equal(t, sdkmath.NewInt(1815*ONE_V2), vaultState.TotalNav, "total NAV should be 1815")
 }
 
 // TestAccountingMixedYieldPreference_SameUser tests a user with multiple positions with different yield preferences
@@ -1205,10 +1197,14 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2), vaultState.TotalDeposits)
 	assert.Equal(t, sdkmath.ZeroInt(), vaultState.TotalAccruedYield, "no yield distributed yet")
-	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), vaultState.TotalNav, "NAV updated to 1100")
+
+	// Get NAV from NavInfo (TotalNav no longer in VaultState)
+	navInfo, err = k.GetVaultsV2NAVInfo(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), navInfo.CurrentNav, "NAV updated to 1100")
 
 	// Undistributed yield = NAV - TotalDeposits - TotalAccruedYield = 1100 - 1000 - 0 = 100
-	undistributedYield := vaultState.TotalNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
+	undistributedYield := navInfo.CurrentNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), undistributedYield, "100 yield should be undistributed")
 
 	// STEP 4: Alice deposits with ReceiveYield=true
@@ -1241,11 +1237,15 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "1000 Bob + 500 Alice")
 	assert.Equal(t, sdkmath.ZeroInt(), vaultState.TotalAccruedYield, "no yield distributed (negative yield scenario)")
-	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), vaultState.TotalNav, "NAV = 1100")
+
+	// Get NAV from NavInfo (TotalNav no longer in VaultState)
+	navInfo, err = k.GetVaultsV2NAVInfo(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), navInfo.CurrentNav, "NAV = 1100")
 
 	// Temporary negative undistributed yield = 1100 - 1500 - 0 = -400
 	// This happens because Alice deposited but NAV hasn't been updated yet
-	undistributedYield = vaultState.TotalNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
+	undistributedYield = navInfo.CurrentNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
 	assert.Equal(t, sdkmath.NewInt(-400*ONE_V2), undistributedYield, "Temporarily negative: deposits exceed NAV")
 
 	// STEP 6: NAV increases to 1650 (external assets grew by 50)
@@ -1285,11 +1285,15 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "total deposits = 1500")
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield, "all 150 yield distributed")
-	assert.Equal(t, sdkmath.NewInt(1650*ONE_V2), vaultState.TotalNav, "NAV = 1650")
+
+	// Get NAV from NavInfo (TotalNav no longer in VaultState)
+	navInfo, err = k.GetVaultsV2NAVInfo(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, sdkmath.NewInt(1650*ONE_V2), navInfo.CurrentNav, "NAV = 1650")
 
 	// CRITICAL ASSERTION: No yield is locked up
 	// Undistributed = NAV - Deposits - Distributed = 1650 - 1500 - 150 = 0
-	undistributedYield = vaultState.TotalNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
+	undistributedYield = navInfo.CurrentNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
 	assert.True(t, undistributedYield.IsZero(),
 		"NO yield should be locked up - all 150 eventually distributed to Alice")
 }

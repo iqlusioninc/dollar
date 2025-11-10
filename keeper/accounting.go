@@ -324,7 +324,6 @@ func (k *Keeper) accountingWithCursor(
 
 		state.TotalAccruedYield = aggregatedYield
 		state.TotalDeposits = aggregatedDeposits
-		state.TotalNav = navInfo.CurrentNav
 		if !navInfo.LastUpdate.IsZero() {
 			state.LastNavUpdate = navInfo.LastUpdate
 		}

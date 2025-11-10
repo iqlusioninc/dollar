@@ -208,83 +208,6 @@ func (q queryServerV2) UserPosition(ctx context.Context, req *vaultsv2.QueryUser
 	}, nil
 }
 
-func (q queryServerV2) NAV(ctx context.Context, req *vaultsv2.QueryNAVRequest) (*vaultsv2.QueryNAVResponse, error) {
-	if req == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
-	}
-
-	// Get vault state
-	state, err := q.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
-	}
-
-	// Get params for yield rate
-	_, err = q.GetVaultsV2Params(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch params")
-	}
-
-	// Calculate local assets (on Noble chain)
-	localAssets := state.TotalDeposits.Sub(sdkmath.ZeroInt())
-
-	// Get remote positions value (sum of all remote deployments)
-	remotePositionsValue := sdkmath.ZeroInt()
-	err = q.IterateVaultsV2RemotePositions(ctx, func(_ uint64, position vaultsv2.RemotePosition) (bool, error) {
-		var err error
-		remotePositionsValue, err = remotePositionsValue.SafeAdd(position.TotalValue)
-		if err != nil {
-			return true, errors.Wrap(err, "unable to accumulate remote positions")
-		}
-		return false, nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate remote positions")
-	}
-
-	// Get inflight funds value
-	inflightFundsValue := sdkmath.ZeroInt()
-	err = q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
-		var err error
-		inflightFundsValue, err = inflightFundsValue.SafeAdd(fund.Amount)
-		if err != nil {
-			return true, errors.Wrap(err, "unable to accumulate inflight funds")
-		}
-		return false, nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate inflight funds")
-	}
-
-	// Get pending withdrawals (liabilities)
-	pendingWithdrawals, err := q.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending withdrawals")
-	}
-
-	// Build NAV breakdown
-	navBreakdown := &vaultsv2.NAVBreakdownView{
-		Local:           localAssets.String(),
-		RemotePositions: remotePositionsValue.String(),
-		Inflight:        inflightFundsValue.String(),
-		Liabilities:     pendingWithdrawals.String(),
-		Total:           state.TotalNav.String(),
-	}
-
-	return &vaultsv2.QueryNAVResponse{
-		Nav:                  state.TotalNav.String(),
-		YieldRate:            sdkmath.LegacyNewDec(0).String(),
-		LastUpdate:           state.LastNavUpdate,
-		TotalDeposits:        state.TotalDeposits.String(),
-		TotalAccruedYield:    state.TotalAccruedYield.String(),
-		LocalAssets:          localAssets.String(),
-		RemotePositionsValue: remotePositionsValue.String(),
-		InflightFundsValue:   inflightFundsValue.String(),
-		PendingWithdrawals:   pendingWithdrawals.String(),
-		NavBreakdown:         navBreakdown,
-	}, nil
-}
-
 func (q queryServerV2) WithdrawalQueue(ctx context.Context, req *vaultsv2.QueryWithdrawalQueueRequest) (*vaultsv2.QueryWithdrawalQueueResponse, error) {
 	if req == nil {
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
@@ -542,11 +465,17 @@ func (q queryServerV2) VaultInfo(ctx context.Context, req *vaultsv2.QueryVaultIn
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
+	// Get NAV info for current NAV (total assets)
+	navInfo, err := q.GetVaultsV2NAVInfo(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to fetch NAV info")
+	}
+
 	return &vaultsv2.QueryVaultInfoResponse{
 		Config:            config,
 		TotalDeposits:     state.TotalDeposits.String(),
 		TotalAccruedYield: state.TotalAccruedYield.String(),
-		TotalNav:          state.TotalNav.String(),
+		TotalNav:          navInfo.CurrentNav.String(),
 		TotalDepositors:   state.TotalUsers,
 	}, nil
 }
@@ -598,30 +527,6 @@ func (q queryServerV2) UserPositions(ctx context.Context, req *vaultsv2.QueryUse
 
 	return &vaultsv2.QueryUserPositionsResponse{
 		Positions: positions,
-	}, nil
-}
-
-func (q queryServerV2) YieldInfo(ctx context.Context, req *vaultsv2.QueryYieldInfoRequest) (*vaultsv2.QueryYieldInfoResponse, error) {
-	if req == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
-	}
-
-	// Get vault state
-	state, err := q.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch vault state")
-	}
-
-	_, err = q.GetVaultsV2Params(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch params")
-	}
-
-	return &vaultsv2.QueryYieldInfoResponse{
-		YieldRate:         sdkmath.LegacyNewDec(0).String(),
-		TotalDeposits:     state.TotalDeposits.String(),
-		TotalAccruedYield: state.TotalAccruedYield.String(),
-		TotalNav:          state.TotalNav.String(),
 	}, nil
 }
 

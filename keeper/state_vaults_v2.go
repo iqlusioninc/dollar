@@ -699,16 +699,10 @@ func (k *Keeper) AddAmountToVaultsV2Totals(ctx context.Context, deposits, accrue
 		if state.TotalDeposits, err = state.TotalDeposits.SafeAdd(deposits); err != nil {
 			return err
 		}
-		if state.TotalNav, err = state.TotalNav.SafeAdd(deposits); err != nil {
-			return err
-		}
 	}
 
 	if accruedYield.IsPositive() {
 		if state.TotalAccruedYield, err = state.TotalAccruedYield.SafeAdd(accruedYield); err != nil {
-			return err
-		}
-		if state.TotalNav, err = state.TotalNav.SafeAdd(accruedYield); err != nil {
 			return err
 		}
 	}
@@ -728,16 +722,10 @@ func (k *Keeper) SubtractAmountFromVaultsV2Totals(ctx context.Context, deposits,
 		if state.TotalDeposits, err = state.TotalDeposits.SafeSub(deposits); err != nil {
 			return err
 		}
-		if state.TotalNav, err = state.TotalNav.SafeSub(deposits); err != nil {
-			return err
-		}
 	}
 
 	if accruedYield.IsPositive() {
 		if state.TotalAccruedYield, err = state.TotalAccruedYield.SafeSub(accruedYield); err != nil {
-			return err
-		}
-		if state.TotalNav, err = state.TotalNav.SafeSub(accruedYield); err != nil {
 			return err
 		}
 	}

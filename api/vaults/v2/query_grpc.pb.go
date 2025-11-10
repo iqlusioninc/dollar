@@ -24,8 +24,6 @@ const (
 	Query_AllVaults_FullMethodName            = "/noble.dollar.vaults.v2.Query/AllVaults"
 	Query_UserPosition_FullMethodName         = "/noble.dollar.vaults.v2.Query/UserPosition"
 	Query_UserPositions_FullMethodName        = "/noble.dollar.vaults.v2.Query/UserPositions"
-	Query_YieldInfo_FullMethodName            = "/noble.dollar.vaults.v2.Query/YieldInfo"
-	Query_NAV_FullMethodName                  = "/noble.dollar.vaults.v2.Query/NAV"
 	Query_CrossChainRoutes_FullMethodName     = "/noble.dollar.vaults.v2.Query/CrossChainRoutes"
 	Query_CrossChainRoute_FullMethodName      = "/noble.dollar.vaults.v2.Query/CrossChainRoute"
 	Query_RemotePosition_FullMethodName       = "/noble.dollar.vaults.v2.Query/RemotePosition"
@@ -63,10 +61,6 @@ type QueryClient interface {
 	UserPosition(ctx context.Context, in *QueryUserPositionRequest, opts ...grpc.CallOption) (*QueryUserPositionResponse, error)
 	// UserPositions returns all of a user's positions
 	UserPositions(ctx context.Context, in *QueryUserPositionsRequest, opts ...grpc.CallOption) (*QueryUserPositionsResponse, error)
-	// YieldInfo returns the current yield information for a vault type
-	YieldInfo(ctx context.Context, in *QueryYieldInfoRequest, opts ...grpc.CallOption) (*QueryYieldInfoResponse, error)
-	// NAV returns current NAV with breakdown (spec-aligned)
-	NAV(ctx context.Context, in *QueryNAVRequest, opts ...grpc.CallOption) (*QueryNAVResponse, error)
 	// CrossChainRoutes returns all available cross-chain routes
 	CrossChainRoutes(ctx context.Context, in *QueryCrossChainRoutesRequest, opts ...grpc.CallOption) (*QueryCrossChainRoutesResponse, error)
 	// CrossChainRoute returns information for a specific route
@@ -159,26 +153,6 @@ func (c *queryClient) UserPositions(ctx context.Context, in *QueryUserPositionsR
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryUserPositionsResponse)
 	err := c.cc.Invoke(ctx, Query_UserPositions_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) YieldInfo(ctx context.Context, in *QueryYieldInfoRequest, opts ...grpc.CallOption) (*QueryYieldInfoResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryYieldInfoResponse)
-	err := c.cc.Invoke(ctx, Query_YieldInfo_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) NAV(ctx context.Context, in *QueryNAVRequest, opts ...grpc.CallOption) (*QueryNAVResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryNAVResponse)
-	err := c.cc.Invoke(ctx, Query_NAV_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -391,10 +365,6 @@ type QueryServer interface {
 	UserPosition(context.Context, *QueryUserPositionRequest) (*QueryUserPositionResponse, error)
 	// UserPositions returns all of a user's positions
 	UserPositions(context.Context, *QueryUserPositionsRequest) (*QueryUserPositionsResponse, error)
-	// YieldInfo returns the current yield information for a vault type
-	YieldInfo(context.Context, *QueryYieldInfoRequest) (*QueryYieldInfoResponse, error)
-	// NAV returns current NAV with breakdown (spec-aligned)
-	NAV(context.Context, *QueryNAVRequest) (*QueryNAVResponse, error)
 	// CrossChainRoutes returns all available cross-chain routes
 	CrossChainRoutes(context.Context, *QueryCrossChainRoutesRequest) (*QueryCrossChainRoutesResponse, error)
 	// CrossChainRoute returns information for a specific route
@@ -457,12 +427,6 @@ func (UnimplementedQueryServer) UserPosition(context.Context, *QueryUserPosition
 }
 func (UnimplementedQueryServer) UserPositions(context.Context, *QueryUserPositionsRequest) (*QueryUserPositionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserPositions not implemented")
-}
-func (UnimplementedQueryServer) YieldInfo(context.Context, *QueryYieldInfoRequest) (*QueryYieldInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method YieldInfo not implemented")
-}
-func (UnimplementedQueryServer) NAV(context.Context, *QueryNAVRequest) (*QueryNAVResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NAV not implemented")
 }
 func (UnimplementedQueryServer) CrossChainRoutes(context.Context, *QueryCrossChainRoutesRequest) (*QueryCrossChainRoutesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CrossChainRoutes not implemented")
@@ -628,42 +592,6 @@ func _Query_UserPositions_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).UserPositions(ctx, req.(*QueryUserPositionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_YieldInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryYieldInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).YieldInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_YieldInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).YieldInfo(ctx, req.(*QueryYieldInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_NAV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryNAVRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).NAV(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_NAV_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).NAV(ctx, req.(*QueryNAVRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1036,14 +964,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserPositions",
 			Handler:    _Query_UserPositions_Handler,
-		},
-		{
-			MethodName: "YieldInfo",
-			Handler:    _Query_YieldInfo_Handler,
-		},
-		{
-			MethodName: "NAV",
-			Handler:    _Query_NAV_Handler,
 		},
 		{
 			MethodName: "CrossChainRoutes",

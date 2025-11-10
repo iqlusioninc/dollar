@@ -39,16 +39,6 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/positions/{address}";
   }
 
-  // YieldInfo returns the current yield information for a vault type
-  rpc YieldInfo(QueryYieldInfoRequest) returns (QueryYieldInfoResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/yield";
-  }
-
-  // NAV returns current NAV with breakdown (spec-aligned)
-  rpc NAV(QueryNAVRequest) returns (QueryNAVResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/nav";
-  }
-
   // Cross-chain queries
 
   // CrossChainRoutes returns all available cross-chain routes
@@ -212,19 +202,6 @@ message UserPositionWithVault {
   string current_value = 3;
 }
 
-// QueryYieldInfoRequest requests the yield information of the vault
-
-// QueryYieldInfoRequest requests the yield information for a vault
-message QueryYieldInfoRequest {}
-
-// QueryYieldInfoResponse returns the yield information
-message QueryYieldInfoResponse {
-  string yield_rate = 1; // APY as decimal
-  string total_deposits = 2;
-  string total_accrued_yield = 3;
-  string total_nav = 4;
-}
-
 // QueryStatsRequest requests statistics for the vault
 
 // QueryVaultStatsRequest requests statistics for the primary V2 vault
@@ -366,33 +343,6 @@ message StaleInflightAlertWithDetails {
 }
 
 // ========== Spec-aligned Query Messages ==========
-
-// NAV (spec-aligned)
-message QueryNAVRequest {}
-
-message NAVBreakdownView {
-  string local = 1;
-  string remote_positions = 2;
-  string inflight = 3;
-  string liabilities = 4;
-  string total = 5;
-}
-
-message QueryNAVResponse {
-  string nav = 1; // Total Net Asset Value ($USDN)
-  string yield_rate = 2; // APY as Dec string
-  google.protobuf.Timestamp last_update = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  string total_deposits = 4;
-  string total_accrued_yield = 5;
-  string local_assets = 6;
-  string remote_positions_value = 7;
-  string inflight_funds_value = 8;
-  string pending_withdrawals = 9;
-  NAVBreakdownView nav_breakdown = 10;
-}
 
 // Withdrawal queue views
 message QueryWithdrawalQueueRequest {

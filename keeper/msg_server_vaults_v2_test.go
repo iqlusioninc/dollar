@@ -1088,11 +1088,6 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	state, err := k.GetVaultsV2VaultState(ctx)
-	require.NoError(t, err)
-	state.TotalNav = math.NewInt(200 * ONE_V2)
-	require.NoError(t, k.SetVaultsV2VaultState(ctx, state))
-
 	navInfo := vaultsv2.NAVInfo{
 		CurrentNav: math.NewInt(200 * ONE_V2),
 		LastUpdate: ctx.HeaderInfo().Time,

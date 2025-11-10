@@ -222,14 +222,6 @@ message VaultState {
     (amino.dont_omitempty) = true
   ];
 
-  // Total Net Asset Value (deposits + yield)
-  string total_nav = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
   // Total number of users with positions
   uint64 total_users = 4;
 
