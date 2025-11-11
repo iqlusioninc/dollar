@@ -72,7 +72,7 @@ func TestCircuitBreakerActivation(t *testing.T) {
 	// Current AUM = 1000 local + 1000 remote = 2000
 	// Previous AUM = 1000
 	// Change = 100% = 10000 bps > 1000 bps limit
-	_, err = k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID)
+	_, err = k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), positionID)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "circuit breaker activated")
 
@@ -113,7 +113,7 @@ func TestCircuitBreakerNotActivatedWithinLimit(t *testing.T) {
 
 	// Recalculate AUM with 10% increase (should NOT trigger circuit breaker)
 	positionID := uint64(1)
-	newAum, err := k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID)
+	newAum, err := k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), positionID)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), newAum)
 
@@ -147,7 +147,7 @@ func TestCircuitBreakerMultipleTrips(t *testing.T) {
 	require.NoError(t, k.AddVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(1200*ONE_V2)))
 
 	positionID1 := uint64(1)
-	_, err = k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID1)
+	_, err = k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), positionID1)
 	require.Error(t, err)
 
 	trip1, found, err := k.GetLatestCircuitBreakerTrip(baseCtx)
@@ -172,7 +172,7 @@ func TestCircuitBreakerMultipleTrips(t *testing.T) {
 	require.NoError(t, k.AddVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(1500*ONE_V2)))
 
 	positionID2 := uint64(2)
-	_, err = k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID2)
+	_, err = k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), positionID2)
 	require.Error(t, err)
 
 	// Get latest trip (should be trip 2)
@@ -211,7 +211,7 @@ func TestCircuitBreakerClear(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2AUMInfo(baseCtx, aumInfo))
 	require.NoError(t, k.AddVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(2000*ONE_V2)))
 
-	_, err = k.RecalculateVaultsV2AUM(baseCtx, time.Now(), 1)
+	_, err = k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), 1)
 	require.Error(t, err)
 
 	active, err := k.IsCircuitBreakerActive(baseCtx)
@@ -256,7 +256,7 @@ func TestCircuitBreakerWithNegativeChange(t *testing.T) {
 
 	// Try to recalculate AUM with 25% decrease (should trigger circuit breaker)
 	positionID := uint64(1)
-	_, err = k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID)
+	_, err = k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), positionID)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "circuit breaker activated")
 
@@ -340,7 +340,7 @@ func TestCircuitBreakerWithRealOracleFlow(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2RemotePositionOracle(baseCtx, positionID, oracle))
 
 	// Initial AUM should be 1000 (200 local + 800 remote)
-	initialAUM, err := k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID)
+	initialAUM, err := k.RecalculateVaultsV2AUMFromOracle(baseCtx, time.Now(), positionID)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2), initialAUM)
 

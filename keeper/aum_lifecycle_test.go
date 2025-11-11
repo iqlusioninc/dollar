@@ -89,7 +89,7 @@ func TestAUMLifecycle(t *testing.T) {
 		// If we call recalculateVaultsV2AUM, it should match
 		t.Logf("checkAUM: Calling RecalculateVaultsV2AUM for %s", step)
 		timestamp := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
-		calculatedByFunc, err := k.RecalculateVaultsV2AUM(baseCtx, timestamp, 0)
+		calculatedByFunc, err := k.RecalculateVaultsV2AUM(baseCtx, timestamp)
 		require.NoError(t, err, "step: %s", step)
 		t.Logf("checkAUM: RecalculateVaultsV2AUM returned %s for %s", calculatedByFunc, step)
 		assert.Equal(t, calculatedAUM.String(), calculatedByFunc.String(),
@@ -393,7 +393,7 @@ func TestAUMCalculationWithOracleMessage(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2RemotePositionOracle(baseCtx, positionID, oracle))
 
 	// Initial AUM should be 1000 (200 pending + 800 remote)
-	initialAUM, err := k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID)
+	initialAUM, err := k.RecalculateVaultsV2AUM(baseCtx, time.Now())
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2).String(), initialAUM.String())
 

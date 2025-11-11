@@ -25,6 +25,7 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
+	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -1170,7 +1171,21 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 		}
 	}
 
-	// STEP 3: AUM increases to 1100 (100 yield), run accounting
+	// STEP 3: Create a remote position worth 100 to generate real yield
+	// This makes the actual AUM = LocalFunds (1000) + RemotePosition (100) = 1100
+	remotePosition := vaultsv2.RemotePosition{
+		VaultAddress: hyperlaneutil.CreateMockHexAddress("vault", 1),
+		SharePrice:   sdkmath.LegacyOneDec(),
+		SharesHeld:   sdkmath.NewInt(100 * ONE_V2),
+		Principal:    sdkmath.ZeroInt(), // Yield, not principal
+		TotalValue:   sdkmath.NewInt(100 * ONE_V2),
+		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
+		LastUpdate:   time.Now(),
+	}
+	require.NoError(t, k.SetVaultsV2RemotePosition(ctx, 1, remotePosition))
+
+	// Recalculate AUM to reflect the remote position
+	// AUM = 1000 (local) + 100 (remote) = 1100
 	aumInfo := vaultsv2.AUMInfo{
 		CurrentAum: sdkmath.NewInt(1100 * ONE_V2),
 		LastUpdate: time.Now().Add(time.Hour),
@@ -1208,7 +1223,8 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), undistributedYield, "100 yield should be undistributed")
 
 	// STEP 4: Alice deposits with ReceiveYield=true
-	// When Alice deposits 500, the underlying assets grow by 500, so AUM increases by 500
+	// When Alice deposits 500, both TotalDeposits and AUM increase by 500
+	// Undistributed yield remains at 100
 	require.NoError(t, k.Mint(ctx, alice.Bytes, sdkmath.NewInt(500*ONE_V2), nil))
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    alice.Address,
@@ -1218,8 +1234,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, err)
 
 	// STEP 5: Run accounting to sync VaultState with Alice's new deposit
-	// IMPORTANT: AUM stays at 1100 during this accounting run to avoid distributing
-	// Alice's deposit as yield. The 100 undistributed yield remains.
+	// The 100 undistributed yield remains (AUM and deposits both increased by 500)
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -1231,32 +1246,42 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 		}
 	}
 
-	// ASSERT: VaultState now reflects both deposits
-	// BUT accounting saw AUM=1100 and TotalDeposits will be 1500, creating temporary "negative yield"
+	// ASSERT: VaultState now reflects both deposits AND Alice got the 100 undistributed yield
+	// Since Alice has ReceiveYield=true, the accounting distributed the 100 yield to her
 	vaultState, err = k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "1000 Bob + 500 Alice")
-	assert.Equal(t, sdkmath.ZeroInt(), vaultState.TotalAccruedYield, "no yield distributed (negative yield scenario)")
+	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), vaultState.TotalAccruedYield, "100 yield distributed to Alice")
+
+	// Check Alice's position received the yield
+	alicePos, found, _ := k.GetVaultsV2UserPosition(ctx, alice.Bytes, 1)
+	require.True(t, found)
+	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), alicePos.AccruedYield, "Alice got 100 yield")
 
 	// Get AUM from AumInfo (TotalAum no longer in VaultState)
 	aumInfo, err = k.GetVaultsV2AUMInfo(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), aumInfo.CurrentAum, "AUM = 1100")
+	assert.Equal(t, sdkmath.NewInt(1600*ONE_V2), aumInfo.CurrentAum, "AUM = 1600 (1100 + 500 deposit)")
 
-	// Temporary negative undistributed yield = 1100 - 1500 - 0 = -400
-	// This happens because Alice deposited but AUM hasn't been updated yet
+	// No undistributed yield now = 1600 - 1500 - 100 = 0
 	undistributedYield = aumInfo.CurrentAum.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
-	assert.Equal(t, sdkmath.NewInt(-400*ONE_V2), undistributedYield, "Temporarily negative: deposits exceed AUM")
+	assert.True(t, undistributedYield.IsZero(), "All yield now distributed, got %s", undistributedYield)
 
-	// STEP 6: AUM increases to 1650 (external assets grew by 50)
-	// Total yield in system: 1650 - 1500 = 150 (100 old undistributed + 50 new)
+	// STEP 6: Remote position grows by 50 (yield on remote assets)
+	// AUM increases to 1650 = LocalFunds (1500) + RemotePosition (150)
+	// New yield = 50 (Alice already got 100)
+	remotePosition.TotalValue = sdkmath.NewInt(150 * ONE_V2)
+	remotePosition.SharesHeld = sdkmath.NewInt(150 * ONE_V2)
+	require.NoError(t, k.SetVaultsV2RemotePosition(ctx, 1, remotePosition))
+
+	// Recalculate AUM to reflect remote position growth
 	aumInfo = vaultsv2.AUMInfo{
 		CurrentAum: sdkmath.NewInt(1650 * ONE_V2),
 		LastUpdate: time.Now().Add(2 * time.Hour),
 	}
 	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
-	// STEP 7: Run accounting - Alice should get ALL 150 yield
+	// STEP 7: Run accounting - Alice should get the additional 50 yield (total 150)
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -1270,7 +1295,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 
 	// ASSERT: Alice gets ALL the yield (150 USDN) since Bob still has ReceiveYield=false
 	// This includes the 100 that was "undistributed" before + 50 new yield
-	alicePos, found, _ := k.GetVaultsV2UserPosition(ctx, alice.Bytes, 1)
+	alicePos, found, _ = k.GetVaultsV2UserPosition(ctx, alice.Bytes, 1)
 	require.True(t, found)
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), alicePos.AccruedYield,
 		"Alice should get ALL 150 yield (100 old undistributed + 50 new)")

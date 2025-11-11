@@ -95,7 +95,7 @@ func (k *Keeper) HandleHyperlaneAUMMessage(ctx context.Context, mailboxID hyperl
 		}
 	}
 
-	updatedAum, err := k.RecalculateVaultsV2AUM(ctx, payload.Timestamp, payload.PositionID)
+	updatedAum, err := k.RecalculateVaultsV2AUMFromOracle(ctx, payload.Timestamp, payload.PositionID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,15 +113,11 @@ func (k *Keeper) HandleHyperlaneAUMMessage(ctx context.Context, mailboxID hyperl
 
 // RecalculateVaultsV2AUM recalculates the vault AUM from all components:
 // local (pending deployment or withdrawal) funds, remote positions, and inflight funds.
-// This is called when oracle updates remote position values.
-func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time, triggeringPositionID uint64) (math.Int, error) {
-	// Check if accounting is currently in progress
+func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time) (math.Int, error) {
+	// TODO (Collin): This isn't stopping if accounting is in progress
 	k.checkAccountingNotInProgress(ctx)
-
-	// Calculate AUM according to spec: Local Assets + Remote Positions + Inflight Funds
 	total := math.ZeroInt()
 
-	// 1. Get local vault assets (liquidity available for deployment or withdrawals)
 	localFunds, err := k.GetVaultsV2LocalFunds(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to get local funds")
@@ -130,8 +126,6 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to add local funds to AUM")
 	}
-
-	// 2. Add remote position values
 	err = k.IterateVaultsV2RemotePositions(ctx, func(_ uint64, position vaultsv2.RemotePosition) (bool, error) {
 		var err error
 		total, err = total.SafeAdd(position.TotalValue)
@@ -145,7 +139,6 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 		return math.ZeroInt(), errors.Wrap(err, "unable to iterate remote position oracles")
 	}
 
-	// 3. Add inflight funds
 	err = k.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 		if fund.Status == vaultsv2.INFLIGHT_PENDING {
 			var err error
@@ -165,7 +158,6 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 		return math.ZeroInt(), errors.Wrap(err, "unable to fetch AUM info")
 	}
 
-	// Initialize AUM values if they are nil (first time setup)
 	if aumInfo.CurrentAum.IsNil() {
 		aumInfo.CurrentAum = math.ZeroInt()
 	}
@@ -175,7 +167,6 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 
 	previousAum := aumInfo.CurrentAum
 
-	// Calculate change basis points
 	changeBps := int32(0)
 	if previousAum.IsPositive() {
 		previousDec := previousAum.ToLegacyDec()
@@ -183,61 +174,6 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 			delta := total.ToLegacyDec().Sub(previousDec)
 			changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousAum)
 			changeBps = int32(changeDec.TruncateInt64())
-		}
-	}
-
-	// Circuit breaker: Check if AUM change exceeds maximum allowed threshold
-	// TODO: Revisit circuit breaker behavior for oracle updates
-	params, err := k.GetVaultsV2Params(ctx)
-	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault parameters")
-	}
-
-	if params.MaxAumChangeBps > 0 && previousAum.IsPositive() {
-		// Calculate absolute value of change
-		absChangeBps := changeBps
-		if absChangeBps < 0 {
-			absChangeBps = -absChangeBps
-		}
-
-		if absChangeBps > params.MaxAumChangeBps {
-			// Record the circuit breaker trip
-			trip := vaultsv2.CircuitBreakerTrip{
-				ChangeBps:        changeBps,
-				RemotePositionId: triggeringPositionID,
-				TriggeredAt:      timestamp,
-				PreviousAum:      previousAum,
-				AttemptedAum:     total,
-			}
-
-			// Get next trip ID
-			nextID, err := k.VaultsV2CircuitBreakerNextID.Get(ctx)
-			if err != nil {
-				if !stderrors.Is(err, collections.ErrNotFound) {
-					return math.ZeroInt(), errors.Wrap(err, "unable to get circuit breaker next ID")
-				}
-				// First trip, start at 0
-				nextID = 0
-			}
-
-			// Store the trip
-			if err := k.VaultsV2CircuitBreakerTrips.Set(ctx, nextID, trip); err != nil {
-				return math.ZeroInt(), errors.Wrap(err, "unable to record circuit breaker trip")
-			}
-
-			// Increment next ID
-			if err := k.VaultsV2CircuitBreakerNextID.Set(ctx, nextID+1); err != nil {
-				return math.ZeroInt(), errors.Wrap(err, "unable to update circuit breaker next ID")
-			}
-
-			// Activate circuit breaker
-			if err := k.VaultsV2CircuitBreakerActive.Set(ctx, true); err != nil {
-				return math.ZeroInt(), errors.Wrap(err, "unable to activate circuit breaker")
-			}
-
-			return math.ZeroInt(), errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
-				"AUM change of %d bps exceeds maximum allowed %d bps - circuit breaker activated",
-				absChangeBps, params.MaxAumChangeBps)
 		}
 	}
 
@@ -249,7 +185,11 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 		return math.ZeroInt(), errors.Wrap(err, "unable to persist AUM info")
 	}
 
-	// Record AUM snapshot for TWAP if conditions are met
+	params, err := k.GetVaultsV2Params(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault parameters")
+	}
+
 	shouldRecord, err := k.shouldRecordAUMSnapshot(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to check snapshot recording conditions")
@@ -266,22 +206,18 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 			return math.ZeroInt(), errors.Wrap(err, "unable to record AUM snapshot")
 		}
 
-		// Optionally prune old snapshots if max age is configured
 		if params.TwapConfig.MaxSnapshotAge > 0 {
-			// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
 			maxAgeInBlocks := params.TwapConfig.MaxSnapshotAge / 6
 			currentHeight := k.header.GetHeaderInfo(ctx).Height
 			_, _ = k.PruneOldVaultsV2AUMSnapshots(ctx, maxAgeInBlocks, currentHeight)
 		}
 	}
 
-	// Emit AUM updated event
 	state, err := k.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	// TODO: Add reason field for oracle updates (e.g., position ID)
 	if err := k.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventAUMUpdated{
 		PreviousAum:       previousAum,
 		NewAum:            total,
@@ -298,6 +234,86 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 	return total, nil
 }
 
+// RecalculateVaultsV2AUMFromOracle recalculates AUM after an oracle update and applies
+// circuit breaker logic to detect abnormal AUM changes that could indicate manipulation.
+func (k *Keeper) RecalculateVaultsV2AUMFromOracle(ctx context.Context, timestamp time.Time, triggeringPositionID uint64) (math.Int, error) {
+	aumInfo, err := k.GetVaultsV2AUMInfo(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch AUM info")
+	}
+
+	if aumInfo.CurrentAum.IsNil() {
+		aumInfo.CurrentAum = math.ZeroInt()
+	}
+	if aumInfo.PreviousAum.IsNil() {
+		aumInfo.PreviousAum = math.ZeroInt()
+	}
+
+	previousAum := aumInfo.CurrentAum
+
+	newAum, err := k.RecalculateVaultsV2AUM(ctx, timestamp)
+	if err != nil {
+		return math.ZeroInt(), err
+	}
+
+	params, err := k.GetVaultsV2Params(ctx)
+	if err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault parameters")
+	}
+
+	if params.MaxAumChangeBps > 0 && previousAum.IsPositive() {
+		changeBps := int32(0)
+		previousDec := previousAum.ToLegacyDec()
+		if !previousDec.IsZero() {
+			delta := newAum.ToLegacyDec().Sub(previousDec)
+			changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousAum)
+			changeBps = int32(changeDec.TruncateInt64())
+		}
+
+		absChangeBps := changeBps
+		if absChangeBps < 0 {
+			absChangeBps = -absChangeBps
+		}
+
+		if absChangeBps > params.MaxAumChangeBps {
+			// Record the circuit breaker trip
+			trip := vaultsv2.CircuitBreakerTrip{
+				ChangeBps:        changeBps,
+				RemotePositionId: triggeringPositionID,
+				TriggeredAt:      timestamp,
+				PreviousAum:      previousAum,
+				AttemptedAum:     newAum,
+			}
+
+			nextID, err := k.VaultsV2CircuitBreakerNextID.Get(ctx)
+			if err != nil {
+				if !stderrors.Is(err, collections.ErrNotFound) {
+					return math.ZeroInt(), errors.Wrap(err, "unable to get circuit breaker next ID")
+				}
+				nextID = 0
+			}
+
+			if err := k.VaultsV2CircuitBreakerTrips.Set(ctx, nextID, trip); err != nil {
+				return math.ZeroInt(), errors.Wrap(err, "unable to record circuit breaker trip")
+			}
+
+			if err := k.VaultsV2CircuitBreakerNextID.Set(ctx, nextID+1); err != nil {
+				return math.ZeroInt(), errors.Wrap(err, "unable to update circuit breaker next ID")
+			}
+
+			if err := k.VaultsV2CircuitBreakerActive.Set(ctx, true); err != nil {
+				return math.ZeroInt(), errors.Wrap(err, "unable to activate circuit breaker")
+			}
+
+			return math.ZeroInt(), errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
+				"AUM change of %d bps exceeds maximum allowed %d bps - circuit breaker activated",
+				absChangeBps, params.MaxAumChangeBps)
+		}
+	}
+
+	return newAum, nil
+}
+
 // shouldRecordAUMSnapshot determines if a new AUM snapshot should be recorded for TWAP calculations.
 func (k *Keeper) shouldRecordAUMSnapshot(ctx context.Context) (bool, error) {
 	params, err := k.GetVaultsV2Params(ctx)
@@ -305,17 +321,14 @@ func (k *Keeper) shouldRecordAUMSnapshot(ctx context.Context) (bool, error) {
 		return false, errors.Wrap(err, "unable to fetch params")
 	}
 
-	// If TWAP is disabled, don't record snapshots
 	if !params.TwapConfig.Enabled {
 		return false, nil
 	}
 
-	// Check minimum interval
 	if params.TwapConfig.MinSnapshotInterval <= 0 {
-		return true, nil // No minimum interval
+		return true, nil
 	}
 
-	// Get most recent snapshot
 	snapshots, err := k.GetRecentVaultsV2AUMSnapshots(ctx, 1)
 	if err != nil {
 		return false, errors.Wrap(err, "unable to fetch recent snapshots")
@@ -327,7 +340,6 @@ func (k *Keeper) shouldRecordAUMSnapshot(ctx context.Context) (bool, error) {
 
 	currentHeight := k.header.GetHeaderInfo(ctx).Height
 	blocksSinceLastSnapshot := currentHeight - snapshots[0].BlockHeight
-	// Convert MinSnapshotInterval from seconds to blocks (assume ~6 seconds per block)
 	minIntervalInBlocks := params.TwapConfig.MinSnapshotInterval / 6
 
 	return blocksSinceLastSnapshot >= minIntervalInBlocks, nil

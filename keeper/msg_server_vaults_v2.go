@@ -412,9 +412,12 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
 	}
 
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
 	// TODO(Collin): We don't need this line setting DepositsEnabled
 	state.DepositsEnabled = config.Enabled
-	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -1049,13 +1052,8 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to update local funds")
 	}
 
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.LastAumUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
 	}
 
 	return &vaultsv2.MsgCreateRemotePositionResponse{
@@ -1136,13 +1134,8 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal distribution")
 	}
 
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.LastAumUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
 	}
 
 	return &vaultsv2.MsgCloseRemotePositionResponse{
@@ -1527,6 +1520,10 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund update")
 	}
 
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
 	// Emit status change event
 	if previousStatus != msg.ResultStatus {
 		_ = m.EmitInflightStatusChangeEvent(
@@ -1857,7 +1854,10 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal")
 	}
 
-	state.LastAumUpdate = headerInfo.Time
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
