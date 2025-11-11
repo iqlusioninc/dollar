@@ -604,7 +604,6 @@ func (m *NobleEndpoint) GetOperationType() OperationType {
 // ProviderTrackingInfo contains provider-specific tracking data
 type ProviderTrackingInfo struct {
 	// Types that are valid to be assigned to TrackingInfo:
-	//
 	//	*ProviderTrackingInfo_HyperlaneTracking
 	TrackingInfo isProviderTrackingInfo_TrackingInfo `protobuf_oneof:"tracking_info"`
 }

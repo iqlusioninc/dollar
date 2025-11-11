@@ -23,8 +23,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_AUMBand = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("AUMBand")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_AUMBand = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("AUMBand")
 	fd_AUMBand_lower_bound = md_AUMBand.Fields().ByName("lower_bound")
 	fd_AUMBand_upper_bound = md_AUMBand.Fields().ByName("upper_bound")
 }
@@ -38,7 +38,7 @@ func (x *AUMBand) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AUMBand) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[0]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -580,8 +580,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_AUMConfig = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("AUMConfig")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_AUMConfig = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("AUMConfig")
 	fd_AUMConfig_deposit_bands = md_AUMConfig.Fields().ByName("deposit_bands")
 	fd_AUMConfig_withdrawal_bands = md_AUMConfig.Fields().ByName("withdrawal_bands")
 	fd_AUMConfig_min_aum_update_interval = md_AUMConfig.Fields().ByName("min_aum_update_interval")
@@ -598,7 +598,7 @@ func (x *AUMConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AUMConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[1]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1252,8 +1252,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_AUMInfo = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("AUMInfo")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_AUMInfo = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("AUMInfo")
 	fd_AUMInfo_current_aum = md_AUMInfo.Fields().ByName("current_aum")
 	fd_AUMInfo_previous_aum = md_AUMInfo.Fields().ByName("previous_aum")
 	fd_AUMInfo_last_update = md_AUMInfo.Fields().ByName("last_update")
@@ -1268,7 +1268,7 @@ func (x *AUMInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AUMInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[2]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1817,8 +1817,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_CircuitBreakerTrip = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("CircuitBreakerTrip")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_CircuitBreakerTrip = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("CircuitBreakerTrip")
 	fd_CircuitBreakerTrip_change_bps = md_CircuitBreakerTrip.Fields().ByName("change_bps")
 	fd_CircuitBreakerTrip_remote_position_id = md_CircuitBreakerTrip.Fields().ByName("remote_position_id")
 	fd_CircuitBreakerTrip_triggered_at = md_CircuitBreakerTrip.Fields().ByName("triggered_at")
@@ -1835,7 +1835,7 @@ func (x *CircuitBreakerTrip) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CircuitBreakerTrip) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[3]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2474,8 +2474,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_AUMUpdate = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("AUMUpdate")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_AUMUpdate = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("AUMUpdate")
 	fd_AUMUpdate_new_aum = md_AUMUpdate.Fields().ByName("new_aum")
 	fd_AUMUpdate_timestamp = md_AUMUpdate.Fields().ByName("timestamp")
 	fd_AUMUpdate_block_height = md_AUMUpdate.Fields().ByName("block_height")
@@ -2490,7 +2490,7 @@ func (x *AUMUpdate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AUMUpdate) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[4]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3021,8 +3021,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_PricingInfo = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("PricingInfo")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_PricingInfo = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("PricingInfo")
 	fd_PricingInfo_yield_rate = md_PricingInfo.Fields().ByName("yield_rate")
 	fd_PricingInfo_applied_band = md_PricingInfo.Fields().ByName("applied_band")
 	fd_PricingInfo_effective_fee_rate = md_PricingInfo.Fields().ByName("effective_fee_rate")
@@ -3037,7 +3037,7 @@ func (x *PricingInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *PricingInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[5]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3569,8 +3569,8 @@ var (
 )
 
 func init() {
-	file_noble_dollar_vaults_v2_nav_proto_init()
-	md_LossEvent = File_noble_dollar_vaults_v2_nav_proto.Messages().ByName("LossEvent")
+	file_noble_dollar_vaults_v2_aum_proto_init()
+	md_LossEvent = File_noble_dollar_vaults_v2_aum_proto.Messages().ByName("LossEvent")
 	fd_LossEvent_loss_amount = md_LossEvent.Fields().ByName("loss_amount")
 	fd_LossEvent_previous_aum = md_LossEvent.Fields().ByName("previous_aum")
 	fd_LossEvent_new_aum = md_LossEvent.Fields().ByName("new_aum")
@@ -3586,7 +3586,7 @@ func (x *LossEvent) ProtoReflect() protoreflect.Message {
 }
 
 func (x *LossEvent) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[6]
+	mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4191,7 +4191,7 @@ func (x *fastReflection_LossEvent) ProtoMethods() *protoiface.Methods {
 // versions:
 // 	protoc-gen-go v1.27.0
 // 	protoc        (unknown)
-// source: noble/dollar/vaults/v2/nav.proto
+// source: noble/dollar/vaults/v2/aum.proto
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
@@ -4215,7 +4215,7 @@ type AUMBand struct {
 func (x *AUMBand) Reset() {
 	*x = AUMBand{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[0]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4229,7 +4229,7 @@ func (*AUMBand) ProtoMessage() {}
 
 // Deprecated: Use AUMBand.ProtoReflect.Descriptor instead.
 func (*AUMBand) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{0}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *AUMBand) GetLowerBound() int32 {
@@ -4267,7 +4267,7 @@ type AUMConfig struct {
 func (x *AUMConfig) Reset() {
 	*x = AUMConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[1]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4281,7 +4281,7 @@ func (*AUMConfig) ProtoMessage() {}
 
 // Deprecated: Use AUMConfig.ProtoReflect.Descriptor instead.
 func (*AUMConfig) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{1}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AUMConfig) GetDepositBands() []*AUMBand {
@@ -4336,7 +4336,7 @@ type AUMInfo struct {
 func (x *AUMInfo) Reset() {
 	*x = AUMInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[2]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4350,7 +4350,7 @@ func (*AUMInfo) ProtoMessage() {}
 
 // Deprecated: Use AUMInfo.ProtoReflect.Descriptor instead.
 func (*AUMInfo) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{2}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AUMInfo) GetCurrentAum() string {
@@ -4395,7 +4395,7 @@ type CircuitBreakerTrip struct {
 func (x *CircuitBreakerTrip) Reset() {
 	*x = CircuitBreakerTrip{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[3]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4409,7 +4409,7 @@ func (*CircuitBreakerTrip) ProtoMessage() {}
 
 // Deprecated: Use CircuitBreakerTrip.ProtoReflect.Descriptor instead.
 func (*CircuitBreakerTrip) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{3}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CircuitBreakerTrip) GetChangeBps() int32 {
@@ -4464,7 +4464,7 @@ type AUMUpdate struct {
 func (x *AUMUpdate) Reset() {
 	*x = AUMUpdate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[4]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4478,7 +4478,7 @@ func (*AUMUpdate) ProtoMessage() {}
 
 // Deprecated: Use AUMUpdate.ProtoReflect.Descriptor instead.
 func (*AUMUpdate) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{4}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AUMUpdate) GetNewAum() string {
@@ -4519,7 +4519,7 @@ type PricingInfo struct {
 func (x *PricingInfo) Reset() {
 	*x = PricingInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[5]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4533,7 +4533,7 @@ func (*PricingInfo) ProtoMessage() {}
 
 // Deprecated: Use PricingInfo.ProtoReflect.Descriptor instead.
 func (*PricingInfo) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{5}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *PricingInfo) GetYieldRate() string {
@@ -4576,7 +4576,7 @@ type LossEvent struct {
 func (x *LossEvent) Reset() {
 	*x = LossEvent{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_nav_proto_msgTypes[6]
+		mi := &file_noble_dollar_vaults_v2_aum_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4590,7 +4590,7 @@ func (*LossEvent) ProtoMessage() {}
 
 // Deprecated: Use LossEvent.ProtoReflect.Descriptor instead.
 func (*LossEvent) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP(), []int{6}
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *LossEvent) GetLossAmount() string {
@@ -4621,11 +4621,11 @@ func (x *LossEvent) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-var File_noble_dollar_vaults_v2_nav_proto protoreflect.FileDescriptor
+var File_noble_dollar_vaults_v2_aum_proto protoreflect.FileDescriptor
 
-var file_noble_dollar_vaults_v2_nav_proto_rawDesc = []byte{
+var file_noble_dollar_vaults_v2_aum_proto_rawDesc = []byte{
 	0x0a, 0x20, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x6e, 0x61, 0x76, 0x2e, 0x70, 0x72, 0x6f,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x61, 0x75, 0x6d, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x12, 0x16, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
 	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e,
 	0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63,
@@ -4743,8 +4743,8 @@ var file_noble_dollar_vaults_v2_nav_proto_rawDesc = []byte{
 	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf,
 	0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0xda, 0x01,
 	0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c,
-	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x08, 0x4e, 0x61,
-	0x76, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
+	0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x08, 0x41, 0x75,
+	0x6d, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
 	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76,
 	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76,
@@ -4760,19 +4760,19 @@ var file_noble_dollar_vaults_v2_nav_proto_rawDesc = []byte{
 }
 
 var (
-	file_noble_dollar_vaults_v2_nav_proto_rawDescOnce sync.Once
-	file_noble_dollar_vaults_v2_nav_proto_rawDescData = file_noble_dollar_vaults_v2_nav_proto_rawDesc
+	file_noble_dollar_vaults_v2_aum_proto_rawDescOnce sync.Once
+	file_noble_dollar_vaults_v2_aum_proto_rawDescData = file_noble_dollar_vaults_v2_aum_proto_rawDesc
 )
 
-func file_noble_dollar_vaults_v2_nav_proto_rawDescGZIP() []byte {
-	file_noble_dollar_vaults_v2_nav_proto_rawDescOnce.Do(func() {
-		file_noble_dollar_vaults_v2_nav_proto_rawDescData = protoimpl.X.CompressGZIP(file_noble_dollar_vaults_v2_nav_proto_rawDescData)
+func file_noble_dollar_vaults_v2_aum_proto_rawDescGZIP() []byte {
+	file_noble_dollar_vaults_v2_aum_proto_rawDescOnce.Do(func() {
+		file_noble_dollar_vaults_v2_aum_proto_rawDescData = protoimpl.X.CompressGZIP(file_noble_dollar_vaults_v2_aum_proto_rawDescData)
 	})
-	return file_noble_dollar_vaults_v2_nav_proto_rawDescData
+	return file_noble_dollar_vaults_v2_aum_proto_rawDescData
 }
 
-var file_noble_dollar_vaults_v2_nav_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_noble_dollar_vaults_v2_nav_proto_goTypes = []interface{}{
+var file_noble_dollar_vaults_v2_aum_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_noble_dollar_vaults_v2_aum_proto_goTypes = []interface{}{
 	(*AUMBand)(nil),               // 0: noble.dollar.vaults.v2.AUMBand
 	(*AUMConfig)(nil),             // 1: noble.dollar.vaults.v2.AUMConfig
 	(*AUMInfo)(nil),               // 2: noble.dollar.vaults.v2.AUMInfo
@@ -4782,7 +4782,7 @@ var file_noble_dollar_vaults_v2_nav_proto_goTypes = []interface{}{
 	(*LossEvent)(nil),             // 6: noble.dollar.vaults.v2.LossEvent
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
-var file_noble_dollar_vaults_v2_nav_proto_depIdxs = []int32{
+var file_noble_dollar_vaults_v2_aum_proto_depIdxs = []int32{
 	0, // 0: noble.dollar.vaults.v2.AUMConfig.deposit_bands:type_name -> noble.dollar.vaults.v2.AUMBand
 	0, // 1: noble.dollar.vaults.v2.AUMConfig.withdrawal_bands:type_name -> noble.dollar.vaults.v2.AUMBand
 	7, // 2: noble.dollar.vaults.v2.AUMInfo.last_update:type_name -> google.protobuf.Timestamp
@@ -4797,13 +4797,13 @@ var file_noble_dollar_vaults_v2_nav_proto_depIdxs = []int32{
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_noble_dollar_vaults_v2_nav_proto_init() }
-func file_noble_dollar_vaults_v2_nav_proto_init() {
-	if File_noble_dollar_vaults_v2_nav_proto != nil {
+func init() { file_noble_dollar_vaults_v2_aum_proto_init() }
+func file_noble_dollar_vaults_v2_aum_proto_init() {
+	if File_noble_dollar_vaults_v2_aum_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AUMBand); i {
 			case 0:
 				return &v.state
@@ -4815,7 +4815,7 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AUMConfig); i {
 			case 0:
 				return &v.state
@@ -4827,7 +4827,7 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AUMInfo); i {
 			case 0:
 				return &v.state
@@ -4839,7 +4839,7 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CircuitBreakerTrip); i {
 			case 0:
 				return &v.state
@@ -4851,7 +4851,7 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AUMUpdate); i {
 			case 0:
 				return &v.state
@@ -4863,7 +4863,7 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PricingInfo); i {
 			case 0:
 				return &v.state
@@ -4875,7 +4875,7 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_nav_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_aum_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LossEvent); i {
 			case 0:
 				return &v.state
@@ -4892,18 +4892,18 @@ func file_noble_dollar_vaults_v2_nav_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_noble_dollar_vaults_v2_nav_proto_rawDesc,
+			RawDescriptor: file_noble_dollar_vaults_v2_aum_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_noble_dollar_vaults_v2_nav_proto_goTypes,
-		DependencyIndexes: file_noble_dollar_vaults_v2_nav_proto_depIdxs,
-		MessageInfos:      file_noble_dollar_vaults_v2_nav_proto_msgTypes,
+		GoTypes:           file_noble_dollar_vaults_v2_aum_proto_goTypes,
+		DependencyIndexes: file_noble_dollar_vaults_v2_aum_proto_depIdxs,
+		MessageInfos:      file_noble_dollar_vaults_v2_aum_proto_msgTypes,
 	}.Build()
-	File_noble_dollar_vaults_v2_nav_proto = out.File
-	file_noble_dollar_vaults_v2_nav_proto_rawDesc = nil
-	file_noble_dollar_vaults_v2_nav_proto_goTypes = nil
-	file_noble_dollar_vaults_v2_nav_proto_depIdxs = nil
+	File_noble_dollar_vaults_v2_aum_proto = out.File
+	file_noble_dollar_vaults_v2_aum_proto_rawDesc = nil
+	file_noble_dollar_vaults_v2_aum_proto_goTypes = nil
+	file_noble_dollar_vaults_v2_aum_proto_depIdxs = nil
 }
