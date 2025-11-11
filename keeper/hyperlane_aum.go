@@ -218,6 +218,11 @@ func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time
 		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault state")
 	}
 
+	state.LastAumUpdate = timestamp
+	if err := k.SetVaultsV2VaultState(ctx, state); err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to persist vault state")
+	}
+
 	if err := k.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventAUMUpdated{
 		PreviousAum:       previousAum,
 		NewAum:            total,

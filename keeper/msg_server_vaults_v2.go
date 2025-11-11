@@ -531,7 +531,6 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(principalAmount)
 	}
 
-	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -1379,13 +1378,8 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 	}
 
 	headerInfo = m.header.GetHeaderInfo(ctx)
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.LastAumUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
 	}
 
 	summary := fmt.Sprintf("rebalanced %d positions; pending deployment %s", operations, available.String())
@@ -2048,7 +2042,6 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(principalAmount)
 	}
 
-	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
