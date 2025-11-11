@@ -379,7 +379,7 @@ var (
 	fd_QueryVaultInfoResponse_config              protoreflect.FieldDescriptor
 	fd_QueryVaultInfoResponse_total_deposits      protoreflect.FieldDescriptor
 	fd_QueryVaultInfoResponse_total_accrued_yield protoreflect.FieldDescriptor
-	fd_QueryVaultInfoResponse_total_nav           protoreflect.FieldDescriptor
+	fd_QueryVaultInfoResponse_total_aum           protoreflect.FieldDescriptor
 	fd_QueryVaultInfoResponse_total_depositors    protoreflect.FieldDescriptor
 )
 
@@ -389,7 +389,7 @@ func init() {
 	fd_QueryVaultInfoResponse_config = md_QueryVaultInfoResponse.Fields().ByName("config")
 	fd_QueryVaultInfoResponse_total_deposits = md_QueryVaultInfoResponse.Fields().ByName("total_deposits")
 	fd_QueryVaultInfoResponse_total_accrued_yield = md_QueryVaultInfoResponse.Fields().ByName("total_accrued_yield")
-	fd_QueryVaultInfoResponse_total_nav = md_QueryVaultInfoResponse.Fields().ByName("total_nav")
+	fd_QueryVaultInfoResponse_total_aum = md_QueryVaultInfoResponse.Fields().ByName("total_aum")
 	fd_QueryVaultInfoResponse_total_depositors = md_QueryVaultInfoResponse.Fields().ByName("total_depositors")
 }
 
@@ -476,9 +476,9 @@ func (x *fastReflection_QueryVaultInfoResponse) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
-	if x.TotalNav != "" {
-		value := protoreflect.ValueOfString(x.TotalNav)
-		if !f(fd_QueryVaultInfoResponse_total_nav, value) {
+	if x.TotalAum != "" {
+		value := protoreflect.ValueOfString(x.TotalAum)
+		if !f(fd_QueryVaultInfoResponse_total_aum, value) {
 			return
 		}
 	}
@@ -509,8 +509,8 @@ func (x *fastReflection_QueryVaultInfoResponse) Has(fd protoreflect.FieldDescrip
 		return x.TotalDeposits != ""
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_accrued_yield":
 		return x.TotalAccruedYield != ""
-	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_nav":
-		return x.TotalNav != ""
+	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_aum":
+		return x.TotalAum != ""
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_depositors":
 		return x.TotalDepositors != uint64(0)
 	default:
@@ -535,8 +535,8 @@ func (x *fastReflection_QueryVaultInfoResponse) Clear(fd protoreflect.FieldDescr
 		x.TotalDeposits = ""
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_accrued_yield":
 		x.TotalAccruedYield = ""
-	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_nav":
-		x.TotalNav = ""
+	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_aum":
+		x.TotalAum = ""
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_depositors":
 		x.TotalDepositors = uint64(0)
 	default:
@@ -564,8 +564,8 @@ func (x *fastReflection_QueryVaultInfoResponse) Get(descriptor protoreflect.Fiel
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_accrued_yield":
 		value := x.TotalAccruedYield
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_nav":
-		value := x.TotalNav
+	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_aum":
+		value := x.TotalAum
 		return protoreflect.ValueOfString(value)
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_depositors":
 		value := x.TotalDepositors
@@ -596,8 +596,8 @@ func (x *fastReflection_QueryVaultInfoResponse) Set(fd protoreflect.FieldDescrip
 		x.TotalDeposits = value.Interface().(string)
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_accrued_yield":
 		x.TotalAccruedYield = value.Interface().(string)
-	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_nav":
-		x.TotalNav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_aum":
+		x.TotalAum = value.Interface().(string)
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_depositors":
 		x.TotalDepositors = value.Uint()
 	default:
@@ -629,8 +629,8 @@ func (x *fastReflection_QueryVaultInfoResponse) Mutable(fd protoreflect.FieldDes
 		panic(fmt.Errorf("field total_deposits of message noble.dollar.vaults.v2.QueryVaultInfoResponse is not mutable"))
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_accrued_yield":
 		panic(fmt.Errorf("field total_accrued_yield of message noble.dollar.vaults.v2.QueryVaultInfoResponse is not mutable"))
-	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_nav":
-		panic(fmt.Errorf("field total_nav of message noble.dollar.vaults.v2.QueryVaultInfoResponse is not mutable"))
+	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_aum":
+		panic(fmt.Errorf("field total_aum of message noble.dollar.vaults.v2.QueryVaultInfoResponse is not mutable"))
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_depositors":
 		panic(fmt.Errorf("field total_depositors of message noble.dollar.vaults.v2.QueryVaultInfoResponse is not mutable"))
 	default:
@@ -653,7 +653,7 @@ func (x *fastReflection_QueryVaultInfoResponse) NewField(fd protoreflect.FieldDe
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_accrued_yield":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_nav":
+	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_aum":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.QueryVaultInfoResponse.total_depositors":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -738,7 +738,7 @@ func (x *fastReflection_QueryVaultInfoResponse) ProtoMethods() *protoiface.Metho
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.TotalNav)
+		l = len(x.TotalAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -779,10 +779,10 @@ func (x *fastReflection_QueryVaultInfoResponse) ProtoMethods() *protoiface.Metho
 			i--
 			dAtA[i] = 0x28
 		}
-		if len(x.TotalNav) > 0 {
-			i -= len(x.TotalNav)
-			copy(dAtA[i:], x.TotalNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TotalNav)))
+		if len(x.TotalAum) > 0 {
+			i -= len(x.TotalAum)
+			copy(dAtA[i:], x.TotalAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TotalAum)))
 			i--
 			dAtA[i] = 0x22
 		}
@@ -965,7 +965,7 @@ func (x *fastReflection_QueryVaultInfoResponse) ProtoMethods() *protoiface.Metho
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -993,7 +993,7 @@ func (x *fastReflection_QueryVaultInfoResponse) ProtoMethods() *protoiface.Metho
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.TotalNav = string(dAtA[iNdEx:postIndex])
+				x.TotalAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 5:
 				if wireType != 0 {
@@ -34741,7 +34741,7 @@ type QueryVaultInfoResponse struct {
 	Config            *VaultConfig `protobuf:"bytes,1,opt,name=config,proto3" json:"config,omitempty"`
 	TotalDeposits     string       `protobuf:"bytes,2,opt,name=total_deposits,json=totalDeposits,proto3" json:"total_deposits,omitempty"`
 	TotalAccruedYield string       `protobuf:"bytes,3,opt,name=total_accrued_yield,json=totalAccruedYield,proto3" json:"total_accrued_yield,omitempty"`
-	TotalNav          string       `protobuf:"bytes,4,opt,name=total_nav,json=totalNav,proto3" json:"total_nav,omitempty"`
+	TotalAum          string       `protobuf:"bytes,4,opt,name=total_aum,json=totalAum,proto3" json:"total_aum,omitempty"`
 	TotalDepositors   uint64       `protobuf:"varint,5,opt,name=total_depositors,json=totalDepositors,proto3" json:"total_depositors,omitempty"`
 }
 
@@ -34786,9 +34786,9 @@ func (x *QueryVaultInfoResponse) GetTotalAccruedYield() string {
 	return ""
 }
 
-func (x *QueryVaultInfoResponse) GetTotalNav() string {
+func (x *QueryVaultInfoResponse) GetTotalAum() string {
 	if x != nil {
-		return x.TotalNav
+		return x.TotalAum
 	}
 	return ""
 }
@@ -37827,8 +37827,8 @@ var file_noble_dollar_vaults_v2_query_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x61, 0x63, 0x63, 0x72, 0x75, 0x65, 0x64, 0x5f, 0x79, 0x69, 0x65,
 	0x6c, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x41,
 	0x63, 0x63, 0x72, 0x75, 0x65, 0x64, 0x59, 0x69, 0x65, 0x6c, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x74,
-	0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x6e, 0x61, 0x76, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x74, 0x6f, 0x74, 0x61, 0x6c, 0x4e, 0x61, 0x76, 0x12, 0x29, 0x0a, 0x10, 0x74, 0x6f, 0x74, 0x61,
+	0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x61, 0x75, 0x6d, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x74, 0x6f, 0x74, 0x61, 0x6c, 0x41, 0x75, 0x6d, 0x12, 0x29, 0x0a, 0x10, 0x74, 0x6f, 0x74, 0x61,
 	0x6c, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x05, 0x20, 0x01,
 	0x28, 0x04, 0x52, 0x0f, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74,
 	0x6f, 0x72, 0x73, 0x22, 0x5f, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x56,

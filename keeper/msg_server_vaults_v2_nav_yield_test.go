@@ -33,8 +33,8 @@ import (
 	"dollar.noble.xyz/v3/utils/mocks"
 )
 
-// TestNAVUpdateYieldTracking_Basic tests basic NAV update and yield accrual
-func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
+// TestAUMUpdateYieldTracking_Basic tests basic AUM update and yield accrual
+func TestAUMUpdateYieldTracking_Basic(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
 	// ARRANGE: Get params (accounting is always enabled in v2)
@@ -61,11 +61,11 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	assert.Equal(t, sdkmath.ZeroInt(), position.AccruedYield)
 
 	// ACT: Initialize vault state by running accounting at deposit level (no yield yet)
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: depositAmount,
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: depositAmount,
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 
 	// Run accounting to initialize VaultState.TotalDeposits
 	for {
@@ -79,13 +79,13 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 		}
 	}
 
-	// ACT: Update NAV with 10% increase (1100 total)
-	newNAV := sdkmath.NewInt(1100 * ONE_V2)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: newNAV,
+	// ACT: Update AUM with 10% increase (1100 total)
+	newAUM := sdkmath.NewInt(1100 * ONE_V2)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: newAUM,
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// ACT: Run accounting to distribute yield
 	for {
@@ -113,8 +113,8 @@ func TestNAVUpdateYieldTracking_Basic(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), vaultState.TotalAccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_MultipleUsers tests yield distribution among multiple users
-func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
+// TestAUMUpdateYieldTracking_MultipleUsers tests yield distribution among multiple users
+func TestAUMUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 	alice := utils.TestAccount()
 
@@ -145,11 +145,11 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	// Total deposits: 1000 USDN
 
 	// ACT: Initialize vault state by running accounting at deposit level (no yield yet)
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1000 * ONE_V2),
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1000 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 
 	// Run accounting to initialize VaultState.TotalDeposits
 	for {
@@ -163,12 +163,12 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 		}
 	}
 
-	// ACT: NAV increases by 20% (1000 → 1200)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1200 * ONE_V2),
+	// ACT: AUM increases by 20% (1000 → 1200)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1200 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// ACT: Run accounting
 	for {
@@ -202,8 +202,8 @@ func TestNAVUpdateYieldTracking_MultipleUsers(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), vaultState.TotalAccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_NoYieldPreference tests users who opt out of yield
-func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
+// TestAUMUpdateYieldTracking_NoYieldPreference tests users who opt out of yield
+func TestAUMUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 	alice := utils.TestAccount()
 
@@ -234,11 +234,11 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	// Total deposits: 1000 USDN
 
 	// ACT: Initialize vault state by running accounting at current deposit level
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1000 * ONE_V2),
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1000 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 
 	// Run accounting until complete
 	for {
@@ -252,12 +252,12 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 		}
 	}
 
-	// ACT: NAV increases by 10% (1000 → 1100)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1100 * ONE_V2),
+	// ACT: AUM increases by 10% (1000 → 1100)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1100 * ONE_V2),
 		LastUpdate: time.Now().Add(time.Hour),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// ACT: Run accounting to distribute yield
 	for {
@@ -284,8 +284,8 @@ func TestNAVUpdateYieldTracking_NoYieldPreference(t *testing.T) {
 	assert.Equal(t, sdkmath.ZeroInt(), alicePosition.AccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_MultipleNAVUpdates tests cumulative yield across multiple NAV updates
-func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
+// TestAUMUpdateYieldTracking_MultipleAUMUpdates tests cumulative yield across multiple AUM updates
+func TestAUMUpdateYieldTracking_MultipleAUMUpdates(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
 	// ARRANGE: Get params (accounting is always enabled in v2)
@@ -305,11 +305,11 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	require.NoError(t, err)
 
 	// ACT: Initialize vault state
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: depositAmount,
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: depositAmount,
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -321,12 +321,12 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 		}
 	}
 
-	// ACT: First NAV update: 1000 → 1050 (5% increase)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1050 * ONE_V2),
+	// ACT: First AUM update: 1000 → 1050 (5% increase)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1050 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Use the message server to run accounting
 	for {
@@ -346,12 +346,12 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, sdkmath.NewInt(50*ONE_V2), position.AccruedYield)
 
-	// ACT: Second NAV update: 1050 → 1150 (another ~9.5% increase)
-	navInfo = vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1150 * ONE_V2),
+	// ACT: Second AUM update: 1050 → 1150 (another ~9.5% increase)
+	aumInfo = vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1150 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting again
 	for {
@@ -377,8 +377,8 @@ func TestNAVUpdateYieldTracking_MultipleNAVUpdates(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_WithWithdrawals tests yield tracking with withdrawals
-func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
+// TestAUMUpdateYieldTracking_WithWithdrawals tests yield tracking with withdrawals
+func TestAUMUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
 	// ARRANGE: Get params (accounting is always enabled in v2)
@@ -398,11 +398,11 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	require.NoError(t, err)
 
 	// ACT: Initialize vault state
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: depositAmount,
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: depositAmount,
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -414,12 +414,12 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 		}
 	}
 
-	// ACT: NAV increases to 1100 (10% yield)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1100 * ONE_V2),
+	// ACT: AUM increases to 1100 (10% yield)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1100 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Use the message server to run accounting
 	for {
@@ -447,12 +447,12 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// ACT: NAV increases to 1150 (additional yield on remaining positions)
-	navInfo = vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1150 * ONE_V2),
+	// ACT: AUM increases to 1150 (additional yield on remaining positions)
+	aumInfo = vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1150 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting again
 	for {
@@ -474,8 +474,8 @@ func TestNAVUpdateYieldTracking_WithWithdrawals(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), position.AccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_NAVDecrease tests handling of NAV decreases (no negative yield)
-func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
+// TestAUMUpdateYieldTracking_AUMDecrease tests handling of AUM decreases (no negative yield)
+func TestAUMUpdateYieldTracking_AUMDecrease(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
 	// ARRANGE: Get params (accounting is always enabled in v2)
@@ -493,12 +493,12 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// ACT: First increase NAV to 1100
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1100 * ONE_V2),
+	// ACT: First increase AUM to 1100
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1100 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Use the message server to run accounting
 	for {
@@ -518,12 +518,12 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), position.AccruedYield)
 
-	// ACT: NAV decreases to 1050 (loss, but still above deposits)
-	navInfo = vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1050 * ONE_V2),
+	// ACT: AUM decreases to 1050 (loss, but still above deposits)
+	aumInfo = vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1050 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting again
 	for {
@@ -546,8 +546,8 @@ func TestNAVUpdateYieldTracking_NAVDecrease(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), position.AccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_CursorPagination tests cursor-based accounting with many users
-func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
+// TestAUMUpdateYieldTracking_CursorPagination tests cursor-based accounting with many users
+func TestAUMUpdateYieldTracking_CursorPagination(t *testing.T) {
 	k, vaultsV2Server, _, ctx, _ := setupV2Test(t)
 
 	// ARRANGE: Get params (accounting is always enabled in v2)
@@ -573,13 +573,13 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	}
 	// Total deposits: 100+200+300+...+1000 = 5500 USDN
 
-	// ACT: NAV increases by 10%
-	newNav := totalDeposits.MulRaw(11).QuoRaw(10) // 110% of deposits
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: newNav,
+	// ACT: AUM increases by 10%
+	newAum := totalDeposits.MulRaw(11).QuoRaw(10) // 110% of deposits
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: newAum,
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// ACT: Run accounting with small batch size to test pagination
 	batchSize := uint32(3) // Process 3 positions per call
@@ -609,14 +609,14 @@ func TestNAVUpdateYieldTracking_CursorPagination(t *testing.T) {
 	assert.Equal(t, uint64(10), positionsProcessed, "should process all 10 positions")
 
 	// ASSERT: Total yield distributed matches expected (10% of deposits)
-	expectedYield := newNav.Sub(totalDeposits)
+	expectedYield := newAum.Sub(totalDeposits)
 	vaultState, err := k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, expectedYield, vaultState.TotalAccruedYield)
 }
 
-// TestNAVUpdateYieldTracking_ResidualHandling tests fair distribution with rounding
-func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
+// TestAUMUpdateYieldTracking_ResidualHandling tests fair distribution with rounding
+func TestAUMUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 	alice := utils.TestAccount()
 	charlie := utils.TestAccount()
@@ -655,11 +655,11 @@ func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	// Total: 1,000,000,000 units (1000 USDN)
 
 	// ACT: Initialize vault state
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1_000_000_000),
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1_000_000_000),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -672,11 +672,11 @@ func TestNAVUpdateYieldTracking_ResidualHandling(t *testing.T) {
 	}
 
 	// ACT: Add yield that doesn't divide evenly (100 units total)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1_000_000_100), // 100 units of yield
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1_000_000_100), // 100 units of yield
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Use the message server to run accounting
 	for {
@@ -734,8 +734,8 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 		position.DepositAmount.Int64(), position.AccruedYield.Int64(), position.TotalPendingWithdrawal.Int64())
 
 	// Initialize accounting
-	navInfo := vaultsv2.NAVInfo{CurrentNav: sdkmath.NewInt(1000 * ONE_V2), LastUpdate: time.Now()}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	aumInfo := vaultsv2.AUMInfo{CurrentAum: sdkmath.NewInt(1000 * ONE_V2), LastUpdate: time.Now()}
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 	for {
 		resp, _ := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager: mocks.Authority, MaxPositions: 100,
@@ -749,10 +749,10 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d",
 		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64())
 
-	// === STEP 2: NAV increases to 1100, run accounting ===
-	t.Log("\n=== STEP 2: NAV increases to 1100, run accounting ===")
-	navInfo = vaultsv2.NAVInfo{CurrentNav: sdkmath.NewInt(1100 * ONE_V2), LastUpdate: time.Now()}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	// === STEP 2: AUM increases to 1100, run accounting ===
+	t.Log("\n=== STEP 2: AUM increases to 1100, run accounting ===")
+	aumInfo = vaultsv2.AUMInfo{CurrentAum: sdkmath.NewInt(1100 * ONE_V2), LastUpdate: time.Now()}
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	for {
 		resp, _ := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
@@ -786,16 +786,16 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 	t.Logf("Vault: TotalDeposits=%d, TotalYield=%d",
 		vaultState.TotalDeposits.Int64(), vaultState.TotalAccruedYield.Int64())
 
-	// === STEP 4: NAV increases to 1150, run accounting ===
-	t.Log("\n=== STEP 4: NAV increases to 1150, run accounting ===")
+	// === STEP 4: AUM increases to 1150, run accounting ===
+	t.Log("\n=== STEP 4: AUM increases to 1150, run accounting ===")
 	t.Logf("BEFORE accounting:")
-	t.Logf("  CurrentNAV: %d", 1150*ONE_V2)
+	t.Logf("  CurrentAUM: %d", 1150*ONE_V2)
 	t.Logf("  VaultState.TotalDeposits: %d", vaultState.TotalDeposits.Int64())
 	t.Logf("  totalYieldToDistribute = %d - %d = %d", 1150*ONE_V2, vaultState.TotalDeposits.Int64(),
 		1150*ONE_V2-vaultState.TotalDeposits.Int64())
 
-	navInfo = vaultsv2.NAVInfo{CurrentNav: sdkmath.NewInt(1150 * ONE_V2), LastUpdate: time.Now()}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	aumInfo = vaultsv2.AUMInfo{CurrentAum: sdkmath.NewInt(1150 * ONE_V2), LastUpdate: time.Now()}
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	for {
 		resp, _ := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
@@ -829,7 +829,7 @@ func TestYieldTraceWithWithdrawal(t *testing.T) {
 		vaultState.TotalDeposits.Add(vaultState.TotalAccruedYield).Int64())
 }
 
-// TestAccountingSequentialSessions tests running accounting twice with different NAVs
+// TestAccountingSequentialSessions tests running accounting twice with different AUMs
 // to ensure a new cursor/accounting session can be started after a previous one completes
 func TestAccountingSequentialSessions(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
@@ -860,12 +860,12 @@ func TestAccountingSequentialSessions(t *testing.T) {
 
 	// Total deposits: 1500 USDN
 
-	// === SESSION 1: NAV = 1650 (150 yield to distribute) ===
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1650 * ONE_V2),
+	// === SESSION 1: AUM = 1650 (150 yield to distribute) ===
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1650 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting until complete
 	for {
@@ -904,12 +904,12 @@ func TestAccountingSequentialSessions(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "total deposits should be 1500")
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield, "total yield should be 150")
 
-	// === SESSION 2: NAV = 1815 (additional 165 yield to distribute) ===
-	navInfo2 := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1815 * ONE_V2),
+	// === SESSION 2: AUM = 1815 (additional 165 yield to distribute) ===
+	aumInfo2 := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1815 * ONE_V2),
 		LastUpdate: time.Now().Add(time.Hour), // Later timestamp
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo2))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo2))
 
 	// Run accounting again for session 2
 	for {
@@ -977,11 +977,11 @@ func TestAccountingMixedYieldPreference_SameUser(t *testing.T) {
 	require.NoError(t, err)
 
 	// ACT: Initialize vault state
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(2000 * ONE_V2),
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(2000 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -993,12 +993,12 @@ func TestAccountingMixedYieldPreference_SameUser(t *testing.T) {
 		}
 	}
 
-	// ACT: NAV increases by 10% (2000 → 2200, 200 yield)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(2200 * ONE_V2),
+	// ACT: AUM increases by 10% (2000 → 2200, 200 yield)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(2200 * ONE_V2),
 		LastUpdate: time.Now().Add(time.Hour),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting
 	for {
@@ -1050,11 +1050,11 @@ func TestAccountingYieldPreferenceChange(t *testing.T) {
 	require.NoError(t, err)
 
 	// ACT: Initialize vault state
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1000 * ONE_V2),
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1000 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -1066,12 +1066,12 @@ func TestAccountingYieldPreferenceChange(t *testing.T) {
 		}
 	}
 
-	// ACT: NAV increases to 1100 (100 yield)
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1100 * ONE_V2),
+	// ACT: AUM increases to 1100 (100 yield)
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1100 * ONE_V2),
 		LastUpdate: time.Now().Add(time.Hour),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting
 	for {
@@ -1099,12 +1099,12 @@ func TestAccountingYieldPreferenceChange(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// ACT: NAV increases to 1200 (additional 100 yield available)
-	navInfo = vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1200 * ONE_V2),
+	// ACT: AUM increases to 1200 (additional 100 yield available)
+	aumInfo = vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1200 * ONE_V2),
 		LastUpdate: time.Now().Add(2 * time.Hour),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Run accounting again
 	for {
@@ -1153,12 +1153,12 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// STEP 2: Initialize accounting (NAV=1000, no yield)
-	initialNav := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1000 * ONE_V2),
+	// STEP 2: Initialize accounting (AUM=1000, no yield)
+	initialAum := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1000 * ONE_V2),
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, initialNav))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, initialAum))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -1170,12 +1170,12 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 		}
 	}
 
-	// STEP 3: NAV increases to 1100 (100 yield), run accounting
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1100 * ONE_V2),
+	// STEP 3: AUM increases to 1100 (100 yield), run accounting
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1100 * ONE_V2),
 		LastUpdate: time.Now().Add(time.Hour),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
 			Manager:      mocks.Authority,
@@ -1198,17 +1198,17 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2), vaultState.TotalDeposits)
 	assert.Equal(t, sdkmath.ZeroInt(), vaultState.TotalAccruedYield, "no yield distributed yet")
 
-	// Get NAV from NavInfo (TotalNav no longer in VaultState)
-	navInfo, err = k.GetVaultsV2NAVInfo(ctx)
+	// Get AUM from AumInfo (TotalAum no longer in VaultState)
+	aumInfo, err = k.GetVaultsV2AUMInfo(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), navInfo.CurrentNav, "NAV updated to 1100")
+	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), aumInfo.CurrentAum, "AUM updated to 1100")
 
-	// Undistributed yield = NAV - TotalDeposits - TotalAccruedYield = 1100 - 1000 - 0 = 100
-	undistributedYield := navInfo.CurrentNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
+	// Undistributed yield = AUM - TotalDeposits - TotalAccruedYield = 1100 - 1000 - 0 = 100
+	undistributedYield := aumInfo.CurrentAum.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
 	assert.Equal(t, sdkmath.NewInt(100*ONE_V2), undistributedYield, "100 yield should be undistributed")
 
 	// STEP 4: Alice deposits with ReceiveYield=true
-	// When Alice deposits 500, the underlying assets grow by 500, so NAV increases by 500
+	// When Alice deposits 500, the underlying assets grow by 500, so AUM increases by 500
 	require.NoError(t, k.Mint(ctx, alice.Bytes, sdkmath.NewInt(500*ONE_V2), nil))
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    alice.Address,
@@ -1218,7 +1218,7 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	require.NoError(t, err)
 
 	// STEP 5: Run accounting to sync VaultState with Alice's new deposit
-	// IMPORTANT: NAV stays at 1100 during this accounting run to avoid distributing
+	// IMPORTANT: AUM stays at 1100 during this accounting run to avoid distributing
 	// Alice's deposit as yield. The 100 undistributed yield remains.
 	for {
 		resp, err := vaultsV2Server.UpdateVaultAccounting(ctx, &vaultsv2.MsgUpdateVaultAccounting{
@@ -1232,29 +1232,29 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	}
 
 	// ASSERT: VaultState now reflects both deposits
-	// BUT accounting saw NAV=1100 and TotalDeposits will be 1500, creating temporary "negative yield"
+	// BUT accounting saw AUM=1100 and TotalDeposits will be 1500, creating temporary "negative yield"
 	vaultState, err = k.GetVaultsV2VaultState(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "1000 Bob + 500 Alice")
 	assert.Equal(t, sdkmath.ZeroInt(), vaultState.TotalAccruedYield, "no yield distributed (negative yield scenario)")
 
-	// Get NAV from NavInfo (TotalNav no longer in VaultState)
-	navInfo, err = k.GetVaultsV2NAVInfo(ctx)
+	// Get AUM from AumInfo (TotalAum no longer in VaultState)
+	aumInfo, err = k.GetVaultsV2AUMInfo(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), navInfo.CurrentNav, "NAV = 1100")
+	assert.Equal(t, sdkmath.NewInt(1100*ONE_V2), aumInfo.CurrentAum, "AUM = 1100")
 
 	// Temporary negative undistributed yield = 1100 - 1500 - 0 = -400
-	// This happens because Alice deposited but NAV hasn't been updated yet
-	undistributedYield = navInfo.CurrentNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
-	assert.Equal(t, sdkmath.NewInt(-400*ONE_V2), undistributedYield, "Temporarily negative: deposits exceed NAV")
+	// This happens because Alice deposited but AUM hasn't been updated yet
+	undistributedYield = aumInfo.CurrentAum.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
+	assert.Equal(t, sdkmath.NewInt(-400*ONE_V2), undistributedYield, "Temporarily negative: deposits exceed AUM")
 
-	// STEP 6: NAV increases to 1650 (external assets grew by 50)
+	// STEP 6: AUM increases to 1650 (external assets grew by 50)
 	// Total yield in system: 1650 - 1500 = 150 (100 old undistributed + 50 new)
-	navInfo = vaultsv2.NAVInfo{
-		CurrentNav: sdkmath.NewInt(1650 * ONE_V2),
+	aumInfo = vaultsv2.AUMInfo{
+		CurrentAum: sdkmath.NewInt(1650 * ONE_V2),
 		LastUpdate: time.Now().Add(2 * time.Hour),
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// STEP 7: Run accounting - Alice should get ALL 150 yield
 	for {
@@ -1286,14 +1286,14 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 	assert.Equal(t, sdkmath.NewInt(1500*ONE_V2), vaultState.TotalDeposits, "total deposits = 1500")
 	assert.Equal(t, sdkmath.NewInt(150*ONE_V2), vaultState.TotalAccruedYield, "all 150 yield distributed")
 
-	// Get NAV from NavInfo (TotalNav no longer in VaultState)
-	navInfo, err = k.GetVaultsV2NAVInfo(ctx)
+	// Get AUM from AumInfo (TotalAum no longer in VaultState)
+	aumInfo, err = k.GetVaultsV2AUMInfo(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1650*ONE_V2), navInfo.CurrentNav, "NAV = 1650")
+	assert.Equal(t, sdkmath.NewInt(1650*ONE_V2), aumInfo.CurrentAum, "AUM = 1650")
 
 	// CRITICAL ASSERTION: No yield is locked up
-	// Undistributed = NAV - Deposits - Distributed = 1650 - 1500 - 150 = 0
-	undistributedYield = navInfo.CurrentNav.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
+	// Undistributed = AUM - Deposits - Distributed = 1650 - 1500 - 150 = 0
+	undistributedYield = aumInfo.CurrentAum.Sub(vaultState.TotalDeposits).Sub(vaultState.TotalAccruedYield)
 	assert.True(t, undistributedYield.IsZero(),
 		"NO yield should be locked up - all 150 eventually distributed to Alice")
 }

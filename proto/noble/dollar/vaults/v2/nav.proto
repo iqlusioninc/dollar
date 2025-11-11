@@ -9,40 +9,40 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
-// NAVBand defines the pricing bands for deposits and withdrawals
-message NAVBand {
-  // Lower bound of the band (basis points above/below NAV)
+// AUMBand defines the pricing bands for deposits and withdrawals
+message AUMBand {
+  // Lower bound of the band (basis points above/below AUM)
   int32 lower_bound = 1;
-  // Upper bound of the band (basis points above/below NAV)
+  // Upper bound of the band (basis points above/below AUM)
   int32 upper_bound = 2;
 }
 
-// NAVConfig defines the configuration for NAV-based pricing
-message NAVConfig {
-  // Base NAV bands for deposits
-  repeated NAVBand deposit_bands = 1;
-  // Base NAV bands for withdrawals
-  repeated NAVBand withdrawal_bands = 2;
-  // Minimum NAV update interval (seconds)
-  int64 min_nav_update_interval = 3;
-  // Maximum allowed NAV deviation before emergency controls (basis points)
-  int32 max_nav_deviation = 4;
+// AUMConfig defines the configuration for AUM-based pricing
+message AUMConfig {
+  // Base AUM bands for deposits
+  repeated AUMBand deposit_bands = 1;
+  // Base AUM bands for withdrawals
+  repeated AUMBand withdrawal_bands = 2;
+  // Minimum AUM update interval (seconds)
+  int64 min_aum_update_interval = 3;
+  // Maximum allowed AUM deviation before emergency controls (basis points)
+  int32 max_aum_deviation = 4;
   // Emergency circuit breaker threshold (basis points)
   int32 circuit_breaker_threshold = 5;
 }
 
-// NAVInfo represents current NAV information for a vault
-message NAVInfo {
-  // Current NAV value
-  string current_nav = 1 [
+// AUMInfo represents current AUM information for a vault
+message AUMInfo {
+  // Current AUM value
+  string current_aum = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Previous NAV value
-  string previous_nav = 2 [
+  // Previous AUM value
+  string previous_aum = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -58,7 +58,7 @@ message NAVInfo {
 
 // CircuitBreakerTrip records when a circuit breaker was triggered
 message CircuitBreakerTrip {
-  // NAV change that triggered the circuit breaker (basis points)
+  // AUM change that triggered the circuit breaker (basis points)
   int32 change_bps = 1;
 
   // Remote position ID that caused the circuit breaker to trigger
@@ -70,16 +70,16 @@ message CircuitBreakerTrip {
     (gogoproto.stdtime) = true
   ];
 
-  // Previous NAV before the change
-  string previous_nav = 4 [
+  // Previous AUM before the change
+  string previous_aum = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Attempted new NAV that triggered the breaker
-  string attempted_nav = 5 [
+  // Attempted new AUM that triggered the breaker
+  string attempted_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -87,10 +87,10 @@ message CircuitBreakerTrip {
   ];
 }
 
-// NAVUpdate represents a NAV update event
-message NAVUpdate {
-  // New NAV point
-  string new_nav = 1 [
+// AUMUpdate represents a AUM update event
+message AUMUpdate {
+  // New AUM point
+  string new_aum = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -117,8 +117,8 @@ message PricingInfo {
     (amino.dont_omitempty) = true
   ];
 
-  // Applied NAV band
-  NAVBand applied_band = 2;
+  // Applied AUM band
+  AUMBand applied_band = 2;
 
   // Effective fee rate
   int32 effective_fee_rate = 3;
@@ -134,16 +134,16 @@ message LossEvent {
     (amino.dont_omitempty) = true
   ];
 
-  // Previous NAV before loss
-  string previous_nav = 2 [
+  // Previous AUM before loss
+  string previous_aum = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // New NAV after loss
-  string new_nav = 3 [
+  // New AUM after loss
+  string new_aum = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

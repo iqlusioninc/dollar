@@ -6741,7 +6741,7 @@ type PerformanceFeeState struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Current high water mark (total NAV)
+	// Current high water mark (total AUM)
 	HighWaterMark string `protobuf:"bytes,1,opt,name=high_water_mark,json=highWaterMark,proto3" json:"high_water_mark,omitempty"`
 	// Last performance fee calculation
 	LastCalculation *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_calculation,json=lastCalculation,proto3" json:"last_calculation,omitempty"`

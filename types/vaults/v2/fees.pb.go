@@ -477,7 +477,7 @@ func (m *FeeStats) GetCollectionFrequency() int64 {
 
 // PerformanceFeeState tracks performance fee calculations
 type PerformanceFeeState struct {
-	// Current high water mark (total NAV)
+	// Current high water mark (total AUM)
 	HighWaterMark cosmossdk_io_math.Int `protobuf:"bytes,1,opt,name=high_water_mark,json=highWaterMark,proto3,customtype=cosmossdk.io/math.Int" json:"high_water_mark"`
 	// Last performance fee calculation
 	LastCalculation time.Time `protobuf:"bytes,2,opt,name=last_calculation,json=lastCalculation,proto3,stdtime" json:"last_calculation"`

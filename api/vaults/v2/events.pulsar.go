@@ -3535,39 +3535,39 @@ func (x *fastReflection_EventWithdrawalProcessed) ProtoMethods() *protoiface.Met
 }
 
 var (
-	md_EventNAVUpdated                     protoreflect.MessageDescriptor
-	fd_EventNAVUpdated_previous_nav        protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_new_nav             protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_change_bps          protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_total_deposits      protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_total_accrued_yield protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_reason              protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_block_height        protoreflect.FieldDescriptor
-	fd_EventNAVUpdated_timestamp           protoreflect.FieldDescriptor
+	md_EventAUMUpdated                     protoreflect.MessageDescriptor
+	fd_EventAUMUpdated_previous_aum        protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_new_aum             protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_change_bps          protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_total_deposits      protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_total_accrued_yield protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_reason              protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_block_height        protoreflect.FieldDescriptor
+	fd_EventAUMUpdated_timestamp           protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_noble_dollar_vaults_v2_events_proto_init()
-	md_EventNAVUpdated = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventNAVUpdated")
-	fd_EventNAVUpdated_previous_nav = md_EventNAVUpdated.Fields().ByName("previous_nav")
-	fd_EventNAVUpdated_new_nav = md_EventNAVUpdated.Fields().ByName("new_nav")
-	fd_EventNAVUpdated_change_bps = md_EventNAVUpdated.Fields().ByName("change_bps")
-	fd_EventNAVUpdated_total_deposits = md_EventNAVUpdated.Fields().ByName("total_deposits")
-	fd_EventNAVUpdated_total_accrued_yield = md_EventNAVUpdated.Fields().ByName("total_accrued_yield")
-	fd_EventNAVUpdated_reason = md_EventNAVUpdated.Fields().ByName("reason")
-	fd_EventNAVUpdated_block_height = md_EventNAVUpdated.Fields().ByName("block_height")
-	fd_EventNAVUpdated_timestamp = md_EventNAVUpdated.Fields().ByName("timestamp")
+	md_EventAUMUpdated = File_noble_dollar_vaults_v2_events_proto.Messages().ByName("EventAUMUpdated")
+	fd_EventAUMUpdated_previous_aum = md_EventAUMUpdated.Fields().ByName("previous_aum")
+	fd_EventAUMUpdated_new_aum = md_EventAUMUpdated.Fields().ByName("new_aum")
+	fd_EventAUMUpdated_change_bps = md_EventAUMUpdated.Fields().ByName("change_bps")
+	fd_EventAUMUpdated_total_deposits = md_EventAUMUpdated.Fields().ByName("total_deposits")
+	fd_EventAUMUpdated_total_accrued_yield = md_EventAUMUpdated.Fields().ByName("total_accrued_yield")
+	fd_EventAUMUpdated_reason = md_EventAUMUpdated.Fields().ByName("reason")
+	fd_EventAUMUpdated_block_height = md_EventAUMUpdated.Fields().ByName("block_height")
+	fd_EventAUMUpdated_timestamp = md_EventAUMUpdated.Fields().ByName("timestamp")
 }
 
-var _ protoreflect.Message = (*fastReflection_EventNAVUpdated)(nil)
+var _ protoreflect.Message = (*fastReflection_EventAUMUpdated)(nil)
 
-type fastReflection_EventNAVUpdated EventNAVUpdated
+type fastReflection_EventAUMUpdated EventAUMUpdated
 
-func (x *EventNAVUpdated) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EventNAVUpdated)(x)
+func (x *EventAUMUpdated) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventAUMUpdated)(x)
 }
 
-func (x *EventNAVUpdated) slowProtoReflect() protoreflect.Message {
+func (x *EventAUMUpdated) slowProtoReflect() protoreflect.Message {
 	mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3579,43 +3579,43 @@ func (x *EventNAVUpdated) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_EventNAVUpdated_messageType fastReflection_EventNAVUpdated_messageType
-var _ protoreflect.MessageType = fastReflection_EventNAVUpdated_messageType{}
+var _fastReflection_EventAUMUpdated_messageType fastReflection_EventAUMUpdated_messageType
+var _ protoreflect.MessageType = fastReflection_EventAUMUpdated_messageType{}
 
-type fastReflection_EventNAVUpdated_messageType struct{}
+type fastReflection_EventAUMUpdated_messageType struct{}
 
-func (x fastReflection_EventNAVUpdated_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EventNAVUpdated)(nil)
+func (x fastReflection_EventAUMUpdated_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventAUMUpdated)(nil)
 }
-func (x fastReflection_EventNAVUpdated_messageType) New() protoreflect.Message {
-	return new(fastReflection_EventNAVUpdated)
+func (x fastReflection_EventAUMUpdated_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventAUMUpdated)
 }
-func (x fastReflection_EventNAVUpdated_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventNAVUpdated
+func (x fastReflection_EventAUMUpdated_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAUMUpdated
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_EventNAVUpdated) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventNAVUpdated
+func (x *fastReflection_EventAUMUpdated) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAUMUpdated
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EventNAVUpdated) Type() protoreflect.MessageType {
-	return _fastReflection_EventNAVUpdated_messageType
+func (x *fastReflection_EventAUMUpdated) Type() protoreflect.MessageType {
+	return _fastReflection_EventAUMUpdated_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EventNAVUpdated) New() protoreflect.Message {
-	return new(fastReflection_EventNAVUpdated)
+func (x *fastReflection_EventAUMUpdated) New() protoreflect.Message {
+	return new(fastReflection_EventAUMUpdated)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_EventNAVUpdated) Interface() protoreflect.ProtoMessage {
-	return (*EventNAVUpdated)(x)
+func (x *fastReflection_EventAUMUpdated) Interface() protoreflect.ProtoMessage {
+	return (*EventAUMUpdated)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -3623,52 +3623,52 @@ func (x *fastReflection_EventNAVUpdated) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_EventNAVUpdated) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.PreviousNav != "" {
-		value := protoreflect.ValueOfString(x.PreviousNav)
-		if !f(fd_EventNAVUpdated_previous_nav, value) {
+func (x *fastReflection_EventAUMUpdated) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.PreviousAum != "" {
+		value := protoreflect.ValueOfString(x.PreviousAum)
+		if !f(fd_EventAUMUpdated_previous_aum, value) {
 			return
 		}
 	}
-	if x.NewNav != "" {
-		value := protoreflect.ValueOfString(x.NewNav)
-		if !f(fd_EventNAVUpdated_new_nav, value) {
+	if x.NewAum != "" {
+		value := protoreflect.ValueOfString(x.NewAum)
+		if !f(fd_EventAUMUpdated_new_aum, value) {
 			return
 		}
 	}
 	if x.ChangeBps != int32(0) {
 		value := protoreflect.ValueOfInt32(x.ChangeBps)
-		if !f(fd_EventNAVUpdated_change_bps, value) {
+		if !f(fd_EventAUMUpdated_change_bps, value) {
 			return
 		}
 	}
 	if x.TotalDeposits != "" {
 		value := protoreflect.ValueOfString(x.TotalDeposits)
-		if !f(fd_EventNAVUpdated_total_deposits, value) {
+		if !f(fd_EventAUMUpdated_total_deposits, value) {
 			return
 		}
 	}
 	if x.TotalAccruedYield != "" {
 		value := protoreflect.ValueOfString(x.TotalAccruedYield)
-		if !f(fd_EventNAVUpdated_total_accrued_yield, value) {
+		if !f(fd_EventAUMUpdated_total_accrued_yield, value) {
 			return
 		}
 	}
 	if x.Reason != "" {
 		value := protoreflect.ValueOfString(x.Reason)
-		if !f(fd_EventNAVUpdated_reason, value) {
+		if !f(fd_EventAUMUpdated_reason, value) {
 			return
 		}
 	}
 	if x.BlockHeight != int64(0) {
 		value := protoreflect.ValueOfInt64(x.BlockHeight)
-		if !f(fd_EventNAVUpdated_block_height, value) {
+		if !f(fd_EventAUMUpdated_block_height, value) {
 			return
 		}
 	}
 	if x.Timestamp != nil {
 		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-		if !f(fd_EventNAVUpdated_timestamp, value) {
+		if !f(fd_EventAUMUpdated_timestamp, value) {
 			return
 		}
 	}
@@ -3685,29 +3685,29 @@ func (x *fastReflection_EventNAVUpdated) Range(f func(protoreflect.FieldDescript
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_EventNAVUpdated) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_EventAUMUpdated) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EventNAVUpdated.previous_nav":
-		return x.PreviousNav != ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.new_nav":
-		return x.NewNav != ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.change_bps":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.previous_aum":
+		return x.PreviousAum != ""
+	case "noble.dollar.vaults.v2.EventAUMUpdated.new_aum":
+		return x.NewAum != ""
+	case "noble.dollar.vaults.v2.EventAUMUpdated.change_bps":
 		return x.ChangeBps != int32(0)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_deposits":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_deposits":
 		return x.TotalDeposits != ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_accrued_yield":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_accrued_yield":
 		return x.TotalAccruedYield != ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.reason":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.reason":
 		return x.Reason != ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.block_height":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.block_height":
 		return x.BlockHeight != int64(0)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.timestamp":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.timestamp":
 		return x.Timestamp != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventNAVUpdated"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventAUMUpdated"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventNAVUpdated does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventAUMUpdated does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3717,29 +3717,29 @@ func (x *fastReflection_EventNAVUpdated) Has(fd protoreflect.FieldDescriptor) bo
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventNAVUpdated) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_EventAUMUpdated) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EventNAVUpdated.previous_nav":
-		x.PreviousNav = ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.new_nav":
-		x.NewNav = ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.change_bps":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.previous_aum":
+		x.PreviousAum = ""
+	case "noble.dollar.vaults.v2.EventAUMUpdated.new_aum":
+		x.NewAum = ""
+	case "noble.dollar.vaults.v2.EventAUMUpdated.change_bps":
 		x.ChangeBps = int32(0)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_deposits":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_deposits":
 		x.TotalDeposits = ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_accrued_yield":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_accrued_yield":
 		x.TotalAccruedYield = ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.reason":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.reason":
 		x.Reason = ""
-	case "noble.dollar.vaults.v2.EventNAVUpdated.block_height":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.block_height":
 		x.BlockHeight = int64(0)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.timestamp":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.timestamp":
 		x.Timestamp = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventNAVUpdated"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventAUMUpdated"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventNAVUpdated does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventAUMUpdated does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3749,37 +3749,37 @@ func (x *fastReflection_EventNAVUpdated) Clear(fd protoreflect.FieldDescriptor) 
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EventNAVUpdated) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAUMUpdated) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.EventNAVUpdated.previous_nav":
-		value := x.PreviousNav
+	case "noble.dollar.vaults.v2.EventAUMUpdated.previous_aum":
+		value := x.PreviousAum
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.new_nav":
-		value := x.NewNav
+	case "noble.dollar.vaults.v2.EventAUMUpdated.new_aum":
+		value := x.NewAum
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.change_bps":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.change_bps":
 		value := x.ChangeBps
 		return protoreflect.ValueOfInt32(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_deposits":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_deposits":
 		value := x.TotalDeposits
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_accrued_yield":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_accrued_yield":
 		value := x.TotalAccruedYield
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.reason":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.reason":
 		value := x.Reason
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.block_height":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.block_height":
 		value := x.BlockHeight
 		return protoreflect.ValueOfInt64(value)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.timestamp":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.timestamp":
 		value := x.Timestamp
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventNAVUpdated"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventAUMUpdated"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventNAVUpdated does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventAUMUpdated does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3793,29 +3793,29 @@ func (x *fastReflection_EventNAVUpdated) Get(descriptor protoreflect.FieldDescri
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventNAVUpdated) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_EventAUMUpdated) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EventNAVUpdated.previous_nav":
-		x.PreviousNav = value.Interface().(string)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.new_nav":
-		x.NewNav = value.Interface().(string)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.change_bps":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.previous_aum":
+		x.PreviousAum = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventAUMUpdated.new_aum":
+		x.NewAum = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventAUMUpdated.change_bps":
 		x.ChangeBps = int32(value.Int())
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_deposits":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_deposits":
 		x.TotalDeposits = value.Interface().(string)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_accrued_yield":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_accrued_yield":
 		x.TotalAccruedYield = value.Interface().(string)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.reason":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.reason":
 		x.Reason = value.Interface().(string)
-	case "noble.dollar.vaults.v2.EventNAVUpdated.block_height":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.block_height":
 		x.BlockHeight = value.Int()
-	case "noble.dollar.vaults.v2.EventNAVUpdated.timestamp":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.timestamp":
 		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventNAVUpdated"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventAUMUpdated"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventNAVUpdated does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventAUMUpdated does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3829,72 +3829,72 @@ func (x *fastReflection_EventNAVUpdated) Set(fd protoreflect.FieldDescriptor, va
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventNAVUpdated) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAUMUpdated) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EventNAVUpdated.timestamp":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.timestamp":
 		if x.Timestamp == nil {
 			x.Timestamp = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-	case "noble.dollar.vaults.v2.EventNAVUpdated.previous_nav":
-		panic(fmt.Errorf("field previous_nav of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.new_nav":
-		panic(fmt.Errorf("field new_nav of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.change_bps":
-		panic(fmt.Errorf("field change_bps of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_deposits":
-		panic(fmt.Errorf("field total_deposits of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_accrued_yield":
-		panic(fmt.Errorf("field total_accrued_yield of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.reason":
-		panic(fmt.Errorf("field reason of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.block_height":
-		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventNAVUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.previous_aum":
+		panic(fmt.Errorf("field previous_aum of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.new_aum":
+		panic(fmt.Errorf("field new_aum of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.change_bps":
+		panic(fmt.Errorf("field change_bps of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_deposits":
+		panic(fmt.Errorf("field total_deposits of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_accrued_yield":
+		panic(fmt.Errorf("field total_accrued_yield of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.reason":
+		panic(fmt.Errorf("field reason of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAUMUpdated.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.EventAUMUpdated is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventNAVUpdated"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventAUMUpdated"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventNAVUpdated does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventAUMUpdated does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EventNAVUpdated) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAUMUpdated) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EventNAVUpdated.previous_nav":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.previous_aum":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.EventNAVUpdated.new_nav":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.new_aum":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.EventNAVUpdated.change_bps":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.change_bps":
 		return protoreflect.ValueOfInt32(int32(0))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_deposits":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_deposits":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.EventNAVUpdated.total_accrued_yield":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.total_accrued_yield":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.EventNAVUpdated.reason":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.reason":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.EventNAVUpdated.block_height":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.block_height":
 		return protoreflect.ValueOfInt64(int64(0))
-	case "noble.dollar.vaults.v2.EventNAVUpdated.timestamp":
+	case "noble.dollar.vaults.v2.EventAUMUpdated.timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventNAVUpdated"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EventAUMUpdated"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventNAVUpdated does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.EventAUMUpdated does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EventNAVUpdated) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_EventAUMUpdated) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventNAVUpdated", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EventAUMUpdated", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3902,7 +3902,7 @@ func (x *fastReflection_EventNAVUpdated) WhichOneof(d protoreflect.OneofDescript
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EventNAVUpdated) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_EventAUMUpdated) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -3913,7 +3913,7 @@ func (x *fastReflection_EventNAVUpdated) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventNAVUpdated) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_EventAUMUpdated) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -3925,7 +3925,7 @@ func (x *fastReflection_EventNAVUpdated) SetUnknown(fields protoreflect.RawField
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_EventNAVUpdated) IsValid() bool {
+func (x *fastReflection_EventAUMUpdated) IsValid() bool {
 	return x != nil
 }
 
@@ -3935,9 +3935,9 @@ func (x *fastReflection_EventNAVUpdated) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_EventAUMUpdated) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EventNAVUpdated)
+		x := input.Message.Interface().(*EventAUMUpdated)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3949,11 +3949,11 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.PreviousNav)
+		l = len(x.PreviousAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.NewNav)
+		l = len(x.NewAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -3989,7 +3989,7 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EventNAVUpdated)
+		x := input.Message.Interface().(*EventAUMUpdated)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -4053,17 +4053,17 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.NewNav) > 0 {
-			i -= len(x.NewNav)
-			copy(dAtA[i:], x.NewNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NewNav)))
+		if len(x.NewAum) > 0 {
+			i -= len(x.NewAum)
+			copy(dAtA[i:], x.NewAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NewAum)))
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.PreviousNav) > 0 {
-			i -= len(x.PreviousNav)
-			copy(dAtA[i:], x.PreviousNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PreviousNav)))
+		if len(x.PreviousAum) > 0 {
+			i -= len(x.PreviousAum)
+			copy(dAtA[i:], x.PreviousAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PreviousAum)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -4078,7 +4078,7 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EventNAVUpdated)
+		x := input.Message.Interface().(*EventAUMUpdated)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -4110,15 +4110,15 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventNAVUpdated: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAUMUpdated: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventNAVUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAUMUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PreviousNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PreviousAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -4146,11 +4146,11 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.PreviousNav = string(dAtA[iNdEx:postIndex])
+				x.PreviousAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -4178,7 +4178,7 @@ func (x *fastReflection_EventNAVUpdated) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.NewNav = string(dAtA[iNdEx:postIndex])
+				x.NewAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -4391,7 +4391,7 @@ var (
 	fd_EventAccountingUpdated_total_positions_processed protoreflect.FieldDescriptor
 	fd_EventAccountingUpdated_total_positions           protoreflect.FieldDescriptor
 	fd_EventAccountingUpdated_complete                  protoreflect.FieldDescriptor
-	fd_EventAccountingUpdated_applied_nav               protoreflect.FieldDescriptor
+	fd_EventAccountingUpdated_applied_aum               protoreflect.FieldDescriptor
 	fd_EventAccountingUpdated_yield_distributed         protoreflect.FieldDescriptor
 	fd_EventAccountingUpdated_manager                   protoreflect.FieldDescriptor
 	fd_EventAccountingUpdated_block_height              protoreflect.FieldDescriptor
@@ -4405,7 +4405,7 @@ func init() {
 	fd_EventAccountingUpdated_total_positions_processed = md_EventAccountingUpdated.Fields().ByName("total_positions_processed")
 	fd_EventAccountingUpdated_total_positions = md_EventAccountingUpdated.Fields().ByName("total_positions")
 	fd_EventAccountingUpdated_complete = md_EventAccountingUpdated.Fields().ByName("complete")
-	fd_EventAccountingUpdated_applied_nav = md_EventAccountingUpdated.Fields().ByName("applied_nav")
+	fd_EventAccountingUpdated_applied_aum = md_EventAccountingUpdated.Fields().ByName("applied_aum")
 	fd_EventAccountingUpdated_yield_distributed = md_EventAccountingUpdated.Fields().ByName("yield_distributed")
 	fd_EventAccountingUpdated_manager = md_EventAccountingUpdated.Fields().ByName("manager")
 	fd_EventAccountingUpdated_block_height = md_EventAccountingUpdated.Fields().ByName("block_height")
@@ -4501,9 +4501,9 @@ func (x *fastReflection_EventAccountingUpdated) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
-	if x.AppliedNav != "" {
-		value := protoreflect.ValueOfString(x.AppliedNav)
-		if !f(fd_EventAccountingUpdated_applied_nav, value) {
+	if x.AppliedAum != "" {
+		value := protoreflect.ValueOfString(x.AppliedAum)
+		if !f(fd_EventAccountingUpdated_applied_aum, value) {
 			return
 		}
 	}
@@ -4554,8 +4554,8 @@ func (x *fastReflection_EventAccountingUpdated) Has(fd protoreflect.FieldDescrip
 		return x.TotalPositions != uint64(0)
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.complete":
 		return x.Complete != false
-	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_nav":
-		return x.AppliedNav != ""
+	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_aum":
+		return x.AppliedAum != ""
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.yield_distributed":
 		return x.YieldDistributed != ""
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.manager":
@@ -4588,8 +4588,8 @@ func (x *fastReflection_EventAccountingUpdated) Clear(fd protoreflect.FieldDescr
 		x.TotalPositions = uint64(0)
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.complete":
 		x.Complete = false
-	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_nav":
-		x.AppliedNav = ""
+	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_aum":
+		x.AppliedAum = ""
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.yield_distributed":
 		x.YieldDistributed = ""
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.manager":
@@ -4626,8 +4626,8 @@ func (x *fastReflection_EventAccountingUpdated) Get(descriptor protoreflect.Fiel
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.complete":
 		value := x.Complete
 		return protoreflect.ValueOfBool(value)
-	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_nav":
-		value := x.AppliedNav
+	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_aum":
+		value := x.AppliedAum
 		return protoreflect.ValueOfString(value)
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.yield_distributed":
 		value := x.YieldDistributed
@@ -4669,8 +4669,8 @@ func (x *fastReflection_EventAccountingUpdated) Set(fd protoreflect.FieldDescrip
 		x.TotalPositions = value.Uint()
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.complete":
 		x.Complete = value.Bool()
-	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_nav":
-		x.AppliedNav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_aum":
+		x.AppliedAum = value.Interface().(string)
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.yield_distributed":
 		x.YieldDistributed = value.Interface().(string)
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.manager":
@@ -4712,8 +4712,8 @@ func (x *fastReflection_EventAccountingUpdated) Mutable(fd protoreflect.FieldDes
 		panic(fmt.Errorf("field total_positions of message noble.dollar.vaults.v2.EventAccountingUpdated is not mutable"))
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.complete":
 		panic(fmt.Errorf("field complete of message noble.dollar.vaults.v2.EventAccountingUpdated is not mutable"))
-	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_nav":
-		panic(fmt.Errorf("field applied_nav of message noble.dollar.vaults.v2.EventAccountingUpdated is not mutable"))
+	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_aum":
+		panic(fmt.Errorf("field applied_aum of message noble.dollar.vaults.v2.EventAccountingUpdated is not mutable"))
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.yield_distributed":
 		panic(fmt.Errorf("field yield_distributed of message noble.dollar.vaults.v2.EventAccountingUpdated is not mutable"))
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.manager":
@@ -4741,7 +4741,7 @@ func (x *fastReflection_EventAccountingUpdated) NewField(fd protoreflect.FieldDe
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.complete":
 		return protoreflect.ValueOfBool(false)
-	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_nav":
+	case "noble.dollar.vaults.v2.EventAccountingUpdated.applied_aum":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.EventAccountingUpdated.yield_distributed":
 		return protoreflect.ValueOfString("")
@@ -4833,7 +4833,7 @@ func (x *fastReflection_EventAccountingUpdated) ProtoMethods() *protoiface.Metho
 		if x.Complete {
 			n += 2
 		}
-		l = len(x.AppliedNav)
+		l = len(x.AppliedAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -4914,10 +4914,10 @@ func (x *fastReflection_EventAccountingUpdated) ProtoMethods() *protoiface.Metho
 			i--
 			dAtA[i] = 0x32
 		}
-		if len(x.AppliedNav) > 0 {
-			i -= len(x.AppliedNav)
-			copy(dAtA[i:], x.AppliedNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AppliedNav)))
+		if len(x.AppliedAum) > 0 {
+			i -= len(x.AppliedAum)
+			copy(dAtA[i:], x.AppliedAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AppliedAum)))
 			i--
 			dAtA[i] = 0x2a
 		}
@@ -5074,7 +5074,7 @@ func (x *fastReflection_EventAccountingUpdated) ProtoMethods() *protoiface.Metho
 				x.Complete = bool(v != 0)
 			case 5:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AppliedNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AppliedAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -5102,7 +5102,7 @@ func (x *fastReflection_EventAccountingUpdated) ProtoMethods() *protoiface.Metho
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.AppliedNav = string(dAtA[iNdEx:postIndex])
+				x.AppliedAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 6:
 				if wireType != 2 {
@@ -14071,17 +14071,17 @@ func (x *EventWithdrawalProcessed) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// EventNAVUpdated is emitted when NAV is updated for a vault
-type EventNAVUpdated struct {
+// EventAUMUpdated is emitted when AUM is updated for a vault
+type EventAUMUpdated struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Previous NAV
-	PreviousNav string `protobuf:"bytes,1,opt,name=previous_nav,json=previousNav,proto3" json:"previous_nav,omitempty"`
-	// New NAV
-	NewNav string `protobuf:"bytes,2,opt,name=new_nav,json=newNav,proto3" json:"new_nav,omitempty"`
-	// NAV change percentage (basis points)
+	// Previous AUM
+	PreviousAum string `protobuf:"bytes,1,opt,name=previous_aum,json=previousAum,proto3" json:"previous_aum,omitempty"`
+	// New AUM
+	NewAum string `protobuf:"bytes,2,opt,name=new_aum,json=newAum,proto3" json:"new_aum,omitempty"`
+	// AUM change percentage (basis points)
 	ChangeBps int32 `protobuf:"varint,3,opt,name=change_bps,json=changeBps,proto3" json:"change_bps,omitempty"`
 	// Total deposits in vault
 	TotalDeposits string `protobuf:"bytes,4,opt,name=total_deposits,json=totalDeposits,proto3" json:"total_deposits,omitempty"`
@@ -14095,8 +14095,8 @@ type EventNAVUpdated struct {
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
-func (x *EventNAVUpdated) Reset() {
-	*x = EventNAVUpdated{}
+func (x *EventAUMUpdated) Reset() {
+	*x = EventAUMUpdated{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_noble_dollar_vaults_v2_events_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -14104,67 +14104,67 @@ func (x *EventNAVUpdated) Reset() {
 	}
 }
 
-func (x *EventNAVUpdated) String() string {
+func (x *EventAUMUpdated) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EventNAVUpdated) ProtoMessage() {}
+func (*EventAUMUpdated) ProtoMessage() {}
 
-// Deprecated: Use EventNAVUpdated.ProtoReflect.Descriptor instead.
-func (*EventNAVUpdated) Descriptor() ([]byte, []int) {
+// Deprecated: Use EventAUMUpdated.ProtoReflect.Descriptor instead.
+func (*EventAUMUpdated) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_events_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *EventNAVUpdated) GetPreviousNav() string {
+func (x *EventAUMUpdated) GetPreviousAum() string {
 	if x != nil {
-		return x.PreviousNav
+		return x.PreviousAum
 	}
 	return ""
 }
 
-func (x *EventNAVUpdated) GetNewNav() string {
+func (x *EventAUMUpdated) GetNewAum() string {
 	if x != nil {
-		return x.NewNav
+		return x.NewAum
 	}
 	return ""
 }
 
-func (x *EventNAVUpdated) GetChangeBps() int32 {
+func (x *EventAUMUpdated) GetChangeBps() int32 {
 	if x != nil {
 		return x.ChangeBps
 	}
 	return 0
 }
 
-func (x *EventNAVUpdated) GetTotalDeposits() string {
+func (x *EventAUMUpdated) GetTotalDeposits() string {
 	if x != nil {
 		return x.TotalDeposits
 	}
 	return ""
 }
 
-func (x *EventNAVUpdated) GetTotalAccruedYield() string {
+func (x *EventAUMUpdated) GetTotalAccruedYield() string {
 	if x != nil {
 		return x.TotalAccruedYield
 	}
 	return ""
 }
 
-func (x *EventNAVUpdated) GetReason() string {
+func (x *EventAUMUpdated) GetReason() string {
 	if x != nil {
 		return x.Reason
 	}
 	return ""
 }
 
-func (x *EventNAVUpdated) GetBlockHeight() int64 {
+func (x *EventAUMUpdated) GetBlockHeight() int64 {
 	if x != nil {
 		return x.BlockHeight
 	}
 	return 0
 }
 
-func (x *EventNAVUpdated) GetTimestamp() *timestamppb.Timestamp {
+func (x *EventAUMUpdated) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Timestamp
 	}
@@ -14185,8 +14185,8 @@ type EventAccountingUpdated struct {
 	TotalPositions uint64 `protobuf:"varint,3,opt,name=total_positions,json=totalPositions,proto3" json:"total_positions,omitempty"`
 	// Whether accounting is complete for this session
 	Complete bool `protobuf:"varint,4,opt,name=complete,proto3" json:"complete,omitempty"`
-	// NAV value applied in this accounting update
-	AppliedNav string `protobuf:"bytes,5,opt,name=applied_nav,json=appliedNav,proto3" json:"applied_nav,omitempty"`
+	// AUM value applied in this accounting update
+	AppliedAum string `protobuf:"bytes,5,opt,name=applied_aum,json=appliedAum,proto3" json:"applied_aum,omitempty"`
 	// Total yield distributed in this call
 	YieldDistributed string `protobuf:"bytes,6,opt,name=yield_distributed,json=yieldDistributed,proto3" json:"yield_distributed,omitempty"`
 	// Manager that triggered the accounting
@@ -14245,9 +14245,9 @@ func (x *EventAccountingUpdated) GetComplete() bool {
 	return false
 }
 
-func (x *EventAccountingUpdated) GetAppliedNav() string {
+func (x *EventAccountingUpdated) GetAppliedAum() string {
 	if x != nil {
-		return x.AppliedNav
+		return x.AppliedAum
 	}
 	return ""
 }
@@ -15418,18 +15418,18 @@ var file_noble_dollar_vaults_v2_events_proto_rawDesc = []byte{
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
 	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00,
 	0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22,
-	0x8a, 0x04, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4e, 0x41, 0x56, 0x55, 0x70, 0x64, 0x61,
+	0x8a, 0x04, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x55, 0x4d, 0x55, 0x70, 0x64, 0x61,
 	0x74, 0x65, 0x64, 0x12, 0x53, 0x0a, 0x0c, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f,
-	0x6e, 0x61, 0x76, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda,
+	0x61, 0x75, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda,
 	0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
 	0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0b, 0x70, 0x72, 0x65,
-	0x76, 0x69, 0x6f, 0x75, 0x73, 0x4e, 0x61, 0x76, 0x12, 0x49, 0x0a, 0x07, 0x6e, 0x65, 0x77, 0x5f,
-	0x6e, 0x61, 0x76, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda,
+	0x76, 0x69, 0x6f, 0x75, 0x73, 0x41, 0x75, 0x6d, 0x12, 0x49, 0x0a, 0x07, 0x6e, 0x65, 0x77, 0x5f,
+	0x61, 0x75, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda,
 	0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
 	0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x6e, 0x65, 0x77,
-	0x4e, 0x61, 0x76, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x5f, 0x62, 0x70,
+	0x41, 0x75, 0x6d, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x5f, 0x62, 0x70,
 	0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x09, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x42,
 	0x70, 0x73, 0x12, 0x57, 0x0a, 0x0e, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x64, 0x65, 0x70, 0x6f,
 	0x73, 0x69, 0x74, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00,
@@ -15464,11 +15464,11 @@ var file_noble_dollar_vaults_v2_events_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x61, 0x6c, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1a, 0x0a,
 	0x08, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52,
 	0x08, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x51, 0x0a, 0x0b, 0x61, 0x70, 0x70,
-	0x6c, 0x69, 0x65, 0x64, 0x5f, 0x6e, 0x61, 0x76, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
+	0x6c, 0x69, 0x65, 0x64, 0x5f, 0x61, 0x75, 0x6d, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
 	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
 	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,
 	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
-	0x52, 0x0a, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x4e, 0x61, 0x76, 0x12, 0x5d, 0x0a, 0x11,
+	0x52, 0x0a, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x41, 0x75, 0x6d, 0x12, 0x5d, 0x0a, 0x11,
 	0x79, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
 	0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f,
 	0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
@@ -15791,7 +15791,7 @@ var file_noble_dollar_vaults_v2_events_proto_goTypes = []interface{}{
 	(*EventWithdrawlRequested)(nil),        // 2: noble.dollar.vaults.v2.EventWithdrawlRequested
 	(*EventWithdrawalCancelled)(nil),       // 3: noble.dollar.vaults.v2.EventWithdrawalCancelled
 	(*EventWithdrawalProcessed)(nil),       // 4: noble.dollar.vaults.v2.EventWithdrawalProcessed
-	(*EventNAVUpdated)(nil),                // 5: noble.dollar.vaults.v2.EventNAVUpdated
+	(*EventAUMUpdated)(nil),                // 5: noble.dollar.vaults.v2.EventAUMUpdated
 	(*EventAccountingUpdated)(nil),         // 6: noble.dollar.vaults.v2.EventAccountingUpdated
 	(*EventFeeCollected)(nil),              // 7: noble.dollar.vaults.v2.EventFeeCollected
 	(*EventYieldPreferenceUpdated)(nil),    // 8: noble.dollar.vaults.v2.EventYieldPreferenceUpdated
@@ -15812,7 +15812,7 @@ var file_noble_dollar_vaults_v2_events_proto_depIdxs = []int32{
 	17, // 3: noble.dollar.vaults.v2.EventWithdrawlRequested.timestamp:type_name -> google.protobuf.Timestamp
 	17, // 4: noble.dollar.vaults.v2.EventWithdrawalCancelled.timestamp:type_name -> google.protobuf.Timestamp
 	17, // 5: noble.dollar.vaults.v2.EventWithdrawalProcessed.timestamp:type_name -> google.protobuf.Timestamp
-	17, // 6: noble.dollar.vaults.v2.EventNAVUpdated.timestamp:type_name -> google.protobuf.Timestamp
+	17, // 6: noble.dollar.vaults.v2.EventAUMUpdated.timestamp:type_name -> google.protobuf.Timestamp
 	17, // 7: noble.dollar.vaults.v2.EventAccountingUpdated.timestamp:type_name -> google.protobuf.Timestamp
 	17, // 8: noble.dollar.vaults.v2.EventFeeCollected.timestamp:type_name -> google.protobuf.Timestamp
 	17, // 9: noble.dollar.vaults.v2.EventYieldPreferenceUpdated.timestamp:type_name -> google.protobuf.Timestamp
@@ -15900,7 +15900,7 @@ func file_noble_dollar_vaults_v2_events_proto_init() {
 			}
 		}
 		file_noble_dollar_vaults_v2_events_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventNAVUpdated); i {
+			switch v := v.(*EventAUMUpdated); i {
 			case 0:
 				return &v.state
 			case 1:

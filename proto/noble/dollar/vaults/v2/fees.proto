@@ -184,7 +184,7 @@ message FeeStats {
 
 // PerformanceFeeState tracks performance fee calculations
 message PerformanceFeeState {
-  // Current high water mark (total NAV)
+  // Current high water mark (total AUM)
   string high_water_mark = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",

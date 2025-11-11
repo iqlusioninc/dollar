@@ -145,7 +145,7 @@ message QueryVaultInfoResponse {
   VaultConfig config = 1 [(gogoproto.nullable) = false];
   string total_deposits = 2;
   string total_accrued_yield = 3;
-  string total_nav = 4;
+  string total_aum = 4;
   uint64 total_depositors = 5;
 }
 

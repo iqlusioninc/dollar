@@ -83,14 +83,14 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 	require.True(t, found)
 	assert.Equal(t, math.NewInt(1500*ONE_V2), alicePos1.DepositAmount)
 
-	// Set up NAV for yield distribution
+	// Set up AUM for yield distribution
 	totalDeposits := math.NewInt(4500 * ONE_V2)            // 1000 + 2000 + 1500
-	newNAV := totalDeposits.Add(math.NewInt(450 * ONE_V2)) // 10% yield = 450 USDN
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: newNAV,
+	newAUM := totalDeposits.Add(math.NewInt(450 * ONE_V2)) // 10% yield = 450 USDN
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: newAUM,
 		LastUpdate: time.Now(),
 	}
-	require.NoError(t, keeper.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, keeper.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	// Manually create accounting snapshots (simulating accounting process)
 	snapshots := []vaultsv2.AccountingSnapshot{
@@ -99,7 +99,7 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 			PositionId:      1,
 			DepositAmount:   bobPos1.DepositAmount,
 			AccruedYield:    math.NewInt(100 * ONE_V2), // 1000 * 10% = 100
-			AccountingNav:   newNAV,
+			AccountingAum:   newAUM,
 			CreatedAtHeight: ctx.BlockHeight(),
 		},
 		{
@@ -107,7 +107,7 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 			PositionId:      2,
 			DepositAmount:   bobPos2.DepositAmount,
 			AccruedYield:    math.NewInt(200 * ONE_V2), // 2000 * 10% = 200
-			AccountingNav:   newNAV,
+			AccountingAum:   newAUM,
 			CreatedAtHeight: ctx.BlockHeight(),
 		},
 		{
@@ -115,7 +115,7 @@ func TestAccountingMultiPositionFlow(t *testing.T) {
 			PositionId:      1,
 			DepositAmount:   alicePos1.DepositAmount,
 			AccruedYield:    math.NewInt(150 * ONE_V2), // 1500 * 10% = 150
-			AccountingNav:   newNAV,
+			AccountingAum:   newAUM,
 			CreatedAtHeight: ctx.BlockHeight(),
 		},
 	}

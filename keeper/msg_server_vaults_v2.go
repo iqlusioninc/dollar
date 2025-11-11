@@ -45,7 +45,7 @@ type msgServerV2 struct {
 	*Keeper
 }
 
-const navBasisPointsMultiplier int64 = 10_000
+const aumBasisPointsMultiplier int64 = 10_000
 
 func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	if route.HyptokenId.IsZeroAddress() {
@@ -64,34 +64,34 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
-// calculateTWAPNav computes the Time-Weighted Average Price of NAV using recent snapshots.
-// Returns the TWAP value or the current NAV if TWAP is disabled or insufficient data.
-func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.Int) (sdkmath.Int, error) {
+// calculateTWAPAum computes the Time-Weighted Average Price of AUM using recent snapshots.
+// Returns the TWAP value or the current AUM if TWAP is disabled or insufficient data.
+func (m msgServerV2) calculateTWAPAum(ctx context.Context, currentAum sdkmath.Int) (sdkmath.Int, error) {
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return currentNav, sdkerrors.Wrap(err, "unable to fetch params")
+		return currentAum, sdkerrors.Wrap(err, "unable to fetch params")
 	}
 
-	// If TWAP is disabled, use current NAV
+	// If TWAP is disabled, use current AUM
 	if !params.TwapConfig.Enabled || params.TwapConfig.WindowSize == 0 {
-		return currentNav, nil
+		return currentAum, nil
 	}
 
 	// Get recent snapshots
-	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, int(params.TwapConfig.WindowSize))
+	snapshots, err := m.GetRecentVaultsV2AUMSnapshots(ctx, int(params.TwapConfig.WindowSize))
 	if err != nil {
-		return currentNav, sdkerrors.Wrap(err, "unable to fetch NAV snapshots")
+		return currentAum, sdkerrors.Wrap(err, "unable to fetch AUM snapshots")
 	}
 
-	// If insufficient snapshots, use current NAV
+	// If insufficient snapshots, use current AUM
 	if len(snapshots) == 0 {
-		return currentNav, nil
+		return currentAum, nil
 	}
 
 	currentHeight := sdk.UnwrapSDKContext(ctx).BlockHeight()
 
 	// Filter snapshots by age (in blocks)
-	validSnapshots := make([]vaultsv2.NAVSnapshot, 0, len(snapshots))
+	validSnapshots := make([]vaultsv2.AUMSnapshot, 0, len(snapshots))
 	for _, snapshot := range snapshots {
 		ageInBlocks := currentHeight - snapshot.BlockHeight
 		// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
@@ -102,35 +102,35 @@ func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.In
 		validSnapshots = append(validSnapshots, snapshot)
 	}
 
-	// If no valid snapshots, use current NAV
+	// If no valid snapshots, use current AUM
 	if len(validSnapshots) == 0 {
-		return currentNav, nil
+		return currentAum, nil
 	}
 
 	// Calculate Time-Weighted Average
 	// We use simple average for now, but could be enhanced to true time-weighting
 	sum := sdkmath.ZeroInt()
 	for _, snapshot := range validSnapshots {
-		sum, err = sum.SafeAdd(snapshot.Nav)
+		sum, err = sum.SafeAdd(snapshot.Aum)
 		if err != nil {
-			return currentNav, sdkerrors.Wrap(err, "overflow in TWAP calculation")
+			return currentAum, sdkerrors.Wrap(err, "overflow in TWAP calculation")
 		}
 	}
 
-	// Include current NAV in the average
-	sum, err = sum.SafeAdd(currentNav)
+	// Include current AUM in the average
+	sum, err = sum.SafeAdd(currentAum)
 	if err != nil {
-		return currentNav, sdkerrors.Wrap(err, "overflow adding current NAV to TWAP")
+		return currentAum, sdkerrors.Wrap(err, "overflow adding current AUM to TWAP")
 	}
 
 	count := int64(len(validSnapshots) + 1)
-	twapNav := sum.QuoRaw(count)
+	twapAum := sum.QuoRaw(count)
 
-	return twapNav, nil
+	return twapAum, nil
 }
 
-// shouldRecordNAVSnapshot determines if a new NAV snapshot should be recorded.
-func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
+// shouldRecordAUMSnapshot determines if a new AUM snapshot should be recorded.
+func (m msgServerV2) shouldRecordAUMSnapshot(ctx context.Context) (bool, error) {
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
 		return false, sdkerrors.Wrap(err, "unable to fetch params")
@@ -147,7 +147,7 @@ func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) 
 	}
 
 	// Get most recent snapshot
-	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, 1)
+	snapshots, err := m.GetRecentVaultsV2AUMSnapshots(ctx, 1)
 	if err != nil {
 		return false, sdkerrors.Wrap(err, "unable to fetch recent snapshots")
 	}
@@ -414,7 +414,7 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 
 	// TODO(Collin): We don't need this line setting DepositsEnabled
 	state.DepositsEnabled = config.Enabled
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -528,7 +528,7 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(principalAmount)
 	}
 
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -808,8 +808,8 @@ func (m msgServerV2) UpdateParams(ctx context.Context, msg *vaultsv2.MsgUpdatePa
 	if msg.Params.MinWithdrawalAmount.IsNegative() {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum withdrawal amount cannot be negative")
 	}
-	if msg.Params.MaxNavChangeBps < 0 {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "maximum NAV change must be non-negative")
+	if msg.Params.MaxAumChangeBps < 0 {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "maximum AUM change must be non-negative")
 	}
 	if msg.Params.WithdrawalRequestTimeout < 0 {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal request timeout must be non-negative")
@@ -1053,7 +1053,7 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -1140,7 +1140,7 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -1390,7 +1390,7 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
 	}
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -1857,7 +1857,7 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal")
 	}
 
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -2048,7 +2048,7 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(principalAmount)
 	}
 
-	state.LastNavUpdate = headerInfo.Time
+	state.LastAumUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -2093,7 +2093,7 @@ func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.Ms
 		TotalPositionsProcessed: result.TotalPositionsProcessed,
 		TotalPositions:          result.TotalPositions,
 		Complete:                result.Complete,
-		AppliedNav:              result.AppliedNav,
+		AppliedAum:              result.AppliedAum,
 		YieldDistributed:        result.YieldDistributed,
 		Manager:                 msg.Manager,
 		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
@@ -2107,7 +2107,7 @@ func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.Ms
 		TotalPositionsProcessed: result.TotalPositionsProcessed,
 		TotalPositions:          result.TotalPositions,
 		AccountingComplete:      result.Complete,
-		AppliedNav:              result.AppliedNav,
+		AppliedAum:              result.AppliedAum,
 		YieldDistributed:        result.YieldDistributed,
 		NextUser:                result.NextUser,
 		NegativeYieldWarning:    result.NegativeYieldWarning,

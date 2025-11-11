@@ -1006,7 +1006,7 @@ var (
 	fd_AccountingSnapshot_position_id       protoreflect.FieldDescriptor
 	fd_AccountingSnapshot_deposit_amount    protoreflect.FieldDescriptor
 	fd_AccountingSnapshot_accrued_yield     protoreflect.FieldDescriptor
-	fd_AccountingSnapshot_accounting_nav    protoreflect.FieldDescriptor
+	fd_AccountingSnapshot_accounting_aum    protoreflect.FieldDescriptor
 	fd_AccountingSnapshot_created_at_height protoreflect.FieldDescriptor
 )
 
@@ -1017,7 +1017,7 @@ func init() {
 	fd_AccountingSnapshot_position_id = md_AccountingSnapshot.Fields().ByName("position_id")
 	fd_AccountingSnapshot_deposit_amount = md_AccountingSnapshot.Fields().ByName("deposit_amount")
 	fd_AccountingSnapshot_accrued_yield = md_AccountingSnapshot.Fields().ByName("accrued_yield")
-	fd_AccountingSnapshot_accounting_nav = md_AccountingSnapshot.Fields().ByName("accounting_nav")
+	fd_AccountingSnapshot_accounting_aum = md_AccountingSnapshot.Fields().ByName("accounting_aum")
 	fd_AccountingSnapshot_created_at_height = md_AccountingSnapshot.Fields().ByName("created_at_height")
 }
 
@@ -1110,9 +1110,9 @@ func (x *fastReflection_AccountingSnapshot) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if x.AccountingNav != "" {
-		value := protoreflect.ValueOfString(x.AccountingNav)
-		if !f(fd_AccountingSnapshot_accounting_nav, value) {
+	if x.AccountingAum != "" {
+		value := protoreflect.ValueOfString(x.AccountingAum)
+		if !f(fd_AccountingSnapshot_accounting_aum, value) {
 			return
 		}
 	}
@@ -1145,8 +1145,8 @@ func (x *fastReflection_AccountingSnapshot) Has(fd protoreflect.FieldDescriptor)
 		return x.DepositAmount != ""
 	case "noble.dollar.vaults.v2.AccountingSnapshot.accrued_yield":
 		return x.AccruedYield != ""
-	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_nav":
-		return x.AccountingNav != ""
+	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_aum":
+		return x.AccountingAum != ""
 	case "noble.dollar.vaults.v2.AccountingSnapshot.created_at_height":
 		return x.CreatedAtHeight != int64(0)
 	default:
@@ -1173,8 +1173,8 @@ func (x *fastReflection_AccountingSnapshot) Clear(fd protoreflect.FieldDescripto
 		x.DepositAmount = ""
 	case "noble.dollar.vaults.v2.AccountingSnapshot.accrued_yield":
 		x.AccruedYield = ""
-	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_nav":
-		x.AccountingNav = ""
+	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_aum":
+		x.AccountingAum = ""
 	case "noble.dollar.vaults.v2.AccountingSnapshot.created_at_height":
 		x.CreatedAtHeight = int64(0)
 	default:
@@ -1205,8 +1205,8 @@ func (x *fastReflection_AccountingSnapshot) Get(descriptor protoreflect.FieldDes
 	case "noble.dollar.vaults.v2.AccountingSnapshot.accrued_yield":
 		value := x.AccruedYield
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_nav":
-		value := x.AccountingNav
+	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_aum":
+		value := x.AccountingAum
 		return protoreflect.ValueOfString(value)
 	case "noble.dollar.vaults.v2.AccountingSnapshot.created_at_height":
 		value := x.CreatedAtHeight
@@ -1239,8 +1239,8 @@ func (x *fastReflection_AccountingSnapshot) Set(fd protoreflect.FieldDescriptor,
 		x.DepositAmount = value.Interface().(string)
 	case "noble.dollar.vaults.v2.AccountingSnapshot.accrued_yield":
 		x.AccruedYield = value.Interface().(string)
-	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_nav":
-		x.AccountingNav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_aum":
+		x.AccountingAum = value.Interface().(string)
 	case "noble.dollar.vaults.v2.AccountingSnapshot.created_at_height":
 		x.CreatedAtHeight = value.Int()
 	default:
@@ -1271,8 +1271,8 @@ func (x *fastReflection_AccountingSnapshot) Mutable(fd protoreflect.FieldDescrip
 		panic(fmt.Errorf("field deposit_amount of message noble.dollar.vaults.v2.AccountingSnapshot is not mutable"))
 	case "noble.dollar.vaults.v2.AccountingSnapshot.accrued_yield":
 		panic(fmt.Errorf("field accrued_yield of message noble.dollar.vaults.v2.AccountingSnapshot is not mutable"))
-	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_nav":
-		panic(fmt.Errorf("field accounting_nav of message noble.dollar.vaults.v2.AccountingSnapshot is not mutable"))
+	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_aum":
+		panic(fmt.Errorf("field accounting_aum of message noble.dollar.vaults.v2.AccountingSnapshot is not mutable"))
 	case "noble.dollar.vaults.v2.AccountingSnapshot.created_at_height":
 		panic(fmt.Errorf("field created_at_height of message noble.dollar.vaults.v2.AccountingSnapshot is not mutable"))
 	default:
@@ -1296,7 +1296,7 @@ func (x *fastReflection_AccountingSnapshot) NewField(fd protoreflect.FieldDescri
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.AccountingSnapshot.accrued_yield":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_nav":
+	case "noble.dollar.vaults.v2.AccountingSnapshot.accounting_aum":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.AccountingSnapshot.created_at_height":
 		return protoreflect.ValueOfInt64(int64(0))
@@ -1384,7 +1384,7 @@ func (x *fastReflection_AccountingSnapshot) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.AccountingNav)
+		l = len(x.AccountingAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1425,10 +1425,10 @@ func (x *fastReflection_AccountingSnapshot) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x30
 		}
-		if len(x.AccountingNav) > 0 {
-			i -= len(x.AccountingNav)
-			copy(dAtA[i:], x.AccountingNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AccountingNav)))
+		if len(x.AccountingAum) > 0 {
+			i -= len(x.AccountingAum)
+			copy(dAtA[i:], x.AccountingAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AccountingAum)))
 			i--
 			dAtA[i] = 0x2a
 		}
@@ -1624,7 +1624,7 @@ func (x *fastReflection_AccountingSnapshot) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountingNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountingAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1652,7 +1652,7 @@ func (x *fastReflection_AccountingSnapshot) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.AccountingNav = string(dAtA[iNdEx:postIndex])
+				x.AccountingAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 6:
 				if wireType != 0 {
@@ -2757,7 +2757,7 @@ var (
 	fd_VaultState_total_users                      protoreflect.FieldDescriptor
 	fd_VaultState_deposits_enabled                 protoreflect.FieldDescriptor
 	fd_VaultState_withdrawals_enabled              protoreflect.FieldDescriptor
-	fd_VaultState_last_nav_update                  protoreflect.FieldDescriptor
+	fd_VaultState_last_aum_update                  protoreflect.FieldDescriptor
 	fd_VaultState_total_deposit_pending_withdrawal protoreflect.FieldDescriptor
 	fd_VaultState_pending_withdrawal_requests      protoreflect.FieldDescriptor
 	fd_VaultState_total_positions                  protoreflect.FieldDescriptor
@@ -2774,7 +2774,7 @@ func init() {
 	fd_VaultState_total_users = md_VaultState.Fields().ByName("total_users")
 	fd_VaultState_deposits_enabled = md_VaultState.Fields().ByName("deposits_enabled")
 	fd_VaultState_withdrawals_enabled = md_VaultState.Fields().ByName("withdrawals_enabled")
-	fd_VaultState_last_nav_update = md_VaultState.Fields().ByName("last_nav_update")
+	fd_VaultState_last_aum_update = md_VaultState.Fields().ByName("last_aum_update")
 	fd_VaultState_total_deposit_pending_withdrawal = md_VaultState.Fields().ByName("total_deposit_pending_withdrawal")
 	fd_VaultState_pending_withdrawal_requests = md_VaultState.Fields().ByName("pending_withdrawal_requests")
 	fd_VaultState_total_positions = md_VaultState.Fields().ByName("total_positions")
@@ -2878,9 +2878,9 @@ func (x *fastReflection_VaultState) Range(f func(protoreflect.FieldDescriptor, p
 			return
 		}
 	}
-	if x.LastNavUpdate != nil {
-		value := protoreflect.ValueOfMessage(x.LastNavUpdate.ProtoReflect())
-		if !f(fd_VaultState_last_nav_update, value) {
+	if x.LastAumUpdate != nil {
+		value := protoreflect.ValueOfMessage(x.LastAumUpdate.ProtoReflect())
+		if !f(fd_VaultState_last_aum_update, value) {
 			return
 		}
 	}
@@ -2945,8 +2945,8 @@ func (x *fastReflection_VaultState) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.DepositsEnabled != false
 	case "noble.dollar.vaults.v2.VaultState.withdrawals_enabled":
 		return x.WithdrawalsEnabled != false
-	case "noble.dollar.vaults.v2.VaultState.last_nav_update":
-		return x.LastNavUpdate != nil
+	case "noble.dollar.vaults.v2.VaultState.last_aum_update":
+		return x.LastAumUpdate != nil
 	case "noble.dollar.vaults.v2.VaultState.total_deposit_pending_withdrawal":
 		return x.TotalDepositPendingWithdrawal != ""
 	case "noble.dollar.vaults.v2.VaultState.pending_withdrawal_requests":
@@ -2985,8 +2985,8 @@ func (x *fastReflection_VaultState) Clear(fd protoreflect.FieldDescriptor) {
 		x.DepositsEnabled = false
 	case "noble.dollar.vaults.v2.VaultState.withdrawals_enabled":
 		x.WithdrawalsEnabled = false
-	case "noble.dollar.vaults.v2.VaultState.last_nav_update":
-		x.LastNavUpdate = nil
+	case "noble.dollar.vaults.v2.VaultState.last_aum_update":
+		x.LastAumUpdate = nil
 	case "noble.dollar.vaults.v2.VaultState.total_deposit_pending_withdrawal":
 		x.TotalDepositPendingWithdrawal = ""
 	case "noble.dollar.vaults.v2.VaultState.pending_withdrawal_requests":
@@ -3030,8 +3030,8 @@ func (x *fastReflection_VaultState) Get(descriptor protoreflect.FieldDescriptor)
 	case "noble.dollar.vaults.v2.VaultState.withdrawals_enabled":
 		value := x.WithdrawalsEnabled
 		return protoreflect.ValueOfBool(value)
-	case "noble.dollar.vaults.v2.VaultState.last_nav_update":
-		value := x.LastNavUpdate
+	case "noble.dollar.vaults.v2.VaultState.last_aum_update":
+		value := x.LastAumUpdate
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "noble.dollar.vaults.v2.VaultState.total_deposit_pending_withdrawal":
 		value := x.TotalDepositPendingWithdrawal
@@ -3081,8 +3081,8 @@ func (x *fastReflection_VaultState) Set(fd protoreflect.FieldDescriptor, value p
 		x.DepositsEnabled = value.Bool()
 	case "noble.dollar.vaults.v2.VaultState.withdrawals_enabled":
 		x.WithdrawalsEnabled = value.Bool()
-	case "noble.dollar.vaults.v2.VaultState.last_nav_update":
-		x.LastNavUpdate = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.VaultState.last_aum_update":
+		x.LastAumUpdate = value.Message().Interface().(*timestamppb.Timestamp)
 	case "noble.dollar.vaults.v2.VaultState.total_deposit_pending_withdrawal":
 		x.TotalDepositPendingWithdrawal = value.Interface().(string)
 	case "noble.dollar.vaults.v2.VaultState.pending_withdrawal_requests":
@@ -3115,11 +3115,11 @@ func (x *fastReflection_VaultState) Set(fd protoreflect.FieldDescriptor, value p
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_VaultState) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.VaultState.last_nav_update":
-		if x.LastNavUpdate == nil {
-			x.LastNavUpdate = new(timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.VaultState.last_aum_update":
+		if x.LastAumUpdate == nil {
+			x.LastAumUpdate = new(timestamppb.Timestamp)
 		}
-		return protoreflect.ValueOfMessage(x.LastNavUpdate.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.LastAumUpdate.ProtoReflect())
 	case "noble.dollar.vaults.v2.VaultState.total_deposits":
 		panic(fmt.Errorf("field total_deposits of message noble.dollar.vaults.v2.VaultState is not mutable"))
 	case "noble.dollar.vaults.v2.VaultState.total_accrued_yield":
@@ -3165,7 +3165,7 @@ func (x *fastReflection_VaultState) NewField(fd protoreflect.FieldDescriptor) pr
 		return protoreflect.ValueOfBool(false)
 	case "noble.dollar.vaults.v2.VaultState.withdrawals_enabled":
 		return protoreflect.ValueOfBool(false)
-	case "noble.dollar.vaults.v2.VaultState.last_nav_update":
+	case "noble.dollar.vaults.v2.VaultState.last_aum_update":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "noble.dollar.vaults.v2.VaultState.total_deposit_pending_withdrawal":
@@ -3266,8 +3266,8 @@ func (x *fastReflection_VaultState) ProtoMethods() *protoiface.Methods {
 		if x.WithdrawalsEnabled {
 			n += 2
 		}
-		if x.LastNavUpdate != nil {
-			l = options.Size(x.LastNavUpdate)
+		if x.LastAumUpdate != nil {
+			l = options.Size(x.LastAumUpdate)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		l = len(x.TotalDepositPendingWithdrawal)
@@ -3359,8 +3359,8 @@ func (x *fastReflection_VaultState) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x42
 		}
-		if x.LastNavUpdate != nil {
-			encoded, err := options.Marshal(x.LastNavUpdate)
+		if x.LastAumUpdate != nil {
+			encoded, err := options.Marshal(x.LastAumUpdate)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3586,7 +3586,7 @@ func (x *fastReflection_VaultState) ProtoMethods() *protoiface.Methods {
 				x.WithdrawalsEnabled = bool(v != 0)
 			case 7:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LastNavUpdate", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LastAumUpdate", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -3613,10 +3613,10 @@ func (x *fastReflection_VaultState) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.LastNavUpdate == nil {
-					x.LastNavUpdate = &timestamppb.Timestamp{}
+				if x.LastAumUpdate == nil {
+					x.LastAumUpdate = &timestamppb.Timestamp{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.LastNavUpdate); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.LastAumUpdate); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -7902,29 +7902,29 @@ func (x *fastReflection_TWAPConfig) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_NAVSnapshot              protoreflect.MessageDescriptor
-	fd_NAVSnapshot_nav          protoreflect.FieldDescriptor
-	fd_NAVSnapshot_block_height protoreflect.FieldDescriptor
-	fd_NAVSnapshot_total_shares protoreflect.FieldDescriptor
+	md_AUMSnapshot              protoreflect.MessageDescriptor
+	fd_AUMSnapshot_aum          protoreflect.FieldDescriptor
+	fd_AUMSnapshot_block_height protoreflect.FieldDescriptor
+	fd_AUMSnapshot_total_shares protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_noble_dollar_vaults_v2_vaults_proto_init()
-	md_NAVSnapshot = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("NAVSnapshot")
-	fd_NAVSnapshot_nav = md_NAVSnapshot.Fields().ByName("nav")
-	fd_NAVSnapshot_block_height = md_NAVSnapshot.Fields().ByName("block_height")
-	fd_NAVSnapshot_total_shares = md_NAVSnapshot.Fields().ByName("total_shares")
+	md_AUMSnapshot = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("AUMSnapshot")
+	fd_AUMSnapshot_aum = md_AUMSnapshot.Fields().ByName("aum")
+	fd_AUMSnapshot_block_height = md_AUMSnapshot.Fields().ByName("block_height")
+	fd_AUMSnapshot_total_shares = md_AUMSnapshot.Fields().ByName("total_shares")
 }
 
-var _ protoreflect.Message = (*fastReflection_NAVSnapshot)(nil)
+var _ protoreflect.Message = (*fastReflection_AUMSnapshot)(nil)
 
-type fastReflection_NAVSnapshot NAVSnapshot
+type fastReflection_AUMSnapshot AUMSnapshot
 
-func (x *NAVSnapshot) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_NAVSnapshot)(x)
+func (x *AUMSnapshot) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AUMSnapshot)(x)
 }
 
-func (x *NAVSnapshot) slowProtoReflect() protoreflect.Message {
+func (x *AUMSnapshot) slowProtoReflect() protoreflect.Message {
 	mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -7936,43 +7936,43 @@ func (x *NAVSnapshot) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_NAVSnapshot_messageType fastReflection_NAVSnapshot_messageType
-var _ protoreflect.MessageType = fastReflection_NAVSnapshot_messageType{}
+var _fastReflection_AUMSnapshot_messageType fastReflection_AUMSnapshot_messageType
+var _ protoreflect.MessageType = fastReflection_AUMSnapshot_messageType{}
 
-type fastReflection_NAVSnapshot_messageType struct{}
+type fastReflection_AUMSnapshot_messageType struct{}
 
-func (x fastReflection_NAVSnapshot_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_NAVSnapshot)(nil)
+func (x fastReflection_AUMSnapshot_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AUMSnapshot)(nil)
 }
-func (x fastReflection_NAVSnapshot_messageType) New() protoreflect.Message {
-	return new(fastReflection_NAVSnapshot)
+func (x fastReflection_AUMSnapshot_messageType) New() protoreflect.Message {
+	return new(fastReflection_AUMSnapshot)
 }
-func (x fastReflection_NAVSnapshot_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVSnapshot
+func (x fastReflection_AUMSnapshot_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMSnapshot
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_NAVSnapshot) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVSnapshot
+func (x *fastReflection_AUMSnapshot) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMSnapshot
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_NAVSnapshot) Type() protoreflect.MessageType {
-	return _fastReflection_NAVSnapshot_messageType
+func (x *fastReflection_AUMSnapshot) Type() protoreflect.MessageType {
+	return _fastReflection_AUMSnapshot_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_NAVSnapshot) New() protoreflect.Message {
-	return new(fastReflection_NAVSnapshot)
+func (x *fastReflection_AUMSnapshot) New() protoreflect.Message {
+	return new(fastReflection_AUMSnapshot)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_NAVSnapshot) Interface() protoreflect.ProtoMessage {
-	return (*NAVSnapshot)(x)
+func (x *fastReflection_AUMSnapshot) Interface() protoreflect.ProtoMessage {
+	return (*AUMSnapshot)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -7980,22 +7980,22 @@ func (x *fastReflection_NAVSnapshot) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_NAVSnapshot) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Nav != "" {
-		value := protoreflect.ValueOfString(x.Nav)
-		if !f(fd_NAVSnapshot_nav, value) {
+func (x *fastReflection_AUMSnapshot) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Aum != "" {
+		value := protoreflect.ValueOfString(x.Aum)
+		if !f(fd_AUMSnapshot_aum, value) {
 			return
 		}
 	}
 	if x.BlockHeight != int64(0) {
 		value := protoreflect.ValueOfInt64(x.BlockHeight)
-		if !f(fd_NAVSnapshot_block_height, value) {
+		if !f(fd_AUMSnapshot_block_height, value) {
 			return
 		}
 	}
 	if x.TotalShares != "" {
 		value := protoreflect.ValueOfString(x.TotalShares)
-		if !f(fd_NAVSnapshot_total_shares, value) {
+		if !f(fd_AUMSnapshot_total_shares, value) {
 			return
 		}
 	}
@@ -8012,19 +8012,19 @@ func (x *fastReflection_NAVSnapshot) Range(f func(protoreflect.FieldDescriptor, 
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_NAVSnapshot) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_AUMSnapshot) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
-		return x.Nav != ""
-	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+	case "noble.dollar.vaults.v2.AUMSnapshot.aum":
+		return x.Aum != ""
+	case "noble.dollar.vaults.v2.AUMSnapshot.block_height":
 		return x.BlockHeight != int64(0)
-	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+	case "noble.dollar.vaults.v2.AUMSnapshot.total_shares":
 		return x.TotalShares != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMSnapshot"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMSnapshot does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8034,19 +8034,19 @@ func (x *fastReflection_NAVSnapshot) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVSnapshot) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_AUMSnapshot) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
-		x.Nav = ""
-	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+	case "noble.dollar.vaults.v2.AUMSnapshot.aum":
+		x.Aum = ""
+	case "noble.dollar.vaults.v2.AUMSnapshot.block_height":
 		x.BlockHeight = int64(0)
-	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+	case "noble.dollar.vaults.v2.AUMSnapshot.total_shares":
 		x.TotalShares = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMSnapshot"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMSnapshot does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8056,22 +8056,22 @@ func (x *fastReflection_NAVSnapshot) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_NAVSnapshot) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMSnapshot) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
-		value := x.Nav
+	case "noble.dollar.vaults.v2.AUMSnapshot.aum":
+		value := x.Aum
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+	case "noble.dollar.vaults.v2.AUMSnapshot.block_height":
 		value := x.BlockHeight
 		return protoreflect.ValueOfInt64(value)
-	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+	case "noble.dollar.vaults.v2.AUMSnapshot.total_shares":
 		value := x.TotalShares
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMSnapshot"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMSnapshot does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8085,19 +8085,19 @@ func (x *fastReflection_NAVSnapshot) Get(descriptor protoreflect.FieldDescriptor
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVSnapshot) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_AUMSnapshot) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
-		x.Nav = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+	case "noble.dollar.vaults.v2.AUMSnapshot.aum":
+		x.Aum = value.Interface().(string)
+	case "noble.dollar.vaults.v2.AUMSnapshot.block_height":
 		x.BlockHeight = value.Int()
-	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+	case "noble.dollar.vaults.v2.AUMSnapshot.total_shares":
 		x.TotalShares = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMSnapshot"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMSnapshot does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8111,48 +8111,48 @@ func (x *fastReflection_NAVSnapshot) Set(fd protoreflect.FieldDescriptor, value 
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVSnapshot) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMSnapshot) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
-		panic(fmt.Errorf("field nav of message noble.dollar.vaults.v2.NAVSnapshot is not mutable"))
-	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
-		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.NAVSnapshot is not mutable"))
-	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
-		panic(fmt.Errorf("field total_shares of message noble.dollar.vaults.v2.NAVSnapshot is not mutable"))
+	case "noble.dollar.vaults.v2.AUMSnapshot.aum":
+		panic(fmt.Errorf("field aum of message noble.dollar.vaults.v2.AUMSnapshot is not mutable"))
+	case "noble.dollar.vaults.v2.AUMSnapshot.block_height":
+		panic(fmt.Errorf("field block_height of message noble.dollar.vaults.v2.AUMSnapshot is not mutable"))
+	case "noble.dollar.vaults.v2.AUMSnapshot.total_shares":
+		panic(fmt.Errorf("field total_shares of message noble.dollar.vaults.v2.AUMSnapshot is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMSnapshot"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMSnapshot does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_NAVSnapshot) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMSnapshot) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVSnapshot.nav":
+	case "noble.dollar.vaults.v2.AUMSnapshot.aum":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVSnapshot.block_height":
+	case "noble.dollar.vaults.v2.AUMSnapshot.block_height":
 		return protoreflect.ValueOfInt64(int64(0))
-	case "noble.dollar.vaults.v2.NAVSnapshot.total_shares":
+	case "noble.dollar.vaults.v2.AUMSnapshot.total_shares":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVSnapshot"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMSnapshot"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVSnapshot does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMSnapshot does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_NAVSnapshot) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_AUMSnapshot) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.NAVSnapshot", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.AUMSnapshot", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8160,7 +8160,7 @@ func (x *fastReflection_NAVSnapshot) WhichOneof(d protoreflect.OneofDescriptor) 
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_NAVSnapshot) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_AUMSnapshot) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -8171,7 +8171,7 @@ func (x *fastReflection_NAVSnapshot) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVSnapshot) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_AUMSnapshot) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -8183,7 +8183,7 @@ func (x *fastReflection_NAVSnapshot) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_NAVSnapshot) IsValid() bool {
+func (x *fastReflection_AUMSnapshot) IsValid() bool {
 	return x != nil
 }
 
@@ -8193,9 +8193,9 @@ func (x *fastReflection_NAVSnapshot) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_AUMSnapshot) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*NAVSnapshot)
+		x := input.Message.Interface().(*AUMSnapshot)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8207,7 +8207,7 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.Nav)
+		l = len(x.Aum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -8228,7 +8228,7 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*NAVSnapshot)
+		x := input.Message.Interface().(*AUMSnapshot)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8259,10 +8259,10 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x10
 		}
-		if len(x.Nav) > 0 {
-			i -= len(x.Nav)
-			copy(dAtA[i:], x.Nav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Nav)))
+		if len(x.Aum) > 0 {
+			i -= len(x.Aum)
+			copy(dAtA[i:], x.Aum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Aum)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -8277,7 +8277,7 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*NAVSnapshot)
+		x := input.Message.Interface().(*AUMSnapshot)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8309,15 +8309,15 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVSnapshot: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMSnapshot: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVSnapshot: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMSnapshot: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Nav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Aum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -8345,7 +8345,7 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Nav = string(dAtA[iNdEx:postIndex])
+				x.Aum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 0 {
@@ -8436,8 +8436,8 @@ func (x *fastReflection_NAVSnapshot) ProtoMethods() *protoiface.Methods {
 var (
 	md_AccountingCursor                          protoreflect.MessageDescriptor
 	fd_AccountingCursor_last_processed_user      protoreflect.FieldDescriptor
-	fd_AccountingCursor_accounting_nav           protoreflect.FieldDescriptor
-	fd_AccountingCursor_accounting_nav_timestamp protoreflect.FieldDescriptor
+	fd_AccountingCursor_accounting_aum           protoreflect.FieldDescriptor
+	fd_AccountingCursor_accounting_aum_timestamp protoreflect.FieldDescriptor
 	fd_AccountingCursor_positions_processed      protoreflect.FieldDescriptor
 	fd_AccountingCursor_total_positions          protoreflect.FieldDescriptor
 	fd_AccountingCursor_in_progress              protoreflect.FieldDescriptor
@@ -8449,8 +8449,8 @@ func init() {
 	file_noble_dollar_vaults_v2_vaults_proto_init()
 	md_AccountingCursor = File_noble_dollar_vaults_v2_vaults_proto.Messages().ByName("AccountingCursor")
 	fd_AccountingCursor_last_processed_user = md_AccountingCursor.Fields().ByName("last_processed_user")
-	fd_AccountingCursor_accounting_nav = md_AccountingCursor.Fields().ByName("accounting_nav")
-	fd_AccountingCursor_accounting_nav_timestamp = md_AccountingCursor.Fields().ByName("accounting_nav_timestamp")
+	fd_AccountingCursor_accounting_aum = md_AccountingCursor.Fields().ByName("accounting_aum")
+	fd_AccountingCursor_accounting_aum_timestamp = md_AccountingCursor.Fields().ByName("accounting_aum_timestamp")
 	fd_AccountingCursor_positions_processed = md_AccountingCursor.Fields().ByName("positions_processed")
 	fd_AccountingCursor_total_positions = md_AccountingCursor.Fields().ByName("total_positions")
 	fd_AccountingCursor_in_progress = md_AccountingCursor.Fields().ByName("in_progress")
@@ -8529,15 +8529,15 @@ func (x *fastReflection_AccountingCursor) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.AccountingNav != "" {
-		value := protoreflect.ValueOfString(x.AccountingNav)
-		if !f(fd_AccountingCursor_accounting_nav, value) {
+	if x.AccountingAum != "" {
+		value := protoreflect.ValueOfString(x.AccountingAum)
+		if !f(fd_AccountingCursor_accounting_aum, value) {
 			return
 		}
 	}
-	if x.AccountingNavTimestamp != nil {
-		value := protoreflect.ValueOfMessage(x.AccountingNavTimestamp.ProtoReflect())
-		if !f(fd_AccountingCursor_accounting_nav_timestamp, value) {
+	if x.AccountingAumTimestamp != nil {
+		value := protoreflect.ValueOfMessage(x.AccountingAumTimestamp.ProtoReflect())
+		if !f(fd_AccountingCursor_accounting_aum_timestamp, value) {
 			return
 		}
 	}
@@ -8588,10 +8588,10 @@ func (x *fastReflection_AccountingCursor) Has(fd protoreflect.FieldDescriptor) b
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.AccountingCursor.last_processed_user":
 		return x.LastProcessedUser != ""
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav":
-		return x.AccountingNav != ""
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp":
-		return x.AccountingNavTimestamp != nil
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum":
+		return x.AccountingAum != ""
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp":
+		return x.AccountingAumTimestamp != nil
 	case "noble.dollar.vaults.v2.AccountingCursor.positions_processed":
 		return x.PositionsProcessed != uint64(0)
 	case "noble.dollar.vaults.v2.AccountingCursor.total_positions":
@@ -8620,10 +8620,10 @@ func (x *fastReflection_AccountingCursor) Clear(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.AccountingCursor.last_processed_user":
 		x.LastProcessedUser = ""
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav":
-		x.AccountingNav = ""
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp":
-		x.AccountingNavTimestamp = nil
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum":
+		x.AccountingAum = ""
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp":
+		x.AccountingAumTimestamp = nil
 	case "noble.dollar.vaults.v2.AccountingCursor.positions_processed":
 		x.PositionsProcessed = uint64(0)
 	case "noble.dollar.vaults.v2.AccountingCursor.total_positions":
@@ -8653,11 +8653,11 @@ func (x *fastReflection_AccountingCursor) Get(descriptor protoreflect.FieldDescr
 	case "noble.dollar.vaults.v2.AccountingCursor.last_processed_user":
 		value := x.LastProcessedUser
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav":
-		value := x.AccountingNav
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum":
+		value := x.AccountingAum
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp":
-		value := x.AccountingNavTimestamp
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp":
+		value := x.AccountingAumTimestamp
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "noble.dollar.vaults.v2.AccountingCursor.positions_processed":
 		value := x.PositionsProcessed
@@ -8696,10 +8696,10 @@ func (x *fastReflection_AccountingCursor) Set(fd protoreflect.FieldDescriptor, v
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.AccountingCursor.last_processed_user":
 		x.LastProcessedUser = value.Interface().(string)
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav":
-		x.AccountingNav = value.Interface().(string)
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp":
-		x.AccountingNavTimestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum":
+		x.AccountingAum = value.Interface().(string)
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp":
+		x.AccountingAumTimestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	case "noble.dollar.vaults.v2.AccountingCursor.positions_processed":
 		x.PositionsProcessed = value.Uint()
 	case "noble.dollar.vaults.v2.AccountingCursor.total_positions":
@@ -8730,11 +8730,11 @@ func (x *fastReflection_AccountingCursor) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_AccountingCursor) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp":
-		if x.AccountingNavTimestamp == nil {
-			x.AccountingNavTimestamp = new(timestamppb.Timestamp)
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp":
+		if x.AccountingAumTimestamp == nil {
+			x.AccountingAumTimestamp = new(timestamppb.Timestamp)
 		}
-		return protoreflect.ValueOfMessage(x.AccountingNavTimestamp.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.AccountingAumTimestamp.ProtoReflect())
 	case "noble.dollar.vaults.v2.AccountingCursor.started_at":
 		if x.StartedAt == nil {
 			x.StartedAt = new(timestamppb.Timestamp)
@@ -8742,8 +8742,8 @@ func (x *fastReflection_AccountingCursor) Mutable(fd protoreflect.FieldDescripto
 		return protoreflect.ValueOfMessage(x.StartedAt.ProtoReflect())
 	case "noble.dollar.vaults.v2.AccountingCursor.last_processed_user":
 		panic(fmt.Errorf("field last_processed_user of message noble.dollar.vaults.v2.AccountingCursor is not mutable"))
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav":
-		panic(fmt.Errorf("field accounting_nav of message noble.dollar.vaults.v2.AccountingCursor is not mutable"))
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum":
+		panic(fmt.Errorf("field accounting_aum of message noble.dollar.vaults.v2.AccountingCursor is not mutable"))
 	case "noble.dollar.vaults.v2.AccountingCursor.positions_processed":
 		panic(fmt.Errorf("field positions_processed of message noble.dollar.vaults.v2.AccountingCursor is not mutable"))
 	case "noble.dollar.vaults.v2.AccountingCursor.total_positions":
@@ -8767,9 +8767,9 @@ func (x *fastReflection_AccountingCursor) NewField(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "noble.dollar.vaults.v2.AccountingCursor.last_processed_user":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav":
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp":
+	case "noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "noble.dollar.vaults.v2.AccountingCursor.positions_processed":
@@ -8856,12 +8856,12 @@ func (x *fastReflection_AccountingCursor) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.AccountingNav)
+		l = len(x.AccountingAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.AccountingNavTimestamp != nil {
-			l = options.Size(x.AccountingNavTimestamp)
+		if x.AccountingAumTimestamp != nil {
+			l = options.Size(x.AccountingAumTimestamp)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.PositionsProcessed != 0 {
@@ -8951,8 +8951,8 @@ func (x *fastReflection_AccountingCursor) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x20
 		}
-		if x.AccountingNavTimestamp != nil {
-			encoded, err := options.Marshal(x.AccountingNavTimestamp)
+		if x.AccountingAumTimestamp != nil {
+			encoded, err := options.Marshal(x.AccountingAumTimestamp)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8965,10 +8965,10 @@ func (x *fastReflection_AccountingCursor) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.AccountingNav) > 0 {
-			i -= len(x.AccountingNav)
-			copy(dAtA[i:], x.AccountingNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AccountingNav)))
+		if len(x.AccountingAum) > 0 {
+			i -= len(x.AccountingAum)
+			copy(dAtA[i:], x.AccountingAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AccountingAum)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -9062,7 +9062,7 @@ func (x *fastReflection_AccountingCursor) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountingNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountingAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -9090,11 +9090,11 @@ func (x *fastReflection_AccountingCursor) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.AccountingNav = string(dAtA[iNdEx:postIndex])
+				x.AccountingAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountingNavTimestamp", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AccountingAumTimestamp", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -9121,10 +9121,10 @@ func (x *fastReflection_AccountingCursor) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.AccountingNavTimestamp == nil {
-					x.AccountingNavTimestamp = &timestamppb.Timestamp{}
+				if x.AccountingAumTimestamp == nil {
+					x.AccountingAumTimestamp = &timestamppb.Timestamp{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AccountingNavTimestamp); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AccountingAumTimestamp); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -9498,8 +9498,8 @@ type AccountingSnapshot struct {
 	DepositAmount string `protobuf:"bytes,3,opt,name=deposit_amount,json=depositAmount,proto3" json:"deposit_amount,omitempty"`
 	// New accrued yield after accounting
 	AccruedYield string `protobuf:"bytes,4,opt,name=accrued_yield,json=accruedYield,proto3" json:"accrued_yield,omitempty"`
-	// NAV value used for this snapshot
-	AccountingNav string `protobuf:"bytes,5,opt,name=accounting_nav,json=accountingNav,proto3" json:"accounting_nav,omitempty"`
+	// AUM value used for this snapshot
+	AccountingAum string `protobuf:"bytes,5,opt,name=accounting_aum,json=accountingAum,proto3" json:"accounting_aum,omitempty"`
 	// Block height when this snapshot was created
 	CreatedAtHeight int64 `protobuf:"varint,6,opt,name=created_at_height,json=createdAtHeight,proto3" json:"created_at_height,omitempty"`
 }
@@ -9552,9 +9552,9 @@ func (x *AccountingSnapshot) GetAccruedYield() string {
 	return ""
 }
 
-func (x *AccountingSnapshot) GetAccountingNav() string {
+func (x *AccountingSnapshot) GetAccountingAum() string {
 	if x != nil {
-		return x.AccountingNav
+		return x.AccountingAum
 	}
 	return ""
 }
@@ -9709,8 +9709,8 @@ type VaultState struct {
 	DepositsEnabled bool `protobuf:"varint,5,opt,name=deposits_enabled,json=depositsEnabled,proto3" json:"deposits_enabled,omitempty"`
 	// Whether withdrawals are currently enabled
 	WithdrawalsEnabled bool `protobuf:"varint,6,opt,name=withdrawals_enabled,json=withdrawalsEnabled,proto3" json:"withdrawals_enabled,omitempty"`
-	// Last NAV update timestamp
-	LastNavUpdate *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=last_nav_update,json=lastNavUpdate,proto3" json:"last_nav_update,omitempty"`
+	// Last AUM update timestamp
+	LastAumUpdate *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=last_aum_update,json=lastAumUpdate,proto3" json:"last_aum_update,omitempty"`
 	// Total deposit amount pending withdrawal
 	TotalDepositPendingWithdrawal string `protobuf:"bytes,8,opt,name=total_deposit_pending_withdrawal,json=totalDepositPendingWithdrawal,proto3" json:"total_deposit_pending_withdrawal,omitempty"`
 	// Number of pending withdrawal requests
@@ -9781,9 +9781,9 @@ func (x *VaultState) GetWithdrawalsEnabled() bool {
 	return false
 }
 
-func (x *VaultState) GetLastNavUpdate() *timestamppb.Timestamp {
+func (x *VaultState) GetLastAumUpdate() *timestamppb.Timestamp {
 	if x != nil {
-		return x.LastNavUpdate
+		return x.LastAumUpdate
 	}
 	return nil
 }
@@ -10213,9 +10213,9 @@ type TWAPConfig struct {
 
 	// Whether TWAP is enabled for share pricing
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	// Number of historical NAV snapshots to include in TWAP calculation
+	// Number of historical AUM snapshots to include in TWAP calculation
 	WindowSize uint32 `protobuf:"varint,2,opt,name=window_size,json=windowSize,proto3" json:"window_size,omitempty"`
-	// Minimum time between NAV snapshots (in seconds)
+	// Minimum time between AUM snapshots (in seconds)
 	MinSnapshotInterval int64 `protobuf:"varint,3,opt,name=min_snapshot_interval,json=minSnapshotInterval,proto3" json:"min_snapshot_interval,omitempty"`
 	// Maximum age of snapshots to include (in seconds)
 	MaxSnapshotAge int64 `protobuf:"varint,4,opt,name=max_snapshot_age,json=maxSnapshotAge,proto3" json:"max_snapshot_age,omitempty"`
@@ -10269,22 +10269,22 @@ func (x *TWAPConfig) GetMaxSnapshotAge() int64 {
 	return 0
 }
 
-// NAVSnapshot represents a point-in-time NAV observation for TWAP
-type NAVSnapshot struct {
+// AUMSnapshot represents a point-in-time AUM observation for TWAP
+type AUMSnapshot struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// NAV value at this snapshot
-	Nav string `protobuf:"bytes,1,opt,name=nav,proto3" json:"nav,omitempty"`
+	// AUM value at this snapshot
+	Aum string `protobuf:"bytes,1,opt,name=aum,proto3" json:"aum,omitempty"`
 	// Block height at this snapshot
 	BlockHeight int64 `protobuf:"varint,2,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
 	// Total shares at this snapshot (for reference)
 	TotalShares string `protobuf:"bytes,4,opt,name=total_shares,json=totalShares,proto3" json:"total_shares,omitempty"`
 }
 
-func (x *NAVSnapshot) Reset() {
-	*x = NAVSnapshot{}
+func (x *AUMSnapshot) Reset() {
+	*x = AUMSnapshot{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_noble_dollar_vaults_v2_vaults_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -10292,32 +10292,32 @@ func (x *NAVSnapshot) Reset() {
 	}
 }
 
-func (x *NAVSnapshot) String() string {
+func (x *AUMSnapshot) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NAVSnapshot) ProtoMessage() {}
+func (*AUMSnapshot) ProtoMessage() {}
 
-// Deprecated: Use NAVSnapshot.ProtoReflect.Descriptor instead.
-func (*NAVSnapshot) Descriptor() ([]byte, []int) {
+// Deprecated: Use AUMSnapshot.ProtoReflect.Descriptor instead.
+func (*AUMSnapshot) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_vaults_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *NAVSnapshot) GetNav() string {
+func (x *AUMSnapshot) GetAum() string {
 	if x != nil {
-		return x.Nav
+		return x.Aum
 	}
 	return ""
 }
 
-func (x *NAVSnapshot) GetBlockHeight() int64 {
+func (x *AUMSnapshot) GetBlockHeight() int64 {
 	if x != nil {
 		return x.BlockHeight
 	}
 	return 0
 }
 
-func (x *NAVSnapshot) GetTotalShares() string {
+func (x *AUMSnapshot) GetTotalShares() string {
 	if x != nil {
 		return x.TotalShares
 	}
@@ -10332,10 +10332,10 @@ type AccountingCursor struct {
 
 	// Last user address that was processed
 	LastProcessedUser string `protobuf:"bytes,1,opt,name=last_processed_user,json=lastProcessedUser,proto3" json:"last_processed_user,omitempty"`
-	// NAV value being applied in this accounting session
-	AccountingNav string `protobuf:"bytes,2,opt,name=accounting_nav,json=accountingNav,proto3" json:"accounting_nav,omitempty"`
-	// Timestamp of NAV being applied
-	AccountingNavTimestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=accounting_nav_timestamp,json=accountingNavTimestamp,proto3" json:"accounting_nav_timestamp,omitempty"`
+	// AUM value being applied in this accounting session
+	AccountingAum string `protobuf:"bytes,2,opt,name=accounting_aum,json=accountingAum,proto3" json:"accounting_aum,omitempty"`
+	// Timestamp of AUM being applied
+	AccountingAumTimestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=accounting_aum_timestamp,json=accountingAumTimestamp,proto3" json:"accounting_aum_timestamp,omitempty"`
 	// Number of positions processed in this accounting session
 	PositionsProcessed uint64 `protobuf:"varint,4,opt,name=positions_processed,json=positionsProcessed,proto3" json:"positions_processed,omitempty"`
 	// Total positions to process in this session
@@ -10375,16 +10375,16 @@ func (x *AccountingCursor) GetLastProcessedUser() string {
 	return ""
 }
 
-func (x *AccountingCursor) GetAccountingNav() string {
+func (x *AccountingCursor) GetAccountingAum() string {
 	if x != nil {
-		return x.AccountingNav
+		return x.AccountingAum
 	}
 	return ""
 }
 
-func (x *AccountingCursor) GetAccountingNavTimestamp() *timestamppb.Timestamp {
+func (x *AccountingCursor) GetAccountingAumTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.AccountingNavTimestamp
+		return x.AccountingAumTimestamp
 	}
 	return nil
 }
@@ -10506,12 +10506,12 @@ var file_noble_dollar_vaults_v2_vaults_proto_rawDesc = []byte{
 	0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a,
 	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
 	0x0c, 0x61, 0x63, 0x63, 0x72, 0x75, 0x65, 0x64, 0x59, 0x69, 0x65, 0x6c, 0x64, 0x12, 0x57, 0x0a,
-	0x0e, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x6e, 0x61, 0x76, 0x18,
+	0x0e, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x61, 0x75, 0x6d, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
 	0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49,
 	0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-	0x69, 0x6e, 0x67, 0x4e, 0x61, 0x76, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x69, 0x6e, 0x67, 0x41, 0x75, 0x6d, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
 	0x64, 0x5f, 0x61, 0x74, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28,
 	0x03, 0x52, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x48, 0x65, 0x69, 0x67,
 	0x68, 0x74, 0x22, 0x80, 0x06, 0x0a, 0x11, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61,
@@ -10583,11 +10583,11 @@ var file_noble_dollar_vaults_v2_vaults_proto_rawDesc = []byte{
 	0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x73, 0x5f, 0x65, 0x6e, 0x61, 0x62, 0x6c,
 	0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x12, 0x77, 0x69, 0x74, 0x68, 0x64, 0x72,
 	0x61, 0x77, 0x61, 0x6c, 0x73, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x4c, 0x0a, 0x0f,
-	0x6c, 0x61, 0x73, 0x74, 0x5f, 0x6e, 0x61, 0x76, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x18,
+	0x6c, 0x61, 0x73, 0x74, 0x5f, 0x61, 0x75, 0x6d, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x18,
 	0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
 	0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0d, 0x6c, 0x61, 0x73,
-	0x74, 0x4e, 0x61, 0x76, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x79, 0x0a, 0x20, 0x74, 0x6f,
+	0x74, 0x41, 0x75, 0x6d, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x79, 0x0a, 0x20, 0x74, 0x6f,
 	0x74, 0x61, 0x6c, 0x5f, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x6e, 0x64,
 	0x69, 0x6e, 0x67, 0x5f, 0x77, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x18, 0x08,
 	0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f,
@@ -10755,12 +10755,12 @@ var file_noble_dollar_vaults_v2_vaults_proto_rawDesc = []byte{
 	0x65, 0x72, 0x76, 0x61, 0x6c, 0x12, 0x28, 0x0a, 0x10, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x6e, 0x61,
 	0x70, 0x73, 0x68, 0x6f, 0x74, 0x5f, 0x61, 0x67, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52,
 	0x0e, 0x6d, 0x61, 0x78, 0x53, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x41, 0x67, 0x65, 0x22,
-	0xc9, 0x01, 0x0a, 0x0b, 0x4e, 0x41, 0x56, 0x53, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x12,
-	0x42, 0x0a, 0x03, 0x6e, 0x61, 0x76, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde,
+	0xc9, 0x01, 0x0a, 0x0b, 0x41, 0x55, 0x4d, 0x53, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x12,
+	0x42, 0x0a, 0x03, 0x61, 0x75, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde,
 	0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,
 	0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x03,
-	0x6e, 0x61, 0x76, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x68, 0x65, 0x69,
+	0x61, 0x75, 0x6d, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x68, 0x65, 0x69,
 	0x67, 0x68, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
 	0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x53, 0x0a, 0x0c, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f,
 	0x73, 0x68, 0x61, 0x72, 0x65, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde,
@@ -10774,17 +10774,17 @@ var file_noble_dollar_vaults_v2_vaults_proto_rawDesc = []byte{
 	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
 	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x11, 0x6c, 0x61, 0x73, 0x74, 0x50, 0x72, 0x6f,
 	0x63, 0x65, 0x73, 0x73, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x12, 0x57, 0x0a, 0x0e, 0x61, 0x63,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x6e, 0x61, 0x76, 0x18, 0x02, 0x20, 0x01,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x61, 0x75, 0x6d, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e,
 	0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8,
 	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67,
-	0x4e, 0x61, 0x76, 0x12, 0x5e, 0x0a, 0x18, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e,
-	0x67, 0x5f, 0x6e, 0x61, 0x76, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18,
+	0x41, 0x75, 0x6d, 0x12, 0x5e, 0x0a, 0x18, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e,
+	0x67, 0x5f, 0x61, 0x75, 0x6d, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18,
 	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
 	0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x16, 0x61, 0x63, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x4e, 0x61, 0x76, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x75, 0x6d, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
 	0x61, 0x6d, 0x70, 0x12, 0x2f, 0x0a, 0x13, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x73,
 	0x5f, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04,
 	0x52, 0x12, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x50, 0x72, 0x6f, 0x63, 0x65,
@@ -10862,7 +10862,7 @@ var file_noble_dollar_vaults_v2_vaults_proto_goTypes = []interface{}{
 	(*DepositLimit)(nil),          // 9: noble.dollar.vaults.v2.DepositLimit
 	(*DepositVelocity)(nil),       // 10: noble.dollar.vaults.v2.DepositVelocity
 	(*TWAPConfig)(nil),            // 11: noble.dollar.vaults.v2.TWAPConfig
-	(*NAVSnapshot)(nil),           // 12: noble.dollar.vaults.v2.NAVSnapshot
+	(*AUMSnapshot)(nil),           // 12: noble.dollar.vaults.v2.AUMSnapshot
 	(*AccountingCursor)(nil),      // 13: noble.dollar.vaults.v2.AccountingCursor
 	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
 }
@@ -10872,10 +10872,10 @@ var file_noble_dollar_vaults_v2_vaults_proto_depIdxs = []int32{
 	14, // 2: noble.dollar.vaults.v2.WithdrawalRequest.request_time:type_name -> google.protobuf.Timestamp
 	14, // 3: noble.dollar.vaults.v2.WithdrawalRequest.unlock_time:type_name -> google.protobuf.Timestamp
 	0,  // 4: noble.dollar.vaults.v2.WithdrawalRequest.status:type_name -> noble.dollar.vaults.v2.WithdrawalRequestStatus
-	14, // 5: noble.dollar.vaults.v2.VaultState.last_nav_update:type_name -> google.protobuf.Timestamp
+	14, // 5: noble.dollar.vaults.v2.VaultState.last_aum_update:type_name -> google.protobuf.Timestamp
 	14, // 6: noble.dollar.vaults.v2.YieldCalculation.calculation_time:type_name -> google.protobuf.Timestamp
 	14, // 7: noble.dollar.vaults.v2.YieldDistribution.distribution_time:type_name -> google.protobuf.Timestamp
-	14, // 8: noble.dollar.vaults.v2.AccountingCursor.accounting_nav_timestamp:type_name -> google.protobuf.Timestamp
+	14, // 8: noble.dollar.vaults.v2.AccountingCursor.accounting_aum_timestamp:type_name -> google.protobuf.Timestamp
 	14, // 9: noble.dollar.vaults.v2.AccountingCursor.started_at:type_name -> google.protobuf.Timestamp
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
@@ -11023,7 +11023,7 @@ func file_noble_dollar_vaults_v2_vaults_proto_init() {
 			}
 		}
 		file_noble_dollar_vaults_v2_vaults_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NAVSnapshot); i {
+			switch v := v.(*AUMSnapshot); i {
 			case 0:
 				return &v.state
 			case 1:

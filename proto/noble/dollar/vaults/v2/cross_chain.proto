@@ -152,7 +152,7 @@ message InflightFund {
   // Current status
   InflightStatus status = 10;
 
-  // Value at initiation (for NAV calculation)
+  // Value at initiation (for AUM calculation)
   string value_at_initiation = 11 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
@@ -239,8 +239,8 @@ enum InflightStatus {
   INFLIGHT_TIMEOUT = 3;
 }
 
-// NAVOracleUpdate represents an oracle price update received via cross-chain messaging
-message NAVOracleUpdate {
+// AUMOracleUpdate represents an oracle price update received via cross-chain messaging
+message AUMOracleUpdate {
   // Position identifier this update is for
   uint64 position_id = 1;
   // Current share price

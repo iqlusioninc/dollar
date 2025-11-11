@@ -125,9 +125,9 @@ message StalenessConfig {
   int64 max_staleness = 3;
 }
 
-// NAVPayload represents the oracle update payload (105 bytes when encoded)
-message NAVPayload {
-  // Message type (0x01 for NAV update)
+// AUMPayload represents the oracle update payload (105 bytes when encoded)
+message AUMPayload {
+  // Message type (0x01 for AUM update)
   uint32 message_type = 1;
 
   // Position identifier (32 bytes)
@@ -253,7 +253,7 @@ message CrossChainOracleMessage {
   // Hyperlane metadata for verification
   bytes metadata = 4;
 
-  // NAV oracle update payload (105 bytes)
+  // AUM oracle update payload (105 bytes)
   bytes payload = 5;
 
   // Timestamp when received
@@ -295,8 +295,8 @@ message OracleUpdateResult {
     (amino.dont_omitempty) = true
   ];
 
-  // Updated total NAV
-  string updated_nav = 5 [
+  // Updated total AUM
+  string updated_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

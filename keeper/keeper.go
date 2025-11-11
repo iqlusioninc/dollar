@@ -87,7 +87,7 @@ type Keeper struct {
 	VaultsV2PendingWithdrawalsAmount      collections.Item[math.Int]
 	VaultsV2WithdrawalQueue               collections.Map[uint64, vaultsv2.WithdrawalRequest]
 	VaultsV2WithdrawalNextID              collections.Item[uint64]
-	VaultsV2NAVInfo                       collections.Item[vaultsv2.NAVInfo]
+	VaultsV2AUMInfo                       collections.Item[vaultsv2.AUMInfo]
 	VaultsV2VaultState                    collections.Item[vaultsv2.VaultState]
 	VaultsV2AccountingCursor              collections.Item[vaultsv2.AccountingCursor]
 	VaultsV2AccountingSnapshots           collections.Map[[]byte, vaultsv2.AccountingSnapshot]
@@ -103,8 +103,8 @@ type Keeper struct {
 	VaultsV2OracleParams                  collections.Item[vaultsv2.OracleGovernanceParams]
 	VaultsV2InflightValueByRoute          collections.Map[uint32, math.Int]
 	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
-	VaultsV2NAVSnapshots                  collections.Map[int64, vaultsv2.NAVSnapshot]
-	VaultsV2NAVSnapshotNextID             collections.Item[int64]
+	VaultsV2AUMSnapshots                  collections.Map[int64, vaultsv2.AUMSnapshot]
+	VaultsV2AUMSnapshotNextID             collections.Item[int64]
 	VaultsV2CircuitBreakerActive          collections.Item[bool]
 	VaultsV2CircuitBreakerTrips           collections.Map[uint64, vaultsv2.CircuitBreakerTrip]
 	VaultsV2CircuitBreakerNextID          collections.Item[uint64]
@@ -194,7 +194,7 @@ func NewKeeper(
 		VaultsV2PendingWithdrawalsAmount:      collections.NewItem(builder, vaultsv2.PendingWithdrawalsKey, "vaults_v2_pending_withdrawals", sdk.IntValue),
 		VaultsV2WithdrawalQueue:               collections.NewMap(builder, vaultsv2.WithdrawalQueuePrefix, "vaults_v2_withdrawal_queue", collections.Uint64Key, codec.CollValue[vaultsv2.WithdrawalRequest](cdc)),
 		VaultsV2WithdrawalNextID:              collections.NewItem(builder, vaultsv2.WithdrawalQueueNextIDKey, "vaults_v2_withdrawal_next_id", collections.Uint64Value),
-		VaultsV2NAVInfo:                       collections.NewItem(builder, vaultsv2.NAVInfoKey, "vaults_v2_nav_info", codec.CollValue[vaultsv2.NAVInfo](cdc)),
+		VaultsV2AUMInfo:                       collections.NewItem(builder, vaultsv2.AUMInfoKey, "vaults_v2_aum_info", codec.CollValue[vaultsv2.AUMInfo](cdc)),
 		VaultsV2VaultState:                    collections.NewItem(builder, vaultsv2.VaultStateKey, "vaults_v2_vault_state", codec.CollValue[vaultsv2.VaultState](cdc)),
 		VaultsV2AccountingCursor:              collections.NewItem(builder, vaultsv2.AccountingCursorKey, "vaults_v2_accounting_cursor", codec.CollValue[vaultsv2.AccountingCursor](cdc)),
 		VaultsV2AccountingSnapshots:           collections.NewMap(builder, vaultsv2.AccountingSnapshotPrefix, "vaults_v2_accounting_snapshots", collections.BytesKey, codec.CollValue[vaultsv2.AccountingSnapshot](cdc)),
@@ -210,8 +210,8 @@ func NewKeeper(
 		VaultsV2OracleParams:                  collections.NewItem(builder, vaultsv2.OracleParamsKey, "vaults_v2_oracle_params", codec.CollValue[vaultsv2.OracleGovernanceParams](cdc)),
 		VaultsV2InflightValueByRoute:          collections.NewMap(builder, vaultsv2.InflightValueByRoutePrefix, "vaults_v2_inflight_value_by_route", collections.Uint32Key, sdk.IntValue),
 		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
-		VaultsV2NAVSnapshots:                  collections.NewMap(builder, vaultsv2.NAVSnapshotsPrefix, "vaults_v2_nav_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.NAVSnapshot](cdc)),
-		VaultsV2NAVSnapshotNextID:             collections.NewItem(builder, vaultsv2.NAVSnapshotNextIDKey, "vaults_v2_nav_snapshot_next_id", collections.Int64Value),
+		VaultsV2AUMSnapshots:                  collections.NewMap(builder, vaultsv2.AUMSnapshotsPrefix, "vaults_v2_aum_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.AUMSnapshot](cdc)),
+		VaultsV2AUMSnapshotNextID:             collections.NewItem(builder, vaultsv2.AUMSnapshotNextIDKey, "vaults_v2_aum_snapshot_next_id", collections.Int64Value),
 		VaultsV2CircuitBreakerActive:          collections.NewItem(builder, vaultsv2.CircuitBreakerActiveKey, "vaults_v2_circuit_breaker_active", collections.BoolValue),
 		VaultsV2CircuitBreakerTrips:           collections.NewMap(builder, vaultsv2.CircuitBreakerTripsPrefix, "vaults_v2_circuit_breaker_trips", collections.Uint64Key, codec.CollValue[vaultsv2.CircuitBreakerTrip](cdc)),
 		VaultsV2CircuitBreakerNextID:          collections.NewItem(builder, vaultsv2.CircuitBreakerNextIDKey, "vaults_v2_circuit_breaker_next_id", collections.Uint64Value),

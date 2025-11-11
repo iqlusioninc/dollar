@@ -20060,7 +20060,7 @@ var (
 	fd_MsgUpdateVaultAccountingResponse_total_positions_processed protoreflect.FieldDescriptor
 	fd_MsgUpdateVaultAccountingResponse_total_positions           protoreflect.FieldDescriptor
 	fd_MsgUpdateVaultAccountingResponse_accounting_complete       protoreflect.FieldDescriptor
-	fd_MsgUpdateVaultAccountingResponse_applied_nav               protoreflect.FieldDescriptor
+	fd_MsgUpdateVaultAccountingResponse_applied_aum               protoreflect.FieldDescriptor
 	fd_MsgUpdateVaultAccountingResponse_yield_distributed         protoreflect.FieldDescriptor
 	fd_MsgUpdateVaultAccountingResponse_next_user                 protoreflect.FieldDescriptor
 	fd_MsgUpdateVaultAccountingResponse_negative_yield_warning    protoreflect.FieldDescriptor
@@ -20073,7 +20073,7 @@ func init() {
 	fd_MsgUpdateVaultAccountingResponse_total_positions_processed = md_MsgUpdateVaultAccountingResponse.Fields().ByName("total_positions_processed")
 	fd_MsgUpdateVaultAccountingResponse_total_positions = md_MsgUpdateVaultAccountingResponse.Fields().ByName("total_positions")
 	fd_MsgUpdateVaultAccountingResponse_accounting_complete = md_MsgUpdateVaultAccountingResponse.Fields().ByName("accounting_complete")
-	fd_MsgUpdateVaultAccountingResponse_applied_nav = md_MsgUpdateVaultAccountingResponse.Fields().ByName("applied_nav")
+	fd_MsgUpdateVaultAccountingResponse_applied_aum = md_MsgUpdateVaultAccountingResponse.Fields().ByName("applied_aum")
 	fd_MsgUpdateVaultAccountingResponse_yield_distributed = md_MsgUpdateVaultAccountingResponse.Fields().ByName("yield_distributed")
 	fd_MsgUpdateVaultAccountingResponse_next_user = md_MsgUpdateVaultAccountingResponse.Fields().ByName("next_user")
 	fd_MsgUpdateVaultAccountingResponse_negative_yield_warning = md_MsgUpdateVaultAccountingResponse.Fields().ByName("negative_yield_warning")
@@ -20168,9 +20168,9 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) Range(f func(protorefl
 			return
 		}
 	}
-	if x.AppliedNav != "" {
-		value := protoreflect.ValueOfString(x.AppliedNav)
-		if !f(fd_MsgUpdateVaultAccountingResponse_applied_nav, value) {
+	if x.AppliedAum != "" {
+		value := protoreflect.ValueOfString(x.AppliedAum)
+		if !f(fd_MsgUpdateVaultAccountingResponse_applied_aum, value) {
 			return
 		}
 	}
@@ -20215,8 +20215,8 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) Has(fd protoreflect.Fi
 		return x.TotalPositions != uint64(0)
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.accounting_complete":
 		return x.AccountingComplete != false
-	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_nav":
-		return x.AppliedNav != ""
+	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_aum":
+		return x.AppliedAum != ""
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.yield_distributed":
 		return x.YieldDistributed != ""
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.next_user":
@@ -20247,8 +20247,8 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) Clear(fd protoreflect.
 		x.TotalPositions = uint64(0)
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.accounting_complete":
 		x.AccountingComplete = false
-	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_nav":
-		x.AppliedNav = ""
+	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_aum":
+		x.AppliedAum = ""
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.yield_distributed":
 		x.YieldDistributed = ""
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.next_user":
@@ -20283,8 +20283,8 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) Get(descriptor protore
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.accounting_complete":
 		value := x.AccountingComplete
 		return protoreflect.ValueOfBool(value)
-	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_nav":
-		value := x.AppliedNav
+	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_aum":
+		value := x.AppliedAum
 		return protoreflect.ValueOfString(value)
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.yield_distributed":
 		value := x.YieldDistributed
@@ -20323,8 +20323,8 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) Set(fd protoreflect.Fi
 		x.TotalPositions = value.Uint()
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.accounting_complete":
 		x.AccountingComplete = value.Bool()
-	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_nav":
-		x.AppliedNav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_aum":
+		x.AppliedAum = value.Interface().(string)
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.yield_distributed":
 		x.YieldDistributed = value.Interface().(string)
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.next_user":
@@ -20359,8 +20359,8 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) Mutable(fd protoreflec
 		panic(fmt.Errorf("field total_positions of message noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse is not mutable"))
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.accounting_complete":
 		panic(fmt.Errorf("field accounting_complete of message noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse is not mutable"))
-	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_nav":
-		panic(fmt.Errorf("field applied_nav of message noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse is not mutable"))
+	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_aum":
+		panic(fmt.Errorf("field applied_aum of message noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse is not mutable"))
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.yield_distributed":
 		panic(fmt.Errorf("field yield_distributed of message noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse is not mutable"))
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.next_user":
@@ -20388,7 +20388,7 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) NewField(fd protorefle
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.accounting_complete":
 		return protoreflect.ValueOfBool(false)
-	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_nav":
+	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.applied_aum":
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.MsgUpdateVaultAccountingResponse.yield_distributed":
 		return protoreflect.ValueOfString("")
@@ -20477,7 +20477,7 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) ProtoMethods() *protoi
 		if x.AccountingComplete {
 			n += 2
 		}
-		l = len(x.AppliedNav)
+		l = len(x.AppliedAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -20543,10 +20543,10 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) ProtoMethods() *protoi
 			i--
 			dAtA[i] = 0x32
 		}
-		if len(x.AppliedNav) > 0 {
-			i -= len(x.AppliedNav)
-			copy(dAtA[i:], x.AppliedNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AppliedNav)))
+		if len(x.AppliedAum) > 0 {
+			i -= len(x.AppliedAum)
+			copy(dAtA[i:], x.AppliedAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AppliedAum)))
 			i--
 			dAtA[i] = 0x2a
 		}
@@ -20703,7 +20703,7 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) ProtoMethods() *protoi
 				x.AccountingComplete = bool(v != 0)
 			case 5:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AppliedNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AppliedAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -20731,7 +20731,7 @@ func (x *fastReflection_MsgUpdateVaultAccountingResponse) ProtoMethods() *protoi
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.AppliedNav = string(dAtA[iNdEx:postIndex])
+				x.AppliedAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 6:
 				if wireType != 2 {
@@ -24522,15 +24522,15 @@ type MsgUpdateVaultAccountingResponse struct {
 	TotalPositions uint64 `protobuf:"varint,3,opt,name=total_positions,json=totalPositions,proto3" json:"total_positions,omitempty"`
 	// Whether accounting is complete for this session
 	AccountingComplete bool `protobuf:"varint,4,opt,name=accounting_complete,json=accountingComplete,proto3" json:"accounting_complete,omitempty"`
-	// NAV value applied in this accounting update
-	AppliedNav string `protobuf:"bytes,5,opt,name=applied_nav,json=appliedNav,proto3" json:"applied_nav,omitempty"`
+	// AUM value applied in this accounting update
+	AppliedAum string `protobuf:"bytes,5,opt,name=applied_aum,json=appliedAum,proto3" json:"applied_aum,omitempty"`
 	// Total yield distributed in this call
 	YieldDistributed string `protobuf:"bytes,6,opt,name=yield_distributed,json=yieldDistributed,proto3" json:"yield_distributed,omitempty"`
 	// Next user to process (empty if complete)
 	NextUser string `protobuf:"bytes,7,opt,name=next_user,json=nextUser,proto3" json:"next_user,omitempty"`
 	// Warning message if negative yield was detected
 	// When negative yield is detected, no yield is distributed (yield_distributed = 0)
-	// This indicates NAV decreased below (TotalDeposits + TotalAccruedYield)
+	// This indicates AUM decreased below (TotalDeposits + TotalAccruedYield)
 	// Manager should investigate vault losses or accounting discrepancies
 	NegativeYieldWarning string `protobuf:"bytes,8,opt,name=negative_yield_warning,json=negativeYieldWarning,proto3" json:"negative_yield_warning,omitempty"`
 }
@@ -24583,9 +24583,9 @@ func (x *MsgUpdateVaultAccountingResponse) GetAccountingComplete() bool {
 	return false
 }
 
-func (x *MsgUpdateVaultAccountingResponse) GetAppliedNav() string {
+func (x *MsgUpdateVaultAccountingResponse) GetAppliedAum() string {
 	if x != nil {
-		return x.AppliedNav
+		return x.AppliedAum
 	}
 	return ""
 }
@@ -25344,12 +25344,12 @@ var file_noble_dollar_vaults_v2_tx_proto_rawDesc = []byte{
 	0x2f, 0x0a, 0x13, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x63, 0x6f,
 	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x12, 0x61, 0x63,
 	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65,
-	0x12, 0x51, 0x0a, 0x0b, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x5f, 0x6e, 0x61, 0x76, 0x18,
+	0x12, 0x51, 0x0a, 0x0b, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x5f, 0x61, 0x75, 0x6d, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
 	0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49,
 	0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0a, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64,
-	0x4e, 0x61, 0x76, 0x12, 0x5d, 0x0a, 0x11, 0x79, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x64, 0x69, 0x73,
+	0x41, 0x75, 0x6d, 0x12, 0x5d, 0x0a, 0x11, 0x79, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x64, 0x69, 0x73,
 	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
 	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
 	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,

@@ -66,7 +66,7 @@ func setupV2Test(t *testing.T) (*keeper.Keeper, vaultsv2.MsgServer, *mocks.BankK
 		Authority:                "address",
 		MinDepositAmount:         math.NewInt(ONE_V2),
 		MinWithdrawalAmount:      math.NewInt(ONE_V2),
-		MaxNavChangeBps:          1000,  // 10%
+		MaxAumChangeBps:          1000,  // 10%
 		WithdrawalRequestTimeout: 86400, // 1 day
 		VaultEnabled:             true,
 	}
@@ -1088,11 +1088,11 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	navInfo := vaultsv2.NAVInfo{
-		CurrentNav: math.NewInt(200 * ONE_V2),
+	aumInfo := vaultsv2.AUMInfo{
+		CurrentAum: math.NewInt(200 * ONE_V2),
 		LastUpdate: ctx.HeaderInfo().Time,
 	}
-	require.NoError(t, k.SetVaultsV2NAVInfo(ctx, navInfo))
+	require.NoError(t, k.SetVaultsV2AUMInfo(ctx, aumInfo))
 
 	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC)})
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
@@ -1436,7 +1436,7 @@ func TestUpdateParams(t *testing.T) {
 	params := vaultsv2.Params{
 		MinDepositAmount:              math.NewInt(10 * ONE_V2),
 		MinWithdrawalAmount:           math.NewInt(5 * ONE_V2),
-		MaxNavChangeBps:               250,
+		MaxAumChangeBps:               250,
 		WithdrawalRequestTimeout:      3600,
 		MaxWithdrawalRequestsPerBlock: 25,
 		VaultEnabled:                  true,
@@ -1453,7 +1453,7 @@ func TestUpdateParams(t *testing.T) {
 	assert.Equal(t, "authority", storedParams.Authority)
 	assert.True(t, storedParams.MinDepositAmount.Equal(params.MinDepositAmount))
 	assert.True(t, storedParams.MinWithdrawalAmount.Equal(params.MinWithdrawalAmount))
-	assert.Equal(t, int32(250), storedParams.MaxNavChangeBps)
+	assert.Equal(t, int32(250), storedParams.MaxAumChangeBps)
 	assert.Equal(t, int64(3600), storedParams.WithdrawalRequestTimeout)
 	assert.Equal(t, int32(25), storedParams.MaxWithdrawalRequestsPerBlock)
 	assert.True(t, storedParams.VaultEnabled)

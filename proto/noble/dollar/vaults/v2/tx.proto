@@ -760,8 +760,8 @@ message MsgUpdateVaultAccountingResponse {
   // Whether accounting is complete for this session
   bool accounting_complete = 4;
 
-  // NAV value applied in this accounting update
-  string applied_nav = 5 [
+  // AUM value applied in this accounting update
+  string applied_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -781,7 +781,7 @@ message MsgUpdateVaultAccountingResponse {
 
   // Warning message if negative yield was detected
   // When negative yield is detected, no yield is distributed (yield_distributed = 0)
-  // This indicates NAV decreased below (TotalDeposits + TotalAccruedYield)
+  // This indicates AUM decreased below (TotalDeposits + TotalAccruedYield)
   // Manager should investigate vault losses or accounting discrepancies
   string negative_yield_warning = 8;
 }

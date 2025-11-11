@@ -75,7 +75,7 @@ func (q queryServerV2) Params(ctx context.Context, req *vaultsv2.QueryParamsRequ
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
 	}
 
-	// Get params for NAV calculation settings
+	// Get params for AUM calculation settings
 	params, err := q.GetVaultsV2Params(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch params")
@@ -465,17 +465,17 @@ func (q queryServerV2) VaultInfo(ctx context.Context, req *vaultsv2.QueryVaultIn
 		return nil, errors.Wrap(err, "unable to fetch vault state")
 	}
 
-	// Get NAV info for current NAV (total assets)
-	navInfo, err := q.GetVaultsV2NAVInfo(ctx)
+	// Get AUM info for current AUM (total assets)
+	aumInfo, err := q.GetVaultsV2AUMInfo(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch NAV info")
+		return nil, errors.Wrap(err, "unable to fetch AUM info")
 	}
 
 	return &vaultsv2.QueryVaultInfoResponse{
 		Config:            config,
 		TotalDeposits:     state.TotalDeposits.String(),
 		TotalAccruedYield: state.TotalAccruedYield.String(),
-		TotalNav:          navInfo.CurrentNav.String(),
+		TotalAum:          aumInfo.CurrentAum.String(),
 		TotalDepositors:   state.TotalUsers,
 	}, nil
 }

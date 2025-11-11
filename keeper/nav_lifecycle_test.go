@@ -19,43 +19,43 @@ import (
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
-// TestNAVLifecycle tests the complete NAV calculation lifecycle:
-// 1. Deposit → LocalFunds increases, NAV increases
-// 2. CreateRemotePosition → LocalFunds decreases, RemotePosition created, NAV stays same
-// 3. Funds go inflight → InflightFunds increases, NAV stays same
-// 4. Oracle updates remote position value → RemotePosition value changes, NAV changes
-// 5. User requests withdrawal → Funds locked in position, NAV stays same
-// 6. Process withdrawal queue → Withdrawal marked ready, NAV stays same
-// 7. User claims withdrawal → Funds leave vault, NAV decreases
+// TestAUMLifecycle tests the complete AUM calculation lifecycle:
+// 1. Deposit → LocalFunds increases, AUM increases
+// 2. CreateRemotePosition → LocalFunds decreases, RemotePosition created, AUM stays same
+// 3. Funds go inflight → InflightFunds increases, AUM stays same
+// 4. Oracle updates remote position value → RemotePosition value changes, AUM changes
+// 5. User requests withdrawal → Funds locked in position, AUM stays same
+// 6. Process withdrawal queue → Withdrawal marked ready, AUM stays same
+// 7. User claims withdrawal → Funds leave vault, AUM decreases
 //
-// This test ensures NAV = LocalFunds + RemotePositions + InflightFunds is correct at each step
-func TestNAVLifecycle(t *testing.T) {
+// This test ensures AUM = LocalFunds + RemotePositions + InflightFunds is correct at each step
+func TestAUMLifecycle(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
 
-	// Increase MaxNavChangeBps for this test since we have large NAV swings
+	// Increase MaxAumChangeBps for this test since we have large AUM swings
 	params, err := k.GetVaultsV2Params(baseCtx)
 	require.NoError(t, err)
-	params.MaxNavChangeBps = 5000 // 50% to allow large test changes
+	params.MaxAumChangeBps = 5000 // 50% to allow large test changes
 	require.NoError(t, k.SetVaultsV2Params(baseCtx, params))
 
 	inflightID := uint64(1)
 	transactionID := "123"
 
-	// Helper to check NAV invariant
-	checkNAV := func(step string, expectedPending, expectedRemote, expectedInflight, expectedTotal sdkmath.Int) {
+	// Helper to check AUM invariant
+	checkAUM := func(step string, expectedPending, expectedRemote, expectedInflight, expectedTotal sdkmath.Int) {
 		t.Helper()
-		t.Logf("checkNAV: Starting %s", step)
+		t.Logf("checkAUM: Starting %s", step)
 
 		// Get local funds funds
-		t.Logf("checkNAV: Getting local funds funds for %s", step)
+		t.Logf("checkAUM: Getting local funds funds for %s", step)
 		pending, err := k.GetVaultsV2LocalFunds(baseCtx)
 		require.NoError(t, err, "step: %s", step)
-		t.Logf("checkNAV: Got pending=%s for %s", pending, step)
+		t.Logf("checkAUM: Got pending=%s for %s", pending, step)
 		assert.Equal(t, expectedPending.String(), pending.String(),
 			"step %s: LocalFunds mismatch", step)
 
 		// Get remote positions total
-		t.Logf("checkNAV: Iterating remote positions for %s", step)
+		t.Logf("checkAUM: Iterating remote positions for %s", step)
 		remoteTotal := sdkmath.ZeroInt()
 		err = k.IterateVaultsV2RemotePositions(baseCtx, func(_ uint64, pos vaultsv2.RemotePosition) (bool, error) {
 			var err error
@@ -63,12 +63,12 @@ func TestNAVLifecycle(t *testing.T) {
 			return false, err
 		})
 		require.NoError(t, err, "step: %s", step)
-		t.Logf("checkNAV: Got remote=%s for %s", remoteTotal, step)
+		t.Logf("checkAUM: Got remote=%s for %s", remoteTotal, step)
 		assert.Equal(t, expectedRemote.String(), remoteTotal.String(),
 			"step %s: RemotePositions total mismatch", step)
 
 		// Get inflight funds total
-		t.Logf("checkNAV: Iterating inflight funds for %s", step)
+		t.Logf("checkAUM: Iterating inflight funds for %s", step)
 		inflightTotal := sdkmath.ZeroInt()
 		err = k.IterateVaultsV2InflightFunds(baseCtx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
 			var err error
@@ -76,34 +76,34 @@ func TestNAVLifecycle(t *testing.T) {
 			return false, err
 		})
 		require.NoError(t, err, "step: %s", step)
-		t.Logf("checkNAV: Got inflight=%s for %s", inflightTotal, step)
+		t.Logf("checkAUM: Got inflight=%s for %s", inflightTotal, step)
 		assert.Equal(t, expectedInflight.String(), inflightTotal.String(),
 			"step %s: InflightFunds total mismatch", step)
 
-		// Calculate expected NAV
-		calculatedNAV := pending.Add(remoteTotal).Add(inflightTotal)
-		assert.Equal(t, expectedTotal.String(), calculatedNAV.String(),
-			"step %s: NAV = Pending(%s) + Remote(%s) + Inflight(%s) = %s, expected %s",
-			step, pending, remoteTotal, inflightTotal, calculatedNAV, expectedTotal)
+		// Calculate expected AUM
+		calculatedAUM := pending.Add(remoteTotal).Add(inflightTotal)
+		assert.Equal(t, expectedTotal.String(), calculatedAUM.String(),
+			"step %s: AUM = Pending(%s) + Remote(%s) + Inflight(%s) = %s, expected %s",
+			step, pending, remoteTotal, inflightTotal, calculatedAUM, expectedTotal)
 
-		// If we call recalculateVaultsV2NAV, it should match
-		t.Logf("checkNAV: Calling RecalculateVaultsV2NAV for %s", step)
+		// If we call recalculateVaultsV2AUM, it should match
+		t.Logf("checkAUM: Calling RecalculateVaultsV2AUM for %s", step)
 		timestamp := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
-		calculatedByFunc, err := k.RecalculateVaultsV2NAV(baseCtx, timestamp, 0)
+		calculatedByFunc, err := k.RecalculateVaultsV2AUM(baseCtx, timestamp, 0)
 		require.NoError(t, err, "step: %s", step)
-		t.Logf("checkNAV: RecalculateVaultsV2NAV returned %s for %s", calculatedByFunc, step)
-		assert.Equal(t, calculatedNAV.String(), calculatedByFunc.String(),
-			"step %s: recalculateVaultsV2NAV() returned %s, expected %s",
-			step, calculatedByFunc, calculatedNAV)
+		t.Logf("checkAUM: RecalculateVaultsV2AUM returned %s for %s", calculatedByFunc, step)
+		assert.Equal(t, calculatedAUM.String(), calculatedByFunc.String(),
+			"step %s: recalculateVaultsV2AUM() returned %s, expected %s",
+			step, calculatedByFunc, calculatedAUM)
 	}
 
 	// === STEP 1: Initial state - everything is zero ===
 	t.Log("Starting step 1: Initial state check")
-	checkNAV("1-initial",
+	checkAUM("1-initial",
 		sdkmath.NewInt(0), // pending
 		sdkmath.NewInt(0), // remote
 		sdkmath.NewInt(0), // inflight
-		sdkmath.NewInt(0)) // total NAV
+		sdkmath.NewInt(0)) // total AUM
 	t.Log("Completed step 1")
 
 	// === STEP 2: User deposits 1000 ===
@@ -115,12 +115,12 @@ func TestNAVLifecycle(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// NAV should increase by 1000 (all in LocalFunds)
-	checkNAV("2-after-deposit",
+	// AUM should increase by 1000 (all in LocalFunds)
+	checkAUM("2-after-deposit",
 		sdkmath.NewInt(1000*ONE_V2), // pending +1000
 		sdkmath.NewInt(0),           // remote
 		sdkmath.NewInt(0),           // inflight
-		sdkmath.NewInt(1000*ONE_V2)) // total NAV = 1000
+		sdkmath.NewInt(1000*ONE_V2)) // total AUM = 1000
 
 	// === STEP 3: Deploy 600 to remote position ===
 	vaultAddress := hyperlaneutil.CreateMockHexAddress("vault", 1).String()
@@ -134,19 +134,19 @@ func TestNAVLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	positionID := createResp.PositionId
 
-	// NAV should stay same: pending decreased, remote increased
-	checkNAV("3-after-create-position",
+	// AUM should stay same: pending decreased, remote increased
+	checkAUM("3-after-create-position",
 		sdkmath.NewInt(400*ONE_V2),  // pending -600 = 400
 		sdkmath.NewInt(600*ONE_V2),  // remote +600 = 600
 		sdkmath.NewInt(0),           // inflight
-		sdkmath.NewInt(1000*ONE_V2)) // total NAV still 1000
+		sdkmath.NewInt(1000*ONE_V2)) // total AUM still 1000
 
 	// === STEP 4: Simulate oracle update - remote position value increases to 660 ===
 	position, found, err := k.GetVaultsV2RemotePosition(baseCtx, positionID)
 	require.NoError(t, err)
 	require.True(t, found)
 
-	// Update position value (simulating oracle NAV update)
+	// Update position value (simulating oracle AUM update)
 	position.TotalValue = sdkmath.NewInt(660 * ONE_V2)
 	position.SharePrice = sdkmath.LegacyNewDec(11).QuoInt64(10) // 1.1
 	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, positionID, position))
@@ -162,12 +162,12 @@ func TestNAVLifecycle(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2RemotePositionOracle(baseCtx, positionID, oracle))
 
-	// NAV should increase by 60 (remote position gained value)
-	checkNAV("4-after-oracle-update",
+	// AUM should increase by 60 (remote position gained value)
+	checkAUM("4-after-oracle-update",
 		sdkmath.NewInt(400*ONE_V2),  // pending unchanged
 		sdkmath.NewInt(660*ONE_V2),  // remote +60 = 660
 		sdkmath.NewInt(0),           // inflight
-		sdkmath.NewInt(1060*ONE_V2)) // total NAV = 1060
+		sdkmath.NewInt(1060*ONE_V2)) // total AUM = 1060
 
 	// === STEP 5: Create inflight fund (simulating cross-chain transfer) ===
 	inflightFund := vaultsv2.InflightFund{
@@ -198,12 +198,12 @@ func TestNAVLifecycle(t *testing.T) {
 	// Also subtract from local funds to reflect that funds are being deployed
 	require.NoError(t, k.SubtractVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(200*ONE_V2)))
 
-	// NAV stays same: pending decreased, inflight increased
-	checkNAV("5-after-inflight-created",
+	// AUM stays same: pending decreased, inflight increased
+	checkAUM("5-after-inflight-created",
 		sdkmath.NewInt(200*ONE_V2),  // pending -200 = 200
 		sdkmath.NewInt(660*ONE_V2),  // remote unchanged
 		sdkmath.NewInt(200*ONE_V2),  // inflight +200 = 200
-		sdkmath.NewInt(1060*ONE_V2)) // total NAV still 1060
+		sdkmath.NewInt(1060*ONE_V2)) // total AUM still 1060
 
 	// === STEP 6: User makes another deposit ===
 	require.NoError(t, k.Mint(baseCtx, bob.Bytes, sdkmath.NewInt(300*ONE_V2), nil))
@@ -214,12 +214,12 @@ func TestNAVLifecycle(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// NAV increases by deposit amount
-	checkNAV("6-after-second-deposit",
+	// AUM increases by deposit amount
+	checkAUM("6-after-second-deposit",
 		sdkmath.NewInt(500*ONE_V2),  // pending +300 = 500
 		sdkmath.NewInt(660*ONE_V2),  // remote unchanged
 		sdkmath.NewInt(200*ONE_V2),  // inflight unchanged
-		sdkmath.NewInt(1360*ONE_V2)) // total NAV = 1360
+		sdkmath.NewInt(1360*ONE_V2)) // total AUM = 1360
 
 	// === STEP 7: Inflight completes - moves to remote position ===
 	// Remove inflight
@@ -237,12 +237,12 @@ func TestNAVLifecycle(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, 2, newPosition))
 
-	// NAV stays same: inflight decreased, remote increased
-	checkNAV("7-after-inflight-completed",
+	// AUM stays same: inflight decreased, remote increased
+	checkAUM("7-after-inflight-completed",
 		sdkmath.NewInt(500*ONE_V2),  // pending unchanged
 		sdkmath.NewInt(860*ONE_V2),  // remote +200 = 860
 		sdkmath.NewInt(0),           // inflight -200 = 0
-		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+		sdkmath.NewInt(1360*ONE_V2)) // total AUM still 1360
 
 	// === STEP 8: Add more funds to existing remote position ===
 	additionalRemoteAmount := sdkmath.NewInt(140 * ONE_V2)
@@ -261,12 +261,12 @@ func TestNAVLifecycle(t *testing.T) {
 	secondPosition.LastUpdate = time.Now()
 	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, 2, secondPosition))
 
-	// NAV should stay same: pending decreased, remote increased
-	checkNAV("8-after-remote-top-up",
+	// AUM should stay same: pending decreased, remote increased
+	checkAUM("8-after-remote-top-up",
 		sdkmath.NewInt(360*ONE_V2),  // pending -140 = 360
 		sdkmath.NewInt(1000*ONE_V2), // remote +140 = 1000
 		sdkmath.NewInt(0),           // inflight unchanged
-		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+		sdkmath.NewInt(1360*ONE_V2)) // total AUM still 1360
 
 	// === STEP 9: Partial withdrawal from remote position ===
 	partialWithdrawal := sdkmath.NewInt(120 * ONE_V2)
@@ -285,12 +285,12 @@ func TestNAVLifecycle(t *testing.T) {
 	secondPosition.LastUpdate = time.Now()
 	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, 2, secondPosition))
 
-	// NAV should stay same: pending increased, remote decreased
-	checkNAV("9-after-partial-remote-withdrawal",
+	// AUM should stay same: pending increased, remote decreased
+	checkAUM("9-after-partial-remote-withdrawal",
 		sdkmath.NewInt(480*ONE_V2),  // pending +120 = 480
 		sdkmath.NewInt(880*ONE_V2),  // remote -120 = 880
 		sdkmath.NewInt(0),           // inflight unchanged
-		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+		sdkmath.NewInt(1360*ONE_V2)) // total AUM still 1360
 
 	// === STEP 10: User requests withdrawal ===
 	// User wants to withdraw 200 from their position
@@ -302,12 +302,12 @@ func TestNAVLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, withdrawalResp)
 
-	// NAV should stay same: funds are locked in user position but still in vault
-	checkNAV("10-after-withdrawal-request",
+	// AUM should stay same: funds are locked in user position but still in vault
+	checkAUM("10-after-withdrawal-request",
 		sdkmath.NewInt(480*ONE_V2),  // pending unchanged
 		sdkmath.NewInt(880*ONE_V2),  // remote unchanged
 		sdkmath.NewInt(0),           // inflight unchanged
-		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+		sdkmath.NewInt(1360*ONE_V2)) // total AUM still 1360
 
 	// === STEP 11: Process withdrawal queue ===
 	// Move time forward past the withdrawal timeout
@@ -322,12 +322,12 @@ func TestNAVLifecycle(t *testing.T) {
 	assert.Equal(t, int32(1), processResp.RequestsProcessed)
 	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), processResp.TotalAmountProcessed)
 
-	// NAV should stay same: funds are marked ready but still in vault
-	checkNAV("11-after-withdrawal-processing",
+	// AUM should stay same: funds are marked ready but still in vault
+	checkAUM("11-after-withdrawal-processing",
 		sdkmath.NewInt(480*ONE_V2),  // pending unchanged
 		sdkmath.NewInt(880*ONE_V2),  // remote unchanged
 		sdkmath.NewInt(0),           // inflight unchanged
-		sdkmath.NewInt(1360*ONE_V2)) // total NAV still 1360
+		sdkmath.NewInt(1360*ONE_V2)) // total AUM still 1360
 
 	// Verify withdrawal is now READY
 	withdrawal, found, err := k.GetVaultsV2Withdrawal(futureCtx, withdrawalResp.RequestId)
@@ -344,20 +344,20 @@ func TestNAVLifecycle(t *testing.T) {
 	require.NotNil(t, claimResp)
 	assert.Equal(t, sdkmath.NewInt(200*ONE_V2), claimResp.AmountClaimed)
 
-	// NAV should decrease by 200: funds have left the vault
+	// AUM should decrease by 200: funds have left the vault
 	// The withdrawal comes from local funds funds
-	checkNAV("12-after-withdrawal-claimed",
+	checkAUM("12-after-withdrawal-claimed",
 		sdkmath.NewInt(280*ONE_V2),  // pending -200 = 280
 		sdkmath.NewInt(880*ONE_V2),  // remote unchanged
 		sdkmath.NewInt(0),           // inflight unchanged
-		sdkmath.NewInt(1160*ONE_V2)) // total NAV = 1160
+		sdkmath.NewInt(1160*ONE_V2)) // total AUM = 1160
 
-	t.Log("✅ NAV lifecycle test passed - NAV correctly calculated at each step including withdrawals!")
+	t.Log("✅ AUM lifecycle test passed - AUM correctly calculated at each step including withdrawals!")
 }
 
-// TestNAVCalculationWithOracleMessage tests the actual oracle message handling
-// and verifies that recalculateVaultsV2NAV is called and NAV is updated correctly
-func TestNAVCalculationWithOracleMessage(t *testing.T) {
+// TestAUMCalculationWithOracleMessage tests the actual oracle message handling
+// and verifies that recalculateVaultsV2AUM is called and AUM is updated correctly
+func TestAUMCalculationWithOracleMessage(t *testing.T) {
 	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
 
 	// Setup: Deposit and create remote position
@@ -392,16 +392,16 @@ func TestNAVCalculationWithOracleMessage(t *testing.T) {
 	}
 	require.NoError(t, k.SetVaultsV2RemotePositionOracle(baseCtx, positionID, oracle))
 
-	// Initial NAV should be 1000 (200 pending + 800 remote)
-	initialNAV, err := k.RecalculateVaultsV2NAV(baseCtx, time.Now(), positionID)
+	// Initial AUM should be 1000 (200 pending + 800 remote)
+	initialAUM, err := k.RecalculateVaultsV2AUM(baseCtx, time.Now(), positionID)
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2).String(), initialNAV.String())
+	assert.Equal(t, sdkmath.NewInt(1000*ONE_V2).String(), initialAUM.String())
 
-	// Simulate oracle NAV message: remote position value increases to 880 (10% gain)
-	// Create NAV payload bytes manually (105 bytes total)
+	// Simulate oracle AUM message: remote position value increases to 880 (10% gain)
+	// Create AUM payload bytes manually (105 bytes total)
 	payloadBytes := make([]byte, 105)
 
-	// Byte 0: Message type (0x01 for NAV update)
+	// Byte 0: Message type (0x01 for AUM update)
 	payloadBytes[0] = 0x01
 
 	// Bytes 1-32: Position ID (32 bytes, big-endian)
@@ -432,19 +432,19 @@ func TestNAVCalculationWithOracleMessage(t *testing.T) {
 		Body:   payloadBytes,
 	}
 
-	// Handle the oracle message - this should call recalculateVaultsV2NAV internally
-	result, err := k.HandleHyperlaneNAVMessage(baseCtx, mailboxID, message)
+	// Handle the oracle message - this should call recalculateVaultsV2AUM internally
+	result, err := k.HandleHyperlaneAUMMessage(baseCtx, mailboxID, message)
 	require.NoError(t, err)
 	require.NotNil(t, result)
 
-	// Verify NAV was updated: should be 1080 (200 pending + 880 remote)
-	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), result.UpdatedNav.String(),
-		"NAV should increase from 1000 to 1080 after oracle update")
+	// Verify AUM was updated: should be 1080 (200 pending + 880 remote)
+	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), result.UpdatedAum.String(),
+		"AUM should increase from 1000 to 1080 after oracle update")
 
 	// Verify it's persisted
-	navInfo, err := k.GetVaultsV2NAVInfo(baseCtx)
+	aumInfo, err := k.GetVaultsV2AUMInfo(baseCtx)
 	require.NoError(t, err)
-	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), navInfo.CurrentNav.String())
+	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), aumInfo.CurrentAum.String())
 
-	t.Log("✅ Oracle NAV message correctly updated NAV through recalculateVaultsV2NAV()")
+	t.Log("✅ Oracle AUM message correctly updated AUM through recalculateVaultsV2AUM()")
 }

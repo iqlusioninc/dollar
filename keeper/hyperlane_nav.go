@@ -33,18 +33,18 @@ import (
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
 
-// HandleHyperlaneNAVMessage processes a Hyperlane message containing NAV data
+// HandleHyperlaneAUMMessage processes a Hyperlane message containing AUM data
 // for a remote position oracle. The function performs basic authentication by
 // checking the message origin and sender against the enrolled oracle record
-// before applying the NAV update and recalculating the aggregate vault NAV.
-func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperlaneutil.HexAddress, message hyperlaneutil.HyperlaneMessage) (*vaultsv2.OracleUpdateResult, error) {
+// before applying the AUM update and recalculating the aggregate vault AUM.
+func (k *Keeper) HandleHyperlaneAUMMessage(ctx context.Context, mailboxID hyperlaneutil.HexAddress, message hyperlaneutil.HyperlaneMessage) (*vaultsv2.OracleUpdateResult, error) {
 	if mailboxID.IsZeroAddress() {
 		return nil, errors.Wrap(vaultsv2.ErrOperationNotPermitted, "mailbox identifier must be provided")
 	}
 
-	payload, err := vaultsv2.ParseNAVPayload(message.Body)
+	payload, err := vaultsv2.ParseAUMPayload(message.Body)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to parse NAV payload")
+		return nil, errors.Wrap(err, "unable to parse AUM payload")
 	}
 
 	oracle, found, err := k.GetVaultsV2RemotePositionOracle(ctx, payload.PositionID)
@@ -95,7 +95,7 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 		}
 	}
 
-	updatedNav, err := k.RecalculateVaultsV2NAV(ctx, payload.Timestamp, payload.PositionID)
+	updatedAum, err := k.RecalculateVaultsV2AUM(ctx, payload.Timestamp, payload.PositionID)
 	if err != nil {
 		return nil, err
 	}
@@ -107,18 +107,18 @@ func (k *Keeper) HandleHyperlaneNAVMessage(ctx context.Context, mailboxID hyperl
 		NewSharePrice: payload.SharePrice,
 		NewShares:     payload.SharesHeld,
 		PositionValue: positionValue,
-		UpdatedNav:    updatedNav,
+		UpdatedAum:    updatedAum,
 	}, nil
 }
 
-// RecalculateVaultsV2NAV recalculates the vault NAV from all components:
+// RecalculateVaultsV2AUM recalculates the vault AUM from all components:
 // local (pending deployment or withdrawal) funds, remote positions, and inflight funds.
 // This is called when oracle updates remote position values.
-func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time, triggeringPositionID uint64) (math.Int, error) {
+func (k *Keeper) RecalculateVaultsV2AUM(ctx context.Context, timestamp time.Time, triggeringPositionID uint64) (math.Int, error) {
 	// Check if accounting is currently in progress
 	k.checkAccountingNotInProgress(ctx)
 
-	// Calculate NAV according to spec: Local Assets + Remote Positions + Inflight Funds
+	// Calculate AUM according to spec: Local Assets + Remote Positions + Inflight Funds
 	total := math.ZeroInt()
 
 	// 1. Get local vault assets (liquidity available for deployment or withdrawals)
@@ -128,7 +128,7 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 	}
 	total, err = total.SafeAdd(localFunds)
 	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to add local funds to NAV")
+		return math.ZeroInt(), errors.Wrap(err, "unable to add local funds to AUM")
 	}
 
 	// 2. Add remote position values
@@ -160,54 +160,54 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 		return math.ZeroInt(), errors.Wrap(err, "unable to iterate inflight funds")
 	}
 
-	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
+	aumInfo, err := k.GetVaultsV2AUMInfo(ctx)
 	if err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to fetch NAV info")
+		return math.ZeroInt(), errors.Wrap(err, "unable to fetch AUM info")
 	}
 
-	// Initialize NAV values if they are nil (first time setup)
-	if navInfo.CurrentNav.IsNil() {
-		navInfo.CurrentNav = math.ZeroInt()
+	// Initialize AUM values if they are nil (first time setup)
+	if aumInfo.CurrentAum.IsNil() {
+		aumInfo.CurrentAum = math.ZeroInt()
 	}
-	if navInfo.PreviousNav.IsNil() {
-		navInfo.PreviousNav = math.ZeroInt()
+	if aumInfo.PreviousAum.IsNil() {
+		aumInfo.PreviousAum = math.ZeroInt()
 	}
 
-	previousNav := navInfo.CurrentNav
+	previousAum := aumInfo.CurrentAum
 
 	// Calculate change basis points
 	changeBps := int32(0)
-	if previousNav.IsPositive() {
-		previousDec := previousNav.ToLegacyDec()
+	if previousAum.IsPositive() {
+		previousDec := previousAum.ToLegacyDec()
 		if !previousDec.IsZero() {
 			delta := total.ToLegacyDec().Sub(previousDec)
-			changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousNav)
+			changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousAum)
 			changeBps = int32(changeDec.TruncateInt64())
 		}
 	}
 
-	// Circuit breaker: Check if NAV change exceeds maximum allowed threshold
+	// Circuit breaker: Check if AUM change exceeds maximum allowed threshold
 	// TODO: Revisit circuit breaker behavior for oracle updates
 	params, err := k.GetVaultsV2Params(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault parameters")
 	}
 
-	if params.MaxNavChangeBps > 0 && previousNav.IsPositive() {
+	if params.MaxAumChangeBps > 0 && previousAum.IsPositive() {
 		// Calculate absolute value of change
 		absChangeBps := changeBps
 		if absChangeBps < 0 {
 			absChangeBps = -absChangeBps
 		}
 
-		if absChangeBps > params.MaxNavChangeBps {
+		if absChangeBps > params.MaxAumChangeBps {
 			// Record the circuit breaker trip
 			trip := vaultsv2.CircuitBreakerTrip{
 				ChangeBps:        changeBps,
 				RemotePositionId: triggeringPositionID,
 				TriggeredAt:      timestamp,
-				PreviousNav:      previousNav,
-				AttemptedNav:     total,
+				PreviousAum:      previousAum,
+				AttemptedAum:     total,
 			}
 
 			// Get next trip ID
@@ -236,34 +236,34 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 			}
 
 			return math.ZeroInt(), errors.Wrapf(vaultsv2.ErrOperationNotPermitted,
-				"NAV change of %d bps exceeds maximum allowed %d bps - circuit breaker activated",
-				absChangeBps, params.MaxNavChangeBps)
+				"AUM change of %d bps exceeds maximum allowed %d bps - circuit breaker activated",
+				absChangeBps, params.MaxAumChangeBps)
 		}
 	}
 
-	navInfo.PreviousNav = previousNav
-	navInfo.CurrentNav = total
-	navInfo.LastUpdate = timestamp
+	aumInfo.PreviousAum = previousAum
+	aumInfo.CurrentAum = total
+	aumInfo.LastUpdate = timestamp
 
-	if err := k.SetVaultsV2NAVInfo(ctx, navInfo); err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to persist NAV info")
+	if err := k.SetVaultsV2AUMInfo(ctx, aumInfo); err != nil {
+		return math.ZeroInt(), errors.Wrap(err, "unable to persist AUM info")
 	}
 
-	// Record NAV snapshot for TWAP if conditions are met
-	shouldRecord, err := k.shouldRecordNAVSnapshot(ctx)
+	// Record AUM snapshot for TWAP if conditions are met
+	shouldRecord, err := k.shouldRecordAUMSnapshot(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to check snapshot recording conditions")
 	}
 
 	if shouldRecord {
-		snapshot := vaultsv2.NAVSnapshot{
-			Nav:         total,
+		snapshot := vaultsv2.AUMSnapshot{
+			Aum:         total,
 			BlockHeight: k.header.GetHeaderInfo(ctx).Height,
 			TotalShares: math.ZeroInt(), // Shares no longer used - kept for backwards compatibility
 		}
 
-		if err := k.AddVaultsV2NAVSnapshot(ctx, snapshot); err != nil {
-			return math.ZeroInt(), errors.Wrap(err, "unable to record NAV snapshot")
+		if err := k.AddVaultsV2AUMSnapshot(ctx, snapshot); err != nil {
+			return math.ZeroInt(), errors.Wrap(err, "unable to record AUM snapshot")
 		}
 
 		// Optionally prune old snapshots if max age is configured
@@ -271,20 +271,20 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 			// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
 			maxAgeInBlocks := params.TwapConfig.MaxSnapshotAge / 6
 			currentHeight := k.header.GetHeaderInfo(ctx).Height
-			_, _ = k.PruneOldVaultsV2NAVSnapshots(ctx, maxAgeInBlocks, currentHeight)
+			_, _ = k.PruneOldVaultsV2AUMSnapshots(ctx, maxAgeInBlocks, currentHeight)
 		}
 	}
 
-	// Emit NAV updated event
+	// Emit AUM updated event
 	state, err := k.GetVaultsV2VaultState(ctx)
 	if err != nil {
 		return math.ZeroInt(), errors.Wrap(err, "unable to fetch vault state")
 	}
 
 	// TODO: Add reason field for oracle updates (e.g., position ID)
-	if err := k.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventNAVUpdated{
-		PreviousNav:       previousNav,
-		NewNav:            total,
+	if err := k.event.EventManager(ctx).Emit(ctx, &vaultsv2.EventAUMUpdated{
+		PreviousAum:       previousAum,
+		NewAum:            total,
 		ChangeBps:         changeBps,
 		TotalDeposits:     state.TotalDeposits,
 		TotalAccruedYield: state.TotalAccruedYield,
@@ -292,14 +292,14 @@ func (k *Keeper) RecalculateVaultsV2NAV(ctx context.Context, timestamp time.Time
 		BlockHeight:       k.header.GetHeaderInfo(ctx).Height,
 		Timestamp:         timestamp,
 	}); err != nil {
-		return math.ZeroInt(), errors.Wrap(err, "unable to emit nav updated event")
+		return math.ZeroInt(), errors.Wrap(err, "unable to emit aum updated event")
 	}
 
 	return total, nil
 }
 
-// shouldRecordNAVSnapshot determines if a new NAV snapshot should be recorded for TWAP calculations.
-func (k *Keeper) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
+// shouldRecordAUMSnapshot determines if a new AUM snapshot should be recorded for TWAP calculations.
+func (k *Keeper) shouldRecordAUMSnapshot(ctx context.Context) (bool, error) {
 	params, err := k.GetVaultsV2Params(ctx)
 	if err != nil {
 		return false, errors.Wrap(err, "unable to fetch params")
@@ -316,7 +316,7 @@ func (k *Keeper) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
 	}
 
 	// Get most recent snapshot
-	snapshots, err := k.GetRecentVaultsV2NAVSnapshots(ctx, 1)
+	snapshots, err := k.GetRecentVaultsV2AUMSnapshots(ctx, 1)
 	if err != nil {
 		return false, errors.Wrap(err, "unable to fetch recent snapshots")
 	}

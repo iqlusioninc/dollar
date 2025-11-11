@@ -30,26 +30,26 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// NAVBand defines the pricing bands for deposits and withdrawals
-type NAVBand struct {
-	// Lower bound of the band (basis points above/below NAV)
+// AUMBand defines the pricing bands for deposits and withdrawals
+type AUMBand struct {
+	// Lower bound of the band (basis points above/below AUM)
 	LowerBound int32 `protobuf:"varint,1,opt,name=lower_bound,json=lowerBound,proto3" json:"lower_bound,omitempty"`
-	// Upper bound of the band (basis points above/below NAV)
+	// Upper bound of the band (basis points above/below AUM)
 	UpperBound int32 `protobuf:"varint,2,opt,name=upper_bound,json=upperBound,proto3" json:"upper_bound,omitempty"`
 }
 
-func (m *NAVBand) Reset()         { *m = NAVBand{} }
-func (m *NAVBand) String() string { return proto.CompactTextString(m) }
-func (*NAVBand) ProtoMessage()    {}
-func (*NAVBand) Descriptor() ([]byte, []int) {
+func (m *AUMBand) Reset()         { *m = AUMBand{} }
+func (m *AUMBand) String() string { return proto.CompactTextString(m) }
+func (*AUMBand) ProtoMessage()    {}
+func (*AUMBand) Descriptor() ([]byte, []int) {
 	return fileDescriptor_893b9e92a5bdeb81, []int{0}
 }
-func (m *NAVBand) XXX_Unmarshal(b []byte) error {
+func (m *AUMBand) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NAVBand) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AUMBand) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NAVBand.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AUMBand.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -59,58 +59,58 @@ func (m *NAVBand) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *NAVBand) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NAVBand.Merge(m, src)
+func (m *AUMBand) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AUMBand.Merge(m, src)
 }
-func (m *NAVBand) XXX_Size() int {
+func (m *AUMBand) XXX_Size() int {
 	return m.Size()
 }
-func (m *NAVBand) XXX_DiscardUnknown() {
-	xxx_messageInfo_NAVBand.DiscardUnknown(m)
+func (m *AUMBand) XXX_DiscardUnknown() {
+	xxx_messageInfo_AUMBand.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NAVBand proto.InternalMessageInfo
+var xxx_messageInfo_AUMBand proto.InternalMessageInfo
 
-func (m *NAVBand) GetLowerBound() int32 {
+func (m *AUMBand) GetLowerBound() int32 {
 	if m != nil {
 		return m.LowerBound
 	}
 	return 0
 }
 
-func (m *NAVBand) GetUpperBound() int32 {
+func (m *AUMBand) GetUpperBound() int32 {
 	if m != nil {
 		return m.UpperBound
 	}
 	return 0
 }
 
-// NAVConfig defines the configuration for NAV-based pricing
-type NAVConfig struct {
-	// Base NAV bands for deposits
-	DepositBands []*NAVBand `protobuf:"bytes,1,rep,name=deposit_bands,json=depositBands,proto3" json:"deposit_bands,omitempty"`
-	// Base NAV bands for withdrawals
-	WithdrawalBands []*NAVBand `protobuf:"bytes,2,rep,name=withdrawal_bands,json=withdrawalBands,proto3" json:"withdrawal_bands,omitempty"`
-	// Minimum NAV update interval (seconds)
-	MinNavUpdateInterval int64 `protobuf:"varint,3,opt,name=min_nav_update_interval,json=minNavUpdateInterval,proto3" json:"min_nav_update_interval,omitempty"`
-	// Maximum allowed NAV deviation before emergency controls (basis points)
-	MaxNavDeviation int32 `protobuf:"varint,4,opt,name=max_nav_deviation,json=maxNavDeviation,proto3" json:"max_nav_deviation,omitempty"`
+// AUMConfig defines the configuration for AUM-based pricing
+type AUMConfig struct {
+	// Base AUM bands for deposits
+	DepositBands []*AUMBand `protobuf:"bytes,1,rep,name=deposit_bands,json=depositBands,proto3" json:"deposit_bands,omitempty"`
+	// Base AUM bands for withdrawals
+	WithdrawalBands []*AUMBand `protobuf:"bytes,2,rep,name=withdrawal_bands,json=withdrawalBands,proto3" json:"withdrawal_bands,omitempty"`
+	// Minimum AUM update interval (seconds)
+	MinAumUpdateInterval int64 `protobuf:"varint,3,opt,name=min_aum_update_interval,json=minAumUpdateInterval,proto3" json:"min_aum_update_interval,omitempty"`
+	// Maximum allowed AUM deviation before emergency controls (basis points)
+	MaxAumDeviation int32 `protobuf:"varint,4,opt,name=max_aum_deviation,json=maxAumDeviation,proto3" json:"max_aum_deviation,omitempty"`
 	// Emergency circuit breaker threshold (basis points)
 	CircuitBreakerThreshold int32 `protobuf:"varint,5,opt,name=circuit_breaker_threshold,json=circuitBreakerThreshold,proto3" json:"circuit_breaker_threshold,omitempty"`
 }
 
-func (m *NAVConfig) Reset()         { *m = NAVConfig{} }
-func (m *NAVConfig) String() string { return proto.CompactTextString(m) }
-func (*NAVConfig) ProtoMessage()    {}
-func (*NAVConfig) Descriptor() ([]byte, []int) {
+func (m *AUMConfig) Reset()         { *m = AUMConfig{} }
+func (m *AUMConfig) String() string { return proto.CompactTextString(m) }
+func (*AUMConfig) ProtoMessage()    {}
+func (*AUMConfig) Descriptor() ([]byte, []int) {
 	return fileDescriptor_893b9e92a5bdeb81, []int{1}
 }
-func (m *NAVConfig) XXX_Unmarshal(b []byte) error {
+func (m *AUMConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NAVConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AUMConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NAVConfig.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AUMConfig.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -120,75 +120,75 @@ func (m *NAVConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *NAVConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NAVConfig.Merge(m, src)
+func (m *AUMConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AUMConfig.Merge(m, src)
 }
-func (m *NAVConfig) XXX_Size() int {
+func (m *AUMConfig) XXX_Size() int {
 	return m.Size()
 }
-func (m *NAVConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_NAVConfig.DiscardUnknown(m)
+func (m *AUMConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_AUMConfig.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NAVConfig proto.InternalMessageInfo
+var xxx_messageInfo_AUMConfig proto.InternalMessageInfo
 
-func (m *NAVConfig) GetDepositBands() []*NAVBand {
+func (m *AUMConfig) GetDepositBands() []*AUMBand {
 	if m != nil {
 		return m.DepositBands
 	}
 	return nil
 }
 
-func (m *NAVConfig) GetWithdrawalBands() []*NAVBand {
+func (m *AUMConfig) GetWithdrawalBands() []*AUMBand {
 	if m != nil {
 		return m.WithdrawalBands
 	}
 	return nil
 }
 
-func (m *NAVConfig) GetMinNavUpdateInterval() int64 {
+func (m *AUMConfig) GetMinAumUpdateInterval() int64 {
 	if m != nil {
-		return m.MinNavUpdateInterval
+		return m.MinAumUpdateInterval
 	}
 	return 0
 }
 
-func (m *NAVConfig) GetMaxNavDeviation() int32 {
+func (m *AUMConfig) GetMaxAumDeviation() int32 {
 	if m != nil {
-		return m.MaxNavDeviation
+		return m.MaxAumDeviation
 	}
 	return 0
 }
 
-func (m *NAVConfig) GetCircuitBreakerThreshold() int32 {
+func (m *AUMConfig) GetCircuitBreakerThreshold() int32 {
 	if m != nil {
 		return m.CircuitBreakerThreshold
 	}
 	return 0
 }
 
-// NAVInfo represents current NAV information for a vault
-type NAVInfo struct {
-	// Current NAV value
-	CurrentNav cosmossdk_io_math.Int `protobuf:"bytes,1,opt,name=current_nav,json=currentNav,proto3,customtype=cosmossdk.io/math.Int" json:"current_nav"`
-	// Previous NAV value
-	PreviousNav cosmossdk_io_math.Int `protobuf:"bytes,2,opt,name=previous_nav,json=previousNav,proto3,customtype=cosmossdk.io/math.Int" json:"previous_nav"`
+// AUMInfo represents current AUM information for a vault
+type AUMInfo struct {
+	// Current AUM value
+	CurrentAum cosmossdk_io_math.Int `protobuf:"bytes,1,opt,name=current_aum,json=currentAum,proto3,customtype=cosmossdk.io/math.Int" json:"current_aum"`
+	// Previous AUM value
+	PreviousAum cosmossdk_io_math.Int `protobuf:"bytes,2,opt,name=previous_aum,json=previousAum,proto3,customtype=cosmossdk.io/math.Int" json:"previous_aum"`
 	// Last update timestamp
 	LastUpdate time.Time `protobuf:"bytes,3,opt,name=last_update,json=lastUpdate,proto3,stdtime" json:"last_update"`
 }
 
-func (m *NAVInfo) Reset()         { *m = NAVInfo{} }
-func (m *NAVInfo) String() string { return proto.CompactTextString(m) }
-func (*NAVInfo) ProtoMessage()    {}
-func (*NAVInfo) Descriptor() ([]byte, []int) {
+func (m *AUMInfo) Reset()         { *m = AUMInfo{} }
+func (m *AUMInfo) String() string { return proto.CompactTextString(m) }
+func (*AUMInfo) ProtoMessage()    {}
+func (*AUMInfo) Descriptor() ([]byte, []int) {
 	return fileDescriptor_893b9e92a5bdeb81, []int{2}
 }
-func (m *NAVInfo) XXX_Unmarshal(b []byte) error {
+func (m *AUMInfo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NAVInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AUMInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NAVInfo.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AUMInfo.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -198,19 +198,19 @@ func (m *NAVInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *NAVInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NAVInfo.Merge(m, src)
+func (m *AUMInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AUMInfo.Merge(m, src)
 }
-func (m *NAVInfo) XXX_Size() int {
+func (m *AUMInfo) XXX_Size() int {
 	return m.Size()
 }
-func (m *NAVInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_NAVInfo.DiscardUnknown(m)
+func (m *AUMInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_AUMInfo.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NAVInfo proto.InternalMessageInfo
+var xxx_messageInfo_AUMInfo proto.InternalMessageInfo
 
-func (m *NAVInfo) GetLastUpdate() time.Time {
+func (m *AUMInfo) GetLastUpdate() time.Time {
 	if m != nil {
 		return m.LastUpdate
 	}
@@ -219,16 +219,16 @@ func (m *NAVInfo) GetLastUpdate() time.Time {
 
 // CircuitBreakerTrip records when a circuit breaker was triggered
 type CircuitBreakerTrip struct {
-	// NAV change that triggered the circuit breaker (basis points)
+	// AUM change that triggered the circuit breaker (basis points)
 	ChangeBps int32 `protobuf:"varint,1,opt,name=change_bps,json=changeBps,proto3" json:"change_bps,omitempty"`
 	// Remote position ID that caused the circuit breaker to trigger
 	RemotePositionId uint64 `protobuf:"varint,2,opt,name=remote_position_id,json=remotePositionId,proto3" json:"remote_position_id,omitempty"`
 	// Timestamp when circuit breaker was triggered
 	TriggeredAt time.Time `protobuf:"bytes,3,opt,name=triggered_at,json=triggeredAt,proto3,stdtime" json:"triggered_at"`
-	// Previous NAV before the change
-	PreviousNav cosmossdk_io_math.Int `protobuf:"bytes,4,opt,name=previous_nav,json=previousNav,proto3,customtype=cosmossdk.io/math.Int" json:"previous_nav"`
-	// Attempted new NAV that triggered the breaker
-	AttemptedNav cosmossdk_io_math.Int `protobuf:"bytes,5,opt,name=attempted_nav,json=attemptedNav,proto3,customtype=cosmossdk.io/math.Int" json:"attempted_nav"`
+	// Previous AUM before the change
+	PreviousAum cosmossdk_io_math.Int `protobuf:"bytes,4,opt,name=previous_aum,json=previousAum,proto3,customtype=cosmossdk.io/math.Int" json:"previous_aum"`
+	// Attempted new AUM that triggered the breaker
+	AttemptedAum cosmossdk_io_math.Int `protobuf:"bytes,5,opt,name=attempted_aum,json=attemptedAum,proto3,customtype=cosmossdk.io/math.Int" json:"attempted_aum"`
 }
 
 func (m *CircuitBreakerTrip) Reset()         { *m = CircuitBreakerTrip{} }
@@ -285,28 +285,28 @@ func (m *CircuitBreakerTrip) GetTriggeredAt() time.Time {
 	return time.Time{}
 }
 
-// NAVUpdate represents a NAV update event
-type NAVUpdate struct {
-	// New NAV point
-	NewNav cosmossdk_io_math.Int `protobuf:"bytes,1,opt,name=new_nav,json=newNav,proto3,customtype=cosmossdk.io/math.Int" json:"new_nav"`
+// AUMUpdate represents a AUM update event
+type AUMUpdate struct {
+	// New AUM point
+	NewAum cosmossdk_io_math.Int `protobuf:"bytes,1,opt,name=new_aum,json=newAum,proto3,customtype=cosmossdk.io/math.Int" json:"new_aum"`
 	// Update timestamp
 	Timestamp time.Time `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
 	// Block height
 	BlockHeight int64 `protobuf:"varint,3,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
 }
 
-func (m *NAVUpdate) Reset()         { *m = NAVUpdate{} }
-func (m *NAVUpdate) String() string { return proto.CompactTextString(m) }
-func (*NAVUpdate) ProtoMessage()    {}
-func (*NAVUpdate) Descriptor() ([]byte, []int) {
+func (m *AUMUpdate) Reset()         { *m = AUMUpdate{} }
+func (m *AUMUpdate) String() string { return proto.CompactTextString(m) }
+func (*AUMUpdate) ProtoMessage()    {}
+func (*AUMUpdate) Descriptor() ([]byte, []int) {
 	return fileDescriptor_893b9e92a5bdeb81, []int{4}
 }
-func (m *NAVUpdate) XXX_Unmarshal(b []byte) error {
+func (m *AUMUpdate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NAVUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AUMUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NAVUpdate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AUMUpdate.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -316,26 +316,26 @@ func (m *NAVUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *NAVUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NAVUpdate.Merge(m, src)
+func (m *AUMUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AUMUpdate.Merge(m, src)
 }
-func (m *NAVUpdate) XXX_Size() int {
+func (m *AUMUpdate) XXX_Size() int {
 	return m.Size()
 }
-func (m *NAVUpdate) XXX_DiscardUnknown() {
-	xxx_messageInfo_NAVUpdate.DiscardUnknown(m)
+func (m *AUMUpdate) XXX_DiscardUnknown() {
+	xxx_messageInfo_AUMUpdate.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NAVUpdate proto.InternalMessageInfo
+var xxx_messageInfo_AUMUpdate proto.InternalMessageInfo
 
-func (m *NAVUpdate) GetTimestamp() time.Time {
+func (m *AUMUpdate) GetTimestamp() time.Time {
 	if m != nil {
 		return m.Timestamp
 	}
 	return time.Time{}
 }
 
-func (m *NAVUpdate) GetBlockHeight() int64 {
+func (m *AUMUpdate) GetBlockHeight() int64 {
 	if m != nil {
 		return m.BlockHeight
 	}
@@ -346,8 +346,8 @@ func (m *NAVUpdate) GetBlockHeight() int64 {
 type PricingInfo struct {
 	// Current yield rate (APY)
 	YieldRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,1,opt,name=yield_rate,json=yieldRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"yield_rate"`
-	// Applied NAV band
-	AppliedBand *NAVBand `protobuf:"bytes,2,opt,name=applied_band,json=appliedBand,proto3" json:"applied_band,omitempty"`
+	// Applied AUM band
+	AppliedBand *AUMBand `protobuf:"bytes,2,opt,name=applied_band,json=appliedBand,proto3" json:"applied_band,omitempty"`
 	// Effective fee rate
 	EffectiveFeeRate int32 `protobuf:"varint,3,opt,name=effective_fee_rate,json=effectiveFeeRate,proto3" json:"effective_fee_rate,omitempty"`
 }
@@ -385,7 +385,7 @@ func (m *PricingInfo) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PricingInfo proto.InternalMessageInfo
 
-func (m *PricingInfo) GetAppliedBand() *NAVBand {
+func (m *PricingInfo) GetAppliedBand() *AUMBand {
 	if m != nil {
 		return m.AppliedBand
 	}
@@ -403,10 +403,10 @@ func (m *PricingInfo) GetEffectiveFeeRate() int32 {
 type LossEvent struct {
 	// Amount of loss
 	LossAmount cosmossdk_io_math.Int `protobuf:"bytes,1,opt,name=loss_amount,json=lossAmount,proto3,customtype=cosmossdk.io/math.Int" json:"loss_amount"`
-	// Previous NAV before loss
-	PreviousNav cosmossdk_io_math.Int `protobuf:"bytes,2,opt,name=previous_nav,json=previousNav,proto3,customtype=cosmossdk.io/math.Int" json:"previous_nav"`
-	// New NAV after loss
-	NewNav cosmossdk_io_math.Int `protobuf:"bytes,3,opt,name=new_nav,json=newNav,proto3,customtype=cosmossdk.io/math.Int" json:"new_nav"`
+	// Previous AUM before loss
+	PreviousAum cosmossdk_io_math.Int `protobuf:"bytes,2,opt,name=previous_aum,json=previousAum,proto3,customtype=cosmossdk.io/math.Int" json:"previous_aum"`
+	// New AUM after loss
+	NewAum cosmossdk_io_math.Int `protobuf:"bytes,3,opt,name=new_aum,json=newAum,proto3,customtype=cosmossdk.io/math.Int" json:"new_aum"`
 	// Timestamp of loss
 	Timestamp time.Time `protobuf:"bytes,4,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
 }
@@ -452,11 +452,11 @@ func (m *LossEvent) GetTimestamp() time.Time {
 }
 
 func init() {
-	proto.RegisterType((*NAVBand)(nil), "noble.dollar.vaults.v2.NAVBand")
-	proto.RegisterType((*NAVConfig)(nil), "noble.dollar.vaults.v2.NAVConfig")
-	proto.RegisterType((*NAVInfo)(nil), "noble.dollar.vaults.v2.NAVInfo")
+	proto.RegisterType((*AUMBand)(nil), "noble.dollar.vaults.v2.AUMBand")
+	proto.RegisterType((*AUMConfig)(nil), "noble.dollar.vaults.v2.AUMConfig")
+	proto.RegisterType((*AUMInfo)(nil), "noble.dollar.vaults.v2.AUMInfo")
 	proto.RegisterType((*CircuitBreakerTrip)(nil), "noble.dollar.vaults.v2.CircuitBreakerTrip")
-	proto.RegisterType((*NAVUpdate)(nil), "noble.dollar.vaults.v2.NAVUpdate")
+	proto.RegisterType((*AUMUpdate)(nil), "noble.dollar.vaults.v2.AUMUpdate")
 	proto.RegisterType((*PricingInfo)(nil), "noble.dollar.vaults.v2.PricingInfo")
 	proto.RegisterType((*LossEvent)(nil), "noble.dollar.vaults.v2.LossEvent")
 }
@@ -464,63 +464,63 @@ func init() {
 func init() { proto.RegisterFile("noble/dollar/vaults/v2/nav.proto", fileDescriptor_893b9e92a5bdeb81) }
 
 var fileDescriptor_893b9e92a5bdeb81 = []byte{
-	// 834 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0x41, 0x8f, 0x1b, 0x35,
-	0x14, 0xce, 0x24, 0xd9, 0x96, 0x78, 0x52, 0x75, 0x6b, 0x15, 0x9a, 0x2e, 0x22, 0x09, 0xe1, 0xb2,
-	0xaa, 0xca, 0x0c, 0x4a, 0x05, 0x07, 0x24, 0x0e, 0x99, 0xa6, 0x40, 0xa0, 0x8a, 0x4a, 0xe8, 0xf6,
-	0xc0, 0x65, 0xe4, 0xcc, 0xbc, 0x4c, 0xac, 0x9d, 0xb1, 0x47, 0xb6, 0x67, 0xb2, 0xe1, 0x57, 0xf4,
-	0x67, 0x70, 0xe4, 0xc0, 0x11, 0x2e, 0x9c, 0x7a, 0xac, 0x38, 0x54, 0x88, 0x43, 0x41, 0xbb, 0x07,
-	0xfe, 0x02, 0x47, 0x34, 0xb6, 0x93, 0x2d, 0x2a, 0x12, 0x25, 0x2c, 0x97, 0x28, 0x7e, 0xef, 0x7b,
-	0x9f, 0xfd, 0x3e, 0x7f, 0xcf, 0x83, 0xfa, 0x8c, 0xcf, 0x53, 0xf0, 0x63, 0x9e, 0xa6, 0x44, 0xf8,
-	0x25, 0x29, 0x52, 0x25, 0xfd, 0x72, 0xe8, 0x33, 0x52, 0x7a, 0xb9, 0xe0, 0x8a, 0xe3, 0x37, 0x34,
-	0xc2, 0x33, 0x08, 0xcf, 0x20, 0xbc, 0x72, 0x78, 0x70, 0x8d, 0x64, 0x94, 0x71, 0x5f, 0xff, 0x1a,
-	0xe8, 0xc1, 0xcd, 0x88, 0xcb, 0x8c, 0xcb, 0x50, 0xaf, 0x7c, 0xb3, 0xb0, 0xa9, 0xeb, 0x09, 0x4f,
-	0xb8, 0x89, 0x57, 0xff, 0x6c, 0xb4, 0x97, 0x70, 0x9e, 0xa4, 0xe0, 0xeb, 0xd5, 0xbc, 0x58, 0xf8,
-	0x8a, 0x66, 0x20, 0x15, 0xc9, 0x72, 0x03, 0x18, 0x7c, 0x8e, 0x2e, 0x4f, 0x47, 0x8f, 0x02, 0xc2,
-	0x62, 0xdc, 0x43, 0x6e, 0xca, 0x57, 0x20, 0xc2, 0x39, 0x2f, 0x58, 0xdc, 0x71, 0xfa, 0xce, 0xe1,
-	0xde, 0x0c, 0xe9, 0x50, 0x50, 0x45, 0x2a, 0x40, 0x91, 0xe7, 0x5b, 0x40, 0xdd, 0x00, 0x74, 0x48,
-	0x03, 0x06, 0xdf, 0xd7, 0x51, 0x6b, 0x3a, 0x7a, 0x74, 0x97, 0xb3, 0x05, 0x4d, 0xf0, 0x18, 0x5d,
-	0x89, 0x21, 0xe7, 0x92, 0xaa, 0x70, 0x4e, 0x58, 0x2c, 0x3b, 0x4e, 0xbf, 0x71, 0xe8, 0x0e, 0x7b,
-	0xde, 0xdf, 0xf7, 0xeb, 0xd9, 0x73, 0xcc, 0xda, 0xb6, 0xaa, 0x5a, 0x48, 0xfc, 0x19, 0xda, 0x5f,
-	0x51, 0xb5, 0x8c, 0x05, 0x59, 0x91, 0xd4, 0x12, 0xd5, 0x5f, 0x8d, 0xe8, 0xea, 0x79, 0xa1, 0xe1,
-	0x7a, 0x1f, 0xdd, 0xc8, 0x28, 0x0b, 0x19, 0x29, 0xc3, 0x22, 0x8f, 0x89, 0x82, 0x90, 0x32, 0x05,
-	0xa2, 0x24, 0x69, 0xa7, 0xd1, 0x77, 0x0e, 0x1b, 0xb3, 0xeb, 0x19, 0x65, 0x53, 0x52, 0x1e, 0xe9,
-	0xe4, 0xc4, 0xe6, 0xf0, 0x2d, 0x74, 0x2d, 0x23, 0x27, 0xba, 0x2c, 0x86, 0x92, 0x12, 0x45, 0x39,
-	0xeb, 0x34, 0x75, 0xf7, 0x57, 0x33, 0x72, 0x32, 0x25, 0xe5, 0x78, 0x13, 0xc6, 0x1f, 0xa2, 0x9b,
-	0x11, 0x15, 0x51, 0x51, 0x35, 0x2d, 0x80, 0x1c, 0x83, 0x08, 0xd5, 0x52, 0x80, 0x5c, 0xf2, 0x34,
-	0xee, 0xec, 0xe9, 0x9a, 0x1b, 0x16, 0x10, 0x98, 0xfc, 0xc3, 0x4d, 0x7a, 0xf0, 0x87, 0xa3, 0x2f,
-	0x63, 0xc2, 0x16, 0x1c, 0x7f, 0x81, 0xdc, 0xa8, 0x10, 0x02, 0x98, 0xaa, 0xf6, 0xd5, 0x97, 0xd1,
-	0x0a, 0xde, 0x7b, 0xf2, 0xbc, 0x57, 0xfb, 0xe5, 0x79, 0xef, 0x75, 0x73, 0xf3, 0x32, 0x3e, 0xf6,
-	0x28, 0xf7, 0x33, 0xa2, 0x96, 0xde, 0x84, 0xa9, 0x9f, 0xbe, 0x7b, 0x17, 0x59, 0x4b, 0x4c, 0x98,
-	0xfa, 0xe6, 0xf7, 0x6f, 0x6f, 0x39, 0x33, 0x64, 0x49, 0xa6, 0xa4, 0xc4, 0x5f, 0xa2, 0x76, 0x2e,
-	0xa0, 0xa4, 0xbc, 0x90, 0x9a, 0xb3, 0xbe, 0x23, 0xa7, 0xbb, 0x61, 0xa9, 0x48, 0xef, 0x21, 0x37,
-	0x25, 0x52, 0x59, 0x3d, 0xb5, 0x8c, 0xee, 0xf0, 0xc0, 0x33, 0xb6, 0xf3, 0x36, 0xb6, 0xf3, 0x1e,
-	0x6e, 0x6c, 0x17, 0xbc, 0x56, 0xed, 0xf7, 0xf8, 0xd7, 0x9e, 0x33, 0x43, 0x55, 0xa1, 0x91, 0x7a,
-	0xf0, 0xac, 0x8e, 0xf0, 0xdd, 0xbf, 0xca, 0x22, 0x68, 0x8e, 0xdf, 0x42, 0x28, 0x5a, 0x12, 0x96,
-	0x40, 0x38, 0xcf, 0xa5, 0x75, 0x64, 0xcb, 0x44, 0x82, 0x5c, 0xe2, 0xdb, 0x08, 0x0b, 0xc8, 0xb8,
-	0x82, 0x50, 0x1b, 0x86, 0x72, 0x16, 0x52, 0xe3, 0xcb, 0xe6, 0x6c, 0xdf, 0x64, 0x1e, 0xd8, 0xc4,
-	0x24, 0xc6, 0x9f, 0xa0, 0xb6, 0x12, 0x34, 0x49, 0x40, 0x40, 0x1c, 0x12, 0xf5, 0xaf, 0xce, 0xea,
-	0x6e, 0x2b, 0x47, 0xea, 0x25, 0x21, 0x9b, 0x17, 0x21, 0xe4, 0x11, 0xba, 0x42, 0x94, 0x82, 0x2c,
-	0x57, 0x10, 0x6b, 0xd6, 0xbd, 0x1d, 0x59, 0xdb, 0x5b, 0x9a, 0x29, 0x29, 0x07, 0x3f, 0x38, 0x7a,
-	0x24, 0x8d, 0xcc, 0x78, 0x82, 0x2e, 0x33, 0x58, 0xfd, 0x27, 0x47, 0x5d, 0x62, 0xb0, 0xaa, 0xce,
-	0x1b, 0xa0, 0xd6, 0xf6, 0x2d, 0xd1, 0x92, 0xbf, 0xaa, 0x94, 0xe7, 0x65, 0xf8, 0x6d, 0xd4, 0x9e,
-	0xa7, 0x3c, 0x3a, 0x0e, 0x97, 0x40, 0x93, 0xa5, 0xb2, 0x43, 0xe8, 0xea, 0xd8, 0xa7, 0x3a, 0x34,
-	0x78, 0xe6, 0x20, 0xf7, 0x81, 0xa0, 0x11, 0x65, 0x89, 0x9e, 0x8b, 0x23, 0x84, 0xd6, 0x14, 0xd2,
-	0x38, 0x14, 0x95, 0xdd, 0x4c, 0x13, 0x1f, 0xd8, 0x26, 0xde, 0x7c, 0xb9, 0x89, 0xfb, 0x90, 0x90,
-	0x68, 0x3d, 0x86, 0xe8, 0x85, 0x56, 0xc6, 0x10, 0x99, 0x56, 0x5a, 0x9a, 0x69, 0x56, 0x09, 0x13,
-	0xa0, 0x36, 0xc9, 0xf3, 0x94, 0x42, 0xac, 0x9f, 0x18, 0xdb, 0xd0, 0x3f, 0xbe, 0x30, 0xae, 0x2d,
-	0xd2, 0xef, 0xe7, 0x6d, 0x84, 0x61, 0xb1, 0x80, 0x48, 0xd1, 0x12, 0xc2, 0x05, 0x80, 0x39, 0x62,
-	0x43, 0x9b, 0x76, 0x7f, 0x9b, 0xf9, 0x18, 0xa0, 0xda, 0x71, 0xf0, 0x63, 0x1d, 0xb5, 0xee, 0x73,
-	0x29, 0xef, 0x95, 0xc0, 0x54, 0x35, 0xee, 0x29, 0x97, 0x32, 0x24, 0x19, 0x2f, 0x98, 0xda, 0x7d,
-	0xdc, 0x2b, 0x92, 0x91, 0xe6, 0xf8, 0x7f, 0xc6, 0xfd, 0x05, 0x03, 0x35, 0x2e, 0xd2, 0x40, 0xcd,
-	0x9d, 0x0c, 0x14, 0x7c, 0xf4, 0xe4, 0xb4, 0xeb, 0x3c, 0x3d, 0xed, 0x3a, 0xbf, 0x9d, 0x76, 0x9d,
-	0xc7, 0x67, 0xdd, 0xda, 0xd3, 0xb3, 0x6e, 0xed, 0xe7, 0xb3, 0x6e, 0xed, 0xab, 0x77, 0xec, 0x9d,
-	0x99, 0x0b, 0x3c, 0x59, 0x7f, 0xed, 0x97, 0x77, 0x7c, 0xb5, 0xce, 0x41, 0x9e, 0x7f, 0x83, 0xe7,
-	0x97, 0xf4, 0x3e, 0x77, 0xfe, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x0f, 0x19, 0xaf, 0x7f, 0xa4, 0x07,
-	0x00, 0x00,
+	// 836 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xbf, 0x8f, 0x1b, 0x45,
+	0x14, 0xbe, 0xb5, 0x2f, 0x09, 0x9e, 0x75, 0x94, 0xcb, 0x28, 0x10, 0xe7, 0x10, 0xf6, 0x61, 0x9a,
+	0x53, 0x14, 0x76, 0xd1, 0x45, 0x50, 0x20, 0x51, 0x78, 0x73, 0x01, 0x0c, 0x89, 0x14, 0x4c, 0xdc,
+	0xd0, 0xac, 0xc6, 0xbb, 0xcf, 0xeb, 0xd1, 0xed, 0xcc, 0xac, 0x66, 0x66, 0xd7, 0x77, 0xfc, 0x15,
+	0xf9, 0x33, 0x28, 0x29, 0x28, 0xa1, 0xa1, 0x4a, 0x19, 0x51, 0x44, 0x88, 0x22, 0xa0, 0xbb, 0x82,
+	0x7f, 0x81, 0x12, 0xcd, 0x0f, 0xfb, 0x82, 0x82, 0x44, 0x30, 0xa1, 0xb1, 0x3c, 0xef, 0x7d, 0xef,
+	0x9b, 0x79, 0xdf, 0x7c, 0x6f, 0x16, 0xed, 0x71, 0x31, 0x2b, 0x21, 0xce, 0x45, 0x59, 0x12, 0x19,
+	0x37, 0xa4, 0x2e, 0xb5, 0x8a, 0x9b, 0x83, 0x98, 0x93, 0x26, 0xaa, 0xa4, 0xd0, 0x02, 0xbf, 0x61,
+	0x11, 0x91, 0x43, 0x44, 0x0e, 0x11, 0x35, 0x07, 0xbb, 0x57, 0x09, 0xa3, 0x5c, 0xc4, 0xf6, 0xd7,
+	0x41, 0x77, 0x6f, 0x64, 0x42, 0x31, 0xa1, 0x52, 0xbb, 0x8a, 0xdd, 0xc2, 0xa7, 0xae, 0x15, 0xa2,
+	0x10, 0x2e, 0x6e, 0xfe, 0xf9, 0xe8, 0xa0, 0x10, 0xa2, 0x28, 0x21, 0xb6, 0xab, 0x59, 0x3d, 0x8f,
+	0x35, 0x65, 0xa0, 0x34, 0x61, 0x95, 0x03, 0x0c, 0x3f, 0x47, 0x97, 0x46, 0xd3, 0xfb, 0x09, 0xe1,
+	0x39, 0x1e, 0xa0, 0xb0, 0x14, 0x4b, 0x90, 0xe9, 0x4c, 0xd4, 0x3c, 0xef, 0x05, 0x7b, 0xc1, 0xfe,
+	0x85, 0x09, 0xb2, 0xa1, 0xc4, 0x44, 0x0c, 0xa0, 0xae, 0xaa, 0x35, 0xa0, 0xe5, 0x00, 0x36, 0x64,
+	0x01, 0xc3, 0xef, 0x5b, 0xa8, 0x33, 0x9a, 0xde, 0xbf, 0x23, 0xf8, 0x9c, 0x16, 0xf8, 0x10, 0x5d,
+	0xce, 0xa1, 0x12, 0x8a, 0xea, 0x74, 0x46, 0x78, 0xae, 0x7a, 0xc1, 0x5e, 0x7b, 0x3f, 0x3c, 0x18,
+	0x44, 0x7f, 0xdf, 0x6f, 0xe4, 0xcf, 0x31, 0xe9, 0xfa, 0x2a, 0xb3, 0x50, 0xf8, 0x33, 0xb4, 0xb3,
+	0xa4, 0x7a, 0x91, 0x4b, 0xb2, 0x24, 0xa5, 0x27, 0x6a, 0xbd, 0x1c, 0xd1, 0x95, 0xf3, 0x42, 0xc7,
+	0xf5, 0x3e, 0xba, 0xce, 0x28, 0x4f, 0x49, 0xcd, 0xd2, 0xba, 0xca, 0x89, 0x86, 0x94, 0x72, 0x0d,
+	0xb2, 0x21, 0x65, 0xaf, 0xbd, 0x17, 0xec, 0xb7, 0x27, 0xd7, 0x18, 0xe5, 0xa3, 0x9a, 0x4d, 0x6d,
+	0x72, 0xec, 0x73, 0xf8, 0x26, 0xba, 0xca, 0xc8, 0xb1, 0x2d, 0xcb, 0xa1, 0xa1, 0x44, 0x53, 0xc1,
+	0x7b, 0xdb, 0xb6, 0xfb, 0x2b, 0x8c, 0x1c, 0x8f, 0x6a, 0x76, 0xb8, 0x0a, 0xe3, 0x0f, 0xd1, 0x8d,
+	0x8c, 0xca, 0xac, 0x36, 0x4d, 0x4b, 0x20, 0x47, 0x20, 0x53, 0xbd, 0x90, 0xa0, 0x16, 0xa2, 0xcc,
+	0x7b, 0x17, 0x6c, 0xcd, 0x75, 0x0f, 0x48, 0x5c, 0xfe, 0xe1, 0x2a, 0x3d, 0xfc, 0x23, 0xb0, 0x97,
+	0x31, 0xe6, 0x73, 0x81, 0xbf, 0x40, 0x61, 0x56, 0x4b, 0x09, 0x5c, 0x9b, 0x7d, 0xed, 0x65, 0x74,
+	0x92, 0xf7, 0x1e, 0x3f, 0x1b, 0x6c, 0xfd, 0xf2, 0x6c, 0xf0, 0xba, 0xbb, 0x79, 0x95, 0x1f, 0x45,
+	0x54, 0xc4, 0x8c, 0xe8, 0x45, 0x34, 0xe6, 0xfa, 0xa7, 0xef, 0xde, 0x45, 0xde, 0x12, 0x63, 0xae,
+	0xbf, 0xf9, 0xfd, 0xdb, 0x9b, 0xc1, 0x04, 0x79, 0x92, 0x51, 0xcd, 0xf0, 0x97, 0xa8, 0x5b, 0x49,
+	0x68, 0xa8, 0xa8, 0x95, 0xe5, 0x6c, 0x6d, 0xc8, 0x19, 0xae, 0x58, 0x0c, 0xe9, 0x5d, 0x14, 0x96,
+	0x44, 0x69, 0xaf, 0xa7, 0x95, 0x31, 0x3c, 0xd8, 0x8d, 0x9c, 0xed, 0xa2, 0x95, 0xed, 0xa2, 0x87,
+	0x2b, 0xdb, 0x25, 0xaf, 0x99, 0xfd, 0x1e, 0xfd, 0x3a, 0x08, 0x26, 0xc8, 0x14, 0x3a, 0xa9, 0x87,
+	0x4f, 0x5b, 0x08, 0xdf, 0xf9, 0xab, 0x2c, 0x92, 0x56, 0xf8, 0x2d, 0x84, 0xb2, 0x05, 0xe1, 0x05,
+	0xa4, 0xb3, 0x4a, 0x79, 0x47, 0x76, 0x5c, 0x24, 0xa9, 0x14, 0xbe, 0x85, 0xb0, 0x04, 0x26, 0x34,
+	0xa4, 0xd6, 0x30, 0x54, 0xf0, 0x94, 0x3a, 0x5f, 0x6e, 0x4f, 0x76, 0x5c, 0xe6, 0x81, 0x4f, 0x8c,
+	0x73, 0xfc, 0x09, 0xea, 0x6a, 0x49, 0x8b, 0x02, 0x24, 0xe4, 0x29, 0xd1, 0xff, 0xea, 0xac, 0xe1,
+	0xba, 0x72, 0xa4, 0x5f, 0x10, 0x72, 0xfb, 0x55, 0x08, 0x39, 0x45, 0x97, 0x89, 0xd6, 0xc0, 0x2a,
+	0x6d, 0x4e, 0x57, 0x33, 0x6b, 0x96, 0x4d, 0x58, 0xbb, 0x6b, 0x9a, 0x51, 0xcd, 0x86, 0x3f, 0x04,
+	0x76, 0x24, 0x9d, 0xcc, 0x78, 0x8c, 0x2e, 0x71, 0x58, 0xfe, 0x27, 0x47, 0x5d, 0xe4, 0xb0, 0x34,
+	0xe7, 0x4d, 0x50, 0x67, 0xfd, 0x96, 0x58, 0xc9, 0x5f, 0x56, 0xca, 0xf3, 0x32, 0xfc, 0x36, 0xea,
+	0xce, 0x4a, 0x91, 0x1d, 0xa5, 0x0b, 0xa0, 0xc5, 0x42, 0xfb, 0x21, 0x0c, 0x6d, 0xec, 0x53, 0x1b,
+	0x1a, 0x3e, 0x0d, 0x50, 0xf8, 0x40, 0xd2, 0x8c, 0xf2, 0xc2, 0xce, 0xc5, 0x14, 0xa1, 0x13, 0x0a,
+	0x65, 0x9e, 0x4a, 0x63, 0x37, 0xd7, 0xc4, 0x07, 0xbe, 0x89, 0x37, 0x5f, 0x6c, 0xe2, 0x1e, 0x14,
+	0x24, 0x3b, 0x39, 0x84, 0xec, 0xb9, 0x56, 0x0e, 0x21, 0x73, 0xad, 0x74, 0x2c, 0xd3, 0xc4, 0x08,
+	0x93, 0xa0, 0x2e, 0xa9, 0xaa, 0x92, 0x42, 0x6e, 0x9f, 0x18, 0xdf, 0xd0, 0x3f, 0xbe, 0x30, 0xa1,
+	0x2f, 0xb2, 0xef, 0xe7, 0x2d, 0x84, 0x61, 0x3e, 0x87, 0x4c, 0xd3, 0x06, 0xd2, 0x39, 0x80, 0x3b,
+	0x62, 0xdb, 0x9a, 0x76, 0x67, 0x9d, 0xf9, 0x18, 0xc0, 0xec, 0x38, 0xfc, 0xb1, 0x85, 0x3a, 0xf7,
+	0x84, 0x52, 0x77, 0x1b, 0xe0, 0xda, 0x8c, 0x7b, 0x29, 0x94, 0x4a, 0x09, 0x13, 0x35, 0xd7, 0x9b,
+	0x8f, 0xbb, 0x21, 0x19, 0x59, 0x8e, 0xff, 0x67, 0xdc, 0x9f, 0x33, 0x50, 0xfb, 0x55, 0x1a, 0x68,
+	0x7b, 0x23, 0x03, 0x25, 0x1f, 0x3d, 0x3e, 0xed, 0x07, 0x4f, 0x4e, 0xfb, 0xc1, 0x6f, 0xa7, 0xfd,
+	0xe0, 0xd1, 0x59, 0x7f, 0xeb, 0xc9, 0x59, 0x7f, 0xeb, 0xe7, 0xb3, 0xfe, 0xd6, 0x57, 0xef, 0xf8,
+	0x3b, 0x73, 0x17, 0x78, 0x7c, 0xf2, 0x75, 0xdc, 0xdc, 0x8e, 0xf5, 0x49, 0x05, 0xea, 0xfc, 0x1b,
+	0x3c, 0xbb, 0x68, 0xf7, 0xb9, 0xfd, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff, 0x25, 0x22, 0x7e, 0x5a,
+	0xa4, 0x07, 0x00, 0x00,
 }
 
-func (m *NAVBand) Marshal() (dAtA []byte, err error) {
+func (m *AUMBand) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -530,12 +530,12 @@ func (m *NAVBand) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NAVBand) MarshalTo(dAtA []byte) (int, error) {
+func (m *AUMBand) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NAVBand) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AUMBand) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -553,7 +553,7 @@ func (m *NAVBand) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NAVConfig) Marshal() (dAtA []byte, err error) {
+func (m *AUMConfig) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -563,12 +563,12 @@ func (m *NAVConfig) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NAVConfig) MarshalTo(dAtA []byte) (int, error) {
+func (m *AUMConfig) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NAVConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AUMConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -578,13 +578,13 @@ func (m *NAVConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x28
 	}
-	if m.MaxNavDeviation != 0 {
-		i = encodeVarintNav(dAtA, i, uint64(m.MaxNavDeviation))
+	if m.MaxAumDeviation != 0 {
+		i = encodeVarintNav(dAtA, i, uint64(m.MaxAumDeviation))
 		i--
 		dAtA[i] = 0x20
 	}
-	if m.MinNavUpdateInterval != 0 {
-		i = encodeVarintNav(dAtA, i, uint64(m.MinNavUpdateInterval))
+	if m.MinAumUpdateInterval != 0 {
+		i = encodeVarintNav(dAtA, i, uint64(m.MinAumUpdateInterval))
 		i--
 		dAtA[i] = 0x18
 	}
@@ -619,7 +619,7 @@ func (m *NAVConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NAVInfo) Marshal() (dAtA []byte, err error) {
+func (m *AUMInfo) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -629,12 +629,12 @@ func (m *NAVInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NAVInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *AUMInfo) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NAVInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AUMInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -648,9 +648,9 @@ func (m *NAVInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x1a
 	{
-		size := m.PreviousNav.Size()
+		size := m.PreviousAum.Size()
 		i -= size
-		if _, err := m.PreviousNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.PreviousAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -658,9 +658,9 @@ func (m *NAVInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x12
 	{
-		size := m.CurrentNav.Size()
+		size := m.CurrentAum.Size()
 		i -= size
-		if _, err := m.CurrentNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.CurrentAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -691,9 +691,9 @@ func (m *CircuitBreakerTrip) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
-		size := m.AttemptedNav.Size()
+		size := m.AttemptedAum.Size()
 		i -= size
-		if _, err := m.AttemptedNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.AttemptedAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -701,9 +701,9 @@ func (m *CircuitBreakerTrip) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x2a
 	{
-		size := m.PreviousNav.Size()
+		size := m.PreviousAum.Size()
 		i -= size
-		if _, err := m.PreviousNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.PreviousAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -731,7 +731,7 @@ func (m *CircuitBreakerTrip) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NAVUpdate) Marshal() (dAtA []byte, err error) {
+func (m *AUMUpdate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -741,12 +741,12 @@ func (m *NAVUpdate) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NAVUpdate) MarshalTo(dAtA []byte) (int, error) {
+func (m *AUMUpdate) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NAVUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AUMUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -765,9 +765,9 @@ func (m *NAVUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x12
 	{
-		size := m.NewNav.Size()
+		size := m.NewAum.Size()
 		i -= size
-		if _, err := m.NewNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.NewAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -856,9 +856,9 @@ func (m *LossEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x22
 	{
-		size := m.NewNav.Size()
+		size := m.NewAum.Size()
 		i -= size
-		if _, err := m.NewNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.NewAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -866,9 +866,9 @@ func (m *LossEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x1a
 	{
-		size := m.PreviousNav.Size()
+		size := m.PreviousAum.Size()
 		i -= size
-		if _, err := m.PreviousNav.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.PreviousAum.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintNav(dAtA, i, uint64(size))
@@ -899,7 +899,7 @@ func encodeVarintNav(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *NAVBand) Size() (n int) {
+func (m *AUMBand) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -914,7 +914,7 @@ func (m *NAVBand) Size() (n int) {
 	return n
 }
 
-func (m *NAVConfig) Size() (n int) {
+func (m *AUMConfig) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -932,11 +932,11 @@ func (m *NAVConfig) Size() (n int) {
 			n += 1 + l + sovNav(uint64(l))
 		}
 	}
-	if m.MinNavUpdateInterval != 0 {
-		n += 1 + sovNav(uint64(m.MinNavUpdateInterval))
+	if m.MinAumUpdateInterval != 0 {
+		n += 1 + sovNav(uint64(m.MinAumUpdateInterval))
 	}
-	if m.MaxNavDeviation != 0 {
-		n += 1 + sovNav(uint64(m.MaxNavDeviation))
+	if m.MaxAumDeviation != 0 {
+		n += 1 + sovNav(uint64(m.MaxAumDeviation))
 	}
 	if m.CircuitBreakerThreshold != 0 {
 		n += 1 + sovNav(uint64(m.CircuitBreakerThreshold))
@@ -944,15 +944,15 @@ func (m *NAVConfig) Size() (n int) {
 	return n
 }
 
-func (m *NAVInfo) Size() (n int) {
+func (m *AUMInfo) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.CurrentNav.Size()
+	l = m.CurrentAum.Size()
 	n += 1 + l + sovNav(uint64(l))
-	l = m.PreviousNav.Size()
+	l = m.PreviousAum.Size()
 	n += 1 + l + sovNav(uint64(l))
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate)
 	n += 1 + l + sovNav(uint64(l))
@@ -973,20 +973,20 @@ func (m *CircuitBreakerTrip) Size() (n int) {
 	}
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.TriggeredAt)
 	n += 1 + l + sovNav(uint64(l))
-	l = m.PreviousNav.Size()
+	l = m.PreviousAum.Size()
 	n += 1 + l + sovNav(uint64(l))
-	l = m.AttemptedNav.Size()
+	l = m.AttemptedAum.Size()
 	n += 1 + l + sovNav(uint64(l))
 	return n
 }
 
-func (m *NAVUpdate) Size() (n int) {
+func (m *AUMUpdate) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.NewNav.Size()
+	l = m.NewAum.Size()
 	n += 1 + l + sovNav(uint64(l))
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovNav(uint64(l))
@@ -1022,9 +1022,9 @@ func (m *LossEvent) Size() (n int) {
 	_ = l
 	l = m.LossAmount.Size()
 	n += 1 + l + sovNav(uint64(l))
-	l = m.PreviousNav.Size()
+	l = m.PreviousAum.Size()
 	n += 1 + l + sovNav(uint64(l))
-	l = m.NewNav.Size()
+	l = m.NewAum.Size()
 	n += 1 + l + sovNav(uint64(l))
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovNav(uint64(l))
@@ -1037,7 +1037,7 @@ func sovNav(x uint64) (n int) {
 func sozNav(x uint64) (n int) {
 	return sovNav(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *NAVBand) Unmarshal(dAtA []byte) error {
+func (m *AUMBand) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1060,10 +1060,10 @@ func (m *NAVBand) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NAVBand: wiretype end group for non-group")
+			return fmt.Errorf("proto: AUMBand: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NAVBand: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AUMBand: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1125,7 +1125,7 @@ func (m *NAVBand) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NAVConfig) Unmarshal(dAtA []byte) error {
+func (m *AUMConfig) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1148,10 +1148,10 @@ func (m *NAVConfig) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NAVConfig: wiretype end group for non-group")
+			return fmt.Errorf("proto: AUMConfig: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NAVConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AUMConfig: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1183,7 +1183,7 @@ func (m *NAVConfig) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DepositBands = append(m.DepositBands, &NAVBand{})
+			m.DepositBands = append(m.DepositBands, &AUMBand{})
 			if err := m.DepositBands[len(m.DepositBands)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1217,16 +1217,16 @@ func (m *NAVConfig) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.WithdrawalBands = append(m.WithdrawalBands, &NAVBand{})
+			m.WithdrawalBands = append(m.WithdrawalBands, &AUMBand{})
 			if err := m.WithdrawalBands[len(m.WithdrawalBands)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MinNavUpdateInterval", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MinAumUpdateInterval", wireType)
 			}
-			m.MinNavUpdateInterval = 0
+			m.MinAumUpdateInterval = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowNav
@@ -1236,16 +1236,16 @@ func (m *NAVConfig) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MinNavUpdateInterval |= int64(b&0x7F) << shift
+				m.MinAumUpdateInterval |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxNavDeviation", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxAumDeviation", wireType)
 			}
-			m.MaxNavDeviation = 0
+			m.MaxAumDeviation = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowNav
@@ -1255,7 +1255,7 @@ func (m *NAVConfig) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MaxNavDeviation |= int32(b&0x7F) << shift
+				m.MaxAumDeviation |= int32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1300,7 +1300,7 @@ func (m *NAVConfig) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NAVInfo) Unmarshal(dAtA []byte) error {
+func (m *AUMInfo) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1323,15 +1323,15 @@ func (m *NAVInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NAVInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: AUMInfo: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NAVInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AUMInfo: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CurrentNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrentAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1359,13 +1359,13 @@ func (m *NAVInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.CurrentNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CurrentAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PreviousNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PreviousAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1393,7 +1393,7 @@ func (m *NAVInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.PreviousNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.PreviousAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1553,7 +1553,7 @@ func (m *CircuitBreakerTrip) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PreviousNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PreviousAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1581,13 +1581,13 @@ func (m *CircuitBreakerTrip) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.PreviousNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.PreviousAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AttemptedNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AttemptedAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1615,7 +1615,7 @@ func (m *CircuitBreakerTrip) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.AttemptedNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.AttemptedAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1640,7 +1640,7 @@ func (m *CircuitBreakerTrip) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NAVUpdate) Unmarshal(dAtA []byte) error {
+func (m *AUMUpdate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1663,15 +1663,15 @@ func (m *NAVUpdate) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NAVUpdate: wiretype end group for non-group")
+			return fmt.Errorf("proto: AUMUpdate: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NAVUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AUMUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NewAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1699,7 +1699,7 @@ func (m *NAVUpdate) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.NewNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.NewAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1869,7 +1869,7 @@ func (m *PricingInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.AppliedBand == nil {
-				m.AppliedBand = &NAVBand{}
+				m.AppliedBand = &AUMBand{}
 			}
 			if err := m.AppliedBand.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1980,7 +1980,7 @@ func (m *LossEvent) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PreviousNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PreviousAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2008,13 +2008,13 @@ func (m *LossEvent) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.PreviousNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.PreviousAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewNav", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NewAum", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2042,7 +2042,7 @@ func (m *LossEvent) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.NewNav.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.NewAum.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

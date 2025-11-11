@@ -4565,37 +4565,37 @@ func (x *fastReflection_HyperlaneTrackingInfo) ProtoMethods() *protoiface.Method
 }
 
 var (
-	md_NAVOracleUpdate              protoreflect.MessageDescriptor
-	fd_NAVOracleUpdate_position_id  protoreflect.FieldDescriptor
-	fd_NAVOracleUpdate_share_price  protoreflect.FieldDescriptor
-	fd_NAVOracleUpdate_shares_held  protoreflect.FieldDescriptor
-	fd_NAVOracleUpdate_timestamp    protoreflect.FieldDescriptor
-	fd_NAVOracleUpdate_source_chain protoreflect.FieldDescriptor
-	fd_NAVOracleUpdate_message_id   protoreflect.FieldDescriptor
-	fd_NAVOracleUpdate_status       protoreflect.FieldDescriptor
+	md_AUMOracleUpdate              protoreflect.MessageDescriptor
+	fd_AUMOracleUpdate_position_id  protoreflect.FieldDescriptor
+	fd_AUMOracleUpdate_share_price  protoreflect.FieldDescriptor
+	fd_AUMOracleUpdate_shares_held  protoreflect.FieldDescriptor
+	fd_AUMOracleUpdate_timestamp    protoreflect.FieldDescriptor
+	fd_AUMOracleUpdate_source_chain protoreflect.FieldDescriptor
+	fd_AUMOracleUpdate_message_id   protoreflect.FieldDescriptor
+	fd_AUMOracleUpdate_status       protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_noble_dollar_vaults_v2_cross_chain_proto_init()
-	md_NAVOracleUpdate = File_noble_dollar_vaults_v2_cross_chain_proto.Messages().ByName("NAVOracleUpdate")
-	fd_NAVOracleUpdate_position_id = md_NAVOracleUpdate.Fields().ByName("position_id")
-	fd_NAVOracleUpdate_share_price = md_NAVOracleUpdate.Fields().ByName("share_price")
-	fd_NAVOracleUpdate_shares_held = md_NAVOracleUpdate.Fields().ByName("shares_held")
-	fd_NAVOracleUpdate_timestamp = md_NAVOracleUpdate.Fields().ByName("timestamp")
-	fd_NAVOracleUpdate_source_chain = md_NAVOracleUpdate.Fields().ByName("source_chain")
-	fd_NAVOracleUpdate_message_id = md_NAVOracleUpdate.Fields().ByName("message_id")
-	fd_NAVOracleUpdate_status = md_NAVOracleUpdate.Fields().ByName("status")
+	md_AUMOracleUpdate = File_noble_dollar_vaults_v2_cross_chain_proto.Messages().ByName("AUMOracleUpdate")
+	fd_AUMOracleUpdate_position_id = md_AUMOracleUpdate.Fields().ByName("position_id")
+	fd_AUMOracleUpdate_share_price = md_AUMOracleUpdate.Fields().ByName("share_price")
+	fd_AUMOracleUpdate_shares_held = md_AUMOracleUpdate.Fields().ByName("shares_held")
+	fd_AUMOracleUpdate_timestamp = md_AUMOracleUpdate.Fields().ByName("timestamp")
+	fd_AUMOracleUpdate_source_chain = md_AUMOracleUpdate.Fields().ByName("source_chain")
+	fd_AUMOracleUpdate_message_id = md_AUMOracleUpdate.Fields().ByName("message_id")
+	fd_AUMOracleUpdate_status = md_AUMOracleUpdate.Fields().ByName("status")
 }
 
-var _ protoreflect.Message = (*fastReflection_NAVOracleUpdate)(nil)
+var _ protoreflect.Message = (*fastReflection_AUMOracleUpdate)(nil)
 
-type fastReflection_NAVOracleUpdate NAVOracleUpdate
+type fastReflection_AUMOracleUpdate AUMOracleUpdate
 
-func (x *NAVOracleUpdate) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_NAVOracleUpdate)(x)
+func (x *AUMOracleUpdate) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AUMOracleUpdate)(x)
 }
 
-func (x *NAVOracleUpdate) slowProtoReflect() protoreflect.Message {
+func (x *AUMOracleUpdate) slowProtoReflect() protoreflect.Message {
 	mi := &file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4607,43 +4607,43 @@ func (x *NAVOracleUpdate) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_NAVOracleUpdate_messageType fastReflection_NAVOracleUpdate_messageType
-var _ protoreflect.MessageType = fastReflection_NAVOracleUpdate_messageType{}
+var _fastReflection_AUMOracleUpdate_messageType fastReflection_AUMOracleUpdate_messageType
+var _ protoreflect.MessageType = fastReflection_AUMOracleUpdate_messageType{}
 
-type fastReflection_NAVOracleUpdate_messageType struct{}
+type fastReflection_AUMOracleUpdate_messageType struct{}
 
-func (x fastReflection_NAVOracleUpdate_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_NAVOracleUpdate)(nil)
+func (x fastReflection_AUMOracleUpdate_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AUMOracleUpdate)(nil)
 }
-func (x fastReflection_NAVOracleUpdate_messageType) New() protoreflect.Message {
-	return new(fastReflection_NAVOracleUpdate)
+func (x fastReflection_AUMOracleUpdate_messageType) New() protoreflect.Message {
+	return new(fastReflection_AUMOracleUpdate)
 }
-func (x fastReflection_NAVOracleUpdate_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVOracleUpdate
+func (x fastReflection_AUMOracleUpdate_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMOracleUpdate
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_NAVOracleUpdate) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVOracleUpdate
+func (x *fastReflection_AUMOracleUpdate) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMOracleUpdate
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_NAVOracleUpdate) Type() protoreflect.MessageType {
-	return _fastReflection_NAVOracleUpdate_messageType
+func (x *fastReflection_AUMOracleUpdate) Type() protoreflect.MessageType {
+	return _fastReflection_AUMOracleUpdate_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_NAVOracleUpdate) New() protoreflect.Message {
-	return new(fastReflection_NAVOracleUpdate)
+func (x *fastReflection_AUMOracleUpdate) New() protoreflect.Message {
+	return new(fastReflection_AUMOracleUpdate)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_NAVOracleUpdate) Interface() protoreflect.ProtoMessage {
-	return (*NAVOracleUpdate)(x)
+func (x *fastReflection_AUMOracleUpdate) Interface() protoreflect.ProtoMessage {
+	return (*AUMOracleUpdate)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -4651,46 +4651,46 @@ func (x *fastReflection_NAVOracleUpdate) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_NAVOracleUpdate) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_AUMOracleUpdate) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.PositionId != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.PositionId)
-		if !f(fd_NAVOracleUpdate_position_id, value) {
+		if !f(fd_AUMOracleUpdate_position_id, value) {
 			return
 		}
 	}
 	if x.SharePrice != "" {
 		value := protoreflect.ValueOfString(x.SharePrice)
-		if !f(fd_NAVOracleUpdate_share_price, value) {
+		if !f(fd_AUMOracleUpdate_share_price, value) {
 			return
 		}
 	}
 	if x.SharesHeld != "" {
 		value := protoreflect.ValueOfString(x.SharesHeld)
-		if !f(fd_NAVOracleUpdate_shares_held, value) {
+		if !f(fd_AUMOracleUpdate_shares_held, value) {
 			return
 		}
 	}
 	if x.Timestamp != nil {
 		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-		if !f(fd_NAVOracleUpdate_timestamp, value) {
+		if !f(fd_AUMOracleUpdate_timestamp, value) {
 			return
 		}
 	}
 	if x.SourceChain != "" {
 		value := protoreflect.ValueOfString(x.SourceChain)
-		if !f(fd_NAVOracleUpdate_source_chain, value) {
+		if !f(fd_AUMOracleUpdate_source_chain, value) {
 			return
 		}
 	}
 	if x.MessageId != "" {
 		value := protoreflect.ValueOfString(x.MessageId)
-		if !f(fd_NAVOracleUpdate_message_id, value) {
+		if !f(fd_AUMOracleUpdate_message_id, value) {
 			return
 		}
 	}
 	if x.Status != 0 {
 		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Status))
-		if !f(fd_NAVOracleUpdate_status, value) {
+		if !f(fd_AUMOracleUpdate_status, value) {
 			return
 		}
 	}
@@ -4707,27 +4707,27 @@ func (x *fastReflection_NAVOracleUpdate) Range(f func(protoreflect.FieldDescript
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_NAVOracleUpdate) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_AUMOracleUpdate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.position_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.position_id":
 		return x.PositionId != uint64(0)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.share_price":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.share_price":
 		return x.SharePrice != ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.shares_held":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.shares_held":
 		return x.SharesHeld != ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.timestamp":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.timestamp":
 		return x.Timestamp != nil
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.source_chain":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.source_chain":
 		return x.SourceChain != ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.message_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.message_id":
 		return x.MessageId != ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.status":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.status":
 		return x.Status != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVOracleUpdate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMOracleUpdate"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVOracleUpdate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMOracleUpdate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4737,27 +4737,27 @@ func (x *fastReflection_NAVOracleUpdate) Has(fd protoreflect.FieldDescriptor) bo
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVOracleUpdate) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_AUMOracleUpdate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.position_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.position_id":
 		x.PositionId = uint64(0)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.share_price":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.share_price":
 		x.SharePrice = ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.shares_held":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.shares_held":
 		x.SharesHeld = ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.timestamp":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.timestamp":
 		x.Timestamp = nil
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.source_chain":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.source_chain":
 		x.SourceChain = ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.message_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.message_id":
 		x.MessageId = ""
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.status":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.status":
 		x.Status = 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVOracleUpdate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMOracleUpdate"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVOracleUpdate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMOracleUpdate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4767,34 +4767,34 @@ func (x *fastReflection_NAVOracleUpdate) Clear(fd protoreflect.FieldDescriptor) 
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_NAVOracleUpdate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMOracleUpdate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.position_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.position_id":
 		value := x.PositionId
 		return protoreflect.ValueOfUint64(value)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.share_price":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.share_price":
 		value := x.SharePrice
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.shares_held":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.shares_held":
 		value := x.SharesHeld
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.timestamp":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.timestamp":
 		value := x.Timestamp
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.source_chain":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.source_chain":
 		value := x.SourceChain
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.message_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.message_id":
 		value := x.MessageId
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.status":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.status":
 		value := x.Status
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVOracleUpdate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMOracleUpdate"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVOracleUpdate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMOracleUpdate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4808,27 +4808,27 @@ func (x *fastReflection_NAVOracleUpdate) Get(descriptor protoreflect.FieldDescri
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVOracleUpdate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_AUMOracleUpdate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.position_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.position_id":
 		x.PositionId = value.Uint()
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.share_price":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.share_price":
 		x.SharePrice = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.shares_held":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.shares_held":
 		x.SharesHeld = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.timestamp":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.timestamp":
 		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.source_chain":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.source_chain":
 		x.SourceChain = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.message_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.message_id":
 		x.MessageId = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.status":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.status":
 		x.Status = (OracleUpdateStatus)(value.Enum())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVOracleUpdate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMOracleUpdate"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVOracleUpdate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMOracleUpdate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4842,68 +4842,68 @@ func (x *fastReflection_NAVOracleUpdate) Set(fd protoreflect.FieldDescriptor, va
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVOracleUpdate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMOracleUpdate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.timestamp":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.timestamp":
 		if x.Timestamp == nil {
 			x.Timestamp = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.position_id":
-		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.NAVOracleUpdate is not mutable"))
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.share_price":
-		panic(fmt.Errorf("field share_price of message noble.dollar.vaults.v2.NAVOracleUpdate is not mutable"))
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.shares_held":
-		panic(fmt.Errorf("field shares_held of message noble.dollar.vaults.v2.NAVOracleUpdate is not mutable"))
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.source_chain":
-		panic(fmt.Errorf("field source_chain of message noble.dollar.vaults.v2.NAVOracleUpdate is not mutable"))
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.message_id":
-		panic(fmt.Errorf("field message_id of message noble.dollar.vaults.v2.NAVOracleUpdate is not mutable"))
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.status":
-		panic(fmt.Errorf("field status of message noble.dollar.vaults.v2.NAVOracleUpdate is not mutable"))
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.position_id":
+		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.AUMOracleUpdate is not mutable"))
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.share_price":
+		panic(fmt.Errorf("field share_price of message noble.dollar.vaults.v2.AUMOracleUpdate is not mutable"))
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.shares_held":
+		panic(fmt.Errorf("field shares_held of message noble.dollar.vaults.v2.AUMOracleUpdate is not mutable"))
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.source_chain":
+		panic(fmt.Errorf("field source_chain of message noble.dollar.vaults.v2.AUMOracleUpdate is not mutable"))
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.message_id":
+		panic(fmt.Errorf("field message_id of message noble.dollar.vaults.v2.AUMOracleUpdate is not mutable"))
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.status":
+		panic(fmt.Errorf("field status of message noble.dollar.vaults.v2.AUMOracleUpdate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVOracleUpdate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMOracleUpdate"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVOracleUpdate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMOracleUpdate does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_NAVOracleUpdate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMOracleUpdate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.position_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.position_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.share_price":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.share_price":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.shares_held":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.shares_held":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.timestamp":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.source_chain":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.source_chain":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.message_id":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.message_id":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVOracleUpdate.status":
+	case "noble.dollar.vaults.v2.AUMOracleUpdate.status":
 		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVOracleUpdate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMOracleUpdate"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVOracleUpdate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMOracleUpdate does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_NAVOracleUpdate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_AUMOracleUpdate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.NAVOracleUpdate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.AUMOracleUpdate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4911,7 +4911,7 @@ func (x *fastReflection_NAVOracleUpdate) WhichOneof(d protoreflect.OneofDescript
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_NAVOracleUpdate) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_AUMOracleUpdate) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -4922,7 +4922,7 @@ func (x *fastReflection_NAVOracleUpdate) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVOracleUpdate) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_AUMOracleUpdate) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -4934,7 +4934,7 @@ func (x *fastReflection_NAVOracleUpdate) SetUnknown(fields protoreflect.RawField
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_NAVOracleUpdate) IsValid() bool {
+func (x *fastReflection_AUMOracleUpdate) IsValid() bool {
 	return x != nil
 }
 
@@ -4944,9 +4944,9 @@ func (x *fastReflection_NAVOracleUpdate) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_NAVOracleUpdate) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_AUMOracleUpdate) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*NAVOracleUpdate)
+		x := input.Message.Interface().(*AUMOracleUpdate)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -4994,7 +4994,7 @@ func (x *fastReflection_NAVOracleUpdate) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*NAVOracleUpdate)
+		x := input.Message.Interface().(*AUMOracleUpdate)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -5076,7 +5076,7 @@ func (x *fastReflection_NAVOracleUpdate) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*NAVOracleUpdate)
+		x := input.Message.Interface().(*AUMOracleUpdate)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -5108,10 +5108,10 @@ func (x *fastReflection_NAVOracleUpdate) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVOracleUpdate: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMOracleUpdate: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVOracleUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMOracleUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -9262,7 +9262,7 @@ type InflightFund struct {
 	ExpectedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expected_at,json=expectedAt,proto3" json:"expected_at,omitempty"`
 	// Current status
 	Status InflightStatus `protobuf:"varint,10,opt,name=status,proto3,enum=noble.dollar.vaults.v2.InflightStatus" json:"status,omitempty"`
-	// Value at initiation (for NAV calculation)
+	// Value at initiation (for AUM calculation)
 	ValueAtInitiation string `protobuf:"bytes,11,opt,name=value_at_initiation,json=valueAtInitiation,proto3" json:"value_at_initiation,omitempty"`
 	// Provider-specific tracking information
 	ProviderTracking *ProviderTrackingInfo `protobuf:"bytes,12,opt,name=provider_tracking,json=providerTracking,proto3" json:"provider_tracking,omitempty"`
@@ -9607,8 +9607,8 @@ func (x *HyperlaneTrackingInfo) GetProcessed() bool {
 	return false
 }
 
-// NAVOracleUpdate represents an oracle price update received via cross-chain messaging
-type NAVOracleUpdate struct {
+// AUMOracleUpdate represents an oracle price update received via cross-chain messaging
+type AUMOracleUpdate struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -9629,8 +9629,8 @@ type NAVOracleUpdate struct {
 	Status OracleUpdateStatus `protobuf:"varint,7,opt,name=status,proto3,enum=noble.dollar.vaults.v2.OracleUpdateStatus" json:"status,omitempty"`
 }
 
-func (x *NAVOracleUpdate) Reset() {
-	*x = NAVOracleUpdate{}
+func (x *AUMOracleUpdate) Reset() {
+	*x = AUMOracleUpdate{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -9638,60 +9638,60 @@ func (x *NAVOracleUpdate) Reset() {
 	}
 }
 
-func (x *NAVOracleUpdate) String() string {
+func (x *AUMOracleUpdate) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NAVOracleUpdate) ProtoMessage() {}
+func (*AUMOracleUpdate) ProtoMessage() {}
 
-// Deprecated: Use NAVOracleUpdate.ProtoReflect.Descriptor instead.
-func (*NAVOracleUpdate) Descriptor() ([]byte, []int) {
+// Deprecated: Use AUMOracleUpdate.ProtoReflect.Descriptor instead.
+func (*AUMOracleUpdate) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_cross_chain_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *NAVOracleUpdate) GetPositionId() uint64 {
+func (x *AUMOracleUpdate) GetPositionId() uint64 {
 	if x != nil {
 		return x.PositionId
 	}
 	return 0
 }
 
-func (x *NAVOracleUpdate) GetSharePrice() string {
+func (x *AUMOracleUpdate) GetSharePrice() string {
 	if x != nil {
 		return x.SharePrice
 	}
 	return ""
 }
 
-func (x *NAVOracleUpdate) GetSharesHeld() string {
+func (x *AUMOracleUpdate) GetSharesHeld() string {
 	if x != nil {
 		return x.SharesHeld
 	}
 	return ""
 }
 
-func (x *NAVOracleUpdate) GetTimestamp() *timestamppb.Timestamp {
+func (x *AUMOracleUpdate) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Timestamp
 	}
 	return nil
 }
 
-func (x *NAVOracleUpdate) GetSourceChain() string {
+func (x *AUMOracleUpdate) GetSourceChain() string {
 	if x != nil {
 		return x.SourceChain
 	}
 	return ""
 }
 
-func (x *NAVOracleUpdate) GetMessageId() string {
+func (x *AUMOracleUpdate) GetMessageId() string {
 	if x != nil {
 		return x.MessageId
 	}
 	return ""
 }
 
-func (x *NAVOracleUpdate) GetStatus() OracleUpdateStatus {
+func (x *AUMOracleUpdate) GetStatus() OracleUpdateStatus {
 	if x != nil {
 		return x.Status
 	}
@@ -10234,7 +10234,7 @@ var file_noble_dollar_vaults_v2_cross_chain_proto_rawDesc = []byte{
 	0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x78, 0x48, 0x61, 0x73,
 	0x68, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x65, 0x64, 0x18, 0x07,
 	0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x65, 0x64, 0x22,
-	0xa8, 0x03, 0x0a, 0x0f, 0x4e, 0x41, 0x56, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x55, 0x70, 0x64,
+	0xa8, 0x03, 0x0a, 0x0f, 0x41, 0x55, 0x4d, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x55, 0x70, 0x64,
 	0x61, 0x74, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
 	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69,
 	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x57, 0x0a, 0x0b, 0x73, 0x68, 0x61, 0x72, 0x65, 0x5f, 0x70, 0x72,
@@ -10457,7 +10457,7 @@ var file_noble_dollar_vaults_v2_cross_chain_proto_goTypes = []interface{}{
 	(*NobleEndpoint)(nil),              // 9: noble.dollar.vaults.v2.NobleEndpoint
 	(*ProviderTrackingInfo)(nil),       // 10: noble.dollar.vaults.v2.ProviderTrackingInfo
 	(*HyperlaneTrackingInfo)(nil),      // 11: noble.dollar.vaults.v2.HyperlaneTrackingInfo
-	(*NAVOracleUpdate)(nil),            // 12: noble.dollar.vaults.v2.NAVOracleUpdate
+	(*AUMOracleUpdate)(nil),            // 12: noble.dollar.vaults.v2.AUMOracleUpdate
 	(*PositionOracleConfig)(nil),       // 13: noble.dollar.vaults.v2.PositionOracleConfig
 	(*CrossChainPositionSnapshot)(nil), // 14: noble.dollar.vaults.v2.CrossChainPositionSnapshot
 	(*CrossChainConfig)(nil),           // 15: noble.dollar.vaults.v2.CrossChainConfig
@@ -10478,8 +10478,8 @@ var file_noble_dollar_vaults_v2_cross_chain_proto_depIdxs = []int32{
 	10, // 9: noble.dollar.vaults.v2.InflightFund.provider_tracking:type_name -> noble.dollar.vaults.v2.ProviderTrackingInfo
 	1,  // 10: noble.dollar.vaults.v2.NobleEndpoint.operation_type:type_name -> noble.dollar.vaults.v2.OperationType
 	11, // 11: noble.dollar.vaults.v2.ProviderTrackingInfo.hyperlane_tracking:type_name -> noble.dollar.vaults.v2.HyperlaneTrackingInfo
-	18, // 12: noble.dollar.vaults.v2.NAVOracleUpdate.timestamp:type_name -> google.protobuf.Timestamp
-	4,  // 13: noble.dollar.vaults.v2.NAVOracleUpdate.status:type_name -> noble.dollar.vaults.v2.OracleUpdateStatus
+	18, // 12: noble.dollar.vaults.v2.AUMOracleUpdate.timestamp:type_name -> google.protobuf.Timestamp
+	4,  // 13: noble.dollar.vaults.v2.AUMOracleUpdate.status:type_name -> noble.dollar.vaults.v2.OracleUpdateStatus
 	18, // 14: noble.dollar.vaults.v2.PositionOracleConfig.last_update:type_name -> google.protobuf.Timestamp
 	5,  // 15: noble.dollar.vaults.v2.PositionOracleConfig.provider_type:type_name -> noble.dollar.vaults.v2.ProviderType
 	17, // 16: noble.dollar.vaults.v2.CrossChainPositionSnapshot.value_by_route:type_name -> noble.dollar.vaults.v2.CrossChainPositionSnapshot.ValueByRouteEntry
@@ -10571,7 +10571,7 @@ func file_noble_dollar_vaults_v2_cross_chain_proto_init() {
 			}
 		}
 		file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NAVOracleUpdate); i {
+			switch v := v.(*AUMOracleUpdate); i {
 			case 0:
 				return &v.state
 			case 1:

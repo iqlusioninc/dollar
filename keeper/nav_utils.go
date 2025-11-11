@@ -24,16 +24,16 @@ import "cosmossdk.io/math"
 
 const basisPointsMultiplier = 10_000
 
-// ComputeNAVChangeBps calculates the change in basis points between two NAV values
-func ComputeNAVChangeBps(currentNav, previousNav math.Int) int32 {
-	if previousNav.IsZero() {
+// ComputeAUMChangeBps calculates the change in basis points between two AUM values
+func ComputeAUMChangeBps(currentAum, previousAum math.Int) int32 {
+	if previousAum.IsZero() {
 		return 0
 	}
-	previousDec := previousNav.ToLegacyDec()
+	previousDec := previousAum.ToLegacyDec()
 	if previousDec.IsZero() {
 		return 0
 	}
-	delta := currentNav.ToLegacyDec().Sub(previousDec)
-	changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousNav)
+	delta := currentAum.ToLegacyDec().Sub(previousDec)
+	changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousAum)
 	return int32(changeDec.TruncateInt64())
 }

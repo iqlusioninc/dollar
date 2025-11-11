@@ -70,7 +70,7 @@ func (x *_GenesisState_3_list) IsValid() bool {
 var _ protoreflect.List = (*_GenesisState_4_list)(nil)
 
 type _GenesisState_4_list struct {
-	list *[]*NAVEntry
+	list *[]*AUMEntry
 }
 
 func (x *_GenesisState_4_list) Len() int {
@@ -86,18 +86,18 @@ func (x *_GenesisState_4_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisState_4_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*NAVEntry)
+	concreteValue := valueUnwrapped.Interface().(*AUMEntry)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisState_4_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*NAVEntry)
+	concreteValue := valueUnwrapped.Interface().(*AUMEntry)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisState_4_list) AppendMutable() protoreflect.Value {
-	v := new(NAVEntry)
+	v := new(AUMEntry)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -110,7 +110,7 @@ func (x *_GenesisState_4_list) Truncate(n int) {
 }
 
 func (x *_GenesisState_4_list) NewElement() protoreflect.Value {
-	v := new(NAVEntry)
+	v := new(AUMEntry)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -174,7 +174,7 @@ var (
 	fd_GenesisState_params           protoreflect.FieldDescriptor
 	fd_GenesisState_vault_config     protoreflect.FieldDescriptor
 	fd_GenesisState_user_positions   protoreflect.FieldDescriptor
-	fd_GenesisState_nav_entries      protoreflect.FieldDescriptor
+	fd_GenesisState_aum_entries      protoreflect.FieldDescriptor
 	fd_GenesisState_withdrawal_queue protoreflect.FieldDescriptor
 	fd_GenesisState_vault_totals     protoreflect.FieldDescriptor
 	fd_GenesisState_vault_stats      protoreflect.FieldDescriptor
@@ -186,7 +186,7 @@ func init() {
 	fd_GenesisState_params = md_GenesisState.Fields().ByName("params")
 	fd_GenesisState_vault_config = md_GenesisState.Fields().ByName("vault_config")
 	fd_GenesisState_user_positions = md_GenesisState.Fields().ByName("user_positions")
-	fd_GenesisState_nav_entries = md_GenesisState.Fields().ByName("nav_entries")
+	fd_GenesisState_aum_entries = md_GenesisState.Fields().ByName("aum_entries")
 	fd_GenesisState_withdrawal_queue = md_GenesisState.Fields().ByName("withdrawal_queue")
 	fd_GenesisState_vault_totals = md_GenesisState.Fields().ByName("vault_totals")
 	fd_GenesisState_vault_stats = md_GenesisState.Fields().ByName("vault_stats")
@@ -275,9 +275,9 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if len(x.NavEntries) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_4_list{list: &x.NavEntries})
-		if !f(fd_GenesisState_nav_entries, value) {
+	if len(x.AumEntries) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_4_list{list: &x.AumEntries})
+		if !f(fd_GenesisState_aum_entries, value) {
 			return
 		}
 	}
@@ -320,8 +320,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return x.VaultConfig != nil
 	case "noble.dollar.vaults.v2.GenesisState.user_positions":
 		return len(x.UserPositions) != 0
-	case "noble.dollar.vaults.v2.GenesisState.nav_entries":
-		return len(x.NavEntries) != 0
+	case "noble.dollar.vaults.v2.GenesisState.aum_entries":
+		return len(x.AumEntries) != 0
 	case "noble.dollar.vaults.v2.GenesisState.withdrawal_queue":
 		return len(x.WithdrawalQueue) != 0
 	case "noble.dollar.vaults.v2.GenesisState.vault_totals":
@@ -350,8 +350,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.VaultConfig = nil
 	case "noble.dollar.vaults.v2.GenesisState.user_positions":
 		x.UserPositions = nil
-	case "noble.dollar.vaults.v2.GenesisState.nav_entries":
-		x.NavEntries = nil
+	case "noble.dollar.vaults.v2.GenesisState.aum_entries":
+		x.AumEntries = nil
 	case "noble.dollar.vaults.v2.GenesisState.withdrawal_queue":
 		x.WithdrawalQueue = nil
 	case "noble.dollar.vaults.v2.GenesisState.vault_totals":
@@ -386,11 +386,11 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_3_list{list: &x.UserPositions}
 		return protoreflect.ValueOfList(listValue)
-	case "noble.dollar.vaults.v2.GenesisState.nav_entries":
-		if len(x.NavEntries) == 0 {
+	case "noble.dollar.vaults.v2.GenesisState.aum_entries":
+		if len(x.AumEntries) == 0 {
 			return protoreflect.ValueOfList(&_GenesisState_4_list{})
 		}
-		listValue := &_GenesisState_4_list{list: &x.NavEntries}
+		listValue := &_GenesisState_4_list{list: &x.AumEntries}
 		return protoreflect.ValueOfList(listValue)
 	case "noble.dollar.vaults.v2.GenesisState.withdrawal_queue":
 		if len(x.WithdrawalQueue) == 0 {
@@ -432,10 +432,10 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_3_list)
 		x.UserPositions = *clv.list
-	case "noble.dollar.vaults.v2.GenesisState.nav_entries":
+	case "noble.dollar.vaults.v2.GenesisState.aum_entries":
 		lv := value.List()
 		clv := lv.(*_GenesisState_4_list)
-		x.NavEntries = *clv.list
+		x.AumEntries = *clv.list
 	case "noble.dollar.vaults.v2.GenesisState.withdrawal_queue":
 		lv := value.List()
 		clv := lv.(*_GenesisState_5_list)
@@ -480,11 +480,11 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_3_list{list: &x.UserPositions}
 		return protoreflect.ValueOfList(value)
-	case "noble.dollar.vaults.v2.GenesisState.nav_entries":
-		if x.NavEntries == nil {
-			x.NavEntries = []*NAVEntry{}
+	case "noble.dollar.vaults.v2.GenesisState.aum_entries":
+		if x.AumEntries == nil {
+			x.AumEntries = []*AUMEntry{}
 		}
-		value := &_GenesisState_4_list{list: &x.NavEntries}
+		value := &_GenesisState_4_list{list: &x.AumEntries}
 		return protoreflect.ValueOfList(value)
 	case "noble.dollar.vaults.v2.GenesisState.withdrawal_queue":
 		if x.WithdrawalQueue == nil {
@@ -524,8 +524,8 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "noble.dollar.vaults.v2.GenesisState.user_positions":
 		list := []*UserPositionEntry{}
 		return protoreflect.ValueOfList(&_GenesisState_3_list{list: &list})
-	case "noble.dollar.vaults.v2.GenesisState.nav_entries":
-		list := []*NAVEntry{}
+	case "noble.dollar.vaults.v2.GenesisState.aum_entries":
+		list := []*AUMEntry{}
 		return protoreflect.ValueOfList(&_GenesisState_4_list{list: &list})
 	case "noble.dollar.vaults.v2.GenesisState.withdrawal_queue":
 		list := []*WithdrawalRequestEntry{}
@@ -619,8 +619,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if len(x.NavEntries) > 0 {
-			for _, e := range x.NavEntries {
+		if len(x.AumEntries) > 0 {
+			for _, e := range x.AumEntries {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -712,9 +712,9 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				dAtA[i] = 0x2a
 			}
 		}
-		if len(x.NavEntries) > 0 {
-			for iNdEx := len(x.NavEntries) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.NavEntries[iNdEx])
+		if len(x.AumEntries) > 0 {
+			for iNdEx := len(x.AumEntries) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.AumEntries[iNdEx])
 				if err != nil {
 					return protoiface.MarshalOutput{
 						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -929,7 +929,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NavEntries", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AumEntries", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -956,8 +956,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.NavEntries = append(x.NavEntries, &NAVEntry{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NavEntries[len(x.NavEntries)-1]); err != nil {
+				x.AumEntries = append(x.AumEntries, &AUMEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AumEntries[len(x.AumEntries)-1]); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -1107,7 +1107,7 @@ var (
 	fd_Params_authority                         protoreflect.FieldDescriptor
 	fd_Params_min_deposit_amount                protoreflect.FieldDescriptor
 	fd_Params_min_withdrawal_amount             protoreflect.FieldDescriptor
-	fd_Params_max_nav_change_bps                protoreflect.FieldDescriptor
+	fd_Params_max_aum_change_bps                protoreflect.FieldDescriptor
 	fd_Params_withdrawal_request_timeout        protoreflect.FieldDescriptor
 	fd_Params_max_withdrawal_requests_per_block protoreflect.FieldDescriptor
 	fd_Params_vault_enabled                     protoreflect.FieldDescriptor
@@ -1120,7 +1120,7 @@ func init() {
 	fd_Params_authority = md_Params.Fields().ByName("authority")
 	fd_Params_min_deposit_amount = md_Params.Fields().ByName("min_deposit_amount")
 	fd_Params_min_withdrawal_amount = md_Params.Fields().ByName("min_withdrawal_amount")
-	fd_Params_max_nav_change_bps = md_Params.Fields().ByName("max_nav_change_bps")
+	fd_Params_max_aum_change_bps = md_Params.Fields().ByName("max_aum_change_bps")
 	fd_Params_withdrawal_request_timeout = md_Params.Fields().ByName("withdrawal_request_timeout")
 	fd_Params_max_withdrawal_requests_per_block = md_Params.Fields().ByName("max_withdrawal_requests_per_block")
 	fd_Params_vault_enabled = md_Params.Fields().ByName("vault_enabled")
@@ -1210,9 +1210,9 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if x.MaxNavChangeBps != int32(0) {
-		value := protoreflect.ValueOfInt32(x.MaxNavChangeBps)
-		if !f(fd_Params_max_nav_change_bps, value) {
+	if x.MaxAumChangeBps != int32(0) {
+		value := protoreflect.ValueOfInt32(x.MaxAumChangeBps)
+		if !f(fd_Params_max_aum_change_bps, value) {
 			return
 		}
 	}
@@ -1261,8 +1261,8 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.MinDepositAmount != ""
 	case "noble.dollar.vaults.v2.Params.min_withdrawal_amount":
 		return x.MinWithdrawalAmount != ""
-	case "noble.dollar.vaults.v2.Params.max_nav_change_bps":
-		return x.MaxNavChangeBps != int32(0)
+	case "noble.dollar.vaults.v2.Params.max_aum_change_bps":
+		return x.MaxAumChangeBps != int32(0)
 	case "noble.dollar.vaults.v2.Params.withdrawal_request_timeout":
 		return x.WithdrawalRequestTimeout != int64(0)
 	case "noble.dollar.vaults.v2.Params.max_withdrawal_requests_per_block":
@@ -1293,8 +1293,8 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 		x.MinDepositAmount = ""
 	case "noble.dollar.vaults.v2.Params.min_withdrawal_amount":
 		x.MinWithdrawalAmount = ""
-	case "noble.dollar.vaults.v2.Params.max_nav_change_bps":
-		x.MaxNavChangeBps = int32(0)
+	case "noble.dollar.vaults.v2.Params.max_aum_change_bps":
+		x.MaxAumChangeBps = int32(0)
 	case "noble.dollar.vaults.v2.Params.withdrawal_request_timeout":
 		x.WithdrawalRequestTimeout = int64(0)
 	case "noble.dollar.vaults.v2.Params.max_withdrawal_requests_per_block":
@@ -1328,8 +1328,8 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "noble.dollar.vaults.v2.Params.min_withdrawal_amount":
 		value := x.MinWithdrawalAmount
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.Params.max_nav_change_bps":
-		value := x.MaxNavChangeBps
+	case "noble.dollar.vaults.v2.Params.max_aum_change_bps":
+		value := x.MaxAumChangeBps
 		return protoreflect.ValueOfInt32(value)
 	case "noble.dollar.vaults.v2.Params.withdrawal_request_timeout":
 		value := x.WithdrawalRequestTimeout
@@ -1369,8 +1369,8 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 		x.MinDepositAmount = value.Interface().(string)
 	case "noble.dollar.vaults.v2.Params.min_withdrawal_amount":
 		x.MinWithdrawalAmount = value.Interface().(string)
-	case "noble.dollar.vaults.v2.Params.max_nav_change_bps":
-		x.MaxNavChangeBps = int32(value.Int())
+	case "noble.dollar.vaults.v2.Params.max_aum_change_bps":
+		x.MaxAumChangeBps = int32(value.Int())
 	case "noble.dollar.vaults.v2.Params.withdrawal_request_timeout":
 		x.WithdrawalRequestTimeout = value.Int()
 	case "noble.dollar.vaults.v2.Params.max_withdrawal_requests_per_block":
@@ -1410,8 +1410,8 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field min_deposit_amount of message noble.dollar.vaults.v2.Params is not mutable"))
 	case "noble.dollar.vaults.v2.Params.min_withdrawal_amount":
 		panic(fmt.Errorf("field min_withdrawal_amount of message noble.dollar.vaults.v2.Params is not mutable"))
-	case "noble.dollar.vaults.v2.Params.max_nav_change_bps":
-		panic(fmt.Errorf("field max_nav_change_bps of message noble.dollar.vaults.v2.Params is not mutable"))
+	case "noble.dollar.vaults.v2.Params.max_aum_change_bps":
+		panic(fmt.Errorf("field max_aum_change_bps of message noble.dollar.vaults.v2.Params is not mutable"))
 	case "noble.dollar.vaults.v2.Params.withdrawal_request_timeout":
 		panic(fmt.Errorf("field withdrawal_request_timeout of message noble.dollar.vaults.v2.Params is not mutable"))
 	case "noble.dollar.vaults.v2.Params.max_withdrawal_requests_per_block":
@@ -1437,7 +1437,7 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.Params.min_withdrawal_amount":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.Params.max_nav_change_bps":
+	case "noble.dollar.vaults.v2.Params.max_aum_change_bps":
 		return protoreflect.ValueOfInt32(int32(0))
 	case "noble.dollar.vaults.v2.Params.withdrawal_request_timeout":
 		return protoreflect.ValueOfInt64(int64(0))
@@ -1529,8 +1529,8 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.MaxNavChangeBps != 0 {
-			n += 1 + runtime.Sov(uint64(x.MaxNavChangeBps))
+		if x.MaxAumChangeBps != 0 {
+			n += 1 + runtime.Sov(uint64(x.MaxAumChangeBps))
 		}
 		if x.WithdrawalRequestTimeout != 0 {
 			n += 1 + runtime.Sov(uint64(x.WithdrawalRequestTimeout))
@@ -1608,8 +1608,8 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x28
 		}
-		if x.MaxNavChangeBps != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxNavChangeBps))
+		if x.MaxAumChangeBps != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxAumChangeBps))
 			i--
 			dAtA[i] = 0x20
 		}
@@ -1781,9 +1781,9 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 4:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxNavChangeBps", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxAumChangeBps", wireType)
 				}
-				x.MaxNavChangeBps = 0
+				x.MaxAumChangeBps = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1793,7 +1793,7 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.MaxNavChangeBps |= int32(b&0x7F) << shift
+					x.MaxAumChangeBps |= int32(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -2967,25 +2967,25 @@ func (x *fastReflection_UserPositionEntry) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_NAVEntry          protoreflect.MessageDescriptor
-	fd_NAVEntry_nav_info protoreflect.FieldDescriptor
+	md_AUMEntry          protoreflect.MessageDescriptor
+	fd_AUMEntry_aum_info protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_noble_dollar_vaults_v2_genesis_proto_init()
-	md_NAVEntry = File_noble_dollar_vaults_v2_genesis_proto.Messages().ByName("NAVEntry")
-	fd_NAVEntry_nav_info = md_NAVEntry.Fields().ByName("nav_info")
+	md_AUMEntry = File_noble_dollar_vaults_v2_genesis_proto.Messages().ByName("AUMEntry")
+	fd_AUMEntry_aum_info = md_AUMEntry.Fields().ByName("aum_info")
 }
 
-var _ protoreflect.Message = (*fastReflection_NAVEntry)(nil)
+var _ protoreflect.Message = (*fastReflection_AUMEntry)(nil)
 
-type fastReflection_NAVEntry NAVEntry
+type fastReflection_AUMEntry AUMEntry
 
-func (x *NAVEntry) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_NAVEntry)(x)
+func (x *AUMEntry) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AUMEntry)(x)
 }
 
-func (x *NAVEntry) slowProtoReflect() protoreflect.Message {
+func (x *AUMEntry) slowProtoReflect() protoreflect.Message {
 	mi := &file_noble_dollar_vaults_v2_genesis_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2997,43 +2997,43 @@ func (x *NAVEntry) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_NAVEntry_messageType fastReflection_NAVEntry_messageType
-var _ protoreflect.MessageType = fastReflection_NAVEntry_messageType{}
+var _fastReflection_AUMEntry_messageType fastReflection_AUMEntry_messageType
+var _ protoreflect.MessageType = fastReflection_AUMEntry_messageType{}
 
-type fastReflection_NAVEntry_messageType struct{}
+type fastReflection_AUMEntry_messageType struct{}
 
-func (x fastReflection_NAVEntry_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_NAVEntry)(nil)
+func (x fastReflection_AUMEntry_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AUMEntry)(nil)
 }
-func (x fastReflection_NAVEntry_messageType) New() protoreflect.Message {
-	return new(fastReflection_NAVEntry)
+func (x fastReflection_AUMEntry_messageType) New() protoreflect.Message {
+	return new(fastReflection_AUMEntry)
 }
-func (x fastReflection_NAVEntry_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVEntry
+func (x fastReflection_AUMEntry_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMEntry
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_NAVEntry) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVEntry
+func (x *fastReflection_AUMEntry) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMEntry
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_NAVEntry) Type() protoreflect.MessageType {
-	return _fastReflection_NAVEntry_messageType
+func (x *fastReflection_AUMEntry) Type() protoreflect.MessageType {
+	return _fastReflection_AUMEntry_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_NAVEntry) New() protoreflect.Message {
-	return new(fastReflection_NAVEntry)
+func (x *fastReflection_AUMEntry) New() protoreflect.Message {
+	return new(fastReflection_AUMEntry)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_NAVEntry) Interface() protoreflect.ProtoMessage {
-	return (*NAVEntry)(x)
+func (x *fastReflection_AUMEntry) Interface() protoreflect.ProtoMessage {
+	return (*AUMEntry)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -3041,10 +3041,10 @@ func (x *fastReflection_NAVEntry) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_NAVEntry) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.NavInfo != nil {
-		value := protoreflect.ValueOfMessage(x.NavInfo.ProtoReflect())
-		if !f(fd_NAVEntry_nav_info, value) {
+func (x *fastReflection_AUMEntry) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.AumInfo != nil {
+		value := protoreflect.ValueOfMessage(x.AumInfo.ProtoReflect())
+		if !f(fd_AUMEntry_aum_info, value) {
 			return
 		}
 	}
@@ -3061,15 +3061,15 @@ func (x *fastReflection_NAVEntry) Range(f func(protoreflect.FieldDescriptor, pro
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_NAVEntry) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_AUMEntry) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVEntry.nav_info":
-		return x.NavInfo != nil
+	case "noble.dollar.vaults.v2.AUMEntry.aum_info":
+		return x.AumInfo != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVEntry"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMEntry"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVEntry does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMEntry does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3079,15 +3079,15 @@ func (x *fastReflection_NAVEntry) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVEntry) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_AUMEntry) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVEntry.nav_info":
-		x.NavInfo = nil
+	case "noble.dollar.vaults.v2.AUMEntry.aum_info":
+		x.AumInfo = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVEntry"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMEntry"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVEntry does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMEntry does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3097,16 +3097,16 @@ func (x *fastReflection_NAVEntry) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_NAVEntry) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMEntry) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.NAVEntry.nav_info":
-		value := x.NavInfo
+	case "noble.dollar.vaults.v2.AUMEntry.aum_info":
+		value := x.AumInfo
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVEntry"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMEntry"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVEntry does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMEntry does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3120,15 +3120,15 @@ func (x *fastReflection_NAVEntry) Get(descriptor protoreflect.FieldDescriptor) p
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVEntry) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_AUMEntry) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVEntry.nav_info":
-		x.NavInfo = value.Message().Interface().(*NAVInfo)
+	case "noble.dollar.vaults.v2.AUMEntry.aum_info":
+		x.AumInfo = value.Message().Interface().(*AUMInfo)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVEntry"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMEntry"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVEntry does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMEntry does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3142,44 +3142,44 @@ func (x *fastReflection_NAVEntry) Set(fd protoreflect.FieldDescriptor, value pro
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVEntry) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMEntry) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVEntry.nav_info":
-		if x.NavInfo == nil {
-			x.NavInfo = new(NAVInfo)
+	case "noble.dollar.vaults.v2.AUMEntry.aum_info":
+		if x.AumInfo == nil {
+			x.AumInfo = new(AUMInfo)
 		}
-		return protoreflect.ValueOfMessage(x.NavInfo.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.AumInfo.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVEntry"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMEntry"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVEntry does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMEntry does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_NAVEntry) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMEntry) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVEntry.nav_info":
-		m := new(NAVInfo)
+	case "noble.dollar.vaults.v2.AUMEntry.aum_info":
+		m := new(AUMInfo)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVEntry"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMEntry"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVEntry does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMEntry does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_NAVEntry) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_AUMEntry) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.NAVEntry", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.AUMEntry", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3187,7 +3187,7 @@ func (x *fastReflection_NAVEntry) WhichOneof(d protoreflect.OneofDescriptor) pro
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_NAVEntry) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_AUMEntry) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -3198,7 +3198,7 @@ func (x *fastReflection_NAVEntry) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVEntry) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_AUMEntry) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -3210,7 +3210,7 @@ func (x *fastReflection_NAVEntry) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_NAVEntry) IsValid() bool {
+func (x *fastReflection_AUMEntry) IsValid() bool {
 	return x != nil
 }
 
@@ -3220,9 +3220,9 @@ func (x *fastReflection_NAVEntry) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_AUMEntry) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*NAVEntry)
+		x := input.Message.Interface().(*AUMEntry)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3234,8 +3234,8 @@ func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if x.NavInfo != nil {
-			l = options.Size(x.NavInfo)
+		if x.AumInfo != nil {
+			l = options.Size(x.AumInfo)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -3248,7 +3248,7 @@ func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*NAVEntry)
+		x := input.Message.Interface().(*AUMEntry)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3267,8 +3267,8 @@ func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.NavInfo != nil {
-			encoded, err := options.Marshal(x.NavInfo)
+		if x.AumInfo != nil {
+			encoded, err := options.Marshal(x.AumInfo)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3292,7 +3292,7 @@ func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*NAVEntry)
+		x := input.Message.Interface().(*AUMEntry)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3324,15 +3324,15 @@ func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVEntry: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMEntry: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMEntry: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NavInfo", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AumInfo", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -3359,10 +3359,10 @@ func (x *fastReflection_NAVEntry) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.NavInfo == nil {
-					x.NavInfo = &NAVInfo{}
+				if x.AumInfo == nil {
+					x.AumInfo = &AUMInfo{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NavInfo); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AumInfo); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -3906,7 +3906,7 @@ var (
 	md_VaultTotalEntry                     protoreflect.MessageDescriptor
 	fd_VaultTotalEntry_total_deposits      protoreflect.FieldDescriptor
 	fd_VaultTotalEntry_total_accrued_yield protoreflect.FieldDescriptor
-	fd_VaultTotalEntry_total_nav           protoreflect.FieldDescriptor
+	fd_VaultTotalEntry_total_aum           protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -3914,7 +3914,7 @@ func init() {
 	md_VaultTotalEntry = File_noble_dollar_vaults_v2_genesis_proto.Messages().ByName("VaultTotalEntry")
 	fd_VaultTotalEntry_total_deposits = md_VaultTotalEntry.Fields().ByName("total_deposits")
 	fd_VaultTotalEntry_total_accrued_yield = md_VaultTotalEntry.Fields().ByName("total_accrued_yield")
-	fd_VaultTotalEntry_total_nav = md_VaultTotalEntry.Fields().ByName("total_nav")
+	fd_VaultTotalEntry_total_aum = md_VaultTotalEntry.Fields().ByName("total_aum")
 }
 
 var _ protoreflect.Message = (*fastReflection_VaultTotalEntry)(nil)
@@ -3994,9 +3994,9 @@ func (x *fastReflection_VaultTotalEntry) Range(f func(protoreflect.FieldDescript
 			return
 		}
 	}
-	if x.TotalNav != "" {
-		value := protoreflect.ValueOfString(x.TotalNav)
-		if !f(fd_VaultTotalEntry_total_nav, value) {
+	if x.TotalAum != "" {
+		value := protoreflect.ValueOfString(x.TotalAum)
+		if !f(fd_VaultTotalEntry_total_aum, value) {
 			return
 		}
 	}
@@ -4019,8 +4019,8 @@ func (x *fastReflection_VaultTotalEntry) Has(fd protoreflect.FieldDescriptor) bo
 		return x.TotalDeposits != ""
 	case "noble.dollar.vaults.v2.VaultTotalEntry.total_accrued_yield":
 		return x.TotalAccruedYield != ""
-	case "noble.dollar.vaults.v2.VaultTotalEntry.total_nav":
-		return x.TotalNav != ""
+	case "noble.dollar.vaults.v2.VaultTotalEntry.total_aum":
+		return x.TotalAum != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.VaultTotalEntry"))
@@ -4041,8 +4041,8 @@ func (x *fastReflection_VaultTotalEntry) Clear(fd protoreflect.FieldDescriptor) 
 		x.TotalDeposits = ""
 	case "noble.dollar.vaults.v2.VaultTotalEntry.total_accrued_yield":
 		x.TotalAccruedYield = ""
-	case "noble.dollar.vaults.v2.VaultTotalEntry.total_nav":
-		x.TotalNav = ""
+	case "noble.dollar.vaults.v2.VaultTotalEntry.total_aum":
+		x.TotalAum = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.VaultTotalEntry"))
@@ -4065,8 +4065,8 @@ func (x *fastReflection_VaultTotalEntry) Get(descriptor protoreflect.FieldDescri
 	case "noble.dollar.vaults.v2.VaultTotalEntry.total_accrued_yield":
 		value := x.TotalAccruedYield
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.VaultTotalEntry.total_nav":
-		value := x.TotalNav
+	case "noble.dollar.vaults.v2.VaultTotalEntry.total_aum":
+		value := x.TotalAum
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -4092,8 +4092,8 @@ func (x *fastReflection_VaultTotalEntry) Set(fd protoreflect.FieldDescriptor, va
 		x.TotalDeposits = value.Interface().(string)
 	case "noble.dollar.vaults.v2.VaultTotalEntry.total_accrued_yield":
 		x.TotalAccruedYield = value.Interface().(string)
-	case "noble.dollar.vaults.v2.VaultTotalEntry.total_nav":
-		x.TotalNav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.VaultTotalEntry.total_aum":
+		x.TotalAum = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.VaultTotalEntry"))
@@ -4118,8 +4118,8 @@ func (x *fastReflection_VaultTotalEntry) Mutable(fd protoreflect.FieldDescriptor
 		panic(fmt.Errorf("field total_deposits of message noble.dollar.vaults.v2.VaultTotalEntry is not mutable"))
 	case "noble.dollar.vaults.v2.VaultTotalEntry.total_accrued_yield":
 		panic(fmt.Errorf("field total_accrued_yield of message noble.dollar.vaults.v2.VaultTotalEntry is not mutable"))
-	case "noble.dollar.vaults.v2.VaultTotalEntry.total_nav":
-		panic(fmt.Errorf("field total_nav of message noble.dollar.vaults.v2.VaultTotalEntry is not mutable"))
+	case "noble.dollar.vaults.v2.VaultTotalEntry.total_aum":
+		panic(fmt.Errorf("field total_aum of message noble.dollar.vaults.v2.VaultTotalEntry is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.VaultTotalEntry"))
@@ -4137,7 +4137,7 @@ func (x *fastReflection_VaultTotalEntry) NewField(fd protoreflect.FieldDescripto
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.VaultTotalEntry.total_accrued_yield":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.VaultTotalEntry.total_nav":
+	case "noble.dollar.vaults.v2.VaultTotalEntry.total_aum":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -4216,7 +4216,7 @@ func (x *fastReflection_VaultTotalEntry) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.TotalNav)
+		l = len(x.TotalAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -4249,10 +4249,10 @@ func (x *fastReflection_VaultTotalEntry) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.TotalNav) > 0 {
-			i -= len(x.TotalNav)
-			copy(dAtA[i:], x.TotalNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TotalNav)))
+		if len(x.TotalAum) > 0 {
+			i -= len(x.TotalAum)
+			copy(dAtA[i:], x.TotalAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TotalAum)))
 			i--
 			dAtA[i] = 0x1a
 		}
@@ -4385,7 +4385,7 @@ func (x *fastReflection_VaultTotalEntry) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -4413,7 +4413,7 @@ func (x *fastReflection_VaultTotalEntry) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.TotalNav = string(dAtA[iNdEx:postIndex])
+				x.TotalAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -5183,8 +5183,8 @@ type GenesisState struct {
 	VaultConfig *VaultConfig `protobuf:"bytes,2,opt,name=vault_config,json=vaultConfig,proto3" json:"vault_config,omitempty"`
 	// All user positions in V2
 	UserPositions []*UserPositionEntry `protobuf:"bytes,3,rep,name=user_positions,json=userPositions,proto3" json:"user_positions,omitempty"`
-	// Current NAV information for each vault type
-	NavEntries []*NAVEntry `protobuf:"bytes,4,rep,name=nav_entries,json=navEntries,proto3" json:"nav_entries,omitempty"`
+	// Current AUM information for each vault type
+	AumEntries []*AUMEntry `protobuf:"bytes,4,rep,name=aum_entries,json=aumEntries,proto3" json:"aum_entries,omitempty"`
 	// Withdrawal queue entries
 	WithdrawalQueue []*WithdrawalRequestEntry `protobuf:"bytes,5,rep,name=withdrawal_queue,json=withdrawalQueue,proto3" json:"withdrawal_queue,omitempty"`
 	// Total deposits and yield
@@ -5234,9 +5234,9 @@ func (x *GenesisState) GetUserPositions() []*UserPositionEntry {
 	return nil
 }
 
-func (x *GenesisState) GetNavEntries() []*NAVEntry {
+func (x *GenesisState) GetAumEntries() []*AUMEntry {
 	if x != nil {
-		return x.NavEntries
+		return x.AumEntries
 	}
 	return nil
 }
@@ -5274,8 +5274,8 @@ type Params struct {
 	MinDepositAmount string `protobuf:"bytes,2,opt,name=min_deposit_amount,json=minDepositAmount,proto3" json:"min_deposit_amount,omitempty"`
 	// Minimum withdrawal amount
 	MinWithdrawalAmount string `protobuf:"bytes,3,opt,name=min_withdrawal_amount,json=minWithdrawalAmount,proto3" json:"min_withdrawal_amount,omitempty"`
-	// Maximum NAV change percentage allowed per update (basis points)
-	MaxNavChangeBps int32 `protobuf:"varint,4,opt,name=max_nav_change_bps,json=maxNavChangeBps,proto3" json:"max_nav_change_bps,omitempty"`
+	// Maximum AUM change percentage allowed per update (basis points)
+	MaxAumChangeBps int32 `protobuf:"varint,4,opt,name=max_aum_change_bps,json=maxAumChangeBps,proto3" json:"max_aum_change_bps,omitempty"`
 	// Withdrawal request timeout duration (in seconds)
 	WithdrawalRequestTimeout int64 `protobuf:"varint,5,opt,name=withdrawal_request_timeout,json=withdrawalRequestTimeout,proto3" json:"withdrawal_request_timeout,omitempty"`
 	// Maximum number of withdrawal requests to process per block
@@ -5327,9 +5327,9 @@ func (x *Params) GetMinWithdrawalAmount() string {
 	return ""
 }
 
-func (x *Params) GetMaxNavChangeBps() int32 {
+func (x *Params) GetMaxAumChangeBps() int32 {
 	if x != nil {
-		return x.MaxNavChangeBps
+		return x.MaxAumChangeBps
 	}
 	return 0
 }
@@ -5463,18 +5463,18 @@ func (x *UserPositionEntry) GetPosition() *UserPosition {
 	return nil
 }
 
-// NAVEntry stores NAV information for a vault type
-type NAVEntry struct {
+// AUMEntry stores AUM information for a vault type
+type AUMEntry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// NAV information
-	NavInfo *NAVInfo `protobuf:"bytes,1,opt,name=nav_info,json=navInfo,proto3" json:"nav_info,omitempty"`
+	// AUM information
+	AumInfo *AUMInfo `protobuf:"bytes,1,opt,name=aum_info,json=aumInfo,proto3" json:"aum_info,omitempty"`
 }
 
-func (x *NAVEntry) Reset() {
-	*x = NAVEntry{}
+func (x *AUMEntry) Reset() {
+	*x = AUMEntry{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_noble_dollar_vaults_v2_genesis_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -5482,20 +5482,20 @@ func (x *NAVEntry) Reset() {
 	}
 }
 
-func (x *NAVEntry) String() string {
+func (x *AUMEntry) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NAVEntry) ProtoMessage() {}
+func (*AUMEntry) ProtoMessage() {}
 
-// Deprecated: Use NAVEntry.ProtoReflect.Descriptor instead.
-func (*NAVEntry) Descriptor() ([]byte, []int) {
+// Deprecated: Use AUMEntry.ProtoReflect.Descriptor instead.
+func (*AUMEntry) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_genesis_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *NAVEntry) GetNavInfo() *NAVInfo {
+func (x *AUMEntry) GetAumInfo() *AUMInfo {
 	if x != nil {
-		return x.NavInfo
+		return x.AumInfo
 	}
 	return nil
 }
@@ -5556,8 +5556,8 @@ type VaultTotalEntry struct {
 	TotalDeposits string `protobuf:"bytes,1,opt,name=total_deposits,json=totalDeposits,proto3" json:"total_deposits,omitempty"`
 	// Total accrued yield
 	TotalAccruedYield string `protobuf:"bytes,2,opt,name=total_accrued_yield,json=totalAccruedYield,proto3" json:"total_accrued_yield,omitempty"`
-	// Total NAV (Net Asset Value = deposits + yield)
-	TotalNav string `protobuf:"bytes,3,opt,name=total_nav,json=totalNav,proto3" json:"total_nav,omitempty"`
+	// Total AUM (Net Asset Value = deposits + yield)
+	TotalAum string `protobuf:"bytes,3,opt,name=total_aum,json=totalAum,proto3" json:"total_aum,omitempty"`
 }
 
 func (x *VaultTotalEntry) Reset() {
@@ -5594,9 +5594,9 @@ func (x *VaultTotalEntry) GetTotalAccruedYield() string {
 	return ""
 }
 
-func (x *VaultTotalEntry) GetTotalNav() string {
+func (x *VaultTotalEntry) GetTotalAum() string {
 	if x != nil {
-		return x.TotalNav
+		return x.TotalAum
 	}
 	return ""
 }
@@ -5716,11 +5716,11 @@ var file_noble_dollar_vaults_v2_genesis_proto_rawDesc = []byte{
 	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x50, 0x6f, 0x73,
 	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
 	0x52, 0x0d, 0x75, 0x73, 0x65, 0x72, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12,
-	0x47, 0x0a, 0x0b, 0x6e, 0x61, 0x76, 0x5f, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x18, 0x04,
+	0x47, 0x0a, 0x0b, 0x61, 0x75, 0x6d, 0x5f, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x18, 0x04,
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
-	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4e, 0x41,
-	0x56, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x6e, 0x61,
-	0x76, 0x45, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x12, 0x5f, 0x0a, 0x10, 0x77, 0x69, 0x74, 0x68,
+	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x41, 0x55,
+	0x4d, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x61, 0x75,
+	0x6d, 0x45, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x12, 0x5f, 0x0a, 0x10, 0x77, 0x69, 0x74, 0x68,
 	0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x5f, 0x71, 0x75, 0x65, 0x75, 0x65, 0x18, 0x05, 0x20, 0x03,
 	0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
 	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x57, 0x69, 0x74, 0x68,
@@ -5753,9 +5753,9 @@ var file_noble_dollar_vaults_v2_genesis_proto_rawDesc = []byte{
 	0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a,
 	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
 	0x13, 0x6d, 0x69, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x41, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2b, 0x0a, 0x12, 0x6d, 0x61, 0x78, 0x5f, 0x6e, 0x61, 0x76, 0x5f,
+	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2b, 0x0a, 0x12, 0x6d, 0x61, 0x78, 0x5f, 0x61, 0x75, 0x6d, 0x5f,
 	0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x5f, 0x62, 0x70, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x0f, 0x6d, 0x61, 0x78, 0x4e, 0x61, 0x76, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x42, 0x70,
+	0x52, 0x0f, 0x6d, 0x61, 0x78, 0x41, 0x75, 0x6d, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x42, 0x70,
 	0x73, 0x12, 0x3c, 0x0a, 0x1a, 0x77, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x5f,
 	0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x18, 0x77, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61,
@@ -5794,11 +5794,11 @@ var file_noble_dollar_vaults_v2_genesis_proto_rawDesc = []byte{
 	0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76,
 	0x32, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04,
 	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x08, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x4c,
-	0x0a, 0x08, 0x4e, 0x41, 0x56, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x40, 0x0a, 0x08, 0x6e, 0x61,
-	0x76, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x6e,
+	0x0a, 0x08, 0x41, 0x55, 0x4d, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x40, 0x0a, 0x08, 0x61, 0x75,
+	0x6d, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x6e,
 	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c,
-	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4e, 0x41, 0x56, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x04, 0xc8,
-	0xde, 0x1f, 0x00, 0x52, 0x07, 0x6e, 0x61, 0x76, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x92, 0x01, 0x0a,
+	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x41, 0x55, 0x4d, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x04, 0xc8,
+	0xde, 0x1f, 0x00, 0x52, 0x07, 0x61, 0x75, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x92, 0x01, 0x0a,
 	0x16, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
 	0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
@@ -5821,11 +5821,11 @@ var file_noble_dollar_vaults_v2_genesis_proto_rawDesc = []byte{
 	0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
 	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x11, 0x74,
 	0x6f, 0x74, 0x61, 0x6c, 0x41, 0x63, 0x63, 0x72, 0x75, 0x65, 0x64, 0x59, 0x69, 0x65, 0x6c, 0x64,
-	0x12, 0x4d, 0x0a, 0x09, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x6e, 0x61, 0x76, 0x18, 0x03, 0x20,
+	0x12, 0x4d, 0x0a, 0x09, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x61, 0x75, 0x6d, 0x18, 0x03, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49,
 	0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74,
-	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x4e, 0x61, 0x76, 0x22,
+	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x41, 0x75, 0x6d, 0x22,
 	0xeb, 0x03, 0x0a, 0x0f, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x53, 0x74, 0x61, 0x74, 0x73, 0x45, 0x6e,
 	0x74, 0x72, 0x79, 0x12, 0x29, 0x0a, 0x10, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x64, 0x65, 0x70,
 	0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x74,
@@ -5892,26 +5892,26 @@ var file_noble_dollar_vaults_v2_genesis_proto_goTypes = []interface{}{
 	(*Params)(nil),                 // 1: noble.dollar.vaults.v2.Params
 	(*VaultConfig)(nil),            // 2: noble.dollar.vaults.v2.VaultConfig
 	(*UserPositionEntry)(nil),      // 3: noble.dollar.vaults.v2.UserPositionEntry
-	(*NAVEntry)(nil),               // 4: noble.dollar.vaults.v2.NAVEntry
+	(*AUMEntry)(nil),               // 4: noble.dollar.vaults.v2.AUMEntry
 	(*WithdrawalRequestEntry)(nil), // 5: noble.dollar.vaults.v2.WithdrawalRequestEntry
 	(*VaultTotalEntry)(nil),        // 6: noble.dollar.vaults.v2.VaultTotalEntry
 	(*VaultStatsEntry)(nil),        // 7: noble.dollar.vaults.v2.VaultStatsEntry
 	(*TWAPConfig)(nil),             // 8: noble.dollar.vaults.v2.TWAPConfig
 	(*UserPosition)(nil),           // 9: noble.dollar.vaults.v2.UserPosition
-	(*NAVInfo)(nil),                // 10: noble.dollar.vaults.v2.NAVInfo
+	(*AUMInfo)(nil),                // 10: noble.dollar.vaults.v2.AUMInfo
 	(*WithdrawalRequest)(nil),      // 11: noble.dollar.vaults.v2.WithdrawalRequest
 }
 var file_noble_dollar_vaults_v2_genesis_proto_depIdxs = []int32{
 	1,  // 0: noble.dollar.vaults.v2.GenesisState.params:type_name -> noble.dollar.vaults.v2.Params
 	2,  // 1: noble.dollar.vaults.v2.GenesisState.vault_config:type_name -> noble.dollar.vaults.v2.VaultConfig
 	3,  // 2: noble.dollar.vaults.v2.GenesisState.user_positions:type_name -> noble.dollar.vaults.v2.UserPositionEntry
-	4,  // 3: noble.dollar.vaults.v2.GenesisState.nav_entries:type_name -> noble.dollar.vaults.v2.NAVEntry
+	4,  // 3: noble.dollar.vaults.v2.GenesisState.aum_entries:type_name -> noble.dollar.vaults.v2.AUMEntry
 	5,  // 4: noble.dollar.vaults.v2.GenesisState.withdrawal_queue:type_name -> noble.dollar.vaults.v2.WithdrawalRequestEntry
 	6,  // 5: noble.dollar.vaults.v2.GenesisState.vault_totals:type_name -> noble.dollar.vaults.v2.VaultTotalEntry
 	7,  // 6: noble.dollar.vaults.v2.GenesisState.vault_stats:type_name -> noble.dollar.vaults.v2.VaultStatsEntry
 	8,  // 7: noble.dollar.vaults.v2.Params.twap_config:type_name -> noble.dollar.vaults.v2.TWAPConfig
 	9,  // 8: noble.dollar.vaults.v2.UserPositionEntry.position:type_name -> noble.dollar.vaults.v2.UserPosition
-	10, // 9: noble.dollar.vaults.v2.NAVEntry.nav_info:type_name -> noble.dollar.vaults.v2.NAVInfo
+	10, // 9: noble.dollar.vaults.v2.AUMEntry.aum_info:type_name -> noble.dollar.vaults.v2.AUMInfo
 	11, // 10: noble.dollar.vaults.v2.WithdrawalRequestEntry.withdrawal_request:type_name -> noble.dollar.vaults.v2.WithdrawalRequest
 	11, // [11:11] is the sub-list for method output_type
 	11, // [11:11] is the sub-list for method input_type
@@ -5977,7 +5977,7 @@ func file_noble_dollar_vaults_v2_genesis_proto_init() {
 			}
 		}
 		file_noble_dollar_vaults_v2_genesis_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NAVEntry); i {
+			switch v := v.(*AUMEntry); i {
 			case 0:
 				return &v.state
 			case 1:

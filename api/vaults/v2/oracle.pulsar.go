@@ -3066,33 +3066,33 @@ func (x *fastReflection_StalenessConfig) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_NAVPayload              protoreflect.MessageDescriptor
-	fd_NAVPayload_message_type protoreflect.FieldDescriptor
-	fd_NAVPayload_position_id  protoreflect.FieldDescriptor
-	fd_NAVPayload_share_price  protoreflect.FieldDescriptor
-	fd_NAVPayload_shares_held  protoreflect.FieldDescriptor
-	fd_NAVPayload_timestamp    protoreflect.FieldDescriptor
+	md_AUMPayload              protoreflect.MessageDescriptor
+	fd_AUMPayload_message_type protoreflect.FieldDescriptor
+	fd_AUMPayload_position_id  protoreflect.FieldDescriptor
+	fd_AUMPayload_share_price  protoreflect.FieldDescriptor
+	fd_AUMPayload_shares_held  protoreflect.FieldDescriptor
+	fd_AUMPayload_timestamp    protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_NAVPayload = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("NAVPayload")
-	fd_NAVPayload_message_type = md_NAVPayload.Fields().ByName("message_type")
-	fd_NAVPayload_position_id = md_NAVPayload.Fields().ByName("position_id")
-	fd_NAVPayload_share_price = md_NAVPayload.Fields().ByName("share_price")
-	fd_NAVPayload_shares_held = md_NAVPayload.Fields().ByName("shares_held")
-	fd_NAVPayload_timestamp = md_NAVPayload.Fields().ByName("timestamp")
+	md_AUMPayload = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("AUMPayload")
+	fd_AUMPayload_message_type = md_AUMPayload.Fields().ByName("message_type")
+	fd_AUMPayload_position_id = md_AUMPayload.Fields().ByName("position_id")
+	fd_AUMPayload_share_price = md_AUMPayload.Fields().ByName("share_price")
+	fd_AUMPayload_shares_held = md_AUMPayload.Fields().ByName("shares_held")
+	fd_AUMPayload_timestamp = md_AUMPayload.Fields().ByName("timestamp")
 }
 
-var _ protoreflect.Message = (*fastReflection_NAVPayload)(nil)
+var _ protoreflect.Message = (*fastReflection_AUMPayload)(nil)
 
-type fastReflection_NAVPayload NAVPayload
+type fastReflection_AUMPayload AUMPayload
 
-func (x *NAVPayload) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_NAVPayload)(x)
+func (x *AUMPayload) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AUMPayload)(x)
 }
 
-func (x *NAVPayload) slowProtoReflect() protoreflect.Message {
+func (x *AUMPayload) slowProtoReflect() protoreflect.Message {
 	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3104,43 +3104,43 @@ func (x *NAVPayload) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_NAVPayload_messageType fastReflection_NAVPayload_messageType
-var _ protoreflect.MessageType = fastReflection_NAVPayload_messageType{}
+var _fastReflection_AUMPayload_messageType fastReflection_AUMPayload_messageType
+var _ protoreflect.MessageType = fastReflection_AUMPayload_messageType{}
 
-type fastReflection_NAVPayload_messageType struct{}
+type fastReflection_AUMPayload_messageType struct{}
 
-func (x fastReflection_NAVPayload_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_NAVPayload)(nil)
+func (x fastReflection_AUMPayload_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AUMPayload)(nil)
 }
-func (x fastReflection_NAVPayload_messageType) New() protoreflect.Message {
-	return new(fastReflection_NAVPayload)
+func (x fastReflection_AUMPayload_messageType) New() protoreflect.Message {
+	return new(fastReflection_AUMPayload)
 }
-func (x fastReflection_NAVPayload_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVPayload
+func (x fastReflection_AUMPayload_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMPayload
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_NAVPayload) Descriptor() protoreflect.MessageDescriptor {
-	return md_NAVPayload
+func (x *fastReflection_AUMPayload) Descriptor() protoreflect.MessageDescriptor {
+	return md_AUMPayload
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_NAVPayload) Type() protoreflect.MessageType {
-	return _fastReflection_NAVPayload_messageType
+func (x *fastReflection_AUMPayload) Type() protoreflect.MessageType {
+	return _fastReflection_AUMPayload_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_NAVPayload) New() protoreflect.Message {
-	return new(fastReflection_NAVPayload)
+func (x *fastReflection_AUMPayload) New() protoreflect.Message {
+	return new(fastReflection_AUMPayload)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_NAVPayload) Interface() protoreflect.ProtoMessage {
-	return (*NAVPayload)(x)
+func (x *fastReflection_AUMPayload) Interface() protoreflect.ProtoMessage {
+	return (*AUMPayload)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -3148,34 +3148,34 @@ func (x *fastReflection_NAVPayload) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_NAVPayload) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_AUMPayload) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.MessageType != uint32(0) {
 		value := protoreflect.ValueOfUint32(x.MessageType)
-		if !f(fd_NAVPayload_message_type, value) {
+		if !f(fd_AUMPayload_message_type, value) {
 			return
 		}
 	}
 	if x.PositionId != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.PositionId)
-		if !f(fd_NAVPayload_position_id, value) {
+		if !f(fd_AUMPayload_position_id, value) {
 			return
 		}
 	}
 	if x.SharePrice != "" {
 		value := protoreflect.ValueOfString(x.SharePrice)
-		if !f(fd_NAVPayload_share_price, value) {
+		if !f(fd_AUMPayload_share_price, value) {
 			return
 		}
 	}
 	if x.SharesHeld != "" {
 		value := protoreflect.ValueOfString(x.SharesHeld)
-		if !f(fd_NAVPayload_shares_held, value) {
+		if !f(fd_AUMPayload_shares_held, value) {
 			return
 		}
 	}
 	if x.Timestamp != int64(0) {
 		value := protoreflect.ValueOfInt64(x.Timestamp)
-		if !f(fd_NAVPayload_timestamp, value) {
+		if !f(fd_AUMPayload_timestamp, value) {
 			return
 		}
 	}
@@ -3192,23 +3192,23 @@ func (x *fastReflection_NAVPayload) Range(f func(protoreflect.FieldDescriptor, p
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_NAVPayload) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_AUMPayload) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVPayload.message_type":
+	case "noble.dollar.vaults.v2.AUMPayload.message_type":
 		return x.MessageType != uint32(0)
-	case "noble.dollar.vaults.v2.NAVPayload.position_id":
+	case "noble.dollar.vaults.v2.AUMPayload.position_id":
 		return x.PositionId != uint64(0)
-	case "noble.dollar.vaults.v2.NAVPayload.share_price":
+	case "noble.dollar.vaults.v2.AUMPayload.share_price":
 		return x.SharePrice != ""
-	case "noble.dollar.vaults.v2.NAVPayload.shares_held":
+	case "noble.dollar.vaults.v2.AUMPayload.shares_held":
 		return x.SharesHeld != ""
-	case "noble.dollar.vaults.v2.NAVPayload.timestamp":
+	case "noble.dollar.vaults.v2.AUMPayload.timestamp":
 		return x.Timestamp != int64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVPayload"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMPayload"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVPayload does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMPayload does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3218,23 +3218,23 @@ func (x *fastReflection_NAVPayload) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVPayload) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_AUMPayload) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVPayload.message_type":
+	case "noble.dollar.vaults.v2.AUMPayload.message_type":
 		x.MessageType = uint32(0)
-	case "noble.dollar.vaults.v2.NAVPayload.position_id":
+	case "noble.dollar.vaults.v2.AUMPayload.position_id":
 		x.PositionId = uint64(0)
-	case "noble.dollar.vaults.v2.NAVPayload.share_price":
+	case "noble.dollar.vaults.v2.AUMPayload.share_price":
 		x.SharePrice = ""
-	case "noble.dollar.vaults.v2.NAVPayload.shares_held":
+	case "noble.dollar.vaults.v2.AUMPayload.shares_held":
 		x.SharesHeld = ""
-	case "noble.dollar.vaults.v2.NAVPayload.timestamp":
+	case "noble.dollar.vaults.v2.AUMPayload.timestamp":
 		x.Timestamp = int64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVPayload"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMPayload"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVPayload does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMPayload does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3244,28 +3244,28 @@ func (x *fastReflection_NAVPayload) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_NAVPayload) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMPayload) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.NAVPayload.message_type":
+	case "noble.dollar.vaults.v2.AUMPayload.message_type":
 		value := x.MessageType
 		return protoreflect.ValueOfUint32(value)
-	case "noble.dollar.vaults.v2.NAVPayload.position_id":
+	case "noble.dollar.vaults.v2.AUMPayload.position_id":
 		value := x.PositionId
 		return protoreflect.ValueOfUint64(value)
-	case "noble.dollar.vaults.v2.NAVPayload.share_price":
+	case "noble.dollar.vaults.v2.AUMPayload.share_price":
 		value := x.SharePrice
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVPayload.shares_held":
+	case "noble.dollar.vaults.v2.AUMPayload.shares_held":
 		value := x.SharesHeld
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.NAVPayload.timestamp":
+	case "noble.dollar.vaults.v2.AUMPayload.timestamp":
 		value := x.Timestamp
 		return protoreflect.ValueOfInt64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVPayload"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMPayload"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVPayload does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMPayload does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3279,23 +3279,23 @@ func (x *fastReflection_NAVPayload) Get(descriptor protoreflect.FieldDescriptor)
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVPayload) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_AUMPayload) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVPayload.message_type":
+	case "noble.dollar.vaults.v2.AUMPayload.message_type":
 		x.MessageType = uint32(value.Uint())
-	case "noble.dollar.vaults.v2.NAVPayload.position_id":
+	case "noble.dollar.vaults.v2.AUMPayload.position_id":
 		x.PositionId = value.Uint()
-	case "noble.dollar.vaults.v2.NAVPayload.share_price":
+	case "noble.dollar.vaults.v2.AUMPayload.share_price":
 		x.SharePrice = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVPayload.shares_held":
+	case "noble.dollar.vaults.v2.AUMPayload.shares_held":
 		x.SharesHeld = value.Interface().(string)
-	case "noble.dollar.vaults.v2.NAVPayload.timestamp":
+	case "noble.dollar.vaults.v2.AUMPayload.timestamp":
 		x.Timestamp = value.Int()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVPayload"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMPayload"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVPayload does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMPayload does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3309,56 +3309,56 @@ func (x *fastReflection_NAVPayload) Set(fd protoreflect.FieldDescriptor, value p
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVPayload) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMPayload) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVPayload.message_type":
-		panic(fmt.Errorf("field message_type of message noble.dollar.vaults.v2.NAVPayload is not mutable"))
-	case "noble.dollar.vaults.v2.NAVPayload.position_id":
-		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.NAVPayload is not mutable"))
-	case "noble.dollar.vaults.v2.NAVPayload.share_price":
-		panic(fmt.Errorf("field share_price of message noble.dollar.vaults.v2.NAVPayload is not mutable"))
-	case "noble.dollar.vaults.v2.NAVPayload.shares_held":
-		panic(fmt.Errorf("field shares_held of message noble.dollar.vaults.v2.NAVPayload is not mutable"))
-	case "noble.dollar.vaults.v2.NAVPayload.timestamp":
-		panic(fmt.Errorf("field timestamp of message noble.dollar.vaults.v2.NAVPayload is not mutable"))
+	case "noble.dollar.vaults.v2.AUMPayload.message_type":
+		panic(fmt.Errorf("field message_type of message noble.dollar.vaults.v2.AUMPayload is not mutable"))
+	case "noble.dollar.vaults.v2.AUMPayload.position_id":
+		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.AUMPayload is not mutable"))
+	case "noble.dollar.vaults.v2.AUMPayload.share_price":
+		panic(fmt.Errorf("field share_price of message noble.dollar.vaults.v2.AUMPayload is not mutable"))
+	case "noble.dollar.vaults.v2.AUMPayload.shares_held":
+		panic(fmt.Errorf("field shares_held of message noble.dollar.vaults.v2.AUMPayload is not mutable"))
+	case "noble.dollar.vaults.v2.AUMPayload.timestamp":
+		panic(fmt.Errorf("field timestamp of message noble.dollar.vaults.v2.AUMPayload is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVPayload"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMPayload"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVPayload does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMPayload does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_NAVPayload) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AUMPayload) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.NAVPayload.message_type":
+	case "noble.dollar.vaults.v2.AUMPayload.message_type":
 		return protoreflect.ValueOfUint32(uint32(0))
-	case "noble.dollar.vaults.v2.NAVPayload.position_id":
+	case "noble.dollar.vaults.v2.AUMPayload.position_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "noble.dollar.vaults.v2.NAVPayload.share_price":
+	case "noble.dollar.vaults.v2.AUMPayload.share_price":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVPayload.shares_held":
+	case "noble.dollar.vaults.v2.AUMPayload.shares_held":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.NAVPayload.timestamp":
+	case "noble.dollar.vaults.v2.AUMPayload.timestamp":
 		return protoreflect.ValueOfInt64(int64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.NAVPayload"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.AUMPayload"))
 		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.NAVPayload does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message noble.dollar.vaults.v2.AUMPayload does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_NAVPayload) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_AUMPayload) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.NAVPayload", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.AUMPayload", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3366,7 +3366,7 @@ func (x *fastReflection_NAVPayload) WhichOneof(d protoreflect.OneofDescriptor) p
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_NAVPayload) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_AUMPayload) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -3377,7 +3377,7 @@ func (x *fastReflection_NAVPayload) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NAVPayload) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_AUMPayload) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -3389,7 +3389,7 @@ func (x *fastReflection_NAVPayload) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_NAVPayload) IsValid() bool {
+func (x *fastReflection_AUMPayload) IsValid() bool {
 	return x != nil
 }
 
@@ -3399,9 +3399,9 @@ func (x *fastReflection_NAVPayload) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_NAVPayload) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_AUMPayload) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*NAVPayload)
+		x := input.Message.Interface().(*AUMPayload)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3440,7 +3440,7 @@ func (x *fastReflection_NAVPayload) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*NAVPayload)
+		x := input.Message.Interface().(*AUMPayload)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3499,7 +3499,7 @@ func (x *fastReflection_NAVPayload) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*NAVPayload)
+		x := input.Message.Interface().(*AUMPayload)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3531,10 +3531,10 @@ func (x *fastReflection_NAVPayload) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVPayload: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMPayload: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NAVPayload: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AUMPayload: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -6935,7 +6935,7 @@ var (
 	fd_OracleUpdateResult_new_share_price protoreflect.FieldDescriptor
 	fd_OracleUpdateResult_new_shares      protoreflect.FieldDescriptor
 	fd_OracleUpdateResult_position_value  protoreflect.FieldDescriptor
-	fd_OracleUpdateResult_updated_nav     protoreflect.FieldDescriptor
+	fd_OracleUpdateResult_updated_aum     protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -6945,7 +6945,7 @@ func init() {
 	fd_OracleUpdateResult_new_share_price = md_OracleUpdateResult.Fields().ByName("new_share_price")
 	fd_OracleUpdateResult_new_shares = md_OracleUpdateResult.Fields().ByName("new_shares")
 	fd_OracleUpdateResult_position_value = md_OracleUpdateResult.Fields().ByName("position_value")
-	fd_OracleUpdateResult_updated_nav = md_OracleUpdateResult.Fields().ByName("updated_nav")
+	fd_OracleUpdateResult_updated_aum = md_OracleUpdateResult.Fields().ByName("updated_aum")
 }
 
 var _ protoreflect.Message = (*fastReflection_OracleUpdateResult)(nil)
@@ -7037,9 +7037,9 @@ func (x *fastReflection_OracleUpdateResult) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if x.UpdatedNav != "" {
-		value := protoreflect.ValueOfString(x.UpdatedNav)
-		if !f(fd_OracleUpdateResult_updated_nav, value) {
+	if x.UpdatedAum != "" {
+		value := protoreflect.ValueOfString(x.UpdatedAum)
+		if !f(fd_OracleUpdateResult_updated_aum, value) {
 			return
 		}
 	}
@@ -7066,8 +7066,8 @@ func (x *fastReflection_OracleUpdateResult) Has(fd protoreflect.FieldDescriptor)
 		return x.NewShares != ""
 	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
 		return x.PositionValue != ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_nav":
-		return x.UpdatedNav != ""
+	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
+		return x.UpdatedAum != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
@@ -7092,8 +7092,8 @@ func (x *fastReflection_OracleUpdateResult) Clear(fd protoreflect.FieldDescripto
 		x.NewShares = ""
 	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
 		x.PositionValue = ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_nav":
-		x.UpdatedNav = ""
+	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
+		x.UpdatedAum = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
@@ -7122,8 +7122,8 @@ func (x *fastReflection_OracleUpdateResult) Get(descriptor protoreflect.FieldDes
 	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
 		value := x.PositionValue
 		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_nav":
-		value := x.UpdatedNav
+	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
+		value := x.UpdatedAum
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -7153,8 +7153,8 @@ func (x *fastReflection_OracleUpdateResult) Set(fd protoreflect.FieldDescriptor,
 		x.NewShares = value.Interface().(string)
 	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
 		x.PositionValue = value.Interface().(string)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_nav":
-		x.UpdatedNav = value.Interface().(string)
+	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
+		x.UpdatedAum = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
@@ -7183,8 +7183,8 @@ func (x *fastReflection_OracleUpdateResult) Mutable(fd protoreflect.FieldDescrip
 		panic(fmt.Errorf("field new_shares of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
 	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
 		panic(fmt.Errorf("field position_value of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_nav":
-		panic(fmt.Errorf("field updated_nav of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
+	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
+		panic(fmt.Errorf("field updated_aum of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
@@ -7206,7 +7206,7 @@ func (x *fastReflection_OracleUpdateResult) NewField(fd protoreflect.FieldDescri
 		return protoreflect.ValueOfString("")
 	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
 		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_nav":
+	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -7292,7 +7292,7 @@ func (x *fastReflection_OracleUpdateResult) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.UpdatedNav)
+		l = len(x.UpdatedAum)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -7325,10 +7325,10 @@ func (x *fastReflection_OracleUpdateResult) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.UpdatedNav) > 0 {
-			i -= len(x.UpdatedNav)
-			copy(dAtA[i:], x.UpdatedNav)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.UpdatedNav)))
+		if len(x.UpdatedAum) > 0 {
+			i -= len(x.UpdatedAum)
+			copy(dAtA[i:], x.UpdatedAum)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.UpdatedAum)))
 			i--
 			dAtA[i] = 0x2a
 		}
@@ -7524,7 +7524,7 @@ func (x *fastReflection_OracleUpdateResult) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UpdatedNav", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UpdatedAum", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -7552,7 +7552,7 @@ func (x *fastReflection_OracleUpdateResult) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.UpdatedNav = string(dAtA[iNdEx:postIndex])
+				x.UpdatedAum = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -12496,13 +12496,13 @@ func (x *StalenessConfig) GetMaxStaleness() int64 {
 	return 0
 }
 
-// NAVPayload represents the oracle update payload (105 bytes when encoded)
-type NAVPayload struct {
+// AUMPayload represents the oracle update payload (105 bytes when encoded)
+type AUMPayload struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Message type (0x01 for NAV update)
+	// Message type (0x01 for AUM update)
 	MessageType uint32 `protobuf:"varint,1,opt,name=message_type,json=messageType,proto3" json:"message_type,omitempty"`
 	// Position identifier (32 bytes)
 	PositionId uint64 `protobuf:"varint,2,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
@@ -12514,8 +12514,8 @@ type NAVPayload struct {
 	Timestamp int64 `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
-func (x *NAVPayload) Reset() {
-	*x = NAVPayload{}
+func (x *AUMPayload) Reset() {
+	*x = AUMPayload{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -12523,46 +12523,46 @@ func (x *NAVPayload) Reset() {
 	}
 }
 
-func (x *NAVPayload) String() string {
+func (x *AUMPayload) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NAVPayload) ProtoMessage() {}
+func (*AUMPayload) ProtoMessage() {}
 
-// Deprecated: Use NAVPayload.ProtoReflect.Descriptor instead.
-func (*NAVPayload) Descriptor() ([]byte, []int) {
+// Deprecated: Use AUMPayload.ProtoReflect.Descriptor instead.
+func (*AUMPayload) Descriptor() ([]byte, []int) {
 	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *NAVPayload) GetMessageType() uint32 {
+func (x *AUMPayload) GetMessageType() uint32 {
 	if x != nil {
 		return x.MessageType
 	}
 	return 0
 }
 
-func (x *NAVPayload) GetPositionId() uint64 {
+func (x *AUMPayload) GetPositionId() uint64 {
 	if x != nil {
 		return x.PositionId
 	}
 	return 0
 }
 
-func (x *NAVPayload) GetSharePrice() string {
+func (x *AUMPayload) GetSharePrice() string {
 	if x != nil {
 		return x.SharePrice
 	}
 	return ""
 }
 
-func (x *NAVPayload) GetSharesHeld() string {
+func (x *AUMPayload) GetSharesHeld() string {
 	if x != nil {
 		return x.SharesHeld
 	}
 	return ""
 }
 
-func (x *NAVPayload) GetTimestamp() int64 {
+func (x *AUMPayload) GetTimestamp() int64 {
 	if x != nil {
 		return x.Timestamp
 	}
@@ -12858,7 +12858,7 @@ type CrossChainOracleMessage struct {
 	Sender []byte `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
 	// Hyperlane metadata for verification
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// NAV oracle update payload (105 bytes)
+	// AUM oracle update payload (105 bytes)
 	Payload []byte `protobuf:"bytes,5,opt,name=payload,proto3" json:"payload,omitempty"`
 	// Timestamp when received
 	ReceivedAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=received_at,json=receivedAt,proto3" json:"received_at,omitempty"`
@@ -12949,8 +12949,8 @@ type OracleUpdateResult struct {
 	NewShares string `protobuf:"bytes,3,opt,name=new_shares,json=newShares,proto3" json:"new_shares,omitempty"`
 	// Calculated position value
 	PositionValue string `protobuf:"bytes,4,opt,name=position_value,json=positionValue,proto3" json:"position_value,omitempty"`
-	// Updated total NAV
-	UpdatedNav string `protobuf:"bytes,5,opt,name=updated_nav,json=updatedNav,proto3" json:"updated_nav,omitempty"`
+	// Updated total AUM
+	UpdatedAum string `protobuf:"bytes,5,opt,name=updated_aum,json=updatedAum,proto3" json:"updated_aum,omitempty"`
 }
 
 func (x *OracleUpdateResult) Reset() {
@@ -13001,9 +13001,9 @@ func (x *OracleUpdateResult) GetPositionValue() string {
 	return ""
 }
 
-func (x *OracleUpdateResult) GetUpdatedNav() string {
+func (x *OracleUpdateResult) GetUpdatedAum() string {
 	if x != nil {
-		return x.UpdatedNav
+		return x.UpdatedAum
 	}
 	return ""
 }
@@ -13567,7 +13567,7 @@ var file_noble_dollar_vaults_v2_oracle_proto_rawDesc = []byte{
 	0x63, 0x61, 0x6c, 0x54, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64, 0x12, 0x23, 0x0a, 0x0d,
 	0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20,
 	0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73,
-	0x73, 0x22, 0x9a, 0x02, 0x0a, 0x0a, 0x4e, 0x41, 0x56, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64,
+	0x73, 0x22, 0x9a, 0x02, 0x0a, 0x0a, 0x41, 0x55, 0x4d, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64,
 	0x12, 0x21, 0x0a, 0x0c, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0b, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x54,
 	0x79, 0x70, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
@@ -13689,11 +13689,11 @@ var file_noble_dollar_vaults_v2_oracle_proto_rawDesc = []byte{
 	0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
 	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x70,
 	0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x51, 0x0a, 0x0b,
-	0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x6e, 0x61, 0x76, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x75, 0x6d, 0x18, 0x05, 0x20, 0x01, 0x28,
 	0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
 	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74,
 	0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7,
-	0xb0, 0x2a, 0x01, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x4e, 0x61, 0x76, 0x22,
+	0xb0, 0x2a, 0x01, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x75, 0x6d, 0x22,
 	0xd4, 0x03, 0x0a, 0x11, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f,
 	0x72, 0x61, 0x63, 0x6c, 0x65, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
 	0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f,
@@ -13853,7 +13853,7 @@ var file_noble_dollar_vaults_v2_oracle_proto_goTypes = []interface{}{
 	(*EnrolledOracleRouter)(nil),          // 3: noble.dollar.vaults.v2.EnrolledOracleRouter
 	(*EnrolledOracle)(nil),                // 4: noble.dollar.vaults.v2.EnrolledOracle
 	(*StalenessConfig)(nil),               // 5: noble.dollar.vaults.v2.StalenessConfig
-	(*NAVPayload)(nil),                    // 6: noble.dollar.vaults.v2.NAVPayload
+	(*AUMPayload)(nil),                    // 6: noble.dollar.vaults.v2.AUMPayload
 	(*FallbackStrategy)(nil),              // 7: noble.dollar.vaults.v2.FallbackStrategy
 	(*OracleGovernanceParams)(nil),        // 8: noble.dollar.vaults.v2.OracleGovernanceParams
 	(*AlertConfig)(nil),                   // 9: noble.dollar.vaults.v2.AlertConfig
@@ -13962,7 +13962,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 			}
 		}
 		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NAVPayload); i {
+			switch v := v.(*AUMPayload); i {
 			case 0:
 				return &v.state
 			case 1:
