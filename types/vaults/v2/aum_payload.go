@@ -30,7 +30,8 @@ import (
 )
 
 const (
-	aumPayloadSize       = 105
+	aumPayloadSizeLegacy = 105
+	aumPayloadSizeNew    = 113
 	aumUpdateMessageType = 0x01
 	aumDecimalPrecision  = int64(1_000_000_000_000_000_000) // 1e18 precision
 )
@@ -43,14 +44,16 @@ type AUMUpdatePayload struct {
 	SharePrice  math.LegacyDec
 	SharesHeld  math.Int
 	Timestamp   time.Time
+	InflightID  uint64
 }
 
 // ParseAUMPayload decodes the fixed-length AUM oracle payload into a strongly
 // typed representation. All numeric values are expected to be big-endian
-// encoded.
+// encoded. Supports both legacy (105 bytes) and new (113 bytes with inflight_id) formats.
 func ParseAUMPayload(body []byte) (AUMUpdatePayload, error) {
-	if len(body) != aumPayloadSize {
-		return AUMUpdatePayload{}, fmt.Errorf("invalid AUM payload size: expected %d, got %d", aumPayloadSize, len(body))
+	bodyLen := len(body)
+	if bodyLen != aumPayloadSizeLegacy && bodyLen != aumPayloadSizeNew {
+		return AUMUpdatePayload{}, fmt.Errorf("invalid AUM payload size: expected %d or %d, got %d", aumPayloadSizeLegacy, aumPayloadSizeNew, bodyLen)
 	}
 
 	if body[0] != aumUpdateMessageType {
@@ -69,11 +72,17 @@ func ParseAUMPayload(body []byte) (AUMUpdatePayload, error) {
 	sharePrice := math.LegacyNewDecFromBigInt(sharePriceBig).QuoInt(scale)
 	sharesHeld := math.NewIntFromBigInt(sharesHeldBig)
 
+	inflightID := uint64(0)
+	if bodyLen == aumPayloadSizeNew {
+		inflightID = binary.BigEndian.Uint64(body[105:113])
+	}
+
 	return AUMUpdatePayload{
 		MessageType: body[0],
 		PositionID:  positionBig.Uint64(),
 		SharePrice:  sharePrice,
 		SharesHeld:  sharesHeld,
 		Timestamp:   time.Unix(timestamp, 0).UTC(),
+		InflightID:  inflightID,
 	}, nil
 }
