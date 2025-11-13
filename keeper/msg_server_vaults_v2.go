@@ -32,7 +32,9 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
+	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"dollar.noble.xyz/v3/types"
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
@@ -2144,6 +2146,106 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 		AmountReturned: fund.Amount,
 		RouteId:        routeID,
 		CleanedAt:      headerInfo.Time,
+	}, nil
+}
+
+// DeployFunds deploys funds to a remote position and updates the AUM accounting
+func (m msgServerV2) DeployFunds(ctx context.Context, msg *vaultsv2.MsgDeployFunds) (*vaultsv2.MsgDeployFundsResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.RemotePositionId == 0 {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "remote position id must be provided")
+	}
+	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+	}
+
+	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "remote position %d not found", msg.RemotePositionId)
+	}
+
+	inflightID, err := m.NextVaultsV2InflightID(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
+	}
+
+	chainID, found, err := m.GetVaultsV2RemotePositionChainID(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position chain id")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "chain id not found for position %d", msg.RemotePositionId)
+	}
+
+	tokenID := position.HyptokenId.GetInternalId()
+	token, err := m.warp.HypTokens.Get(ctx, tokenID)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to get hyperlane token from state")
+	}
+
+	router, err := m.getHyperlaneRouter(ctx, tokenID)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to get hyperlane router")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	inflight := vaultsv2.InflightFund{
+		Id:                inflightID,
+		RemotePositionId:  msg.RemotePositionId,
+		Amount:            msg.Amount,
+		ValueAtInitiation: msg.Amount,
+		InitiatedAt:       headerInfo.Time,
+		ExpectedAt:        headerInfo.Time,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+			DestinationDomain: chainID,
+		},
+	}
+
+	moduleAddress := authtypes.NewModuleAddress(warptypes.ModuleName)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	messageId, transferErr := m.warp.RemoteTransferCollateral(
+		sdkCtx,
+		token,
+		moduleAddress.String(),
+		router.ReceiverDomain,
+		position.VaultAddress,
+		msg.Amount,
+		nil,                                     // customHookId
+		sdkmath.ZeroInt(),                       // gasLimit
+		sdk.NewCoin(m.denom, sdkmath.ZeroInt()), // maxFee
+		nil,                                     // customHookMetadata
+	)
+	if transferErr != nil {
+		return nil, sdkerrors.Wrap(transferErr, "unable to transfer funds via hyperlane")
+	}
+
+	inflight.HyperlaneTrackingInfo.MessageId = messageId.Bytes()
+
+	if err := m.SubtractVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to subtract from local funds")
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, inflight); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
+	}
+
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
+	return &vaultsv2.MsgDeployFundsResponse{
+		InflightId:       inflightID,
+		RemotePositionId: msg.RemotePositionId,
 	}, nil
 }
 

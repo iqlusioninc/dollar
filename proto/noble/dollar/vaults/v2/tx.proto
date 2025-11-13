@@ -784,7 +784,7 @@ message MsgDeployFunds {
   uint64 remote_position_id = 2;
 
   // Amount to send to the remote position
-  string amount_received = 3 [
+  string amount = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
