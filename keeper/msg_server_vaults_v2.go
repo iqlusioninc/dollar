@@ -1307,29 +1307,16 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 			return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
 		}
 
-		destination := &vaultsv2.RemotePosition{
-			HyptokenId:   entry.Position.HyptokenId,
-			VaultAddress: entry.Position.VaultAddress,
-			SharePrice:   entry.Position.SharePrice,
-			Status:       entry.Position.Status,
-		}
-
 		fund := vaultsv2.InflightFund{
 			Id:                inflightID,
-			TransactionId:     fmt.Sprintf("rebalance:%d", entry.ID),
+			RemotePositionId:  entry.ID,
 			Amount:            adj.amount,
 			ValueAtInitiation: adj.amount,
 			InitiatedAt:       headerInfo.Time,
 			ExpectedAt:        headerInfo.Time,
 			Status:            vaultsv2.INFLIGHT_PENDING,
-			Origin:            &vaultsv2.InflightFund_NobleOrigin{NobleOrigin: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_REBALANCE}},
-			Destination:       &vaultsv2.InflightFund_RemoteDestination{RemoteDestination: destination},
-			ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-				TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-					HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-						DestinationDomain: entry.ChainID,
-					},
-				},
+			HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+				DestinationDomain: entry.ChainID,
 			},
 		}
 
@@ -1386,10 +1373,6 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
-	if msg.ProviderTracking != nil {
-		fund.ProviderTracking = msg.ProviderTracking
-	}
-
 	// Capture previous status for event
 	previousStatus := fund.Status
 
@@ -1407,15 +1390,13 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 	}
 
 	var routeID uint32
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			if hyperlane.DestinationDomain != 0 {
-				routeID = hyperlane.DestinationDomain
-			} else if hyperlane.OriginDomain != 0 {
-				routeID = hyperlane.OriginDomain
-			}
-			hyperlane.Processed = msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED
+	if fund.HyperlaneTrackingInfo != nil {
+		if fund.HyperlaneTrackingInfo.DestinationDomain != 0 {
+			routeID = fund.HyperlaneTrackingInfo.DestinationDomain
+		} else if fund.HyperlaneTrackingInfo.OriginDomain != 0 {
+			routeID = fund.HyperlaneTrackingInfo.OriginDomain
 		}
+		fund.HyperlaneTrackingInfo.Processed = msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED
 	}
 
 	removeRouteValue := func(amount sdkmath.Int) {
@@ -1428,60 +1409,62 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 	case vaultsv2.INFLIGHT_COMPLETED:
 		removeRouteValue(processedAmount)
 
-		if fund.GetOrigin() != nil {
-			if origin := fund.GetRemoteOrigin(); origin != nil {
-				positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, origin.VaultAddress)
-				if err == nil && foundPosition {
-					if sharesAffected.IsPositive() {
-						newShares, err := position.SharesHeld.SafeSub(sharesAffected)
-						if err == nil {
-							position.SharesHeld = newShares
-						} else {
-							position.SharesHeld = sdkmath.ZeroInt()
-						}
-					}
-					if processedAmount.IsPositive() {
-						total, err := position.TotalValue.SafeSub(processedAmount)
-						if err == nil {
-							position.TotalValue = total
-						} else {
-							position.TotalValue = sdkmath.ZeroInt()
-						}
-						principal, err := position.Principal.SafeSub(processedAmount)
-						if err == nil && !principal.IsNegative() {
-							position.Principal = principal
-						} else {
-							position.Principal = sdkmath.ZeroInt()
-						}
-					}
-					if position.SharesHeld.IsPositive() {
-						position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+		// If this is linked to a remote position, update it
+		if fund.RemotePositionId != 0 {
+			position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
+			if err == nil && foundPosition {
+				// For withdrawals from position
+				if sharesAffected.IsPositive() {
+					newShares, err := position.SharesHeld.SafeSub(sharesAffected)
+					if err == nil {
+						position.SharesHeld = newShares
 					} else {
-						position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+						position.SharesHeld = sdkmath.ZeroInt()
 					}
-					position.LastUpdate = headerInfo.Time
-					_ = m.SetVaultsV2RemotePosition(ctx, positionID, position)
 				}
+				if processedAmount.IsPositive() {
+					total, err := position.TotalValue.SafeSub(processedAmount)
+					if err == nil {
+						position.TotalValue = total
+					} else {
+						position.TotalValue = sdkmath.ZeroInt()
+					}
+					principal, err := position.Principal.SafeSub(processedAmount)
+					if err == nil && !principal.IsNegative() {
+						position.Principal = principal
+					} else {
+						position.Principal = sdkmath.ZeroInt()
+					}
+				}
+				if position.SharesHeld.IsPositive() {
+					position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+				} else {
+					position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+				}
+				position.LastUpdate = headerInfo.Time
+				_ = m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position)
 			}
+			// TODO: Determine if this is withdrawal - may need additional field
 			if processedAmount.IsPositive() {
 				_ = m.AddVaultsV2PendingWithdrawalDistribution(ctx, processedAmount)
 			}
-		} else if fund.GetDestination() != nil {
-			// Deposit completion – nothing additional for now beyond clearing inflight totals.
 		}
+		// Else: deposit completion – nothing additional for now beyond clearing inflight totals.
 	case vaultsv2.INFLIGHT_FAILED, vaultsv2.INFLIGHT_TIMEOUT:
 		removeRouteValue(fund.Amount)
 
-		if fund.GetOrigin() == nil && fund.Amount.IsPositive() {
+		// Return funds to local funds on failure
+		if fund.Amount.IsPositive() {
 			_ = m.AddVaultsV2LocalFunds(ctx, fund.Amount)
 		}
 
-		if origin := fund.GetRemoteOrigin(); origin != nil {
-			positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, origin.VaultAddress)
+		// Update position status if linked
+		if fund.RemotePositionId != 0 {
+			position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
 			if err == nil && foundPosition {
 				position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
 				position.LastUpdate = headerInfo.Time
-				_ = m.SetVaultsV2RemotePosition(ctx, positionID, position)
+				_ = m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position)
 			}
 		}
 	default:
@@ -1501,7 +1484,7 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		_ = m.EmitInflightStatusChangeEvent(
 			ctx,
 			msg.Nonce,
-			fund.TransactionId,
+			fmt.Sprintf("%d", fund.Id),
 			routeID,
 			previousStatus,
 			msg.ResultStatus,
@@ -1512,14 +1495,12 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 	// Emit completion event if completed
 	if msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED {
+		// TODO: Track operation type if needed
 		opType := vaultsv2.OPERATION_TYPE_DEPOSIT
-		if origin := fund.GetNobleOrigin(); origin != nil {
-			opType = origin.OperationType
-		}
 		_ = m.EmitInflightCompletedEvent(
 			ctx,
 			msg.Nonce,
-			fund.TransactionId,
+			fmt.Sprintf("%d", fund.Id),
 			routeID,
 			opType,
 			fund.Amount,
@@ -2104,12 +2085,11 @@ func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgH
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	returned, err := m.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
-		Authority:        msg.Authority,
-		Nonce:            msg.InflightId,
-		ResultStatus:     msg.NewStatus,
-		ResultAmount:     fund.Amount,
-		ErrorMessage:     msg.Reason,
-		ProviderTracking: fund.ProviderTracking,
+		Authority:    msg.Authority,
+		Nonce:        msg.InflightId,
+		ResultStatus: msg.NewStatus,
+		ResultAmount: fund.Amount,
+		ErrorMessage: msg.Reason,
 	})
 	if err != nil {
 		return nil, err
@@ -2147,10 +2127,8 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 
 	// Extract route ID
 	routeID := uint32(0)
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			routeID = hyperlane.DestinationDomain
-		}
+	if fund.HyperlaneTrackingInfo != nil {
+		routeID = fund.HyperlaneTrackingInfo.DestinationDomain
 	}
 
 	// Perform cleanup
@@ -2162,7 +2140,7 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 
 	return &vaultsv2.MsgCleanupStaleInflightResponse{
 		InflightId:     fund.Id,
-		TransactionId:  fund.TransactionId,
+		TransactionId:  fmt.Sprintf("%d", fund.Id),
 		AmountReturned: fund.Amount,
 		RouteId:        routeID,
 		CleanedAt:      headerInfo.Time,
@@ -2384,12 +2362,10 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	}
 
 	// Verify route ID matches
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			if hyperlane.OriginDomain != 0 && hyperlane.OriginDomain != msg.OriginDomain {
-				return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidRoute,
-					"origin domain mismatch: expected %d, got %d", hyperlane.OriginDomain, msg.OriginDomain)
-			}
+	if fund.HyperlaneTrackingInfo != nil {
+		if fund.HyperlaneTrackingInfo.OriginDomain != 0 && fund.HyperlaneTrackingInfo.OriginDomain != msg.OriginDomain {
+			return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidRoute,
+				"origin domain mismatch: expected %d, got %d", fund.HyperlaneTrackingInfo.OriginDomain, msg.OriginDomain)
 		}
 	}
 
@@ -2402,11 +2378,9 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	fund.ExpectedAt = msg.ReceivedAt
 
 	// Update provider tracking with message ID
-	if fund.ProviderTracking != nil {
-		if hyperlane := fund.ProviderTracking.GetHyperlaneTracking(); hyperlane != nil {
-			hyperlane.Processed = true
-			hyperlane.DestinationTxHash = msg.HyperlaneMessageId
-		}
+	if fund.HyperlaneTrackingInfo != nil {
+		fund.HyperlaneTrackingInfo.Processed = true
+		fund.HyperlaneTrackingInfo.DestinationTxHash = msg.HyperlaneMessageId
 	}
 
 	// Store updated fund
@@ -2430,25 +2404,11 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 		updatedPending = sdkmath.ZeroInt()
 	}
 
-	// Update remote position if this was a withdrawal from a remote position
-	if fund.GetRemoteOrigin() != nil {
-		remoteOrigin := fund.GetRemoteOrigin()
-		// Find the position by vault address
-		var positionID uint64
-		var position vaultsv2.RemotePosition
-		var foundPosition bool
-
-		err := m.IterateVaultsV2RemotePositions(ctx, func(id uint64, pos vaultsv2.RemotePosition) (bool, error) {
-			if pos.VaultAddress.Equal(remoteOrigin.VaultAddress) {
-				positionID = id
-				position = pos
-				foundPosition = true
-				return true, nil // stop iteration
-			}
-			return false, nil
-		})
+	// Update remote position if this is linked to one
+	if fund.RemotePositionId != 0 {
+		position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
 		if err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to find remote position")
+			return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
 		}
 
 		if foundPosition {
@@ -2474,7 +2434,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 
 			position.LastUpdate = headerInfo.Time
 
-			if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
+			if err := m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to update remote position")
 			}
 		}
@@ -2484,7 +2444,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	_ = m.EmitInflightCompletedEvent(
 		ctx,
 		fund.Id,
-		fund.TransactionId,
+		fmt.Sprintf("%d", fund.Id),
 		msg.RouteId,
 		vaultsv2.OPERATION_TYPE_WITHDRAWAL,
 		originalAmount,
@@ -2496,7 +2456,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	if !amountMatched {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		_ = sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightAmountMismatch{
-			TransactionId:  fund.TransactionId,
+			TransactionId:  fmt.Sprintf("%d", fund.Id),
 			RouteId:        msg.RouteId,
 			ExpectedAmount: originalAmount,
 			ReceivedAmount: msg.AmountReceived,
