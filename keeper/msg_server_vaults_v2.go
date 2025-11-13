@@ -1002,20 +1002,6 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	if msg.VaultAddress == "" {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "vault address must be provided")
 	}
-	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
-	}
-	if msg.MinSharesOut.IsPositive() && msg.Amount.LT(msg.MinSharesOut) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
-	}
-
-	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
-	}
-	if localFunds.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient local funds")
-	}
 
 	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
 	if err != nil {
@@ -1030,13 +1016,14 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	}
 
 	position := vaultsv2.RemotePosition{
+		Id:           positionID,
 		VaultAddress: vaultAddress,
-		SharesHeld:   msg.Amount,
-		Principal:    msg.Amount,
+		SharesHeld:   sdkmath.ZeroInt(),
+		Principal:    sdkmath.ZeroInt(),
 		SharePrice:   sdkmath.LegacyOneDec(),
-		TotalValue:   msg.Amount,
+		TotalValue:   sdkmath.ZeroInt(),
 		LastUpdate:   headerInfo.Time,
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
+		Status:       vaultsv2.REMOTE_POSITION_INITIALIZING,
 	}
 
 	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
@@ -1047,17 +1034,8 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to store remote position chain id")
 	}
 
-	if err := m.SubtractVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update local funds")
-	}
-
-	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
-	}
-
 	return &vaultsv2.MsgCreateRemotePositionResponse{
 		PositionId:         positionID,
-		RouteId:            msg.ChainId,
 		ExpectedCompletion: headerInfo.Time,
 	}, nil
 }

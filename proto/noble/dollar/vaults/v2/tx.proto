@@ -458,29 +458,12 @@ message MsgCreateRemotePosition {
 
   // Hyperlane domain ID for destination chain
   uint32 chain_id = 3;
-
-  // Amount of $USDN to deploy
-  string amount = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Minimum acceptable Noble vault shares to receive (slippage protection)
-  string min_shares_out = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }
 
 message MsgCreateRemotePositionResponse {
   // Assigned position ID
   uint64 position_id = 1;
-  // Route ID used for cross-chain transfer
-  uint32 route_id = 2;
+
   // Expected completion time on remote chain
   google.protobuf.Timestamp expected_completion = 3 [
     (gogoproto.nullable) = false,

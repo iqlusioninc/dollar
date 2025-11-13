@@ -98,14 +98,16 @@ message RemotePosition {
 enum RemotePositionStatus {
   option (gogoproto.goproto_enum_prefix) = false;
 
+  // Position is waiting for initial deposit
+  REMOTE_POSITION_INITIALIZING = 0;
   // Position is active and being tracked
-  REMOTE_POSITION_ACTIVE = 0;
+  REMOTE_POSITION_ACTIVE = 1;
   // Position is being withdrawn from
-  REMOTE_POSITION_WITHDRAWING = 1;
+  REMOTE_POSITION_WITHDRAWING = 2;
   // Position has been closed
-  REMOTE_POSITION_CLOSED = 2;
+  REMOTE_POSITION_CLOSED = 3;
   // Position is in error state
-  REMOTE_POSITION_ERROR = 3;
+  REMOTE_POSITION_ERROR = 4;
 }
 
 // InflightFund represents funds in transit between Noble and remote positions
