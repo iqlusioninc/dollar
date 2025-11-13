@@ -317,9 +317,6 @@ message MsgProcessInFlightPosition {
 
   // Error message (for failed operations)
   string error_message = 5;
-
-  // Provider-specific tracking information
-  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
 }
 
 // MsgProcessInFlightPositionResponse confirms processing

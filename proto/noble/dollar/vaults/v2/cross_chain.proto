@@ -118,9 +118,6 @@ message InflightFund {
   // Id of the corresponding RemotePosition
   uint64 remote_position_id = 2;
 
-  // Transaction ID (Hyperlane message ID or IBC packet sequence)
-  string transaction_id = 3;
-
   // Amount in USDN (always USDN, never shares)
   string amount = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
@@ -128,23 +125,7 @@ message InflightFund {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-
-  // Origin information
-  oneof origin {
-    // Origin is Noble
-    NobleEndpoint noble_origin = 5;
-    // Origin is a remote position (withdrawing USDN from it)
-    RemotePosition remote_origin = 6;
-  }
-
-  // Destination information
-  oneof destination {
-    // Destination is Noble
-    NobleEndpoint noble_destination = 7;
-    // Destination is a remote position (depositing USDN to it)
-    RemotePosition remote_destination = 8;
-  }
-
+ 
   // When the operation was initiated
   google.protobuf.Timestamp initiated_at = 9 [
     (gogoproto.nullable) = false,
@@ -168,8 +149,7 @@ message InflightFund {
     (amino.dont_omitempty) = true
   ];
 
-  // Provider-specific tracking information
-  ProviderTrackingInfo provider_tracking = 13;
+  HyperlaneTrackingInfo hyperlane_tracking_info = 13;
 }
 
 // OperationType represents the type of cross-chain operation
@@ -184,21 +164,6 @@ enum OperationType {
   OPERATION_TYPE_REBALANCE = 2;
 }
 
-// NobleEndpoint represents Noble as an origin or destination
-message NobleEndpoint {
-  // Purpose/context of the operation (deposit, withdrawal, rebalance)
-  OperationType operation_type = 1;
-}
-
-// ProviderTrackingInfo contains provider-specific tracking data
-message ProviderTrackingInfo {
-  oneof tracking_info {
-    // Hyperlane-specific tracking information
-    HyperlaneTrackingInfo hyperlane_tracking = 1;
-    // Future: IBC tracking could be added here
-  }
-}
-
 // HyperlaneTrackingInfo contains Hyperlane-specific tracking data
 message HyperlaneTrackingInfo {
   // Hyperlane message ID
@@ -207,30 +172,12 @@ message HyperlaneTrackingInfo {
   uint32 origin_domain = 2;
   // Destination domain
   uint32 destination_domain = 3;
-  // Message nonce
-  uint64 nonce = 4;
   // Transaction hash on origin chain
   string origin_tx_hash = 5;
   // Transaction hash on destination chain
   string destination_tx_hash = 6;
   // Whether message has been processed
   bool processed = 7;
-}
-
-// InflightType defines the type of inflight funds
-enum InflightType {
-  option (gogoproto.goproto_enum_prefix) = false;
-
-  // USDN being deployed to a remote position
-  INFLIGHT_DEPOSIT_TO_POSITION = 0;
-  // USDN returning from a remote position
-  INFLIGHT_WITHDRAWAL_FROM_POSITION = 1;
-  // USDN moving between positions (via Noble)
-  INFLIGHT_REBALANCE_BETWEEN_POSITIONS = 2;
-  // USDN awaiting deployment to positions
-  INFLIGHT_PENDING_DEPLOYMENT = 3;
-  // USDN awaiting distribution to withdrawal queue
-  INFLIGHT_PENDING_WITHDRAWAL_DISTRIBUTION = 4;
 }
 
 // InflightStatus represents the status of inflight funds
@@ -290,37 +237,6 @@ enum OracleUpdateStatus {
   ORACLE_UPDATE_REJECTED = 2;
 }
 
-// PositionOracleConfig stores oracle configuration for a position
-message PositionOracleConfig {
-  // Unique position identifier
-  uint64 position_id = 1;
-  // Expected origin mailbox/channel
-  string origin_identifier = 2;
-  // Maximum age before data is considered stale (seconds)
-  int64 max_staleness = 3;
-  // Authorized oracle contract address on remote chain
-  string oracle_contract = 4;
-  // Source chain identifier
-  string source_chain = 5;
-  // Last update timestamp
-  google.protobuf.Timestamp last_update = 6 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Provider type (HYPERLANE, IBC)
-  ProviderType provider_type = 7;
-}
-
-// ProviderType represents the cross-chain provider type
-enum ProviderType {
-  option (gogoproto.goproto_enum_prefix) = false;
-
-  // Hyperlane provider
-  PROVIDER_TYPE_HYPERLANE = 0;
-  // IBC provider
-  PROVIDER_TYPE_IBC = 1;
-}
-
 // CrossChainPositionSnapshot provides a snapshot of all cross-chain positions
 message CrossChainPositionSnapshot {
   // Total value of all remote positions
@@ -370,8 +286,6 @@ message CrossChainConfig {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
-  // Supported providers (currently only HYPERLANE)
-  repeated ProviderType supported_providers = 9;
 }
 
 // StaleInflightAlert represents an alert for inflight funds exceeding expected duration
