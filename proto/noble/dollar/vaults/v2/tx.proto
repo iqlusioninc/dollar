@@ -88,6 +88,9 @@ service Msg {
   // Cleanup stale inflight fund (authority only)
   rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
 
+  // Send funds to remote position
+  rpc DeployFunds(MsgDeployFunds) returns (MsgDeployFundsResponse);
+
   // Process incoming warp route funds (system/hook only)
   rpc ProcessIncomingWarpFunds(MsgProcessIncomingWarpFunds) returns (MsgProcessIncomingWarpFundsResponse);
 
@@ -764,6 +767,38 @@ message MsgUpdateVaultAccountingResponse {
   // This indicates AUM decreased below (TotalDeposits + TotalAccruedYield)
   // Manager should investigate vault losses or accounting discrepancies
   string negative_yield_warning = 8;
+}
+
+// MsgDeployFunds creates an InflightFunds mapped to a RemotePosition and sends funds over warp to the position
+message MsgDeployFunds {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/ProcessIncomingWarpFunds";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (manager address)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // The remote positions ID
+  uint64 remote_position_id = 2;
+
+  // Amount to send to the remote position
+  string amount_received = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgDeployFundsResponse returns details about the deployed funds
+message MsgDeployFundsResponse {
+  // The ID of the InflightFunds created by the message
+  uint64 inflight_id = 1;
+
+  // The ID of the remote position
+  uint64 remote_position_id = 2;
 }
 
 // MsgProcessIncomingWarpFunds processes funds received via warp route and marks inflight funds as completed

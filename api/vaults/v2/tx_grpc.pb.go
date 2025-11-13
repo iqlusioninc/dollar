@@ -41,6 +41,7 @@ const (
 	Msg_HandleStaleInflight_FullMethodName      = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
 	Msg_UpdateDepositLimits_FullMethodName      = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
 	Msg_CleanupStaleInflight_FullMethodName     = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
+	Msg_DeployFunds_FullMethodName              = "/noble.dollar.vaults.v2.Msg/DeployFunds"
 	Msg_ProcessIncomingWarpFunds_FullMethodName = "/noble.dollar.vaults.v2.Msg/ProcessIncomingWarpFunds"
 	Msg_UpdateVaultAccounting_FullMethodName    = "/noble.dollar.vaults.v2.Msg/UpdateVaultAccounting"
 )
@@ -95,6 +96,8 @@ type MsgClient interface {
 	UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error)
 	// Cleanup stale inflight fund (authority only)
 	CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error)
+	// Send funds to remote position
+	DeployFunds(ctx context.Context, in *MsgDeployFunds, opts ...grpc.CallOption) (*MsgDeployFundsResponse, error)
 	// Process incoming warp route funds (system/hook only)
 	ProcessIncomingWarpFunds(ctx context.Context, in *MsgProcessIncomingWarpFunds, opts ...grpc.CallOption) (*MsgProcessIncomingWarpFundsResponse, error)
 	// Update vault accounting for yield distribution (vault manager only)
@@ -329,6 +332,16 @@ func (c *msgClient) CleanupStaleInflight(ctx context.Context, in *MsgCleanupStal
 	return out, nil
 }
 
+func (c *msgClient) DeployFunds(ctx context.Context, in *MsgDeployFunds, opts ...grpc.CallOption) (*MsgDeployFundsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgDeployFundsResponse)
+	err := c.cc.Invoke(ctx, Msg_DeployFunds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) ProcessIncomingWarpFunds(ctx context.Context, in *MsgProcessIncomingWarpFunds, opts ...grpc.CallOption) (*MsgProcessIncomingWarpFundsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgProcessIncomingWarpFundsResponse)
@@ -399,6 +412,8 @@ type MsgServer interface {
 	UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error)
 	// Cleanup stale inflight fund (authority only)
 	CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error)
+	// Send funds to remote position
+	DeployFunds(context.Context, *MsgDeployFunds) (*MsgDeployFundsResponse, error)
 	// Process incoming warp route funds (system/hook only)
 	ProcessIncomingWarpFunds(context.Context, *MsgProcessIncomingWarpFunds) (*MsgProcessIncomingWarpFundsResponse, error)
 	// Update vault accounting for yield distribution (vault manager only)
@@ -478,6 +493,9 @@ func (UnimplementedMsgServer) UpdateDepositLimits(context.Context, *MsgUpdateDep
 }
 func (UnimplementedMsgServer) CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CleanupStaleInflight not implemented")
+}
+func (UnimplementedMsgServer) DeployFunds(context.Context, *MsgDeployFunds) (*MsgDeployFundsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeployFunds not implemented")
 }
 func (UnimplementedMsgServer) ProcessIncomingWarpFunds(context.Context, *MsgProcessIncomingWarpFunds) (*MsgProcessIncomingWarpFundsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProcessIncomingWarpFunds not implemented")
@@ -902,6 +920,24 @@ func _Msg_CleanupStaleInflight_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_DeployFunds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeployFunds)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DeployFunds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_DeployFunds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DeployFunds(ctx, req.(*MsgDeployFunds))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_ProcessIncomingWarpFunds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgProcessIncomingWarpFunds)
 	if err := dec(in); err != nil {
@@ -1032,6 +1068,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CleanupStaleInflight",
 			Handler:    _Msg_CleanupStaleInflight_Handler,
+		},
+		{
+			MethodName: "DeployFunds",
+			Handler:    _Msg_DeployFunds_Handler,
 		},
 		{
 			MethodName: "ProcessIncomingWarpFunds",
