@@ -233,9 +233,6 @@ message CrossChainOracleMessage {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-
-  // Provider type (HYPERLANE, IBC)
-  ProviderType provider_type = 7;
 }
 
 // OracleUpdateResult represents the result of processing an oracle update
@@ -303,9 +300,6 @@ message MsgRegisterOracle {
 
   // Maximum staleness allowed (seconds)
   int64 max_staleness = 5;
-
-  // Provider type (HYPERLANE, IBC)
-  ProviderType provider_type = 6;
 
   // Origin identifier (mailbox for Hyperlane, channel for IBC)
   string origin_identifier = 7;

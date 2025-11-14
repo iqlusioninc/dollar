@@ -86,6 +86,7 @@ func DollarKeeperWithKeepers(t testing.TB, bank BankKeeper, account AccountKeepe
 		nil,
 		nil,
 		nil,
+		nil,
 		wormholeKeeper,
 	)
 

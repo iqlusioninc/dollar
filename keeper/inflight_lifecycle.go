@@ -22,6 +22,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cosmossdk.io/errors"
@@ -48,14 +49,12 @@ func (k *Keeper) DetectStaleInflightFunds(ctx context.Context, staleThresholdHou
 			if hoursOverdue >= staleThresholdHours {
 				// Extract route ID
 				routeID := uint32(0)
-				if tracking := fund.GetProviderTracking(); tracking != nil {
-					if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-						routeID = hyperlane.DestinationDomain
-					}
+				if fund.HyperlaneTrackingInfo != nil {
+					routeID = fund.HyperlaneTrackingInfo.DestinationDomain
 				}
 
 				staleFunds = append(staleFunds, StaleInflightFund{
-					TransactionID: fund.TransactionId,
+					TransactionID: fmt.Sprintf("%d", fund.Id),
 					RouteID:       routeID,
 					Fund:          fund,
 					HoursOverdue:  hoursOverdue,
@@ -83,10 +82,8 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID uint64, reas
 
 	// Extract route ID for tracking
 	routeID := uint32(0)
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			routeID = hyperlane.DestinationDomain
-		}
+	if fund.HyperlaneTrackingInfo != nil {
+		routeID = fund.HyperlaneTrackingInfo.DestinationDomain
 	}
 
 	// Subtract from route's inflight value
@@ -103,20 +100,11 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID uint64, reas
 		}
 	}
 
-	// Return funds to vault - update pending deployment if it was an outbound operation
-	if origin := fund.GetNobleOrigin(); origin != nil {
-		if origin.OperationType == vaultsv2.OPERATION_TYPE_DEPOSIT ||
-			origin.OperationType == vaultsv2.OPERATION_TYPE_REBALANCE {
-			// Subtract from local funds
-			if err := k.SubtractVaultsV2LocalFunds(ctx, fund.Amount); err != nil {
-				return errors.Wrap(err, "unable to update local funds")
-			}
-		} else if origin.OperationType == vaultsv2.OPERATION_TYPE_WITHDRAWAL {
-			// Subtract from pending withdrawal distribution
-			if err := k.SubtractVaultsV2PendingWithdrawalDistribution(ctx, fund.Amount); err != nil {
-				return errors.Wrap(err, "unable to update pending withdrawal distribution")
-			}
-		}
+	// Return funds to vault - add amount back to local funds
+	// Note: This assumes funds originated from local funds
+	// TODO: Track operation type if needed to distinguish between local funds and withdrawal distribution
+	if err := k.AddVaultsV2LocalFunds(ctx, fund.Amount); err != nil {
+		return errors.Wrap(err, "unable to return funds to local funds")
 	}
 
 	// Delete the inflight fund
@@ -127,7 +115,7 @@ func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID uint64, reas
 	// Emit cleanup event
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	if err := sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundCleaned{
-		TransactionId:  fund.TransactionId,
+		TransactionId:  fmt.Sprintf("%d", fund.Id),
 		RouteId:        routeID,
 		AmountReturned: fund.Amount,
 		Reason:         reason,
