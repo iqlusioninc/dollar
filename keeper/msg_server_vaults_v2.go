@@ -2201,6 +2201,7 @@ func (m msgServerV2) DeployFunds(ctx context.Context, msg *vaultsv2.MsgDeployFun
 	inflight := vaultsv2.InflightFund{
 		Id:                inflightID,
 		RemotePositionId:  msg.RemotePositionId,
+		Direction:         vaultsv2.INFLIGHT_OUTGOING,
 		Amount:            msg.Amount,
 		ValueAtInitiation: msg.Amount,
 		InitiatedAt:       headerInfo.Time,
@@ -2244,6 +2245,83 @@ func (m msgServerV2) DeployFunds(ctx context.Context, msg *vaultsv2.MsgDeployFun
 	}
 
 	return &vaultsv2.MsgDeployFundsResponse{
+		InflightId:       inflightID,
+		RemotePositionId: msg.RemotePositionId,
+	}, nil
+}
+
+// InitiateWithdrawFromRemotePosition creates an InflightFund to prepare for incoming funds from a remote position
+func (m msgServerV2) InitiateWithdrawFromRemotePosition(ctx context.Context, msg *vaultsv2.MsgInitiateWithdrawFromRemotePosition) (*vaultsv2.MsgInitiateWithdrawFromRemotePositionResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.RemotePositionId == 0 {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "remote position id must be provided")
+	}
+	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+	}
+
+	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "remote position %d not found", msg.RemotePositionId)
+	}
+
+	if position.TotalValue.LT(msg.Amount) {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, "insufficient funds in remote position: have %s, requested %s", position.TotalValue.String(), msg.Amount.String())
+	}
+
+	inflightID, err := m.NextVaultsV2InflightID(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
+	}
+
+	chainID, found, err := m.GetVaultsV2RemotePositionChainID(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position chain id")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "chain id not found for position %d", msg.RemotePositionId)
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	inflight := vaultsv2.InflightFund{
+		Id:                inflightID,
+		RemotePositionId:  msg.RemotePositionId,
+		Direction:         vaultsv2.INFLIGHT_INCOMING,
+		Amount:            msg.Amount,
+		ValueAtInitiation: msg.Amount,
+		InitiatedAt:       headerInfo.Time,
+		ExpectedAt:        headerInfo.Time,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+			OriginDomain: chainID,
+		},
+	}
+
+	position.Principal = position.Principal.Sub(msg.Amount)
+	position.TotalValue = position.TotalValue.Sub(msg.Amount)
+
+	if err := m.SetVaultsV2RemotePosition(ctx, msg.RemotePositionId, position); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update remote position")
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, inflight); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
+	}
+
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
+	return &vaultsv2.MsgInitiateWithdrawFromRemotePositionResponse{
 		InflightId:       inflightID,
 		RemotePositionId: msg.RemotePositionId,
 	}, nil
@@ -2461,6 +2539,11 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	}
 	if fund.Status == vaultsv2.INFLIGHT_FAILED || fund.Status == vaultsv2.INFLIGHT_TIMEOUT {
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyProcessed, "inflight fund %d already failed/timed out", msg.InflightId)
+	}
+
+	// Verify direction is INCOMING (funds returning to vault)
+	if fund.Direction != vaultsv2.INFLIGHT_INCOMING {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "inflight fund %d has wrong direction: expected INCOMING, got %s", msg.InflightId, fund.Direction.String())
 	}
 
 	// Verify route ID matches

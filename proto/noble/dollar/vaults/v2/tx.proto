@@ -91,6 +91,9 @@ service Msg {
   // Send funds to remote position
   rpc DeployFunds(MsgDeployFunds) returns (MsgDeployFundsResponse);
 
+  // Initiate withdrawal from remote position (creates inflight fund in preparation for receiving warp funds)
+  rpc InitiateWithdrawFromRemotePosition(MsgInitiateWithdrawFromRemotePosition) returns (MsgInitiateWithdrawFromRemotePositionResponse);
+
   // Process incoming warp route funds (system/hook only)
   rpc ProcessIncomingWarpFunds(MsgProcessIncomingWarpFunds) returns (MsgProcessIncomingWarpFundsResponse);
 
@@ -794,6 +797,38 @@ message MsgDeployFunds {
 
 // MsgDeployFundsResponse returns details about the deployed funds
 message MsgDeployFundsResponse {
+  // The ID of the InflightFunds created by the message
+  uint64 inflight_id = 1;
+
+  // The ID of the remote position
+  uint64 remote_position_id = 2;
+}
+
+// MsgInitiateWithdrawFromRemotePosition creates an InflightFund in preparation for receiving funds from a remote position
+message MsgInitiateWithdrawFromRemotePosition {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/InitiateWithdrawFromRemotePosition";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (manager address)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // The remote position ID to withdraw from
+  uint64 remote_position_id = 2;
+
+  // Amount to withdraw from the remote position
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgInitiateWithdrawFromRemotePositionResponse returns details about the initiated withdrawal
+message MsgInitiateWithdrawFromRemotePositionResponse {
   // The ID of the InflightFunds created by the message
   uint64 inflight_id = 1;
 

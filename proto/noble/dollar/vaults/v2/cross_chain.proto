@@ -118,6 +118,9 @@ message InflightFund {
   // Id of the corresponding RemotePosition
   uint64 remote_position_id = 2;
 
+  // Direction of funds (outgoing to remote or incoming to vault)
+  InflightDirection direction = 3;
+
   // Amount in USDN (always USDN, never shares)
   string amount = 4 [
     (cosmos_proto.scalar) = "cosmos.Int",
@@ -162,6 +165,16 @@ enum OperationType {
   OPERATION_TYPE_WITHDRAWAL = 1;
   // Rebalance operation
   OPERATION_TYPE_REBALANCE = 2;
+}
+
+// InflightDirection represents the direction of funds in transit
+enum InflightDirection {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // Funds leaving vault (deploying to remote position)
+  INFLIGHT_OUTGOING = 0;
+  // Funds returning to vault (withdrawing from remote position)
+  INFLIGHT_INCOMING = 1;
 }
 
 // HyperlaneTrackingInfo contains Hyperlane-specific tracking data

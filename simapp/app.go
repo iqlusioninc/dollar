@@ -163,7 +163,7 @@ func NewSimApp(
 	}
 
 	// Register x/dollar with Hyperlane
-	app.HyperlaneKeeper.AppRouter().RegisterModule(dollartypes.HyperlaneAppModuleId, app.DollarKeeper)
+	app.HyperlaneKeeper.AppRouter().RegisterModule(dollartypes.HyperlaneAppModuleID, app.DollarKeeper)
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
