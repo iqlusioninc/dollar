@@ -32,7 +32,9 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
+	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"dollar.noble.xyz/v3/types"
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
@@ -45,7 +47,7 @@ type msgServerV2 struct {
 	*Keeper
 }
 
-const navBasisPointsMultiplier int64 = 10_000
+const aumBasisPointsMultiplier int64 = 10_000
 
 func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	if route.HyptokenId.IsZeroAddress() {
@@ -64,34 +66,34 @@ func validateCrossChainRoute(route vaultsv2.CrossChainRoute) error {
 	return nil
 }
 
-// calculateTWAPNav computes the Time-Weighted Average Price of NAV using recent snapshots.
-// Returns the TWAP value or the current NAV if TWAP is disabled or insufficient data.
-func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.Int) (sdkmath.Int, error) {
+// calculateTWAPAum computes the Time-Weighted Average Price of AUM using recent snapshots.
+// Returns the TWAP value or the current AUM if TWAP is disabled or insufficient data.
+func (m msgServerV2) calculateTWAPAum(ctx context.Context, currentAum sdkmath.Int) (sdkmath.Int, error) {
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
-		return currentNav, sdkerrors.Wrap(err, "unable to fetch params")
+		return currentAum, sdkerrors.Wrap(err, "unable to fetch params")
 	}
 
-	// If TWAP is disabled, use current NAV
+	// If TWAP is disabled, use current AUM
 	if !params.TwapConfig.Enabled || params.TwapConfig.WindowSize == 0 {
-		return currentNav, nil
+		return currentAum, nil
 	}
 
 	// Get recent snapshots
-	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, int(params.TwapConfig.WindowSize))
+	snapshots, err := m.GetRecentVaultsV2AUMSnapshots(ctx, int(params.TwapConfig.WindowSize))
 	if err != nil {
-		return currentNav, sdkerrors.Wrap(err, "unable to fetch NAV snapshots")
+		return currentAum, sdkerrors.Wrap(err, "unable to fetch AUM snapshots")
 	}
 
-	// If insufficient snapshots, use current NAV
+	// If insufficient snapshots, use current AUM
 	if len(snapshots) == 0 {
-		return currentNav, nil
+		return currentAum, nil
 	}
 
 	currentHeight := sdk.UnwrapSDKContext(ctx).BlockHeight()
 
 	// Filter snapshots by age (in blocks)
-	validSnapshots := make([]vaultsv2.NAVSnapshot, 0, len(snapshots))
+	validSnapshots := make([]vaultsv2.AUMSnapshot, 0, len(snapshots))
 	for _, snapshot := range snapshots {
 		ageInBlocks := currentHeight - snapshot.BlockHeight
 		// Convert MaxSnapshotAge from seconds to blocks (assume ~6 seconds per block)
@@ -102,35 +104,35 @@ func (m msgServerV2) calculateTWAPNav(ctx context.Context, currentNav sdkmath.In
 		validSnapshots = append(validSnapshots, snapshot)
 	}
 
-	// If no valid snapshots, use current NAV
+	// If no valid snapshots, use current AUM
 	if len(validSnapshots) == 0 {
-		return currentNav, nil
+		return currentAum, nil
 	}
 
 	// Calculate Time-Weighted Average
 	// We use simple average for now, but could be enhanced to true time-weighting
 	sum := sdkmath.ZeroInt()
 	for _, snapshot := range validSnapshots {
-		sum, err = sum.SafeAdd(snapshot.Nav)
+		sum, err = sum.SafeAdd(snapshot.Aum)
 		if err != nil {
-			return currentNav, sdkerrors.Wrap(err, "overflow in TWAP calculation")
+			return currentAum, sdkerrors.Wrap(err, "overflow in TWAP calculation")
 		}
 	}
 
-	// Include current NAV in the average
-	sum, err = sum.SafeAdd(currentNav)
+	// Include current AUM in the average
+	sum, err = sum.SafeAdd(currentAum)
 	if err != nil {
-		return currentNav, sdkerrors.Wrap(err, "overflow adding current NAV to TWAP")
+		return currentAum, sdkerrors.Wrap(err, "overflow adding current AUM to TWAP")
 	}
 
 	count := int64(len(validSnapshots) + 1)
-	twapNav := sum.QuoRaw(count)
+	twapAum := sum.QuoRaw(count)
 
-	return twapNav, nil
+	return twapAum, nil
 }
 
-// shouldRecordNAVSnapshot determines if a new NAV snapshot should be recorded.
-func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) {
+// shouldRecordAUMSnapshot determines if a new AUM snapshot should be recorded.
+func (m msgServerV2) shouldRecordAUMSnapshot(ctx context.Context) (bool, error) {
 	params, err := m.GetVaultsV2Params(ctx)
 	if err != nil {
 		return false, sdkerrors.Wrap(err, "unable to fetch params")
@@ -147,7 +149,7 @@ func (m msgServerV2) shouldRecordNAVSnapshot(ctx context.Context) (bool, error) 
 	}
 
 	// Get most recent snapshot
-	snapshots, err := m.GetRecentVaultsV2NAVSnapshots(ctx, 1)
+	snapshots, err := m.GetRecentVaultsV2AUMSnapshots(ctx, 1)
 	if err != nil {
 		return false, sdkerrors.Wrap(err, "unable to fetch recent snapshots")
 	}
@@ -412,9 +414,12 @@ func (m msgServerV2) Deposit(ctx context.Context, msg *vaultsv2.MsgDeposit) (*va
 		return nil, sdkerrors.Wrap(err, "unable to update deposit tracking")
 	}
 
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
 	// TODO(Collin): We don't need this line setting DepositsEnabled
 	state.DepositsEnabled = config.Enabled
-	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -528,7 +533,6 @@ func (m msgServerV2) RequestWithdrawal(ctx context.Context, msg *vaultsv2.MsgReq
 		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeSub(principalAmount)
 	}
 
-	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -808,8 +812,8 @@ func (m msgServerV2) UpdateParams(ctx context.Context, msg *vaultsv2.MsgUpdatePa
 	if msg.Params.MinWithdrawalAmount.IsNegative() {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "minimum withdrawal amount cannot be negative")
 	}
-	if msg.Params.MaxNavChangeBps < 0 {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "maximum NAV change must be non-negative")
+	if msg.Params.MaxAumChangeBps < 0 {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "maximum AUM change must be non-negative")
 	}
 	if msg.Params.WithdrawalRequestTimeout < 0 {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "withdrawal request timeout must be non-negative")
@@ -1000,20 +1004,6 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	if msg.VaultAddress == "" {
 		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "vault address must be provided")
 	}
-	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
-	}
-	if msg.MinSharesOut.IsPositive() && msg.Amount.LT(msg.MinSharesOut) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount less than minimum shares out")
-	}
-
-	localFunds, err := m.GetVaultsV2LocalFunds(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch local funds")
-	}
-	if localFunds.LT(msg.Amount) {
-		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "insufficient local funds")
-	}
 
 	vaultAddress, err := hyperlaneutil.DecodeHexAddress(msg.VaultAddress)
 	if err != nil {
@@ -1028,13 +1018,14 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 	}
 
 	position := vaultsv2.RemotePosition{
+		Id:           positionID,
 		VaultAddress: vaultAddress,
-		SharesHeld:   msg.Amount,
-		Principal:    msg.Amount,
+		SharesHeld:   sdkmath.ZeroInt(),
+		Principal:    sdkmath.ZeroInt(),
 		SharePrice:   sdkmath.LegacyOneDec(),
-		TotalValue:   msg.Amount,
+		TotalValue:   sdkmath.ZeroInt(),
 		LastUpdate:   headerInfo.Time,
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
+		Status:       vaultsv2.REMOTE_POSITION_INITIALIZING,
 	}
 
 	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
@@ -1045,22 +1036,8 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		return nil, sdkerrors.Wrap(err, "unable to store remote position chain id")
 	}
 
-	if err := m.SubtractVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update local funds")
-	}
-
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.LastNavUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
-	}
-
 	return &vaultsv2.MsgCreateRemotePositionResponse{
 		PositionId:         positionID,
-		RouteId:            msg.ChainId,
 		ExpectedCompletion: headerInfo.Time,
 	}, nil
 }
@@ -1136,13 +1113,8 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal distribution")
 	}
 
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.LastNavUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
 	}
 
 	return &vaultsv2.MsgCloseRemotePositionResponse{
@@ -1337,29 +1309,16 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 			return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
 		}
 
-		destination := &vaultsv2.RemotePosition{
-			HyptokenId:   entry.Position.HyptokenId,
-			VaultAddress: entry.Position.VaultAddress,
-			SharePrice:   entry.Position.SharePrice,
-			Status:       entry.Position.Status,
-		}
-
 		fund := vaultsv2.InflightFund{
 			Id:                inflightID,
-			TransactionId:     fmt.Sprintf("rebalance:%d", entry.ID),
+			RemotePositionId:  entry.ID,
 			Amount:            adj.amount,
 			ValueAtInitiation: adj.amount,
 			InitiatedAt:       headerInfo.Time,
 			ExpectedAt:        headerInfo.Time,
 			Status:            vaultsv2.INFLIGHT_PENDING,
-			Origin:            &vaultsv2.InflightFund_NobleOrigin{NobleOrigin: &vaultsv2.NobleEndpoint{OperationType: vaultsv2.OPERATION_TYPE_REBALANCE}},
-			Destination:       &vaultsv2.InflightFund_RemoteDestination{RemoteDestination: destination},
-			ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-				TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-					HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-						DestinationDomain: entry.ChainID,
-					},
-				},
+			HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+				DestinationDomain: entry.ChainID,
 			},
 		}
 
@@ -1386,13 +1345,8 @@ func (m msgServerV2) Rebalance(ctx context.Context, msg *vaultsv2.MsgRebalance) 
 	}
 
 	headerInfo = m.header.GetHeaderInfo(ctx)
-	state, err := m.GetVaultsV2VaultState(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to fetch vault state")
-	}
-	state.LastNavUpdate = headerInfo.Time
-	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
 	}
 
 	summary := fmt.Sprintf("rebalanced %d positions; pending deployment %s", operations, available.String())
@@ -1421,10 +1375,6 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
-	if msg.ProviderTracking != nil {
-		fund.ProviderTracking = msg.ProviderTracking
-	}
-
 	// Capture previous status for event
 	previousStatus := fund.Status
 
@@ -1442,15 +1392,13 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 	}
 
 	var routeID uint32
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			if hyperlane.DestinationDomain != 0 {
-				routeID = hyperlane.DestinationDomain
-			} else if hyperlane.OriginDomain != 0 {
-				routeID = hyperlane.OriginDomain
-			}
-			hyperlane.Processed = msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED
+	if fund.HyperlaneTrackingInfo != nil {
+		if fund.HyperlaneTrackingInfo.DestinationDomain != 0 {
+			routeID = fund.HyperlaneTrackingInfo.DestinationDomain
+		} else if fund.HyperlaneTrackingInfo.OriginDomain != 0 {
+			routeID = fund.HyperlaneTrackingInfo.OriginDomain
 		}
+		fund.HyperlaneTrackingInfo.Processed = msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED
 	}
 
 	removeRouteValue := func(amount sdkmath.Int) {
@@ -1463,60 +1411,62 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 	case vaultsv2.INFLIGHT_COMPLETED:
 		removeRouteValue(processedAmount)
 
-		if fund.GetOrigin() != nil {
-			if origin := fund.GetRemoteOrigin(); origin != nil {
-				positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, origin.VaultAddress)
-				if err == nil && foundPosition {
-					if sharesAffected.IsPositive() {
-						newShares, err := position.SharesHeld.SafeSub(sharesAffected)
-						if err == nil {
-							position.SharesHeld = newShares
-						} else {
-							position.SharesHeld = sdkmath.ZeroInt()
-						}
-					}
-					if processedAmount.IsPositive() {
-						total, err := position.TotalValue.SafeSub(processedAmount)
-						if err == nil {
-							position.TotalValue = total
-						} else {
-							position.TotalValue = sdkmath.ZeroInt()
-						}
-						principal, err := position.Principal.SafeSub(processedAmount)
-						if err == nil && !principal.IsNegative() {
-							position.Principal = principal
-						} else {
-							position.Principal = sdkmath.ZeroInt()
-						}
-					}
-					if position.SharesHeld.IsPositive() {
-						position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+		// If this is linked to a remote position, update it
+		if fund.RemotePositionId != 0 {
+			position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
+			if err == nil && foundPosition {
+				// For withdrawals from position
+				if sharesAffected.IsPositive() {
+					newShares, err := position.SharesHeld.SafeSub(sharesAffected)
+					if err == nil {
+						position.SharesHeld = newShares
 					} else {
-						position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+						position.SharesHeld = sdkmath.ZeroInt()
 					}
-					position.LastUpdate = headerInfo.Time
-					_ = m.SetVaultsV2RemotePosition(ctx, positionID, position)
 				}
+				if processedAmount.IsPositive() {
+					total, err := position.TotalValue.SafeSub(processedAmount)
+					if err == nil {
+						position.TotalValue = total
+					} else {
+						position.TotalValue = sdkmath.ZeroInt()
+					}
+					principal, err := position.Principal.SafeSub(processedAmount)
+					if err == nil && !principal.IsNegative() {
+						position.Principal = principal
+					} else {
+						position.Principal = sdkmath.ZeroInt()
+					}
+				}
+				if position.SharesHeld.IsPositive() {
+					position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
+				} else {
+					position.Status = vaultsv2.REMOTE_POSITION_CLOSED
+				}
+				position.LastUpdate = headerInfo.Time
+				_ = m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position)
 			}
+			// TODO: Determine if this is withdrawal - may need additional field
 			if processedAmount.IsPositive() {
 				_ = m.AddVaultsV2PendingWithdrawalDistribution(ctx, processedAmount)
 			}
-		} else if fund.GetDestination() != nil {
-			// Deposit completion – nothing additional for now beyond clearing inflight totals.
 		}
+		// Else: deposit completion – nothing additional for now beyond clearing inflight totals.
 	case vaultsv2.INFLIGHT_FAILED, vaultsv2.INFLIGHT_TIMEOUT:
 		removeRouteValue(fund.Amount)
 
-		if fund.GetOrigin() == nil && fund.Amount.IsPositive() {
+		// Return funds to local funds on failure
+		if fund.Amount.IsPositive() {
 			_ = m.AddVaultsV2LocalFunds(ctx, fund.Amount)
 		}
 
-		if origin := fund.GetRemoteOrigin(); origin != nil {
-			positionID, position, foundPosition, err := m.findRemotePositionByAddress(ctx, origin.VaultAddress)
+		// Update position status if linked
+		if fund.RemotePositionId != 0 {
+			position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
 			if err == nil && foundPosition {
 				position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
 				position.LastUpdate = headerInfo.Time
-				_ = m.SetVaultsV2RemotePosition(ctx, positionID, position)
+				_ = m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position)
 			}
 		}
 	default:
@@ -1527,12 +1477,16 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund update")
 	}
 
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
 	// Emit status change event
 	if previousStatus != msg.ResultStatus {
 		_ = m.EmitInflightStatusChangeEvent(
 			ctx,
 			msg.Nonce,
-			fund.TransactionId,
+			fmt.Sprintf("%d", fund.Id),
 			routeID,
 			previousStatus,
 			msg.ResultStatus,
@@ -1543,14 +1497,12 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 
 	// Emit completion event if completed
 	if msg.ResultStatus == vaultsv2.INFLIGHT_COMPLETED {
+		// TODO: Track operation type if needed
 		opType := vaultsv2.OPERATION_TYPE_DEPOSIT
-		if origin := fund.GetNobleOrigin(); origin != nil {
-			opType = origin.OperationType
-		}
 		_ = m.EmitInflightCompletedEvent(
 			ctx,
 			msg.Nonce,
-			fund.TransactionId,
+			fmt.Sprintf("%d", fund.Id),
 			routeID,
 			opType,
 			fund.Amount,
@@ -1857,7 +1809,10 @@ func (m msgServerV2) ClaimWithdrawal(ctx context.Context, msg *vaultsv2.MsgClaim
 		return nil, sdkerrors.Wrap(err, "unable to update total pending withdrawal")
 	}
 
-	state.LastNavUpdate = headerInfo.Time
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -2048,7 +2003,6 @@ func (m msgServerV2) CancelWithdrawal(ctx context.Context, msg *vaultsv2.MsgCanc
 		state.TotalEligibleDeposits, _ = state.TotalEligibleDeposits.SafeAdd(principalAmount)
 	}
 
-	state.LastNavUpdate = headerInfo.Time
 	if err := m.SetVaultsV2VaultState(ctx, state); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to persist vault state")
 	}
@@ -2093,7 +2047,7 @@ func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.Ms
 		TotalPositionsProcessed: result.TotalPositionsProcessed,
 		TotalPositions:          result.TotalPositions,
 		Complete:                result.Complete,
-		AppliedNav:              result.AppliedNav,
+		AppliedAum:              result.AppliedAum,
 		YieldDistributed:        result.YieldDistributed,
 		Manager:                 msg.Manager,
 		BlockHeight:             sdk.UnwrapSDKContext(ctx).BlockHeight(),
@@ -2107,7 +2061,7 @@ func (m msgServerV2) UpdateVaultAccounting(ctx context.Context, msg *vaultsv2.Ms
 		TotalPositionsProcessed: result.TotalPositionsProcessed,
 		TotalPositions:          result.TotalPositions,
 		AccountingComplete:      result.Complete,
-		AppliedNav:              result.AppliedNav,
+		AppliedAum:              result.AppliedAum,
 		YieldDistributed:        result.YieldDistributed,
 		NextUser:                result.NextUser,
 		NegativeYieldWarning:    result.NegativeYieldWarning,
@@ -2133,12 +2087,11 @@ func (m msgServerV2) HandleStaleInflight(ctx context.Context, msg *vaultsv2.MsgH
 	headerInfo := m.header.GetHeaderInfo(ctx)
 
 	returned, err := m.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
-		Authority:        msg.Authority,
-		Nonce:            msg.InflightId,
-		ResultStatus:     msg.NewStatus,
-		ResultAmount:     fund.Amount,
-		ErrorMessage:     msg.Reason,
-		ProviderTracking: fund.ProviderTracking,
+		Authority:    msg.Authority,
+		Nonce:        msg.InflightId,
+		ResultStatus: msg.NewStatus,
+		ResultAmount: fund.Amount,
+		ErrorMessage: msg.Reason,
 	})
 	if err != nil {
 		return nil, err
@@ -2176,10 +2129,8 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 
 	// Extract route ID
 	routeID := uint32(0)
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			routeID = hyperlane.DestinationDomain
-		}
+	if fund.HyperlaneTrackingInfo != nil {
+		routeID = fund.HyperlaneTrackingInfo.DestinationDomain
 	}
 
 	// Perform cleanup
@@ -2191,10 +2142,188 @@ func (m msgServerV2) CleanupStaleInflight(ctx context.Context, msg *vaultsv2.Msg
 
 	return &vaultsv2.MsgCleanupStaleInflightResponse{
 		InflightId:     fund.Id,
-		TransactionId:  fund.TransactionId,
+		TransactionId:  fmt.Sprintf("%d", fund.Id),
 		AmountReturned: fund.Amount,
 		RouteId:        routeID,
 		CleanedAt:      headerInfo.Time,
+	}, nil
+}
+
+// DeployFunds deploys funds to a remote position and updates the AUM accounting
+func (m msgServerV2) DeployFunds(ctx context.Context, msg *vaultsv2.MsgDeployFunds) (*vaultsv2.MsgDeployFundsResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.RemotePositionId == 0 {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "remote position id must be provided")
+	}
+	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+	}
+
+	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "remote position %d not found", msg.RemotePositionId)
+	}
+
+	inflightID, err := m.NextVaultsV2InflightID(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
+	}
+
+	chainID, found, err := m.GetVaultsV2RemotePositionChainID(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position chain id")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "chain id not found for position %d", msg.RemotePositionId)
+	}
+
+	tokenID := position.HyptokenId.GetInternalId()
+	token, err := m.warp.HypTokens.Get(ctx, tokenID)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to get hyperlane token from state")
+	}
+
+	router, err := m.getHyperlaneRouter(ctx, tokenID)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to get hyperlane router")
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	inflight := vaultsv2.InflightFund{
+		Id:                inflightID,
+		RemotePositionId:  msg.RemotePositionId,
+		Direction:         vaultsv2.INFLIGHT_OUTGOING,
+		Amount:            msg.Amount,
+		ValueAtInitiation: msg.Amount,
+		InitiatedAt:       headerInfo.Time,
+		ExpectedAt:        headerInfo.Time,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+			DestinationDomain: chainID,
+		},
+	}
+
+	moduleAddress := authtypes.NewModuleAddress(warptypes.ModuleName)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	messageId, transferErr := m.warp.RemoteTransferCollateral(
+		sdkCtx,
+		token,
+		moduleAddress.String(),
+		router.ReceiverDomain,
+		position.VaultAddress,
+		msg.Amount,
+		nil,                                     // customHookId
+		sdkmath.ZeroInt(),                       // gasLimit
+		sdk.NewCoin(m.denom, sdkmath.ZeroInt()), // maxFee
+		nil,                                     // customHookMetadata
+	)
+	if transferErr != nil {
+		return nil, sdkerrors.Wrap(transferErr, "unable to transfer funds via hyperlane")
+	}
+
+	inflight.HyperlaneTrackingInfo.MessageId = messageId.Bytes()
+
+	if err := m.SubtractVaultsV2LocalFunds(ctx, msg.Amount); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to subtract from local funds")
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, inflight); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
+	}
+
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
+	return &vaultsv2.MsgDeployFundsResponse{
+		InflightId:       inflightID,
+		RemotePositionId: msg.RemotePositionId,
+	}, nil
+}
+
+// InitiateWithdrawFromRemotePosition creates an InflightFund to prepare for incoming funds from a remote position
+func (m msgServerV2) InitiateWithdrawFromRemotePosition(ctx context.Context, msg *vaultsv2.MsgInitiateWithdrawFromRemotePosition) (*vaultsv2.MsgInitiateWithdrawFromRemotePositionResponse, error) {
+	if msg == nil {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "message cannot be nil")
+	}
+	if msg.Authority != m.authority {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAuthority, "expected %s, got %s", m.authority, msg.Authority)
+	}
+	if msg.RemotePositionId == 0 {
+		return nil, sdkerrors.Wrap(types.ErrInvalidRequest, "remote position id must be provided")
+	}
+	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
+		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+	}
+
+	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "remote position %d not found", msg.RemotePositionId)
+	}
+
+	if position.TotalValue.LT(msg.Amount) {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidAmount, "insufficient funds in remote position: have %s, requested %s", position.TotalValue.String(), msg.Amount.String())
+	}
+
+	inflightID, err := m.NextVaultsV2InflightID(ctx)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to allocate inflight identifier")
+	}
+
+	chainID, found, err := m.GetVaultsV2RemotePositionChainID(ctx, msg.RemotePositionId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to fetch remote position chain id")
+	}
+	if !found {
+		return nil, sdkerrors.Wrapf(vaultsv2.ErrRemotePositionNotFound, "chain id not found for position %d", msg.RemotePositionId)
+	}
+
+	headerInfo := m.header.GetHeaderInfo(ctx)
+
+	inflight := vaultsv2.InflightFund{
+		Id:                inflightID,
+		RemotePositionId:  msg.RemotePositionId,
+		Direction:         vaultsv2.INFLIGHT_INCOMING,
+		Amount:            msg.Amount,
+		ValueAtInitiation: msg.Amount,
+		InitiatedAt:       headerInfo.Time,
+		ExpectedAt:        headerInfo.Time,
+		Status:            vaultsv2.INFLIGHT_PENDING,
+		HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+			OriginDomain: chainID,
+		},
+	}
+
+	position.Principal = position.Principal.Sub(msg.Amount)
+	position.TotalValue = position.TotalValue.Sub(msg.Amount)
+
+	if err := m.SetVaultsV2RemotePosition(ctx, msg.RemotePositionId, position); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to update remote position")
+	}
+
+	if err := m.SetVaultsV2InflightFund(ctx, inflight); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to persist inflight fund")
+	}
+
+	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
+	}
+
+	return &vaultsv2.MsgInitiateWithdrawFromRemotePositionResponse{
+		InflightId:       inflightID,
+		RemotePositionId: msg.RemotePositionId,
 	}, nil
 }
 
@@ -2412,13 +2541,16 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 		return nil, sdkerrors.Wrapf(vaultsv2.ErrInflightAlreadyProcessed, "inflight fund %d already failed/timed out", msg.InflightId)
 	}
 
+	// Verify direction is INCOMING (funds returning to vault)
+	if fund.Direction != vaultsv2.INFLIGHT_INCOMING {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidRequest, "inflight fund %d has wrong direction: expected INCOMING, got %s", msg.InflightId, fund.Direction.String())
+	}
+
 	// Verify route ID matches
-	if tracking := fund.GetProviderTracking(); tracking != nil {
-		if hyperlane := tracking.GetHyperlaneTracking(); hyperlane != nil {
-			if hyperlane.OriginDomain != 0 && hyperlane.OriginDomain != msg.OriginDomain {
-				return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidRoute,
-					"origin domain mismatch: expected %d, got %d", hyperlane.OriginDomain, msg.OriginDomain)
-			}
+	if fund.HyperlaneTrackingInfo != nil {
+		if fund.HyperlaneTrackingInfo.OriginDomain != 0 && fund.HyperlaneTrackingInfo.OriginDomain != msg.OriginDomain {
+			return nil, sdkerrors.Wrapf(vaultsv2.ErrInvalidRoute,
+				"origin domain mismatch: expected %d, got %d", fund.HyperlaneTrackingInfo.OriginDomain, msg.OriginDomain)
 		}
 	}
 
@@ -2431,11 +2563,9 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	fund.ExpectedAt = msg.ReceivedAt
 
 	// Update provider tracking with message ID
-	if fund.ProviderTracking != nil {
-		if hyperlane := fund.ProviderTracking.GetHyperlaneTracking(); hyperlane != nil {
-			hyperlane.Processed = true
-			hyperlane.DestinationTxHash = msg.HyperlaneMessageId
-		}
+	if fund.HyperlaneTrackingInfo != nil {
+		fund.HyperlaneTrackingInfo.Processed = true
+		fund.HyperlaneTrackingInfo.DestinationTxHash = msg.HyperlaneMessageId
 	}
 
 	// Store updated fund
@@ -2459,25 +2589,11 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 		updatedPending = sdkmath.ZeroInt()
 	}
 
-	// Update remote position if this was a withdrawal from a remote position
-	if fund.GetRemoteOrigin() != nil {
-		remoteOrigin := fund.GetRemoteOrigin()
-		// Find the position by vault address
-		var positionID uint64
-		var position vaultsv2.RemotePosition
-		var foundPosition bool
-
-		err := m.IterateVaultsV2RemotePositions(ctx, func(id uint64, pos vaultsv2.RemotePosition) (bool, error) {
-			if pos.VaultAddress.Equal(remoteOrigin.VaultAddress) {
-				positionID = id
-				position = pos
-				foundPosition = true
-				return true, nil // stop iteration
-			}
-			return false, nil
-		})
+	// Update remote position if this is linked to one
+	if fund.RemotePositionId != 0 {
+		position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
 		if err != nil {
-			return nil, sdkerrors.Wrap(err, "unable to find remote position")
+			return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
 		}
 
 		if foundPosition {
@@ -2503,7 +2619,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 
 			position.LastUpdate = headerInfo.Time
 
-			if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
+			if err := m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position); err != nil {
 				return nil, sdkerrors.Wrap(err, "unable to update remote position")
 			}
 		}
@@ -2513,7 +2629,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	_ = m.EmitInflightCompletedEvent(
 		ctx,
 		fund.Id,
-		fund.TransactionId,
+		fmt.Sprintf("%d", fund.Id),
 		msg.RouteId,
 		vaultsv2.OPERATION_TYPE_WITHDRAWAL,
 		originalAmount,
@@ -2525,7 +2641,7 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	if !amountMatched {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		_ = sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightAmountMismatch{
-			TransactionId:  fund.TransactionId,
+			TransactionId:  fmt.Sprintf("%d", fund.Id),
 			RouteId:        msg.RouteId,
 			ExpectedAmount: originalAmount,
 			ReceivedAmount: msg.AmountReceived,

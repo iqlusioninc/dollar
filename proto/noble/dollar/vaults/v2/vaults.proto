@@ -114,8 +114,8 @@ message AccountingSnapshot {
     (amino.dont_omitempty) = true
   ];
 
-  // NAV value used for this snapshot
-  string accounting_nav = 5 [
+  // AUM value used for this snapshot
+  string accounting_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -222,14 +222,6 @@ message VaultState {
     (amino.dont_omitempty) = true
   ];
 
-  // Total Net Asset Value (deposits + yield)
-  string total_nav = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
   // Total number of users with positions
   uint64 total_users = 4;
 
@@ -239,8 +231,8 @@ message VaultState {
   // Whether withdrawals are currently enabled
   bool withdrawals_enabled = 6;
 
-  // Last NAV update timestamp
-  google.protobuf.Timestamp last_nav_update = 7 [
+  // Last AUM update timestamp
+  google.protobuf.Timestamp last_aum_update = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
@@ -453,20 +445,20 @@ message TWAPConfig {
   // Whether TWAP is enabled for share pricing
   bool enabled = 1;
 
-  // Number of historical NAV snapshots to include in TWAP calculation
+  // Number of historical AUM snapshots to include in TWAP calculation
   uint32 window_size = 2;
 
-  // Minimum time between NAV snapshots (in seconds)
+  // Minimum time between AUM snapshots (in seconds)
   int64 min_snapshot_interval = 3;
 
   // Maximum age of snapshots to include (in seconds)
   int64 max_snapshot_age = 4;
 }
 
-// NAVSnapshot represents a point-in-time NAV observation for TWAP
-message NAVSnapshot {
-  // NAV value at this snapshot
-  string nav = 1 [
+// AUMSnapshot represents a point-in-time AUM observation for TWAP
+message AUMSnapshot {
+  // AUM value at this snapshot
+  string aum = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -490,16 +482,16 @@ message AccountingCursor {
   // Last user address that was processed
   string last_processed_user = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  // NAV value being applied in this accounting session
-  string accounting_nav = 2 [
+  // AUM value being applied in this accounting session
+  string accounting_aum = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // Timestamp of NAV being applied
-  google.protobuf.Timestamp accounting_nav_timestamp = 3 [
+  // Timestamp of AUM being applied
+  google.protobuf.Timestamp accounting_aum_timestamp = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];

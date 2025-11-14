@@ -33,6 +33,7 @@ import (
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
 	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -52,7 +53,7 @@ import (
 	"dollar.noble.xyz/v3/keeper"
 	"dollar.noble.xyz/v3/types"
 	"dollar.noble.xyz/v3/types/portal"
-	"dollar.noble.xyz/v3/types/v2"
+	v2 "dollar.noble.xyz/v3/types/v2"
 	"dollar.noble.xyz/v3/types/vaults"
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
@@ -388,12 +389,13 @@ type ModuleInputs struct {
 	HeaderService header.Service
 	EventService  event.Service
 
-	Cdc            codec.Codec
-	AddressCodec   address.Codec
-	BankKeeper     types.BankKeeper
-	AccountKeeper  types.AccountKeeper
-	WarpKeeper     warpkeeper.Keeper
-	WormholeKeeper portal.WormholeKeeper
+	Cdc             codec.Codec
+	AddressCodec    address.Codec
+	BankKeeper      types.BankKeeper
+	AccountKeeper   types.AccountKeeper
+	HyperlaneKeeper hyperlanekeeper.Keeper
+	WarpKeeper      warpkeeper.Keeper
+	WormholeKeeper  portal.WormholeKeeper
 }
 
 type ModuleOutputs struct {
@@ -425,6 +427,7 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.BankKeeper,
 		nil,
 		nil,
+		&in.HyperlaneKeeper,
 		&in.WarpKeeper,
 		in.WormholeKeeper,
 	)

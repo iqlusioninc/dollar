@@ -88,6 +88,12 @@ service Msg {
   // Cleanup stale inflight fund (authority only)
   rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
 
+  // Send funds to remote position
+  rpc DeployFunds(MsgDeployFunds) returns (MsgDeployFundsResponse);
+
+  // Initiate withdrawal from remote position (creates inflight fund in preparation for receiving warp funds)
+  rpc InitiateWithdrawFromRemotePosition(MsgInitiateWithdrawFromRemotePosition) returns (MsgInitiateWithdrawFromRemotePositionResponse);
+
   // Process incoming warp route funds (system/hook only)
   rpc ProcessIncomingWarpFunds(MsgProcessIncomingWarpFunds) returns (MsgProcessIncomingWarpFundsResponse);
 
@@ -317,9 +323,6 @@ message MsgProcessInFlightPosition {
 
   // Error message (for failed operations)
   string error_message = 5;
-
-  // Provider-specific tracking information
-  noble.dollar.vaults.v2.ProviderTrackingInfo provider_tracking = 6;
 }
 
 // MsgProcessInFlightPositionResponse confirms processing
@@ -458,29 +461,12 @@ message MsgCreateRemotePosition {
 
   // Hyperlane domain ID for destination chain
   uint32 chain_id = 3;
-
-  // Amount of $USDN to deploy
-  string amount = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Minimum acceptable Noble vault shares to receive (slippage protection)
-  string min_shares_out = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }
 
 message MsgCreateRemotePositionResponse {
   // Assigned position ID
   uint64 position_id = 1;
-  // Route ID used for cross-chain transfer
-  uint32 route_id = 2;
+
   // Expected completion time on remote chain
   google.protobuf.Timestamp expected_completion = 3 [
     (gogoproto.nullable) = false,
@@ -760,8 +746,8 @@ message MsgUpdateVaultAccountingResponse {
   // Whether accounting is complete for this session
   bool accounting_complete = 4;
 
-  // NAV value applied in this accounting update
-  string applied_nav = 5 [
+  // AUM value applied in this accounting update
+  string applied_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -781,9 +767,73 @@ message MsgUpdateVaultAccountingResponse {
 
   // Warning message if negative yield was detected
   // When negative yield is detected, no yield is distributed (yield_distributed = 0)
-  // This indicates NAV decreased below (TotalDeposits + TotalAccruedYield)
+  // This indicates AUM decreased below (TotalDeposits + TotalAccruedYield)
   // Manager should investigate vault losses or accounting discrepancies
   string negative_yield_warning = 8;
+}
+
+// MsgDeployFunds creates an InflightFunds mapped to a RemotePosition and sends funds over warp to the position
+message MsgDeployFunds {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/ProcessIncomingWarpFunds";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (manager address)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // The remote positions ID
+  uint64 remote_position_id = 2;
+
+  // Amount to send to the remote position
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgDeployFundsResponse returns details about the deployed funds
+message MsgDeployFundsResponse {
+  // The ID of the InflightFunds created by the message
+  uint64 inflight_id = 1;
+
+  // The ID of the remote position
+  uint64 remote_position_id = 2;
+}
+
+// MsgInitiateWithdrawFromRemotePosition creates an InflightFund in preparation for receiving funds from a remote position
+message MsgInitiateWithdrawFromRemotePosition {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "dollar/vaults/v2/InitiateWithdrawFromRemotePosition";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // Authority (manager address)
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // The remote position ID to withdraw from
+  uint64 remote_position_id = 2;
+
+  // Amount to withdraw from the remote position
+  string amount = 3 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgInitiateWithdrawFromRemotePositionResponse returns details about the initiated withdrawal
+message MsgInitiateWithdrawFromRemotePositionResponse {
+  // The ID of the InflightFunds created by the message
+  uint64 inflight_id = 1;
+
+  // The ID of the remote position
+  uint64 remote_position_id = 2;
 }
 
 // MsgProcessIncomingWarpFunds processes funds received via warp route and marks inflight funds as completed

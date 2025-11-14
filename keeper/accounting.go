@@ -39,7 +39,7 @@ type AccountingResult struct {
 	TotalPositions          uint64
 	Complete                bool
 	NextUser                string
-	AppliedNav              sdkmath.Int
+	AppliedAum              sdkmath.Int
 	YieldDistributed        sdkmath.Int
 	NegativeYieldWarning    string
 }
@@ -69,13 +69,13 @@ func (k *Keeper) checkAccountingNotInProgress(ctx context.Context) error {
 // This allows the accounting to be split across multiple message invocations.
 // All updates are written to snapshots and only committed atomically when accounting completes.
 func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPositions uint32) (*AccountingResult, error) {
-	navInfo, err := k.GetVaultsV2NAVInfo(ctx)
+	aumInfo, err := k.GetVaultsV2AUMInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	if navInfo.CurrentNav.IsNil() {
-		return nil, fmt.Errorf("current NAV is not set")
+	if aumInfo.CurrentAum.IsNil() {
+		return nil, fmt.Errorf("current AUM is not set")
 	}
 
 	// Get vault state to check if we have any positions
@@ -91,22 +91,22 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 
 	// Determine if we need to start a new accounting session
 	needsInit := !cursor.InProgress ||
-		cursor.AccountingNav.IsNil() ||
-		!cursor.AccountingNav.Equal(navInfo.CurrentNav) ||
-		!cursor.AccountingNavTimestamp.Equal(navInfo.LastUpdate)
+		cursor.AccountingAum.IsNil() ||
+		!cursor.AccountingAum.Equal(aumInfo.CurrentAum) ||
+		!cursor.AccountingAumTimestamp.Equal(aumInfo.LastUpdate)
 
 	if needsInit {
-		// If accounting is in progress with a different NAV, we have a problem
+		// If accounting is in progress with a different AUM, we have a problem
 		if cursor.InProgress {
 			return nil, fmt.Errorf(
-				"accounting already in progress for NAV %s (started at %s, %d/%d positions processed). "+
-					"Cannot start new accounting for NAV %s until current session completes. "+
+				"accounting already in progress for AUM %s (started at %s, %d/%d positions processed). "+
+					"Cannot start new accounting for AUM %s until current session completes. "+
 					"Continue calling this message to complete the current session",
-				cursor.AccountingNav.String(),
+				cursor.AccountingAum.String(),
 				cursor.StartedAt.String(),
 				cursor.PositionsProcessed,
 				cursor.TotalPositions,
-				navInfo.CurrentNav.String(),
+				aumInfo.CurrentAum.String(),
 			)
 		}
 
@@ -118,8 +118,8 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 		// Initialize new accounting session.
 		cursor = vaultsv2.AccountingCursor{
 			LastProcessedUser:      "",
-			AccountingNav:          navInfo.CurrentNav,
-			AccountingNavTimestamp: navInfo.LastUpdate,
+			AccountingAum:          aumInfo.CurrentAum,
+			AccountingAumTimestamp: aumInfo.LastUpdate,
 			PositionsProcessed:     0,
 			TotalPositions:         0, // Not known upfront, updated as we go
 			InProgress:             true,
@@ -134,14 +134,14 @@ func (k *Keeper) updateVaultsV2AccountingWithCursor(ctx context.Context, maxPosi
 	}
 
 	// Perform cursor-based accounting
-	return k.accountingWithCursor(ctx, navInfo, vaultState, cursor, maxPositions)
+	return k.accountingWithCursor(ctx, aumInfo, vaultState, cursor, maxPositions)
 }
 
 // accountingWithCursor performs the main accounting logic with cursor pagination.
 // Writes all updates to snapshots for atomic commit when complete.
 func (k *Keeper) accountingWithCursor(
 	ctx context.Context,
-	navInfo vaultsv2.NAVInfo,
+	aumInfo vaultsv2.AUMInfo,
 	vaultState vaultsv2.VaultState,
 	cursor vaultsv2.AccountingCursor,
 	maxPositions uint32,
@@ -152,40 +152,40 @@ func (k *Keeper) accountingWithCursor(
 	}
 
 	// For position-based accounting, we need to calculate the NEW yield to distribute
-	// New yield = NAV - Total Deposits - Total Accrued Yield
+	// New yield = AUM - Total Deposits - Total Accrued Yield
 	// This gives us only the incremental yield, preventing double-counting
 	totalYieldToDistribute := sdkmath.ZeroInt()
 	negativeYieldWarning := ""
 
-	navMinusDeposits := sdkmath.ZeroInt()
-	if navInfo.CurrentNav.GT(vaultState.TotalDeposits) {
-		navMinusDeposits = navInfo.CurrentNav.Sub(vaultState.TotalDeposits)
-	} else if navInfo.CurrentNav.LT(vaultState.TotalDeposits) {
-		// NAV is less than deposits - this indicates a loss
-		loss := vaultState.TotalDeposits.Sub(navInfo.CurrentNav)
+	aumMinusDeposits := sdkmath.ZeroInt()
+	if aumInfo.CurrentAum.GT(vaultState.TotalDeposits) {
+		aumMinusDeposits = aumInfo.CurrentAum.Sub(vaultState.TotalDeposits)
+	} else if aumInfo.CurrentAum.LT(vaultState.TotalDeposits) {
+		// AUM is less than deposits - this indicates a loss
+		loss := vaultState.TotalDeposits.Sub(aumInfo.CurrentAum)
 		negativeYieldWarning = fmt.Sprintf(
-			"Negative yield detected: NAV (%s) is less than TotalDeposits (%s), indicating a loss of %s. No yield distributed.",
-			navInfo.CurrentNav.String(),
+			"Negative yield detected: AUM (%s) is less than TotalDeposits (%s), indicating a loss of %s. No yield distributed.",
+			aumInfo.CurrentAum.String(),
 			vaultState.TotalDeposits.String(),
 			loss.String(),
 		)
 	}
 
 	// Subtract already-distributed yield to get only new yield
-	if navMinusDeposits.GT(vaultState.TotalAccruedYield) {
-		totalYieldToDistribute = navMinusDeposits.Sub(vaultState.TotalAccruedYield)
-	} else if navMinusDeposits.LT(vaultState.TotalAccruedYield) {
+	if aumMinusDeposits.GT(vaultState.TotalAccruedYield) {
+		totalYieldToDistribute = aumMinusDeposits.Sub(vaultState.TotalAccruedYield)
+	} else if aumMinusDeposits.LT(vaultState.TotalAccruedYield) {
 		// Total yield in system is less than what we've already distributed
 		// This indicates negative yield (loss that exceeds available yield buffer)
-		deficit := vaultState.TotalAccruedYield.Sub(navMinusDeposits)
+		deficit := vaultState.TotalAccruedYield.Sub(aumMinusDeposits)
 		negativeYieldWarning = fmt.Sprintf(
 			"Negative yield detected: Total yield in system (%s) is less than distributed yield (%s), deficit of %s. No yield distributed.",
-			navMinusDeposits.String(),
+			aumMinusDeposits.String(),
 			vaultState.TotalAccruedYield.String(),
 			deficit.String(),
 		)
 	}
-	// If navMinusDeposits == TotalAccruedYield, then totalYieldToDistribute stays at zero (no new yield)
+	// If aumMinusDeposits == TotalAccruedYield, then totalYieldToDistribute stays at zero (no new yield)
 
 	totalEligibleDeposits := vaultState.TotalEligibleDeposits
 
@@ -263,7 +263,7 @@ func (k *Keeper) accountingWithCursor(
 				PositionId:      positionID,
 				DepositAmount:   depositAmount,
 				AccruedYield:    accruedYield,
-				AccountingNav:   navInfo.CurrentNav,
+				AccountingAum:   aumInfo.CurrentAum,
 				CreatedAtHeight: headerInfo.Height,
 			}
 
@@ -324,9 +324,8 @@ func (k *Keeper) accountingWithCursor(
 
 		state.TotalAccruedYield = aggregatedYield
 		state.TotalDeposits = aggregatedDeposits
-		state.TotalNav = navInfo.CurrentNav
-		if !navInfo.LastUpdate.IsZero() {
-			state.LastNavUpdate = navInfo.LastUpdate
+		if !aumInfo.LastUpdate.IsZero() {
+			state.LastAumUpdate = aumInfo.LastUpdate
 		}
 
 		if err := k.SetVaultsV2VaultState(ctx, state); err != nil {
@@ -350,7 +349,7 @@ func (k *Keeper) accountingWithCursor(
 		TotalPositions:          cursor.TotalPositions,
 		Complete:                complete,
 		NextUser:                lastProcessed,
-		AppliedNav:              navInfo.CurrentNav,
+		AppliedAum:              aumInfo.CurrentAum,
 		YieldDistributed:        yieldThisBatch,
 		NegativeYieldWarning:    negativeYieldWarning,
 	}, nil

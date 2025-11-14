@@ -101,23 +101,23 @@ func (k *Keeper) SetVaultsV2VaultState(ctx context.Context, state vaultsv2.Vault
 	return k.VaultsV2VaultState.Set(ctx, state)
 }
 
-// GetVaultsV2NAVInfo returns the cached NAV information or a zero-value copy
+// GetVaultsV2AUMInfo returns the cached AUM information or a zero-value copy
 // when unset.
-func (k *Keeper) GetVaultsV2NAVInfo(ctx context.Context) (vaultsv2.NAVInfo, error) {
-	nav, err := k.VaultsV2NAVInfo.Get(ctx)
+func (k *Keeper) GetVaultsV2AUMInfo(ctx context.Context) (vaultsv2.AUMInfo, error) {
+	aum, err := k.VaultsV2AUMInfo.Get(ctx)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
-			return vaultsv2.NAVInfo{}, nil
+			return vaultsv2.AUMInfo{}, nil
 		}
-		return vaultsv2.NAVInfo{}, err
+		return vaultsv2.AUMInfo{}, err
 	}
 
-	return nav, nil
+	return aum, nil
 }
 
-// SetVaultsV2NAVInfo updates the cached NAV information in storage.
-func (k *Keeper) SetVaultsV2NAVInfo(ctx context.Context, nav vaultsv2.NAVInfo) error {
-	return k.VaultsV2NAVInfo.Set(ctx, nav)
+// SetVaultsV2AUMInfo updates the cached AUM information in storage.
+func (k *Keeper) SetVaultsV2AUMInfo(ctx context.Context, aum vaultsv2.AUMInfo) error {
+	return k.VaultsV2AUMInfo.Set(ctx, aum)
 }
 
 // GetVaultsV2UserPosition returns a specific position for the supplied account and position ID.
@@ -699,16 +699,10 @@ func (k *Keeper) AddAmountToVaultsV2Totals(ctx context.Context, deposits, accrue
 		if state.TotalDeposits, err = state.TotalDeposits.SafeAdd(deposits); err != nil {
 			return err
 		}
-		if state.TotalNav, err = state.TotalNav.SafeAdd(deposits); err != nil {
-			return err
-		}
 	}
 
 	if accruedYield.IsPositive() {
 		if state.TotalAccruedYield, err = state.TotalAccruedYield.SafeAdd(accruedYield); err != nil {
-			return err
-		}
-		if state.TotalNav, err = state.TotalNav.SafeAdd(accruedYield); err != nil {
 			return err
 		}
 	}
@@ -728,16 +722,10 @@ func (k *Keeper) SubtractAmountFromVaultsV2Totals(ctx context.Context, deposits,
 		if state.TotalDeposits, err = state.TotalDeposits.SafeSub(deposits); err != nil {
 			return err
 		}
-		if state.TotalNav, err = state.TotalNav.SafeSub(deposits); err != nil {
-			return err
-		}
 	}
 
 	if accruedYield.IsPositive() {
 		if state.TotalAccruedYield, err = state.TotalAccruedYield.SafeSub(accruedYield); err != nil {
-			return err
-		}
-		if state.TotalNav, err = state.TotalNav.SafeSub(accruedYield); err != nil {
 			return err
 		}
 	}
@@ -1127,9 +1115,9 @@ func (k *Keeper) IterateVaultsV2InflightFunds(ctx context.Context, fn func(uint6
 
 // TWAP (Time-Weighted Average Price) Snapshot Management
 
-// NextVaultsV2NAVSnapshotID increments and returns the next NAV snapshot identifier.
-func (k *Keeper) NextVaultsV2NAVSnapshotID(ctx context.Context) (int64, error) {
-	next, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
+// NextVaultsV2AUMSnapshotID increments and returns the next AUM snapshot identifier.
+func (k *Keeper) NextVaultsV2AUMSnapshotID(ctx context.Context) (int64, error) {
+	next, err := k.VaultsV2AUMSnapshotNextID.Get(ctx)
 	if err != nil {
 		if !errors.Is(err, collections.ErrNotFound) {
 			return 0, err
@@ -1139,44 +1127,44 @@ func (k *Keeper) NextVaultsV2NAVSnapshotID(ctx context.Context) (int64, error) {
 		next++
 	}
 
-	if err := k.VaultsV2NAVSnapshotNextID.Set(ctx, next); err != nil {
+	if err := k.VaultsV2AUMSnapshotNextID.Set(ctx, next); err != nil {
 		return 0, err
 	}
 
 	return next, nil
 }
 
-// AddVaultsV2NAVSnapshot records a new NAV snapshot for TWAP calculations.
-func (k *Keeper) AddVaultsV2NAVSnapshot(ctx context.Context, snapshot vaultsv2.NAVSnapshot) error {
-	id, err := k.NextVaultsV2NAVSnapshotID(ctx)
+// AddVaultsV2AUMSnapshot records a new AUM snapshot for TWAP calculations.
+func (k *Keeper) AddVaultsV2AUMSnapshot(ctx context.Context, snapshot vaultsv2.AUMSnapshot) error {
+	id, err := k.NextVaultsV2AUMSnapshotID(ctx)
 	if err != nil {
 		return err
 	}
 
-	return k.VaultsV2NAVSnapshots.Set(ctx, id, snapshot)
+	return k.VaultsV2AUMSnapshots.Set(ctx, id, snapshot)
 }
 
-// GetVaultsV2NAVSnapshot retrieves a specific NAV snapshot by ID.
-func (k *Keeper) GetVaultsV2NAVSnapshot(ctx context.Context, id int64) (vaultsv2.NAVSnapshot, bool, error) {
-	snapshot, err := k.VaultsV2NAVSnapshots.Get(ctx, id)
+// GetVaultsV2AUMSnapshot retrieves a specific AUM snapshot by ID.
+func (k *Keeper) GetVaultsV2AUMSnapshot(ctx context.Context, id int64) (vaultsv2.AUMSnapshot, bool, error) {
+	snapshot, err := k.VaultsV2AUMSnapshots.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
-			return vaultsv2.NAVSnapshot{}, false, nil
+			return vaultsv2.AUMSnapshot{}, false, nil
 		}
-		return vaultsv2.NAVSnapshot{}, false, err
+		return vaultsv2.AUMSnapshot{}, false, err
 	}
 
 	return snapshot, true, nil
 }
 
-// GetRecentVaultsV2NAVSnapshots retrieves the N most recent NAV snapshots.
+// GetRecentVaultsV2AUMSnapshots retrieves the N most recent AUM snapshots.
 // Returns snapshots in reverse chronological order (newest first).
-func (k *Keeper) GetRecentVaultsV2NAVSnapshots(ctx context.Context, limit int) ([]vaultsv2.NAVSnapshot, error) {
+func (k *Keeper) GetRecentVaultsV2AUMSnapshots(ctx context.Context, limit int) ([]vaultsv2.AUMSnapshot, error) {
 	if limit <= 0 {
 		return nil, nil
 	}
 
-	currentID, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
+	currentID, err := k.VaultsV2AUMSnapshotNextID.Get(ctx)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return nil, nil
@@ -1184,11 +1172,11 @@ func (k *Keeper) GetRecentVaultsV2NAVSnapshots(ctx context.Context, limit int) (
 		return nil, err
 	}
 
-	snapshots := make([]vaultsv2.NAVSnapshot, 0, limit)
+	snapshots := make([]vaultsv2.AUMSnapshot, 0, limit)
 
 	// Iterate backwards from most recent
 	for i := currentID - 1; i > 0 && len(snapshots) < limit; i-- {
-		snapshot, found, err := k.GetVaultsV2NAVSnapshot(ctx, i)
+		snapshot, found, err := k.GetVaultsV2AUMSnapshot(ctx, i)
 		if err != nil {
 			return nil, err
 		}
@@ -1200,15 +1188,15 @@ func (k *Keeper) GetRecentVaultsV2NAVSnapshots(ctx context.Context, limit int) (
 	return snapshots, nil
 }
 
-// PruneOldVaultsV2NAVSnapshots removes snapshots older than the specified age.
+// PruneOldVaultsV2AUMSnapshots removes snapshots older than the specified age.
 // This helps keep storage bounded for TWAP calculations.
 // maxAgeInBlocks specifies how many blocks back to keep snapshots
-func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAgeInBlocks int64, currentHeight int64) (int, error) {
+func (k *Keeper) PruneOldVaultsV2AUMSnapshots(ctx context.Context, maxAgeInBlocks int64, currentHeight int64) (int, error) {
 	pruned := 0
 	cutoffHeight := currentHeight - maxAgeInBlocks
 
 	// Get current max ID
-	currentID, err := k.VaultsV2NAVSnapshotNextID.Get(ctx)
+	currentID, err := k.VaultsV2AUMSnapshotNextID.Get(ctx)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return 0, nil
@@ -1218,7 +1206,7 @@ func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAgeInBlock
 
 	// Iterate through all snapshots and remove old ones
 	for i := int64(1); i < currentID; i++ {
-		snapshot, found, err := k.GetVaultsV2NAVSnapshot(ctx, i)
+		snapshot, found, err := k.GetVaultsV2AUMSnapshot(ctx, i)
 		if err != nil {
 			return pruned, err
 		}
@@ -1227,7 +1215,7 @@ func (k *Keeper) PruneOldVaultsV2NAVSnapshots(ctx context.Context, maxAgeInBlock
 		}
 
 		if snapshot.BlockHeight < cutoffHeight {
-			if err := k.VaultsV2NAVSnapshots.Remove(ctx, i); err != nil {
+			if err := k.VaultsV2AUMSnapshots.Remove(ctx, i); err != nil {
 				return pruned, err
 			}
 			pruned++
@@ -1391,4 +1379,53 @@ func (k *Keeper) CommitVaultsV2AccountingSnapshots(ctx context.Context) error {
 
 		return false, nil
 	})
+}
+
+// IsCircuitBreakerActive returns whether the circuit breaker is currently active
+func (k *Keeper) IsCircuitBreakerActive(ctx context.Context) (bool, error) {
+	active, err := k.VaultsV2CircuitBreakerActive.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return active, nil
+}
+
+// GetLatestCircuitBreakerTrip returns the most recent circuit breaker trip
+func (k *Keeper) GetLatestCircuitBreakerTrip(ctx context.Context) (vaultsv2.CircuitBreakerTrip, bool, error) {
+	// Get the next ID to be used
+	nextID, err := k.VaultsV2CircuitBreakerNextID.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.CircuitBreakerTrip{}, false, nil
+		}
+		return vaultsv2.CircuitBreakerTrip{}, false, err
+	}
+
+	if nextID == 0 {
+		return vaultsv2.CircuitBreakerTrip{}, false, nil
+	}
+
+	// Get the last trip (nextID - 1)
+	trip, err := k.VaultsV2CircuitBreakerTrips.Get(ctx, nextID-1)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return vaultsv2.CircuitBreakerTrip{}, false, nil
+		}
+		return vaultsv2.CircuitBreakerTrip{}, false, err
+	}
+
+	return trip, true, nil
+}
+
+// ClearCircuitBreaker deactivates the circuit breaker (requires governance)
+func (k *Keeper) ClearCircuitBreaker(ctx context.Context) error {
+	return k.VaultsV2CircuitBreakerActive.Remove(ctx)
+}
+
+// IterateCircuitBreakerTrips iterates over all circuit breaker trips in chronological order
+func (k *Keeper) IterateCircuitBreakerTrips(ctx context.Context, fn func(id uint64, trip vaultsv2.CircuitBreakerTrip) (bool, error)) error {
+	return k.VaultsV2CircuitBreakerTrips.Walk(ctx, nil, fn)
 }

@@ -48,6 +48,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateOracleConfig{}, "dollar/vaults/v2/UpdateOracleConfig", nil)
 	cdc.RegisterConcrete(&MsgRemoveOracle{}, "dollar/vaults/v2/RemoveOracle", nil)
 	cdc.RegisterConcrete(&MsgUpdateOracleParams{}, "dollar/vaults/v2/UpdateOracleParams", nil)
+	cdc.RegisterConcrete(&MsgDeployFunds{}, "dollar/vaults/v2/DeployFunds", nil)
 }
 
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {

@@ -67,7 +67,7 @@ func TestAccountingSnapshotSinglePosition(t *testing.T) {
 		PositionId:      positionID,
 		DepositAmount:   depositAmount.Add(math.NewInt(100 * ONE_V2)),
 		AccruedYield:    accruedYield.Add(math.NewInt(25 * ONE_V2)),
-		AccountingNav:   math.NewInt(2000 * ONE_V2),
+		AccountingAum:   math.NewInt(2000 * ONE_V2),
 		CreatedAtHeight: ctx.BlockHeight(),
 	}
 
@@ -84,7 +84,7 @@ func TestAccountingSnapshotSinglePosition(t *testing.T) {
 	assert.Equal(t, snapshot.PositionId, retrievedSnapshot.PositionId)
 	assert.Equal(t, snapshot.DepositAmount, retrievedSnapshot.DepositAmount)
 	assert.Equal(t, snapshot.AccruedYield, retrievedSnapshot.AccruedYield)
-	assert.Equal(t, snapshot.AccountingNav, retrievedSnapshot.AccountingNav)
+	assert.Equal(t, snapshot.AccountingAum, retrievedSnapshot.AccountingAum)
 
 	// Test snapshot not found for different position ID
 	_, found, err = keeper.GetVaultsV2AccountingSnapshot(ctx, userAddr, 999)
@@ -144,7 +144,7 @@ func TestAccountingSnapshotMultiplePositions(t *testing.T) {
 			PositionId:      pos.id,
 			DepositAmount:   pos.depositAmount.Add(math.NewInt(100 * ONE_V2)),
 			AccruedYield:    pos.accruedYield.Add(math.NewInt(10 * ONE_V2)),
-			AccountingNav:   math.NewInt(2000 * ONE_V2),
+			AccountingAum:   math.NewInt(2000 * ONE_V2),
 			CreatedAtHeight: ctx.BlockHeight(),
 		}
 		err := keeper.SetVaultsV2AccountingSnapshot(ctx, snapshots[i])
@@ -161,7 +161,7 @@ func TestAccountingSnapshotMultiplePositions(t *testing.T) {
 		assert.Equal(t, snapshot.PositionId, retrieved.PositionId)
 		assert.Equal(t, snapshot.DepositAmount, retrieved.DepositAmount)
 		assert.Equal(t, snapshot.AccruedYield, retrieved.AccruedYield)
-		assert.Equal(t, snapshot.AccountingNav, retrieved.AccountingNav)
+		assert.Equal(t, snapshot.AccountingAum, retrieved.AccountingAum)
 	}
 
 	// Test that snapshots are independent - deleting one doesn't affect others
@@ -224,7 +224,7 @@ func TestAccountingSnapshotCommitMultiPosition(t *testing.T) {
 				PositionId:      posID,
 				DepositAmount:   updatedDeposit,
 				AccruedYield:    updatedYield,
-				AccountingNav:   math.NewInt(2000 * ONE_V2),
+				AccountingAum:   math.NewInt(2000 * ONE_V2),
 				CreatedAtHeight: ctx.BlockHeight(),
 			}
 			err = keeper.SetVaultsV2AccountingSnapshot(ctx, snapshot)
@@ -277,7 +277,7 @@ func TestAccountingSnapshotIteration(t *testing.T) {
 				PositionId:      posID,
 				DepositAmount:   math.NewInt(int64(posID) * 1000 * ONE_V2),
 				AccruedYield:    math.NewInt(int64(posID) * 50 * ONE_V2),
-				AccountingNav:   math.NewInt(2000 * ONE_V2),
+				AccountingAum:   math.NewInt(2000 * ONE_V2),
 				CreatedAtHeight: ctx.BlockHeight(),
 			}
 			err := keeper.SetVaultsV2AccountingSnapshot(ctx, snapshot)
@@ -329,7 +329,7 @@ func TestAccountingSnapshotClearAll(t *testing.T) {
 				PositionId:      posID,
 				DepositAmount:   math.NewInt(1000 * ONE_V2),
 				AccruedYield:    math.NewInt(50 * ONE_V2),
-				AccountingNav:   math.NewInt(2000 * ONE_V2),
+				AccountingAum:   math.NewInt(2000 * ONE_V2),
 				CreatedAtHeight: ctx.BlockHeight(),
 			}
 			err := keeper.SetVaultsV2AccountingSnapshot(ctx, snapshot)

@@ -6,7 +6,7 @@ import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "noble/dollar/vaults/v2/nav.proto";
+import "noble/dollar/vaults/v2/aum.proto";
 import "noble/dollar/vaults/v2/vaults.proto";
 
 option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
@@ -22,8 +22,8 @@ message GenesisState {
   // All user positions in V2
   repeated UserPositionEntry user_positions = 3 [(gogoproto.nullable) = false];
 
-  // Current NAV information for each vault type
-  repeated NAVEntry nav_entries = 4 [(gogoproto.nullable) = false];
+  // Current AUM information for each vault type
+  repeated AUMEntry aum_entries = 4 [(gogoproto.nullable) = false];
 
   // Withdrawal queue entries
   repeated WithdrawalRequestEntry withdrawal_queue = 5 [(gogoproto.nullable) = false];
@@ -56,8 +56,8 @@ message Params {
     (amino.dont_omitempty) = true
   ];
 
-  // Maximum NAV change percentage allowed per update (basis points)
-  int32 max_nav_change_bps = 4;
+  // Maximum AUM change percentage allowed per update (basis points)
+  int32 max_aum_change_bps = 4;
 
   // Withdrawal request timeout duration (in seconds)
   int64 withdrawal_request_timeout = 5;
@@ -103,10 +103,10 @@ message UserPositionEntry {
   UserPosition position = 2 [(gogoproto.nullable) = false];
 }
 
-// NAVEntry stores NAV information for a vault type
-message NAVEntry {
-  // NAV information
-  NAVInfo nav_info = 1 [(gogoproto.nullable) = false];
+// AUMEntry stores AUM information for a vault type
+message AUMEntry {
+  // AUM information
+  AUMInfo aum_info = 1 [(gogoproto.nullable) = false];
 }
 
 // WithdrawalRequestEntry stores a withdrawal request in the queue
@@ -136,8 +136,8 @@ message VaultTotalEntry {
     (amino.dont_omitempty) = true
   ];
 
-  // Total NAV (Net Asset Value = deposits + yield)
-  string total_nav = 3 [
+  // Total AUM (Net Asset Value = deposits + yield)
+  string total_aum = 3 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,

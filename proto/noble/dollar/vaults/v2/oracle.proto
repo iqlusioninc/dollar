@@ -125,34 +125,6 @@ message StalenessConfig {
   int64 max_staleness = 3;
 }
 
-// NAVPayload represents the oracle update payload (105 bytes when encoded)
-message NAVPayload {
-  // Message type (0x01 for NAV update)
-  uint32 message_type = 1;
-
-  // Position identifier (32 bytes)
-  uint64 position_id = 2;
-
-  // Share price (32 bytes, 1e18 precision)
-  string share_price = 3 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Shares held (32 bytes, 1e18 precision)
-  string shares_held = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Unix timestamp (8 bytes)
-  int64 timestamp = 5;
-}
-
 // FallbackStrategy defines the fallback strategy for stale data
 message FallbackStrategy {
   // Whether to use last known good value
@@ -253,7 +225,7 @@ message CrossChainOracleMessage {
   // Hyperlane metadata for verification
   bytes metadata = 4;
 
-  // NAV oracle update payload (105 bytes)
+  // AUM oracle update payload (105 bytes)
   bytes payload = 5;
 
   // Timestamp when received
@@ -261,9 +233,6 @@ message CrossChainOracleMessage {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-
-  // Provider type (HYPERLANE, IBC)
-  ProviderType provider_type = 7;
 }
 
 // OracleUpdateResult represents the result of processing an oracle update
@@ -295,8 +264,8 @@ message OracleUpdateResult {
     (amino.dont_omitempty) = true
   ];
 
-  // Updated total NAV
-  string updated_nav = 5 [
+  // Updated total AUM
+  string updated_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
@@ -331,9 +300,6 @@ message MsgRegisterOracle {
 
   // Maximum staleness allowed (seconds)
   int64 max_staleness = 5;
-
-  // Provider type (HYPERLANE, IBC)
-  ProviderType provider_type = 6;
 
   // Origin identifier (mailbox for Hyperlane, channel for IBC)
   string origin_identifier = 7;

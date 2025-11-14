@@ -41,15 +41,19 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+
 	// Hyperlane Modules
 	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
 	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
+
 	// IBC Modules
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+
 	// Custom Modules
 	dollarkeeper "dollar.noble.xyz/v3/keeper"
+	dollartypes "dollar.noble.xyz/v3/types"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 )
 
@@ -157,6 +161,9 @@ func NewSimApp(
 	); err != nil {
 		return nil, err
 	}
+
+	// Register x/dollar with Hyperlane
+	app.HyperlaneKeeper.AppRouter().RegisterModule(dollartypes.HyperlaneAppModuleID, app.DollarKeeper)
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 

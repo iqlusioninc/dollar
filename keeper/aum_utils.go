@@ -18,31 +18,22 @@
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND
 // TITLE.
 
-package types
+package keeper
 
-import (
-	"fmt"
+import "cosmossdk.io/math"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-)
+const basisPointsMultiplier = 10_000
 
-const ModuleName = "dollar"
-
-const HyperlaneAppModuleID uint8 = 1
-
-var (
-	ModuleAddress = authtypes.NewModuleAddress(ModuleName)
-
-	YieldName    = fmt.Sprintf("%s/yield", ModuleName)
-	YieldAddress = authtypes.NewModuleAddress(YieldName)
-)
-
-var (
-	PausedKey                = []byte("paused")
-	IndexKey                 = []byte("index")
-	PrincipalPrefix          = []byte("principal/")
-	StatsKey                 = []byte("stats")
-	TotalExternalYieldPrefix = []byte("total_external_yield/")
-	YieldRecipientPrefix     = []byte("yield_recipient/")
-	RetryAmountPrefix        = []byte("retry_amount/")
-)
+// ComputeAUMChangeBps calculates the change in basis points between two AUM values
+func ComputeAUMChangeBps(currentAum, previousAum math.Int) int32 {
+	if previousAum.IsZero() {
+		return 0
+	}
+	previousDec := previousAum.ToLegacyDec()
+	if previousDec.IsZero() {
+		return 0
+	}
+	delta := currentAum.ToLegacyDec().Sub(previousDec)
+	changeDec := delta.MulInt(math.NewInt(basisPointsMultiplier)).QuoInt(previousAum)
+	return int32(changeDec.TruncateInt64())
+}

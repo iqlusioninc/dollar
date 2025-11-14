@@ -37,28 +37,32 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type RemotePositionStatus int32
 
 const (
+	// Position is waiting for initial deposit
+	REMOTE_POSITION_INITIALIZING RemotePositionStatus = 0
 	// Position is active and being tracked
-	REMOTE_POSITION_ACTIVE RemotePositionStatus = 0
+	REMOTE_POSITION_ACTIVE RemotePositionStatus = 1
 	// Position is being withdrawn from
-	REMOTE_POSITION_WITHDRAWING RemotePositionStatus = 1
+	REMOTE_POSITION_WITHDRAWING RemotePositionStatus = 2
 	// Position has been closed
-	REMOTE_POSITION_CLOSED RemotePositionStatus = 2
+	REMOTE_POSITION_CLOSED RemotePositionStatus = 3
 	// Position is in error state
-	REMOTE_POSITION_ERROR RemotePositionStatus = 3
+	REMOTE_POSITION_ERROR RemotePositionStatus = 4
 )
 
 var RemotePositionStatus_name = map[int32]string{
-	0: "REMOTE_POSITION_ACTIVE",
-	1: "REMOTE_POSITION_WITHDRAWING",
-	2: "REMOTE_POSITION_CLOSED",
-	3: "REMOTE_POSITION_ERROR",
+	0: "REMOTE_POSITION_INITIALIZING",
+	1: "REMOTE_POSITION_ACTIVE",
+	2: "REMOTE_POSITION_WITHDRAWING",
+	3: "REMOTE_POSITION_CLOSED",
+	4: "REMOTE_POSITION_ERROR",
 }
 
 var RemotePositionStatus_value = map[string]int32{
-	"REMOTE_POSITION_ACTIVE":      0,
-	"REMOTE_POSITION_WITHDRAWING": 1,
-	"REMOTE_POSITION_CLOSED":      2,
-	"REMOTE_POSITION_ERROR":       3,
+	"REMOTE_POSITION_INITIALIZING": 0,
+	"REMOTE_POSITION_ACTIVE":       1,
+	"REMOTE_POSITION_WITHDRAWING":  2,
+	"REMOTE_POSITION_CLOSED":       3,
+	"REMOTE_POSITION_ERROR":        4,
 }
 
 func (x RemotePositionStatus) String() string {
@@ -101,43 +105,31 @@ func (OperationType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_4abec74535b2c22a, []int{1}
 }
 
-// InflightType defines the type of inflight funds
-type InflightType int32
+// InflightDirection represents the direction of funds in transit
+type InflightDirection int32
 
 const (
-	// USDN being deployed to a remote position
-	INFLIGHT_DEPOSIT_TO_POSITION InflightType = 0
-	// USDN returning from a remote position
-	INFLIGHT_WITHDRAWAL_FROM_POSITION InflightType = 1
-	// USDN moving between positions (via Noble)
-	INFLIGHT_REBALANCE_BETWEEN_POSITIONS InflightType = 2
-	// USDN awaiting deployment to positions
-	INFLIGHT_PENDING_DEPLOYMENT InflightType = 3
-	// USDN awaiting distribution to withdrawal queue
-	INFLIGHT_PENDING_WITHDRAWAL_DISTRIBUTION InflightType = 4
+	// Funds leaving vault (deploying to remote position)
+	INFLIGHT_OUTGOING InflightDirection = 0
+	// Funds returning to vault (withdrawing from remote position)
+	INFLIGHT_INCOMING InflightDirection = 1
 )
 
-var InflightType_name = map[int32]string{
-	0: "INFLIGHT_DEPOSIT_TO_POSITION",
-	1: "INFLIGHT_WITHDRAWAL_FROM_POSITION",
-	2: "INFLIGHT_REBALANCE_BETWEEN_POSITIONS",
-	3: "INFLIGHT_PENDING_DEPLOYMENT",
-	4: "INFLIGHT_PENDING_WITHDRAWAL_DISTRIBUTION",
+var InflightDirection_name = map[int32]string{
+	0: "INFLIGHT_OUTGOING",
+	1: "INFLIGHT_INCOMING",
 }
 
-var InflightType_value = map[string]int32{
-	"INFLIGHT_DEPOSIT_TO_POSITION":             0,
-	"INFLIGHT_WITHDRAWAL_FROM_POSITION":        1,
-	"INFLIGHT_REBALANCE_BETWEEN_POSITIONS":     2,
-	"INFLIGHT_PENDING_DEPLOYMENT":              3,
-	"INFLIGHT_PENDING_WITHDRAWAL_DISTRIBUTION": 4,
+var InflightDirection_value = map[string]int32{
+	"INFLIGHT_OUTGOING": 0,
+	"INFLIGHT_INCOMING": 1,
 }
 
-func (x InflightType) String() string {
-	return proto.EnumName(InflightType_name, int32(x))
+func (x InflightDirection) String() string {
+	return proto.EnumName(InflightDirection_name, int32(x))
 }
 
-func (InflightType) EnumDescriptor() ([]byte, []int) {
+func (InflightDirection) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_4abec74535b2c22a, []int{2}
 }
 
@@ -209,34 +201,6 @@ func (OracleUpdateStatus) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_4abec74535b2c22a, []int{4}
 }
 
-// ProviderType represents the cross-chain provider type
-type ProviderType int32
-
-const (
-	// Hyperlane provider
-	PROVIDER_TYPE_HYPERLANE ProviderType = 0
-	// IBC provider
-	PROVIDER_TYPE_IBC ProviderType = 1
-)
-
-var ProviderType_name = map[int32]string{
-	0: "PROVIDER_TYPE_HYPERLANE",
-	1: "PROVIDER_TYPE_IBC",
-}
-
-var ProviderType_value = map[string]int32{
-	"PROVIDER_TYPE_HYPERLANE": 0,
-	"PROVIDER_TYPE_IBC":       1,
-}
-
-func (x ProviderType) String() string {
-	return proto.EnumName(ProviderType_name, int32(x))
-}
-
-func (ProviderType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{5}
-}
-
 // CrossChainRoute defines a route for cross-chain operations
 // Currently supports Hyperlane, with potential for future IBC support
 type CrossChainRoute struct {
@@ -285,26 +249,28 @@ var xxx_messageInfo_CrossChainRoute proto.InternalMessageInfo
 
 // RemotePosition represents a position in an ERC-4626 compatible vault on another chain
 type RemotePosition struct {
+	// Remote Position ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// HypToken
-	HyptokenId github_com_bcp_innovations_hyperlane_cosmos_util.HexAddress `protobuf:"bytes,1,opt,name=hyptoken_id,json=hyptokenId,proto3,customtype=github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress" json:"hyptoken_id"`
+	HyptokenId github_com_bcp_innovations_hyperlane_cosmos_util.HexAddress `protobuf:"bytes,2,opt,name=hyptoken_id,json=hyptokenId,proto3,customtype=github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress" json:"hyptoken_id"`
 	// Address of the ERC-4626 compatible vault
-	VaultAddress github_com_bcp_innovations_hyperlane_cosmos_util.HexAddress `protobuf:"bytes,2,opt,name=vault_address,json=vaultAddress,proto3,customtype=github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress" json:"vault_address"`
+	VaultAddress github_com_bcp_innovations_hyperlane_cosmos_util.HexAddress `protobuf:"bytes,3,opt,name=vault_address,json=vaultAddress,proto3,customtype=github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress" json:"vault_address"`
 	// Number of vault shares held
-	SharesHeld cosmossdk_io_math.Int `protobuf:"bytes,3,opt,name=shares_held,json=sharesHeld,proto3,customtype=cosmossdk.io/math.Int" json:"shares_held"`
+	SharesHeld cosmossdk_io_math.Int `protobuf:"bytes,4,opt,name=shares_held,json=sharesHeld,proto3,customtype=cosmossdk.io/math.Int" json:"shares_held"`
 	// Principal amount initially deposited (in USDN)
-	Principal cosmossdk_io_math.Int `protobuf:"bytes,4,opt,name=principal,proto3,customtype=cosmossdk.io/math.Int" json:"principal"`
+	Principal cosmossdk_io_math.Int `protobuf:"bytes,5,opt,name=principal,proto3,customtype=cosmossdk.io/math.Int" json:"principal"`
 	// Current share price from oracle
-	SharePrice cosmossdk_io_math.LegacyDec `protobuf:"bytes,5,opt,name=share_price,json=sharePrice,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"share_price"`
+	SharePrice cosmossdk_io_math.LegacyDec `protobuf:"bytes,6,opt,name=share_price,json=sharePrice,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"share_price"`
 	// Total value of position (shares * price)
-	TotalValue cosmossdk_io_math.Int `protobuf:"bytes,6,opt,name=total_value,json=totalValue,proto3,customtype=cosmossdk.io/math.Int" json:"total_value"`
+	TotalValue cosmossdk_io_math.Int `protobuf:"bytes,7,opt,name=total_value,json=totalValue,proto3,customtype=cosmossdk.io/math.Int" json:"total_value"`
 	// Last oracle update timestamp
-	LastUpdate time.Time `protobuf:"bytes,7,opt,name=last_update,json=lastUpdate,proto3,stdtime" json:"last_update"`
+	LastUpdate time.Time `protobuf:"bytes,8,opt,name=last_update,json=lastUpdate,proto3,stdtime" json:"last_update"`
 	// Position status
-	Status RemotePositionStatus `protobuf:"varint,8,opt,name=status,proto3,enum=noble.dollar.vaults.v2.RemotePositionStatus" json:"status,omitempty"`
+	Status RemotePositionStatus `protobuf:"varint,9,opt,name=status,proto3,enum=noble.dollar.vaults.v2.RemotePositionStatus" json:"status,omitempty"`
 	// Oracle configuration for this position
-	OracleAddress string `protobuf:"bytes,9,opt,name=oracle_address,json=oracleAddress,proto3" json:"oracle_address,omitempty"`
+	OracleAddress string `protobuf:"bytes,10,opt,name=oracle_address,json=oracleAddress,proto3" json:"oracle_address,omitempty"`
 	// Maximum staleness for oracle data (seconds)
-	MaxStaleness int64 `protobuf:"varint,10,opt,name=max_staleness,json=maxStaleness,proto3" json:"max_staleness,omitempty"`
+	MaxStaleness int64 `protobuf:"varint,11,opt,name=max_staleness,json=maxStaleness,proto3" json:"max_staleness,omitempty"`
 }
 
 func (m *RemotePosition) Reset()         { *m = RemotePosition{} }
@@ -340,6 +306,13 @@ func (m *RemotePosition) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RemotePosition proto.InternalMessageInfo
 
+func (m *RemotePosition) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
 func (m *RemotePosition) GetLastUpdate() time.Time {
 	if m != nil {
 		return m.LastUpdate
@@ -351,7 +324,7 @@ func (m *RemotePosition) GetStatus() RemotePositionStatus {
 	if m != nil {
 		return m.Status
 	}
-	return REMOTE_POSITION_ACTIVE
+	return REMOTE_POSITION_INITIALIZING
 }
 
 func (m *RemotePosition) GetOracleAddress() string {
@@ -372,32 +345,21 @@ func (m *RemotePosition) GetMaxStaleness() int64 {
 type InflightFund struct {
 	// Unique identifier for this inflight transaction
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Transaction ID (Hyperlane message ID or IBC packet sequence)
-	TransactionId string `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
+	// Id of the corresponding RemotePosition
+	RemotePositionId uint64 `protobuf:"varint,2,opt,name=remote_position_id,json=remotePositionId,proto3" json:"remote_position_id,omitempty"`
+	// Direction of funds (outgoing to remote or incoming to vault)
+	Direction InflightDirection `protobuf:"varint,3,opt,name=direction,proto3,enum=noble.dollar.vaults.v2.InflightDirection" json:"direction,omitempty"`
 	// Amount in USDN (always USDN, never shares)
-	Amount cosmossdk_io_math.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=cosmossdk.io/math.Int" json:"amount"`
-	// Origin information
-	//
-	// Types that are valid to be assigned to Origin:
-	//	*InflightFund_NobleOrigin
-	//	*InflightFund_RemoteOrigin
-	Origin isInflightFund_Origin `protobuf_oneof:"origin"`
-	// Destination information
-	//
-	// Types that are valid to be assigned to Destination:
-	//	*InflightFund_NobleDestination
-	//	*InflightFund_RemoteDestination
-	Destination isInflightFund_Destination `protobuf_oneof:"destination"`
+	Amount cosmossdk_io_math.Int `protobuf:"bytes,4,opt,name=amount,proto3,customtype=cosmossdk.io/math.Int" json:"amount"`
 	// When the operation was initiated
-	InitiatedAt time.Time `protobuf:"bytes,8,opt,name=initiated_at,json=initiatedAt,proto3,stdtime" json:"initiated_at"`
+	InitiatedAt time.Time `protobuf:"bytes,9,opt,name=initiated_at,json=initiatedAt,proto3,stdtime" json:"initiated_at"`
 	// Expected completion time
-	ExpectedAt time.Time `protobuf:"bytes,9,opt,name=expected_at,json=expectedAt,proto3,stdtime" json:"expected_at"`
+	ExpectedAt time.Time `protobuf:"bytes,10,opt,name=expected_at,json=expectedAt,proto3,stdtime" json:"expected_at"`
 	// Current status
-	Status InflightStatus `protobuf:"varint,10,opt,name=status,proto3,enum=noble.dollar.vaults.v2.InflightStatus" json:"status,omitempty"`
-	// Value at initiation (for NAV calculation)
-	ValueAtInitiation cosmossdk_io_math.Int `protobuf:"bytes,11,opt,name=value_at_initiation,json=valueAtInitiation,proto3,customtype=cosmossdk.io/math.Int" json:"value_at_initiation"`
-	// Provider-specific tracking information
-	ProviderTracking *ProviderTrackingInfo `protobuf:"bytes,12,opt,name=provider_tracking,json=providerTracking,proto3" json:"provider_tracking,omitempty"`
+	Status InflightStatus `protobuf:"varint,11,opt,name=status,proto3,enum=noble.dollar.vaults.v2.InflightStatus" json:"status,omitempty"`
+	// Value at initiation (for AUM calculation)
+	ValueAtInitiation     cosmossdk_io_math.Int  `protobuf:"bytes,12,opt,name=value_at_initiation,json=valueAtInitiation,proto3,customtype=cosmossdk.io/math.Int" json:"value_at_initiation"`
+	HyperlaneTrackingInfo *HyperlaneTrackingInfo `protobuf:"bytes,13,opt,name=hyperlane_tracking_info,json=hyperlaneTrackingInfo,proto3" json:"hyperlane_tracking_info,omitempty"`
 }
 
 func (m *InflightFund) Reset()         { *m = InflightFund{} }
@@ -433,48 +395,6 @@ func (m *InflightFund) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_InflightFund proto.InternalMessageInfo
 
-type isInflightFund_Origin interface {
-	isInflightFund_Origin()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
-type isInflightFund_Destination interface {
-	isInflightFund_Destination()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
-
-type InflightFund_NobleOrigin struct {
-	NobleOrigin *NobleEndpoint `protobuf:"bytes,4,opt,name=noble_origin,json=nobleOrigin,proto3,oneof" json:"noble_origin,omitempty"`
-}
-type InflightFund_RemoteOrigin struct {
-	RemoteOrigin *RemotePosition `protobuf:"bytes,5,opt,name=remote_origin,json=remoteOrigin,proto3,oneof" json:"remote_origin,omitempty"`
-}
-type InflightFund_NobleDestination struct {
-	NobleDestination *NobleEndpoint `protobuf:"bytes,6,opt,name=noble_destination,json=nobleDestination,proto3,oneof" json:"noble_destination,omitempty"`
-}
-type InflightFund_RemoteDestination struct {
-	RemoteDestination *RemotePosition `protobuf:"bytes,7,opt,name=remote_destination,json=remoteDestination,proto3,oneof" json:"remote_destination,omitempty"`
-}
-
-func (*InflightFund_NobleOrigin) isInflightFund_Origin()            {}
-func (*InflightFund_RemoteOrigin) isInflightFund_Origin()           {}
-func (*InflightFund_NobleDestination) isInflightFund_Destination()  {}
-func (*InflightFund_RemoteDestination) isInflightFund_Destination() {}
-
-func (m *InflightFund) GetOrigin() isInflightFund_Origin {
-	if m != nil {
-		return m.Origin
-	}
-	return nil
-}
-func (m *InflightFund) GetDestination() isInflightFund_Destination {
-	if m != nil {
-		return m.Destination
-	}
-	return nil
-}
-
 func (m *InflightFund) GetId() uint64 {
 	if m != nil {
 		return m.Id
@@ -482,39 +402,18 @@ func (m *InflightFund) GetId() uint64 {
 	return 0
 }
 
-func (m *InflightFund) GetTransactionId() string {
+func (m *InflightFund) GetRemotePositionId() uint64 {
 	if m != nil {
-		return m.TransactionId
+		return m.RemotePositionId
 	}
-	return ""
+	return 0
 }
 
-func (m *InflightFund) GetNobleOrigin() *NobleEndpoint {
-	if x, ok := m.GetOrigin().(*InflightFund_NobleOrigin); ok {
-		return x.NobleOrigin
+func (m *InflightFund) GetDirection() InflightDirection {
+	if m != nil {
+		return m.Direction
 	}
-	return nil
-}
-
-func (m *InflightFund) GetRemoteOrigin() *RemotePosition {
-	if x, ok := m.GetOrigin().(*InflightFund_RemoteOrigin); ok {
-		return x.RemoteOrigin
-	}
-	return nil
-}
-
-func (m *InflightFund) GetNobleDestination() *NobleEndpoint {
-	if x, ok := m.GetDestination().(*InflightFund_NobleDestination); ok {
-		return x.NobleDestination
-	}
-	return nil
-}
-
-func (m *InflightFund) GetRemoteDestination() *RemotePosition {
-	if x, ok := m.GetDestination().(*InflightFund_RemoteDestination); ok {
-		return x.RemoteDestination
-	}
-	return nil
+	return INFLIGHT_OUTGOING
 }
 
 func (m *InflightFund) GetInitiatedAt() time.Time {
@@ -538,141 +437,11 @@ func (m *InflightFund) GetStatus() InflightStatus {
 	return INFLIGHT_PENDING
 }
 
-func (m *InflightFund) GetProviderTracking() *ProviderTrackingInfo {
+func (m *InflightFund) GetHyperlaneTrackingInfo() *HyperlaneTrackingInfo {
 	if m != nil {
-		return m.ProviderTracking
+		return m.HyperlaneTrackingInfo
 	}
 	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*InflightFund) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*InflightFund_NobleOrigin)(nil),
-		(*InflightFund_RemoteOrigin)(nil),
-		(*InflightFund_NobleDestination)(nil),
-		(*InflightFund_RemoteDestination)(nil),
-	}
-}
-
-// NobleEndpoint represents Noble as an origin or destination
-type NobleEndpoint struct {
-	// Purpose/context of the operation (deposit, withdrawal, rebalance)
-	OperationType OperationType `protobuf:"varint,1,opt,name=operation_type,json=operationType,proto3,enum=noble.dollar.vaults.v2.OperationType" json:"operation_type,omitempty"`
-}
-
-func (m *NobleEndpoint) Reset()         { *m = NobleEndpoint{} }
-func (m *NobleEndpoint) String() string { return proto.CompactTextString(m) }
-func (*NobleEndpoint) ProtoMessage()    {}
-func (*NobleEndpoint) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{3}
-}
-func (m *NobleEndpoint) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *NobleEndpoint) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_NobleEndpoint.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *NobleEndpoint) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NobleEndpoint.Merge(m, src)
-}
-func (m *NobleEndpoint) XXX_Size() int {
-	return m.Size()
-}
-func (m *NobleEndpoint) XXX_DiscardUnknown() {
-	xxx_messageInfo_NobleEndpoint.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NobleEndpoint proto.InternalMessageInfo
-
-func (m *NobleEndpoint) GetOperationType() OperationType {
-	if m != nil {
-		return m.OperationType
-	}
-	return OPERATION_TYPE_DEPOSIT
-}
-
-// ProviderTrackingInfo contains provider-specific tracking data
-type ProviderTrackingInfo struct {
-	// Types that are valid to be assigned to TrackingInfo:
-	//
-	//	*ProviderTrackingInfo_HyperlaneTracking
-	TrackingInfo isProviderTrackingInfo_TrackingInfo `protobuf_oneof:"tracking_info"`
-}
-
-func (m *ProviderTrackingInfo) Reset()         { *m = ProviderTrackingInfo{} }
-func (m *ProviderTrackingInfo) String() string { return proto.CompactTextString(m) }
-func (*ProviderTrackingInfo) ProtoMessage()    {}
-func (*ProviderTrackingInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{4}
-}
-func (m *ProviderTrackingInfo) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ProviderTrackingInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ProviderTrackingInfo.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ProviderTrackingInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProviderTrackingInfo.Merge(m, src)
-}
-func (m *ProviderTrackingInfo) XXX_Size() int {
-	return m.Size()
-}
-func (m *ProviderTrackingInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProviderTrackingInfo.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ProviderTrackingInfo proto.InternalMessageInfo
-
-type isProviderTrackingInfo_TrackingInfo interface {
-	isProviderTrackingInfo_TrackingInfo()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
-
-type ProviderTrackingInfo_HyperlaneTracking struct {
-	HyperlaneTracking *HyperlaneTrackingInfo `protobuf:"bytes,1,opt,name=hyperlane_tracking,json=hyperlaneTracking,proto3,oneof" json:"hyperlane_tracking,omitempty"`
-}
-
-func (*ProviderTrackingInfo_HyperlaneTracking) isProviderTrackingInfo_TrackingInfo() {}
-
-func (m *ProviderTrackingInfo) GetTrackingInfo() isProviderTrackingInfo_TrackingInfo {
-	if m != nil {
-		return m.TrackingInfo
-	}
-	return nil
-}
-
-func (m *ProviderTrackingInfo) GetHyperlaneTracking() *HyperlaneTrackingInfo {
-	if x, ok := m.GetTrackingInfo().(*ProviderTrackingInfo_HyperlaneTracking); ok {
-		return x.HyperlaneTracking
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*ProviderTrackingInfo) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ProviderTrackingInfo_HyperlaneTracking)(nil),
-	}
 }
 
 // HyperlaneTrackingInfo contains Hyperlane-specific tracking data
@@ -683,8 +452,6 @@ type HyperlaneTrackingInfo struct {
 	OriginDomain uint32 `protobuf:"varint,2,opt,name=origin_domain,json=originDomain,proto3" json:"origin_domain,omitempty"`
 	// Destination domain
 	DestinationDomain uint32 `protobuf:"varint,3,opt,name=destination_domain,json=destinationDomain,proto3" json:"destination_domain,omitempty"`
-	// Message nonce
-	Nonce uint64 `protobuf:"varint,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
 	// Transaction hash on origin chain
 	OriginTxHash string `protobuf:"bytes,5,opt,name=origin_tx_hash,json=originTxHash,proto3" json:"origin_tx_hash,omitempty"`
 	// Transaction hash on destination chain
@@ -697,7 +464,7 @@ func (m *HyperlaneTrackingInfo) Reset()         { *m = HyperlaneTrackingInfo{} }
 func (m *HyperlaneTrackingInfo) String() string { return proto.CompactTextString(m) }
 func (*HyperlaneTrackingInfo) ProtoMessage()    {}
 func (*HyperlaneTrackingInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{5}
+	return fileDescriptor_4abec74535b2c22a, []int{3}
 }
 func (m *HyperlaneTrackingInfo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -747,13 +514,6 @@ func (m *HyperlaneTrackingInfo) GetDestinationDomain() uint32 {
 	return 0
 }
 
-func (m *HyperlaneTrackingInfo) GetNonce() uint64 {
-	if m != nil {
-		return m.Nonce
-	}
-	return 0
-}
-
 func (m *HyperlaneTrackingInfo) GetOriginTxHash() string {
 	if m != nil {
 		return m.OriginTxHash
@@ -775,8 +535,8 @@ func (m *HyperlaneTrackingInfo) GetProcessed() bool {
 	return false
 }
 
-// NAVOracleUpdate represents an oracle price update received via cross-chain messaging
-type NAVOracleUpdate struct {
+// AUMOracleUpdate represents an oracle price update received via cross-chain messaging
+type AUMOracleUpdate struct {
 	// Position identifier this update is for
 	PositionId uint64 `protobuf:"varint,1,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
 	// Current share price
@@ -793,18 +553,18 @@ type NAVOracleUpdate struct {
 	Status OracleUpdateStatus `protobuf:"varint,7,opt,name=status,proto3,enum=noble.dollar.vaults.v2.OracleUpdateStatus" json:"status,omitempty"`
 }
 
-func (m *NAVOracleUpdate) Reset()         { *m = NAVOracleUpdate{} }
-func (m *NAVOracleUpdate) String() string { return proto.CompactTextString(m) }
-func (*NAVOracleUpdate) ProtoMessage()    {}
-func (*NAVOracleUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{6}
+func (m *AUMOracleUpdate) Reset()         { *m = AUMOracleUpdate{} }
+func (m *AUMOracleUpdate) String() string { return proto.CompactTextString(m) }
+func (*AUMOracleUpdate) ProtoMessage()    {}
+func (*AUMOracleUpdate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4abec74535b2c22a, []int{4}
 }
-func (m *NAVOracleUpdate) XXX_Unmarshal(b []byte) error {
+func (m *AUMOracleUpdate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NAVOracleUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AUMOracleUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NAVOracleUpdate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AUMOracleUpdate.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -814,151 +574,51 @@ func (m *NAVOracleUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *NAVOracleUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NAVOracleUpdate.Merge(m, src)
+func (m *AUMOracleUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AUMOracleUpdate.Merge(m, src)
 }
-func (m *NAVOracleUpdate) XXX_Size() int {
+func (m *AUMOracleUpdate) XXX_Size() int {
 	return m.Size()
 }
-func (m *NAVOracleUpdate) XXX_DiscardUnknown() {
-	xxx_messageInfo_NAVOracleUpdate.DiscardUnknown(m)
+func (m *AUMOracleUpdate) XXX_DiscardUnknown() {
+	xxx_messageInfo_AUMOracleUpdate.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NAVOracleUpdate proto.InternalMessageInfo
+var xxx_messageInfo_AUMOracleUpdate proto.InternalMessageInfo
 
-func (m *NAVOracleUpdate) GetPositionId() uint64 {
+func (m *AUMOracleUpdate) GetPositionId() uint64 {
 	if m != nil {
 		return m.PositionId
 	}
 	return 0
 }
 
-func (m *NAVOracleUpdate) GetTimestamp() time.Time {
+func (m *AUMOracleUpdate) GetTimestamp() time.Time {
 	if m != nil {
 		return m.Timestamp
 	}
 	return time.Time{}
 }
 
-func (m *NAVOracleUpdate) GetSourceChain() string {
+func (m *AUMOracleUpdate) GetSourceChain() string {
 	if m != nil {
 		return m.SourceChain
 	}
 	return ""
 }
 
-func (m *NAVOracleUpdate) GetMessageId() string {
+func (m *AUMOracleUpdate) GetMessageId() string {
 	if m != nil {
 		return m.MessageId
 	}
 	return ""
 }
 
-func (m *NAVOracleUpdate) GetStatus() OracleUpdateStatus {
+func (m *AUMOracleUpdate) GetStatus() OracleUpdateStatus {
 	if m != nil {
 		return m.Status
 	}
 	return ORACLE_UPDATE_VALIDATED
-}
-
-// PositionOracleConfig stores oracle configuration for a position
-type PositionOracleConfig struct {
-	// Unique position identifier
-	PositionId uint64 `protobuf:"varint,1,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
-	// Expected origin mailbox/channel
-	OriginIdentifier string `protobuf:"bytes,2,opt,name=origin_identifier,json=originIdentifier,proto3" json:"origin_identifier,omitempty"`
-	// Maximum age before data is considered stale (seconds)
-	MaxStaleness int64 `protobuf:"varint,3,opt,name=max_staleness,json=maxStaleness,proto3" json:"max_staleness,omitempty"`
-	// Authorized oracle contract address on remote chain
-	OracleContract string `protobuf:"bytes,4,opt,name=oracle_contract,json=oracleContract,proto3" json:"oracle_contract,omitempty"`
-	// Source chain identifier
-	SourceChain string `protobuf:"bytes,5,opt,name=source_chain,json=sourceChain,proto3" json:"source_chain,omitempty"`
-	// Last update timestamp
-	LastUpdate time.Time `protobuf:"bytes,6,opt,name=last_update,json=lastUpdate,proto3,stdtime" json:"last_update"`
-	// Provider type (HYPERLANE, IBC)
-	ProviderType ProviderType `protobuf:"varint,7,opt,name=provider_type,json=providerType,proto3,enum=noble.dollar.vaults.v2.ProviderType" json:"provider_type,omitempty"`
-}
-
-func (m *PositionOracleConfig) Reset()         { *m = PositionOracleConfig{} }
-func (m *PositionOracleConfig) String() string { return proto.CompactTextString(m) }
-func (*PositionOracleConfig) ProtoMessage()    {}
-func (*PositionOracleConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{7}
-}
-func (m *PositionOracleConfig) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *PositionOracleConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_PositionOracleConfig.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *PositionOracleConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PositionOracleConfig.Merge(m, src)
-}
-func (m *PositionOracleConfig) XXX_Size() int {
-	return m.Size()
-}
-func (m *PositionOracleConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_PositionOracleConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PositionOracleConfig proto.InternalMessageInfo
-
-func (m *PositionOracleConfig) GetPositionId() uint64 {
-	if m != nil {
-		return m.PositionId
-	}
-	return 0
-}
-
-func (m *PositionOracleConfig) GetOriginIdentifier() string {
-	if m != nil {
-		return m.OriginIdentifier
-	}
-	return ""
-}
-
-func (m *PositionOracleConfig) GetMaxStaleness() int64 {
-	if m != nil {
-		return m.MaxStaleness
-	}
-	return 0
-}
-
-func (m *PositionOracleConfig) GetOracleContract() string {
-	if m != nil {
-		return m.OracleContract
-	}
-	return ""
-}
-
-func (m *PositionOracleConfig) GetSourceChain() string {
-	if m != nil {
-		return m.SourceChain
-	}
-	return ""
-}
-
-func (m *PositionOracleConfig) GetLastUpdate() time.Time {
-	if m != nil {
-		return m.LastUpdate
-	}
-	return time.Time{}
-}
-
-func (m *PositionOracleConfig) GetProviderType() ProviderType {
-	if m != nil {
-		return m.ProviderType
-	}
-	return PROVIDER_TYPE_HYPERLANE
 }
 
 // CrossChainPositionSnapshot provides a snapshot of all cross-chain positions
@@ -981,7 +641,7 @@ func (m *CrossChainPositionSnapshot) Reset()         { *m = CrossChainPositionSn
 func (m *CrossChainPositionSnapshot) String() string { return proto.CompactTextString(m) }
 func (*CrossChainPositionSnapshot) ProtoMessage()    {}
 func (*CrossChainPositionSnapshot) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{8}
+	return fileDescriptor_4abec74535b2c22a, []int{5}
 }
 func (m *CrossChainPositionSnapshot) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1056,15 +716,13 @@ type CrossChainConfig struct {
 	MaxInflightDuration int64 `protobuf:"varint,7,opt,name=max_inflight_duration,json=maxInflightDuration,proto3" json:"max_inflight_duration,omitempty"`
 	// Maximum total value allowed inflight
 	MaxInflightValue cosmossdk_io_math.Int `protobuf:"bytes,8,opt,name=max_inflight_value,json=maxInflightValue,proto3,customtype=cosmossdk.io/math.Int" json:"max_inflight_value"`
-	// Supported providers (currently only HYPERLANE)
-	SupportedProviders []ProviderType `protobuf:"varint,9,rep,packed,name=supported_providers,json=supportedProviders,proto3,enum=noble.dollar.vaults.v2.ProviderType" json:"supported_providers,omitempty"`
 }
 
 func (m *CrossChainConfig) Reset()         { *m = CrossChainConfig{} }
 func (m *CrossChainConfig) String() string { return proto.CompactTextString(m) }
 func (*CrossChainConfig) ProtoMessage()    {}
 func (*CrossChainConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{9}
+	return fileDescriptor_4abec74535b2c22a, []int{6}
 }
 func (m *CrossChainConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1142,13 +800,6 @@ func (m *CrossChainConfig) GetMaxInflightDuration() int64 {
 	return 0
 }
 
-func (m *CrossChainConfig) GetSupportedProviders() []ProviderType {
-	if m != nil {
-		return m.SupportedProviders
-	}
-	return nil
-}
-
 // StaleInflightAlert represents an alert for inflight funds exceeding expected duration
 type StaleInflightAlert struct {
 	// Route ID
@@ -1167,7 +818,7 @@ func (m *StaleInflightAlert) Reset()         { *m = StaleInflightAlert{} }
 func (m *StaleInflightAlert) String() string { return proto.CompactTextString(m) }
 func (*StaleInflightAlert) ProtoMessage()    {}
 func (*StaleInflightAlert) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4abec74535b2c22a, []int{10}
+	return fileDescriptor_4abec74535b2c22a, []int{7}
 }
 func (m *StaleInflightAlert) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1227,18 +878,14 @@ func (m *StaleInflightAlert) GetTimestamp() time.Time {
 func init() {
 	proto.RegisterEnum("noble.dollar.vaults.v2.RemotePositionStatus", RemotePositionStatus_name, RemotePositionStatus_value)
 	proto.RegisterEnum("noble.dollar.vaults.v2.OperationType", OperationType_name, OperationType_value)
-	proto.RegisterEnum("noble.dollar.vaults.v2.InflightType", InflightType_name, InflightType_value)
+	proto.RegisterEnum("noble.dollar.vaults.v2.InflightDirection", InflightDirection_name, InflightDirection_value)
 	proto.RegisterEnum("noble.dollar.vaults.v2.InflightStatus", InflightStatus_name, InflightStatus_value)
 	proto.RegisterEnum("noble.dollar.vaults.v2.OracleUpdateStatus", OracleUpdateStatus_name, OracleUpdateStatus_value)
-	proto.RegisterEnum("noble.dollar.vaults.v2.ProviderType", ProviderType_name, ProviderType_value)
 	proto.RegisterType((*CrossChainRoute)(nil), "noble.dollar.vaults.v2.CrossChainRoute")
 	proto.RegisterType((*RemotePosition)(nil), "noble.dollar.vaults.v2.RemotePosition")
 	proto.RegisterType((*InflightFund)(nil), "noble.dollar.vaults.v2.InflightFund")
-	proto.RegisterType((*NobleEndpoint)(nil), "noble.dollar.vaults.v2.NobleEndpoint")
-	proto.RegisterType((*ProviderTrackingInfo)(nil), "noble.dollar.vaults.v2.ProviderTrackingInfo")
 	proto.RegisterType((*HyperlaneTrackingInfo)(nil), "noble.dollar.vaults.v2.HyperlaneTrackingInfo")
-	proto.RegisterType((*NAVOracleUpdate)(nil), "noble.dollar.vaults.v2.NAVOracleUpdate")
-	proto.RegisterType((*PositionOracleConfig)(nil), "noble.dollar.vaults.v2.PositionOracleConfig")
+	proto.RegisterType((*AUMOracleUpdate)(nil), "noble.dollar.vaults.v2.AUMOracleUpdate")
 	proto.RegisterType((*CrossChainPositionSnapshot)(nil), "noble.dollar.vaults.v2.CrossChainPositionSnapshot")
 	proto.RegisterMapType((map[uint32]string)(nil), "noble.dollar.vaults.v2.CrossChainPositionSnapshot.ValueByRouteEntry")
 	proto.RegisterType((*CrossChainConfig)(nil), "noble.dollar.vaults.v2.CrossChainConfig")
@@ -1250,137 +897,117 @@ func init() {
 }
 
 var fileDescriptor_4abec74535b2c22a = []byte{
-	// 2076 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x58, 0x4d, 0x73, 0x1b, 0x49,
-	0x19, 0xd6, 0x48, 0xb6, 0x63, 0xbf, 0xfa, 0xf0, 0xa8, 0x6d, 0xef, 0x2a, 0x4e, 0x62, 0x3b, 0x4a,
-	0x02, 0x26, 0x6c, 0xa4, 0xc5, 0x5b, 0x45, 0x51, 0x50, 0x40, 0xe9, 0x63, 0x12, 0xcd, 0x96, 0x2c,
-	0x89, 0xb6, 0x92, 0x54, 0xa8, 0x82, 0x61, 0xac, 0x69, 0x4b, 0x83, 0xa5, 0xe9, 0x61, 0x66, 0xa4,
-	0xb5, 0xe0, 0x4a, 0x15, 0xcb, 0x2d, 0x07, 0xfe, 0x01, 0x97, 0x3d, 0x72, 0xe0, 0x47, 0x2c, 0xb7,
-	0x2d, 0x0e, 0x14, 0xc5, 0x61, 0xa1, 0x92, 0xc3, 0xfe, 0x01, 0xee, 0x50, 0xfd, 0x31, 0xa3, 0x91,
-	0x6c, 0xd7, 0x3a, 0xc6, 0xc5, 0xc5, 0xa5, 0x79, 0xfa, 0xed, 0xe7, 0xed, 0xee, 0xf7, 0xdb, 0xb0,
-	0xef, 0xd0, 0xe3, 0x21, 0x29, 0x5b, 0x74, 0x38, 0x34, 0xbd, 0xf2, 0xc4, 0x1c, 0x0f, 0x03, 0xbf,
-	0x3c, 0x39, 0x28, 0xf7, 0x3c, 0xea, 0xfb, 0x46, 0x6f, 0x60, 0xda, 0x4e, 0xc9, 0xf5, 0x68, 0x40,
-	0xd1, 0x7b, 0x5c, 0xb2, 0x24, 0x24, 0x4b, 0x42, 0xb2, 0x34, 0x39, 0xd8, 0xce, 0x9b, 0x23, 0xdb,
-	0xa1, 0x65, 0xfe, 0x57, 0x88, 0x6e, 0xdf, 0xee, 0x51, 0x7f, 0x44, 0x7d, 0x83, 0x7f, 0x95, 0xc5,
-	0x87, 0x5c, 0xda, 0xec, 0xd3, 0x3e, 0x15, 0x38, 0xfb, 0x25, 0xd1, 0xdd, 0x3e, 0xa5, 0xfd, 0x21,
-	0x29, 0xf3, 0xaf, 0xe3, 0xf1, 0x49, 0x39, 0xb0, 0x47, 0xc4, 0x0f, 0xcc, 0x91, 0x2b, 0x05, 0xee,
-	0x0d, 0xa6, 0x2e, 0xf1, 0x86, 0xa6, 0x43, 0xca, 0x9f, 0x98, 0x9e, 0x5b, 0x9e, 0x7c, 0xa7, 0x1c,
-	0x4c, 0x5d, 0x22, 0x59, 0x8b, 0x7f, 0x49, 0xc1, 0x7a, 0x8d, 0x9d, 0xb8, 0xc6, 0x0e, 0x8c, 0xe9,
-	0x38, 0x20, 0xc8, 0x82, 0xf4, 0x60, 0xea, 0x06, 0xf4, 0x94, 0x38, 0x86, 0x6d, 0x15, 0x94, 0x3d,
-	0x65, 0x7f, 0xad, 0x5a, 0xfb, 0xfc, 0xcb, 0xdd, 0xc4, 0x3f, 0xbe, 0xdc, 0xfd, 0x41, 0xdf, 0x0e,
-	0x06, 0xe3, 0xe3, 0x52, 0x8f, 0x8e, 0xca, 0xc7, 0x3d, 0xf7, 0x89, 0xed, 0x38, 0x74, 0x62, 0x06,
-	0x36, 0x75, 0xfc, 0x72, 0xa4, 0xea, 0x89, 0x38, 0x79, 0x79, 0x1c, 0xd8, 0xc3, 0x52, 0x83, 0x9c,
-	0x55, 0x2c, 0xcb, 0x23, 0xbe, 0x8f, 0x21, 0xe4, 0xd5, 0x2d, 0xe4, 0xc3, 0x86, 0x47, 0x7a, 0xc4,
-	0x9e, 0x10, 0x4f, 0xbc, 0x96, 0x31, 0xa0, 0xf4, 0xb4, 0x90, 0xbc, 0x39, 0x6d, 0xf9, 0x90, 0x9f,
-	0xdf, 0xad, 0x41, 0xe9, 0x29, 0xfa, 0x0d, 0xbc, 0xef, 0x91, 0x11, 0x0d, 0x88, 0xe1, 0x52, 0xdf,
-	0x66, 0x3c, 0x86, 0x29, 0xa4, 0x0b, 0xa9, 0x9b, 0x53, 0xbc, 0x25, 0x74, 0x74, 0xa4, 0x0a, 0x09,
-	0xa3, 0x9f, 0x03, 0x1a, 0x99, 0x67, 0x86, 0xed, 0x9c, 0x0c, 0xed, 0xfe, 0x20, 0x30, 0x26, 0xe6,
-	0x70, 0x4c, 0x0a, 0x4b, 0x5c, 0xef, 0x87, 0x52, 0xef, 0x96, 0xa0, 0xf4, 0xad, 0xd3, 0x92, 0x4d,
-	0xcb, 0x23, 0x33, 0x18, 0x94, 0x74, 0x27, 0xf8, 0xeb, 0x9f, 0x9f, 0x80, 0x74, 0x06, 0xdd, 0x09,
-	0x3e, 0xfb, 0xea, 0x4f, 0x8f, 0x15, 0xac, 0x8e, 0xcc, 0x33, 0x5d, 0x52, 0xbd, 0x60, 0x4c, 0xc5,
-	0x4f, 0x57, 0x20, 0x87, 0xe7, 0x34, 0xff, 0x9f, 0x4c, 0x39, 0x80, 0x2c, 0xf7, 0xea, 0xe8, 0x2d,
-	0x99, 0x11, 0x33, 0x37, 0xa3, 0x27, 0xc3, 0x99, 0xc3, 0x27, 0xfc, 0x09, 0xa4, 0xfd, 0x81, 0xe9,
-	0x11, 0xdf, 0x18, 0x90, 0xa1, 0x25, 0x6d, 0xf6, 0xee, 0x6f, 0x07, 0x82, 0xa4, 0x41, 0x86, 0x16,
-	0x6a, 0xc1, 0x9a, 0xeb, 0xd9, 0x4e, 0xcf, 0x76, 0xcd, 0xe1, 0xb5, 0x8d, 0x31, 0xa3, 0x40, 0x2f,
-	0xe5, 0x11, 0x0d, 0xd7, 0xb3, 0x7b, 0xa4, 0xb0, 0xcc, 0x19, 0xbf, 0x2b, 0x19, 0xef, 0x9c, 0x67,
-	0x6c, 0x92, 0xbe, 0xd9, 0x9b, 0xd6, 0x49, 0x2f, 0xc6, 0x5b, 0x27, 0xbd, 0xf8, 0x41, 0x3b, 0x8c,
-	0x89, 0xdd, 0x3d, 0xa0, 0x81, 0x39, 0x94, 0x7e, 0xb3, 0x72, 0xdd, 0xbb, 0x73, 0x12, 0xee, 0x31,
-	0x48, 0x83, 0xf4, 0xd0, 0xf4, 0x03, 0x63, 0xec, 0x5a, 0x66, 0x40, 0x0a, 0xb7, 0xf6, 0x94, 0xfd,
-	0xf4, 0xc1, 0x76, 0x49, 0xe4, 0x94, 0x52, 0x98, 0x53, 0x4a, 0xdd, 0x30, 0xa7, 0x54, 0x57, 0x99,
-	0xba, 0xd7, 0xff, 0xdc, 0x55, 0x30, 0xb0, 0x8d, 0xcf, 0xf9, 0x3e, 0x54, 0x87, 0x15, 0x3f, 0x30,
-	0x83, 0xb1, 0x5f, 0x58, 0xdd, 0x53, 0xf6, 0x73, 0x07, 0x1f, 0x94, 0x2e, 0xce, 0x78, 0xa5, 0x79,
-	0xef, 0x3c, 0xe2, 0x7b, 0xb0, 0xdc, 0x8b, 0x1e, 0x41, 0x8e, 0x7a, 0x66, 0x6f, 0x48, 0x22, 0x37,
-	0x5a, 0x63, 0x57, 0xc4, 0x59, 0x81, 0x86, 0x2e, 0xf0, 0x00, 0xb2, 0x2c, 0x8a, 0xfc, 0xc0, 0x1c,
-	0x12, 0x87, 0x49, 0xc1, 0x9e, 0xb2, 0x9f, 0xc2, 0x99, 0x91, 0x79, 0x76, 0x14, 0x62, 0xc5, 0xff,
-	0xac, 0x40, 0x26, 0x0c, 0x8e, 0xa7, 0x63, 0xc7, 0x42, 0x39, 0x48, 0x4a, 0xff, 0x5f, 0xc2, 0x49,
-	0xdb, 0x62, 0xca, 0x02, 0xcf, 0x74, 0x7c, 0xb3, 0xc7, 0x93, 0x80, 0x6d, 0x89, 0xc4, 0x83, 0xb3,
-	0x31, 0x54, 0xb7, 0x50, 0x03, 0x56, 0xcc, 0x11, 0x1d, 0x3b, 0xc1, 0xb5, 0x5d, 0x4d, 0xee, 0x47,
-	0x1f, 0x43, 0x86, 0x3f, 0x8a, 0x41, 0x3d, 0xbb, 0x6f, 0x3b, 0xdc, 0xd3, 0xd2, 0x07, 0x8f, 0x2e,
-	0x7b, 0xa9, 0x16, 0x83, 0x35, 0xc7, 0x72, 0xa9, 0xed, 0x04, 0x8d, 0x04, 0x4e, 0x73, 0xb9, 0x36,
-	0xdf, 0x8b, 0x0e, 0x21, 0x2b, 0xb3, 0x98, 0x24, 0x5b, 0xe6, 0x64, 0xdf, 0xb8, 0xda, 0xb3, 0x37,
-	0x12, 0x38, 0x23, 0xb6, 0x4b, 0xba, 0x2e, 0xe4, 0xc5, 0xd1, 0x2c, 0xe2, 0x07, 0xb6, 0xc3, 0x23,
-	0x93, 0xbb, 0xd7, 0x95, 0xcf, 0xa7, 0x60, 0x95, 0xcb, 0xd5, 0x67, 0x04, 0xe8, 0x25, 0x20, 0x79,
-	0xc8, 0x38, 0xed, 0xad, 0x77, 0x3a, 0xa9, 0xc2, 0x72, 0x38, 0x43, 0xe2, 0xc4, 0xcf, 0x20, 0x63,
-	0x3b, 0x76, 0x60, 0x9b, 0x01, 0xb1, 0x0c, 0x33, 0xe0, 0x3e, 0x77, 0x55, 0xaf, 0x4d, 0x47, 0x3b,
-	0x2b, 0x01, 0xf3, 0x7e, 0x72, 0xe6, 0x92, 0x9e, 0xe4, 0x59, 0x7b, 0x17, 0xef, 0x0f, 0x37, 0x56,
-	0x02, 0xf4, 0xa3, 0xc8, 0xfb, 0x81, 0x7b, 0xff, 0xa5, 0x97, 0x0b, 0x1d, 0x72, 0xc1, 0xef, 0x7f,
-	0x01, 0x1b, 0x3c, 0xa2, 0x0d, 0x33, 0x30, 0xe4, 0xf1, 0xd8, 0x4b, 0xa5, 0xaf, 0xe9, 0x70, 0x79,
-	0x4e, 0x56, 0x09, 0xf4, 0x88, 0x0a, 0xbd, 0x82, 0xbc, 0xeb, 0xd1, 0x89, 0x6d, 0x11, 0xcf, 0x08,
-	0x3c, 0xb3, 0x77, 0x6a, 0x3b, 0xfd, 0x42, 0x86, 0x5f, 0xf7, 0xd2, 0x50, 0xed, 0xc8, 0x0d, 0x5d,
-	0x29, 0xaf, 0x3b, 0x27, 0x14, 0xab, 0xee, 0x02, 0x5a, 0x5d, 0x85, 0x15, 0xe1, 0x83, 0xd5, 0x2c,
-	0xa4, 0x63, 0x86, 0x2e, 0xfe, 0x0c, 0xb2, 0x73, 0x3e, 0x82, 0x9a, 0x90, 0xa3, 0x2e, 0xf1, 0xf8,
-	0xaa, 0xc1, 0x5a, 0x10, 0x1e, 0x8d, 0xb9, 0xcb, 0x5d, 0xac, 0x1d, 0x4a, 0x77, 0xa7, 0x2e, 0xc1,
-	0x59, 0x1a, 0xff, 0x2c, 0xfe, 0x4e, 0x81, 0xcd, 0x8b, 0x8e, 0xc8, 0x8a, 0x6c, 0x54, 0x53, 0x66,
-	0x97, 0x55, 0xf8, 0x65, 0x9f, 0x5c, 0xa6, 0xaa, 0x11, 0xee, 0x88, 0x53, 0x35, 0x12, 0x38, 0x3f,
-	0x58, 0x5c, 0xa8, 0xae, 0x43, 0x36, 0x64, 0x65, 0x95, 0x9c, 0x16, 0xff, 0x90, 0x84, 0xad, 0x0b,
-	0xf7, 0xa3, 0x7b, 0x00, 0x23, 0xe2, 0xfb, 0x66, 0x9f, 0x84, 0xb5, 0x37, 0x83, 0xd7, 0x24, 0xa2,
-	0x5b, 0x2c, 0x91, 0x89, 0xa7, 0x33, 0x2c, 0x3a, 0x32, 0x6d, 0x87, 0x67, 0xa0, 0x2c, 0xce, 0x08,
-	0xb0, 0xce, 0x31, 0xf4, 0x04, 0x50, 0xec, 0x55, 0x43, 0xc9, 0x14, 0x97, 0xcc, 0xc7, 0x56, 0xa4,
-	0xf8, 0x26, 0x2c, 0x3b, 0xd4, 0xe9, 0x89, 0xae, 0x62, 0x09, 0x8b, 0x0f, 0xf4, 0x90, 0x65, 0x56,
-	0xae, 0x29, 0x38, 0x33, 0x06, 0xa6, 0x3f, 0x10, 0x55, 0x29, 0x54, 0xd5, 0x3d, 0x6b, 0x98, 0xfe,
-	0x00, 0x95, 0x60, 0x23, 0xae, 0x2a, 0x14, 0xe5, 0x75, 0x66, 0x4e, 0x97, 0x94, 0xbf, 0xcb, 0x0a,
-	0x27, 0xed, 0x11, 0xdf, 0x27, 0x16, 0x8f, 0xeb, 0x55, 0x3c, 0x03, 0x8a, 0x9f, 0xa5, 0x60, 0xbd,
-	0x55, 0x79, 0xd1, 0xe6, 0xb9, 0x5b, 0xd6, 0x89, 0x5d, 0x48, 0x47, 0x6d, 0x57, 0x94, 0x8d, 0x21,
-	0x84, 0x74, 0x6b, 0xb1, 0x76, 0x26, 0x6f, 0xb2, 0x76, 0xde, 0x74, 0xdf, 0x50, 0x85, 0xb5, 0xa8,
-	0xd7, 0x96, 0xd9, 0xfc, 0x6a, 0xb9, 0x63, 0xb6, 0x0d, 0xdd, 0x87, 0x8c, 0x4f, 0xc7, 0x5e, 0x8f,
-	0x88, 0x0e, 0x58, 0x9a, 0x25, 0x2d, 0x30, 0xde, 0xb5, 0x2e, 0x38, 0x91, 0x30, 0x46, 0xcc, 0x89,
-	0xaa, 0x51, 0xf2, 0xb9, 0xc5, 0xa3, 0xe9, 0xf1, 0xa5, 0xd1, 0x14, 0x33, 0xc4, 0x7c, 0x02, 0x2a,
-	0x7e, 0x95, 0x84, 0xcd, 0x30, 0xe5, 0x0a, 0xb1, 0x1a, 0x75, 0x4e, 0xec, 0xfe, 0xd7, 0xdb, 0xeb,
-	0xdb, 0x90, 0x97, 0x8e, 0x65, 0x5b, 0xc4, 0x09, 0xec, 0x13, 0x9b, 0x78, 0xb2, 0x90, 0xaa, 0x62,
-	0x41, 0x8f, 0xf0, 0xf3, 0x85, 0x3b, 0x75, 0xbe, 0x70, 0xa3, 0x6f, 0xc2, 0xba, 0x6c, 0x02, 0x7a,
-	0xd4, 0x61, 0x81, 0x16, 0x88, 0x9e, 0x0c, 0xcb, 0xde, 0xa0, 0x26, 0xd1, 0xab, 0x3c, 0xdd, 0x42,
-	0x77, 0xb3, 0x72, 0xcd, 0xee, 0x46, 0x87, 0xec, 0x2c, 0x7b, 0xb2, 0xbc, 0x25, 0x5e, 0xfa, 0xe1,
-	0xd7, 0x66, 0x4e, 0x96, 0xb6, 0x32, 0x6e, 0xec, 0xab, 0xf8, 0xdb, 0x25, 0xd8, 0x9e, 0x4d, 0x5b,
-	0x51, 0x1f, 0xe4, 0x98, 0xae, 0x3f, 0xa0, 0x01, 0xcb, 0x5d, 0xa2, 0xc3, 0x93, 0x85, 0x53, 0x34,
-	0x7a, 0xca, 0x75, 0x07, 0x04, 0xce, 0x25, 0x2a, 0xaa, 0x68, 0xf7, 0x8e, 0x61, 0x53, 0xf0, 0x2f,
-	0x8c, 0x20, 0xc9, 0x6b, 0x6a, 0x10, 0xa7, 0x9d, 0x1b, 0x42, 0xd0, 0xb7, 0x40, 0x65, 0xdd, 0xd3,
-	0x64, 0x36, 0x61, 0x85, 0x86, 0x5e, 0x17, 0x78, 0x78, 0x6b, 0x6e, 0x6b, 0xee, 0x0c, 0x31, 0xc9,
-	0x25, 0x2e, 0x99, 0xe3, 0xf0, 0x4c, 0xf0, 0x3e, 0x64, 0x8e, 0x87, 0xb4, 0x77, 0x6a, 0x0c, 0x08,
-	0x53, 0xc4, 0x6d, 0x9d, 0xc2, 0x69, 0x8e, 0x35, 0x38, 0x84, 0x7e, 0x09, 0x39, 0x51, 0x44, 0x8f,
-	0xa7, 0x86, 0xc7, 0xa6, 0xd8, 0xc2, 0xca, 0x5e, 0x6a, 0x3f, 0x7d, 0x50, 0xbf, 0xcc, 0x4a, 0x97,
-	0x9b, 0xa1, 0xc4, 0x2f, 0x52, 0x9d, 0xf2, 0x61, 0x58, 0x73, 0x02, 0x6f, 0xca, 0x86, 0x90, 0x19,
-	0xb4, 0xfd, 0x63, 0xc8, 0x9f, 0x13, 0x41, 0x2a, 0xa4, 0x4e, 0xc9, 0x94, 0x1b, 0x2b, 0x8b, 0xd9,
-	0x4f, 0x96, 0x8b, 0x63, 0xcf, 0x8b, 0xc5, 0xc7, 0xf7, 0x93, 0xdf, 0x53, 0x8a, 0xff, 0x4e, 0x81,
-	0x3a, 0xd3, 0x2f, 0x83, 0xad, 0x04, 0x1b, 0x2c, 0x3c, 0xa4, 0xe9, 0xc9, 0x99, 0x4b, 0xfd, 0xb1,
-	0x27, 0xac, 0xbf, 0x8c, 0xf3, 0x23, 0xf3, 0x4c, 0x58, 0x52, 0x93, 0x0b, 0xec, 0xf5, 0x2c, 0x72,
-	0xc2, 0xc7, 0x2e, 0x96, 0x50, 0xe8, 0x38, 0xe0, 0x8a, 0x52, 0x38, 0x27, 0xe1, 0xae, 0x40, 0x99,
-	0x45, 0x44, 0x04, 0x18, 0x27, 0x1e, 0xf9, 0xd5, 0x98, 0x38, 0xbd, 0x69, 0x68, 0x11, 0x81, 0x3f,
-	0x0d, 0x61, 0xf4, 0x21, 0x6c, 0xc6, 0xce, 0x30, 0x6f, 0x96, 0x2c, 0x46, 0xd1, 0x21, 0x66, 0xa6,
-	0x79, 0x04, 0x39, 0x73, 0x38, 0xa4, 0x9f, 0x10, 0x4b, 0xc4, 0xa1, 0x5f, 0x58, 0xde, 0x4b, 0xb1,
-	0x3e, 0x5a, 0xa2, 0xfc, 0x86, 0x3e, 0x2a, 0xc0, 0x2d, 0xe2, 0x98, 0xc7, 0x43, 0x22, 0x52, 0xd8,
-	0x2a, 0x0e, 0x3f, 0xd1, 0x01, 0x6c, 0xcd, 0x0d, 0xc5, 0xd6, 0xd8, 0x9b, 0x75, 0x8a, 0x29, 0xbc,
-	0x11, 0x9b, 0x72, 0xeb, 0x72, 0xe9, 0x92, 0x41, 0x7a, 0xf5, 0xa6, 0x06, 0x69, 0xf4, 0x1c, 0x36,
-	0xfc, 0xb1, 0xeb, 0x52, 0x8f, 0x75, 0x86, 0x61, 0x00, 0xb3, 0x71, 0x24, 0x75, 0xe5, 0xb8, 0x47,
-	0x11, 0x41, 0x08, 0xfb, 0xc5, 0xdf, 0x27, 0x01, 0xf1, 0x4c, 0x17, 0x6a, 0xab, 0x0c, 0x89, 0x17,
-	0xa0, 0xdb, 0xb0, 0xca, 0x3d, 0x36, 0x4c, 0xb1, 0x59, 0x7c, 0x8b, 0x7f, 0xeb, 0x57, 0x9e, 0x52,
-	0x1e, 0x40, 0x76, 0x40, 0xc7, 0x9e, 0x6f, 0xd0, 0x09, 0xf1, 0xac, 0x31, 0xe1, 0xe6, 0x55, 0x70,
-	0x86, 0x83, 0x6d, 0x81, 0xdd, 0x48, 0xbd, 0x9a, 0x8d, 0x43, 0xcb, 0xff, 0xdb, 0x38, 0xf4, 0xf8,
-	0xb5, 0x02, 0x9b, 0x17, 0x4d, 0x83, 0x68, 0x1b, 0xde, 0xc3, 0xda, 0x61, 0xbb, 0xab, 0x19, 0x9d,
-	0xf6, 0x91, 0xde, 0xd5, 0xdb, 0x2d, 0xa3, 0x52, 0xeb, 0xea, 0x2f, 0x34, 0x35, 0x81, 0x76, 0xe1,
-	0xce, 0xe2, 0xda, 0x4b, 0xbd, 0xdb, 0xa8, 0xe3, 0xca, 0x4b, 0xbd, 0xf5, 0x4c, 0x55, 0x2e, 0xda,
-	0x5c, 0x6b, 0xb6, 0x8f, 0xb4, 0xba, 0x9a, 0x44, 0xb7, 0x61, 0x6b, 0x71, 0x4d, 0xc3, 0xb8, 0x8d,
-	0xd5, 0xd4, 0xf6, 0xd2, 0xa7, 0x7f, 0xdc, 0x49, 0x3c, 0x76, 0x20, 0x3b, 0xd7, 0x72, 0x32, 0xb6,
-	0x76, 0x47, 0xc3, 0x15, 0x2e, 0xdb, 0x7d, 0xd5, 0xd1, 0x8c, 0xba, 0xc6, 0xf7, 0xaa, 0x09, 0x74,
-	0x0f, 0x6e, 0x2f, 0xac, 0x85, 0x27, 0xa9, 0x34, 0x55, 0x05, 0xdd, 0x85, 0xc2, 0xc2, 0x32, 0xd6,
-	0xaa, 0x95, 0x66, 0xa5, 0x55, 0xd3, 0xd4, 0xa4, 0xd4, 0xf7, 0x37, 0x65, 0x36, 0xa3, 0x72, 0x7d,
-	0x7b, 0x70, 0x57, 0x6f, 0x3d, 0x6d, 0xea, 0xcf, 0x1a, 0xdd, 0x50, 0x93, 0xd1, 0x6d, 0x47, 0xc7,
-	0x55, 0x13, 0xe8, 0x11, 0xdc, 0x8f, 0x24, 0x66, 0xfa, 0x8c, 0xa7, 0xb8, 0x7d, 0x38, 0x13, 0x53,
-	0xd0, 0x3e, 0x3c, 0x8c, 0xc4, 0x22, 0xbd, 0x46, 0x55, 0xeb, 0xbe, 0xd4, 0xb4, 0x56, 0x24, 0x78,
-	0xa4, 0x26, 0xd9, 0x8b, 0x46, 0x92, 0x1d, 0xad, 0x55, 0xd7, 0x5b, 0xcf, 0x98, 0xea, 0x66, 0xfb,
-	0xd5, 0xa1, 0xd6, 0xea, 0xaa, 0x29, 0xf4, 0x01, 0xec, 0x9f, 0x13, 0x88, 0x69, 0xae, 0xeb, 0x47,
-	0x5d, 0xac, 0x57, 0x9f, 0x73, 0xc5, 0x4b, 0xf2, 0x62, 0x14, 0x72, 0xf3, 0xa3, 0x0e, 0xda, 0x04,
-	0x75, 0x91, 0x45, 0x4d, 0xa0, 0xf7, 0x00, 0x45, 0x68, 0xad, 0x7d, 0xd8, 0x69, 0x6a, 0x5d, 0xad,
-	0xae, 0x2a, 0x68, 0x03, 0xd6, 0x23, 0xfc, 0x69, 0x45, 0x6f, 0x72, 0xf3, 0xc5, 0x29, 0xba, 0xfa,
-	0xa1, 0xd6, 0x7e, 0xde, 0x8d, 0x59, 0x0e, 0x9d, 0x6f, 0x6f, 0xd0, 0x1d, 0x78, 0xbf, 0x8d, 0x2b,
-	0xb5, 0xa6, 0x66, 0x3c, 0xef, 0xd4, 0x2b, 0x5d, 0xcd, 0x78, 0x51, 0x69, 0xea, 0xec, 0x47, 0x5d,
-	0x4d, 0x30, 0x6f, 0x98, 0x5f, 0xac, 0x74, 0x3a, 0x4d, 0x9d, 0xab, 0x67, 0x66, 0x9f, 0x5b, 0xc2,
-	0xda, 0xc7, 0x5a, 0x8d, 0x6d, 0x0b, 0x2d, 0xd7, 0x80, 0x4c, 0x3c, 0xd8, 0x99, 0xa6, 0x0e, 0x6e,
-	0xbf, 0xd0, 0xeb, 0x1a, 0x16, 0xc6, 0x6e, 0xbc, 0xea, 0x68, 0xb8, 0x59, 0x69, 0x31, 0xa7, 0xdd,
-	0x82, 0xfc, 0xfc, 0xa2, 0x5e, 0xad, 0xa9, 0x8a, 0x60, 0xaa, 0xfe, 0xf0, 0xf3, 0x37, 0x3b, 0xca,
-	0x17, 0x6f, 0x76, 0x94, 0x7f, 0xbd, 0xd9, 0x51, 0x5e, 0xbf, 0xdd, 0x49, 0x7c, 0xf1, 0x76, 0x27,
-	0xf1, 0xf7, 0xb7, 0x3b, 0x89, 0x9f, 0x3e, 0x90, 0xf9, 0x45, 0x24, 0x9b, 0xb3, 0xe9, 0xaf, 0xcb,
-	0x93, 0x8f, 0xc4, 0x7f, 0x6e, 0x67, 0xff, 0x6b, 0x3e, 0x5e, 0xe1, 0x81, 0xfb, 0xd1, 0x7f, 0x03,
-	0x00, 0x00, 0xff, 0xff, 0xa4, 0x96, 0x67, 0x4d, 0x8c, 0x16, 0x00, 0x00,
+	// 1747 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x58, 0xcd, 0x6f, 0x23, 0x49,
+	0x15, 0x4f, 0xdb, 0xf9, 0x7c, 0xfe, 0x88, 0x53, 0x49, 0x66, 0x3c, 0x99, 0x99, 0x24, 0x9b, 0x65,
+	0x21, 0x3b, 0xda, 0xd8, 0x4b, 0x56, 0x42, 0x08, 0x04, 0xa8, 0x63, 0xf7, 0xc4, 0x8d, 0x9c, 0xd8,
+	0xd4, 0x38, 0x33, 0x62, 0x0f, 0x34, 0xe5, 0xee, 0x8a, 0xdd, 0xa4, 0xdd, 0xd5, 0x74, 0x97, 0xbd,
+	0x36, 0x5c, 0x39, 0xc0, 0x6d, 0x8f, 0x5c, 0x38, 0x71, 0xd9, 0x23, 0x42, 0xfc, 0x11, 0xcb, 0x6d,
+	0xc5, 0x09, 0x71, 0x58, 0xd0, 0xcc, 0x81, 0x7f, 0x81, 0x13, 0x42, 0x55, 0xd5, 0xed, 0xaf, 0x24,
+	0x62, 0x08, 0xd9, 0x8b, 0xd5, 0xf5, 0xab, 0xf7, 0x7e, 0xaf, 0xea, 0x7d, 0xd5, 0x93, 0xe1, 0xd0,
+	0x67, 0x6d, 0x8f, 0x96, 0x1d, 0xe6, 0x79, 0x24, 0x2c, 0x0f, 0x48, 0xdf, 0xe3, 0x51, 0x79, 0x70,
+	0x5c, 0xb6, 0x43, 0x16, 0x45, 0x96, 0xdd, 0x25, 0xae, 0x5f, 0x0a, 0x42, 0xc6, 0x19, 0x7a, 0x20,
+	0x25, 0x4b, 0x4a, 0xb2, 0xa4, 0x24, 0x4b, 0x83, 0xe3, 0x9d, 0x0d, 0xd2, 0x73, 0x7d, 0x56, 0x96,
+	0xbf, 0x4a, 0x74, 0xe7, 0x91, 0xcd, 0xa2, 0x1e, 0x8b, 0x2c, 0xb9, 0x2a, 0xab, 0x45, 0xbc, 0xb5,
+	0xd5, 0x61, 0x1d, 0xa6, 0x70, 0xf1, 0x15, 0xa3, 0x7b, 0x1d, 0xc6, 0x3a, 0x1e, 0x2d, 0xcb, 0x55,
+	0xbb, 0x7f, 0x59, 0xe6, 0x6e, 0x8f, 0x46, 0x9c, 0xf4, 0x82, 0x58, 0xe0, 0x69, 0x77, 0x14, 0xd0,
+	0xd0, 0x23, 0x3e, 0x2d, 0x7f, 0x42, 0xc2, 0xa0, 0x3c, 0xf8, 0x66, 0x99, 0x8f, 0x02, 0x1a, 0xb3,
+	0x1e, 0xfc, 0x39, 0x0d, 0xeb, 0x15, 0x71, 0xe2, 0x8a, 0x38, 0x30, 0x66, 0x7d, 0x4e, 0x91, 0x03,
+	0x99, 0xee, 0x28, 0xe0, 0xec, 0x8a, 0xfa, 0x96, 0xeb, 0x14, 0xb5, 0x7d, 0xed, 0x70, 0xed, 0xa4,
+	0xf2, 0xf9, 0x97, 0x7b, 0x0b, 0x7f, 0xfb, 0x72, 0xef, 0xbb, 0x1d, 0x97, 0x77, 0xfb, 0xed, 0x92,
+	0xcd, 0x7a, 0xe5, 0xb6, 0x1d, 0x1c, 0xb9, 0xbe, 0xcf, 0x06, 0x84, 0xbb, 0xcc, 0x8f, 0xca, 0x63,
+	0x53, 0x47, 0xea, 0xe4, 0xe5, 0x3e, 0x77, 0xbd, 0x52, 0x8d, 0x0e, 0x75, 0xc7, 0x09, 0x69, 0x14,
+	0x61, 0x48, 0x78, 0x4d, 0x07, 0x45, 0xb0, 0x19, 0x52, 0x9b, 0xba, 0x03, 0x1a, 0x2a, 0x6f, 0x59,
+	0x5d, 0xc6, 0xae, 0x8a, 0xa9, 0xfb, 0xb3, 0xb6, 0x91, 0xf0, 0xcb, 0xbb, 0xd5, 0x18, 0xbb, 0x42,
+	0xbf, 0x84, 0x87, 0x21, 0xed, 0x31, 0x4e, 0xad, 0x80, 0x45, 0xae, 0xe0, 0xb1, 0x88, 0x92, 0x2e,
+	0xa6, 0xef, 0xcf, 0xf0, 0xb6, 0xb2, 0xd1, 0x8c, 0x4d, 0xc4, 0x30, 0xfa, 0x09, 0xa0, 0x1e, 0x19,
+	0x5a, 0xae, 0x7f, 0xe9, 0xb9, 0x9d, 0x2e, 0xb7, 0x06, 0xc4, 0xeb, 0xd3, 0xe2, 0xa2, 0xb4, 0xfb,
+	0x61, 0x6c, 0x77, 0x5b, 0x51, 0x46, 0xce, 0x55, 0xc9, 0x65, 0xe5, 0x1e, 0xe1, 0xdd, 0x92, 0xe9,
+	0xf3, 0xbf, 0xfc, 0xe9, 0x08, 0xe2, 0x64, 0x30, 0x7d, 0xfe, 0xd9, 0x3f, 0xff, 0xf0, 0x4c, 0xc3,
+	0x85, 0x1e, 0x19, 0x9a, 0x31, 0xd5, 0x4b, 0xc1, 0x74, 0xf0, 0xdb, 0x65, 0xc8, 0xe3, 0x19, 0xcb,
+	0x28, 0x0f, 0xa9, 0x38, 0x82, 0x8b, 0x38, 0xe5, 0x3a, 0xf3, 0xa1, 0x4d, 0x7d, 0x35, 0xa1, 0xed,
+	0x42, 0x4e, 0x66, 0xf9, 0x8c, 0x6f, 0xb3, 0xf7, 0x63, 0x27, 0x2b, 0x99, 0x13, 0x97, 0xfe, 0x08,
+	0x32, 0x51, 0x97, 0x84, 0x34, 0xb2, 0xba, 0xd4, 0x73, 0xee, 0xec, 0x4b, 0x50, 0x24, 0x35, 0xea,
+	0x39, 0xe8, 0x1c, 0xd6, 0x82, 0xd0, 0xf5, 0x6d, 0x37, 0x20, 0x5e, 0x71, 0xe9, 0x8e, 0x84, 0x13,
+	0x0a, 0xf4, 0x2a, 0x3e, 0xa2, 0x15, 0x84, 0xae, 0x4d, 0x8b, 0xcb, 0x92, 0xf1, 0x5b, 0x31, 0xe3,
+	0xe3, 0xeb, 0x8c, 0x75, 0xda, 0x21, 0xf6, 0xa8, 0x4a, 0xed, 0x29, 0xde, 0x2a, 0xb5, 0xa7, 0x0f,
+	0xda, 0x14, 0x4c, 0xe2, 0xee, 0x9c, 0x71, 0xe2, 0xc5, 0x79, 0xb4, 0x72, 0xd7, 0xbb, 0x4b, 0x12,
+	0x99, 0x41, 0xc8, 0x80, 0x8c, 0x47, 0x22, 0x6e, 0xf5, 0x03, 0x87, 0x70, 0x5a, 0x5c, 0xdd, 0xd7,
+	0x0e, 0x33, 0xc7, 0x3b, 0x25, 0xd5, 0x63, 0x4a, 0x49, 0x8f, 0x29, 0xb5, 0x92, 0x1e, 0x73, 0xb2,
+	0x2a, 0xcc, 0x7d, 0xfa, 0xf7, 0x3d, 0x0d, 0x83, 0x50, 0xbc, 0x90, 0x7a, 0xa8, 0x0a, 0xcb, 0x11,
+	0x27, 0xbc, 0x1f, 0x15, 0xd7, 0xf6, 0xb5, 0xc3, 0xfc, 0xf1, 0x07, 0xa5, 0x9b, 0x3b, 0x60, 0x69,
+	0x36, 0x5b, 0x5f, 0x48, 0x1d, 0x1c, 0xeb, 0xa2, 0xf7, 0x20, 0xcf, 0x42, 0x62, 0x7b, 0x74, 0x9c,
+	0x46, 0x20, 0xae, 0x88, 0x73, 0x0a, 0x4d, 0x52, 0xe0, 0x5d, 0xc8, 0x89, 0xaa, 0x8a, 0x38, 0xf1,
+	0xa8, 0x2f, 0xa4, 0x32, 0xfb, 0xda, 0x61, 0x1a, 0x67, 0x7b, 0x64, 0xf8, 0x22, 0xc1, 0x0e, 0xfe,
+	0xb5, 0x08, 0xd9, 0xa4, 0x58, 0x9e, 0xf7, 0x7d, 0xe7, 0x5a, 0x61, 0x7c, 0x00, 0x68, 0xbe, 0x31,
+	0xc4, 0xf5, 0xb1, 0x88, 0x0b, 0xb3, 0xe5, 0x6c, 0x3a, 0xe8, 0x14, 0xd6, 0x1c, 0x37, 0xa4, 0xb6,
+	0x58, 0xca, 0xe4, 0xce, 0x1f, 0xbf, 0x7f, 0xdb, 0x1d, 0x13, 0xb3, 0xd5, 0x44, 0x01, 0x4f, 0x74,
+	0x51, 0x0d, 0x96, 0x49, 0x8f, 0xf5, 0x7d, 0x7e, 0xe7, 0xd4, 0x8d, 0xf5, 0xd1, 0x29, 0x64, 0x5d,
+	0xdf, 0xe5, 0x2e, 0xe1, 0xd4, 0xb1, 0x08, 0x97, 0x9e, 0x7f, 0xdb, 0xd8, 0x65, 0xc6, 0x9a, 0x3a,
+	0x17, 0x39, 0x40, 0x87, 0x01, 0xb5, 0x63, 0x1e, 0xf8, 0x5f, 0x72, 0x20, 0x51, 0xd4, 0x39, 0xfa,
+	0xfe, 0x38, 0x07, 0x32, 0xd2, 0x3f, 0x5f, 0xff, 0x6f, 0xfe, 0x99, 0x8b, 0xfe, 0x4f, 0x61, 0x53,
+	0xe6, 0xb5, 0x45, 0xb8, 0x15, 0x1f, 0x4f, 0x38, 0x3b, 0x7b, 0x47, 0x37, 0x6d, 0x48, 0x32, 0x9d,
+	0x9b, 0x63, 0x2a, 0x44, 0xe1, 0xe1, 0xb8, 0xdb, 0x58, 0x3c, 0x24, 0xf6, 0x95, 0xeb, 0x77, 0x44,
+	0x77, 0x66, 0xc5, 0x9c, 0xbc, 0xf4, 0xd1, 0x6d, 0x47, 0xae, 0x25, 0x6a, 0xad, 0x58, 0xcb, 0xf4,
+	0x2f, 0x19, 0xde, 0xee, 0xde, 0x04, 0x1f, 0xfc, 0x5b, 0x83, 0xed, 0x1b, 0x15, 0xd0, 0x53, 0x80,
+	0x1e, 0x8d, 0x22, 0xd2, 0xa1, 0xc9, 0x33, 0x9b, 0xc5, 0x6b, 0x31, 0x62, 0x3a, 0x22, 0xb1, 0x59,
+	0xe8, 0x76, 0x5c, 0xdf, 0x72, 0x58, 0x8f, 0xb8, 0xbe, 0xcc, 0xc6, 0x1c, 0xce, 0x2a, 0xb0, 0x2a,
+	0x31, 0x74, 0x04, 0xc8, 0xa1, 0x11, 0x77, 0x7d, 0x79, 0xa7, 0x44, 0x32, 0x2d, 0x25, 0x37, 0xa6,
+	0x76, 0x62, 0xf1, 0xaf, 0x89, 0x9a, 0x92, 0x9c, 0x7c, 0x68, 0x75, 0x49, 0xd4, 0x55, 0x1d, 0x2e,
+	0x21, 0x6d, 0x0d, 0x6b, 0x24, 0xea, 0xa2, 0x12, 0x6c, 0x4e, 0x93, 0x26, 0xa2, 0xb2, 0x75, 0xcd,
+	0xb0, 0xc6, 0xf2, 0x4f, 0x44, 0xcb, 0x64, 0x36, 0x8d, 0x22, 0xea, 0xc8, 0x3e, 0xb4, 0x8a, 0x27,
+	0xc0, 0xc1, 0x67, 0x69, 0x58, 0xd7, 0x2f, 0xce, 0x1a, 0xb2, 0x6a, 0xe3, 0x0e, 0xb1, 0x07, 0x99,
+	0xe9, 0x3a, 0x53, 0x75, 0x08, 0xc1, 0xa4, 0xc2, 0xe6, 0xba, 0x66, 0xea, 0x3e, 0xbb, 0xe6, 0xf4,
+	0x8b, 0x91, 0xbe, 0x87, 0x17, 0xe3, 0x04, 0xd6, 0xc6, 0x53, 0x97, 0xac, 0xe3, 0xb7, 0xad, 0x97,
+	0x89, 0x1a, 0x7a, 0x07, 0xb2, 0x11, 0xeb, 0x87, 0x36, 0x55, 0xb3, 0x50, 0x1c, 0x96, 0x8c, 0xc2,
+	0xe4, 0xfc, 0x32, 0x97, 0x2e, 0x2a, 0x18, 0x53, 0xe9, 0x72, 0x32, 0x2e, 0xb8, 0x15, 0x59, 0x70,
+	0xcf, 0x6e, 0xcb, 0xde, 0xe9, 0x40, 0xcc, 0x16, 0xdd, 0xc1, 0xaf, 0x16, 0x61, 0x67, 0x32, 0x0d,
+	0x8e, 0xfb, 0xb2, 0x4f, 0x82, 0xa8, 0xcb, 0xb8, 0x18, 0x60, 0xd4, 0x8b, 0x13, 0xb7, 0x4a, 0xf5,
+	0xf0, 0x68, 0x77, 0x1d, 0x60, 0x24, 0x97, 0x7a, 0x02, 0xd4, 0xf3, 0xd3, 0x86, 0x2d, 0xc5, 0x3f,
+	0x37, 0x22, 0xa5, 0xee, 0x68, 0x41, 0x9d, 0x76, 0x66, 0x48, 0x42, 0xef, 0x43, 0x81, 0xd8, 0xdc,
+	0x1d, 0x4c, 0x1a, 0xbd, 0x1a, 0x4f, 0xd2, 0x78, 0x5d, 0xe1, 0xc9, 0xad, 0x23, 0xf4, 0x0d, 0x58,
+	0x97, 0xaf, 0xca, 0x94, 0xe4, 0xa2, 0x94, 0xcc, 0x4b, 0x78, 0x22, 0xf8, 0x0e, 0x64, 0xdb, 0x1e,
+	0xb3, 0xaf, 0xac, 0x2e, 0x15, 0x86, 0x64, 0xf0, 0xd2, 0x38, 0x23, 0xb1, 0x9a, 0x84, 0xd0, 0xcf,
+	0x20, 0xaf, 0xda, 0x59, 0x7b, 0x64, 0x85, 0x62, 0xca, 0x2e, 0x2e, 0xef, 0xa7, 0x0f, 0x33, 0xc7,
+	0xd5, 0xdb, 0xa2, 0x74, 0x7b, 0x18, 0x4a, 0xf2, 0x22, 0x27, 0x23, 0x39, 0xac, 0x1b, 0x3e, 0x0f,
+	0x47, 0x62, 0x28, 0x9a, 0x40, 0x3b, 0x3f, 0x80, 0x8d, 0x6b, 0x22, 0xa8, 0x00, 0xe9, 0x2b, 0x3a,
+	0x92, 0xc1, 0xca, 0x61, 0xf1, 0x89, 0xb6, 0x60, 0x69, 0xca, 0xbd, 0x58, 0x2d, 0xbe, 0x93, 0xfa,
+	0xb6, 0x76, 0xf0, 0xbb, 0x34, 0x14, 0x26, 0xf6, 0x2b, 0xcc, 0xbf, 0x74, 0x3b, 0xa2, 0x29, 0x88,
+	0x77, 0x36, 0x0e, 0x3d, 0x1d, 0x06, 0x2c, 0xea, 0x87, 0x2a, 0xfa, 0x4b, 0x78, 0xa3, 0x47, 0x86,
+	0x2a, 0x92, 0x46, 0xbc, 0x21, 0xbc, 0xe7, 0xd0, 0x4b, 0x39, 0x06, 0x8a, 0x34, 0x67, 0x7d, 0x2e,
+	0x0d, 0xa5, 0x71, 0x3e, 0x86, 0x5b, 0x0a, 0x15, 0x11, 0x51, 0xf3, 0x86, 0x75, 0x19, 0xd2, 0x9f,
+	0xf7, 0xa9, 0x6f, 0x8f, 0x92, 0x88, 0x28, 0xfc, 0x79, 0x02, 0xa3, 0x0f, 0x61, 0x6b, 0xea, 0x0c,
+	0xb3, 0x61, 0xc9, 0x61, 0x34, 0x3e, 0xc4, 0x24, 0x34, 0xef, 0x41, 0x9e, 0x78, 0x1e, 0xfb, 0x84,
+	0x3a, 0xaa, 0xb0, 0xa2, 0xe2, 0xd2, 0x7e, 0x5a, 0x0c, 0x11, 0x31, 0x2a, 0x6f, 0x18, 0xa1, 0x22,
+	0xac, 0x50, 0x9f, 0xb4, 0x3d, 0xaa, 0x0a, 0x6b, 0x15, 0x27, 0x4b, 0x74, 0x0c, 0xdb, 0x33, 0x43,
+	0xbb, 0xd3, 0x0f, 0xd5, 0x4b, 0xb4, 0x22, 0x8f, 0xb8, 0x39, 0x35, 0x85, 0x57, 0xe3, 0xad, 0x5b,
+	0x06, 0xfd, 0xd5, 0x7b, 0x1b, 0xf4, 0x7f, 0x93, 0x02, 0x24, 0x67, 0x9b, 0x04, 0xd6, 0x3d, 0x1a,
+	0x72, 0xf4, 0x08, 0x56, 0x65, 0x6a, 0x25, 0x1d, 0x35, 0x87, 0x57, 0xe4, 0xda, 0x74, 0x84, 0x1b,
+	0x78, 0x48, 0xfc, 0x88, 0xd8, 0xd3, 0xa3, 0xcd, 0x1a, 0xce, 0x4d, 0xa1, 0xea, 0xc9, 0xe9, 0xb2,
+	0x7e, 0x18, 0x59, 0x6c, 0x40, 0x43, 0xa7, 0x4f, 0x65, 0x1c, 0x34, 0x9c, 0x95, 0x60, 0x43, 0x61,
+	0xf7, 0xd2, 0xee, 0x26, 0x73, 0xcf, 0xd2, 0xff, 0x37, 0xf7, 0x3c, 0xfb, 0xa3, 0x06, 0x5b, 0x37,
+	0x8d, 0x91, 0x68, 0x1f, 0x9e, 0x60, 0xe3, 0xac, 0xd1, 0x32, 0xac, 0x66, 0xe3, 0x85, 0xd9, 0x32,
+	0x1b, 0xe7, 0x96, 0x79, 0x6e, 0xb6, 0x4c, 0xbd, 0x6e, 0x7e, 0x6c, 0x9e, 0x9f, 0x16, 0x16, 0xd0,
+	0x0e, 0x3c, 0x98, 0x97, 0xd0, 0x2b, 0x2d, 0xf3, 0xa5, 0x51, 0xd0, 0xd0, 0x1e, 0x3c, 0x9e, 0xdf,
+	0x7b, 0x65, 0xb6, 0x6a, 0x55, 0xac, 0xbf, 0x12, 0xca, 0xa9, 0x9b, 0x94, 0x2b, 0xf5, 0xc6, 0x0b,
+	0xa3, 0x5a, 0x48, 0xa3, 0x47, 0xb0, 0x3d, 0xbf, 0x67, 0x60, 0xdc, 0xc0, 0x85, 0xc5, 0x9d, 0xc5,
+	0x5f, 0xff, 0x7e, 0x77, 0xe1, 0x99, 0x0f, 0xb9, 0x46, 0x40, 0x55, 0xb6, 0xb4, 0x46, 0x01, 0x15,
+	0x6c, 0x8d, 0xa6, 0x81, 0x75, 0x29, 0xdb, 0xfa, 0x71, 0xd3, 0xb0, 0xaa, 0x86, 0xd4, 0x2d, 0x2c,
+	0xa0, 0xa7, 0xf0, 0x68, 0x6e, 0x2f, 0x39, 0x89, 0x5e, 0x2f, 0x68, 0xe8, 0x09, 0x14, 0xe7, 0xb6,
+	0xb1, 0x71, 0xa2, 0xd7, 0xf5, 0xf3, 0x8a, 0x51, 0x48, 0xc5, 0xf6, 0x4e, 0x61, 0xe3, 0xda, 0x18,
+	0x8a, 0xb6, 0x61, 0xc3, 0x3c, 0x7f, 0x5e, 0x37, 0x4f, 0x6b, 0x2d, 0xab, 0x71, 0xd1, 0x3a, 0x6d,
+	0x28, 0xaf, 0x4c, 0xc3, 0xe6, 0x79, 0xa5, 0x71, 0x26, 0x60, 0x2d, 0x26, 0x62, 0x90, 0x9f, 0x9d,
+	0xd7, 0xd0, 0x16, 0x14, 0xc6, 0xe2, 0x4d, 0xe3, 0xbc, 0xaa, 0x48, 0x1e, 0x00, 0x1a, 0xa3, 0x95,
+	0xc6, 0x59, 0xb3, 0x6e, 0xb4, 0x8c, 0x6a, 0x41, 0x43, 0x9b, 0xb0, 0x3e, 0xc6, 0x9f, 0xeb, 0x66,
+	0xdd, 0xa8, 0x16, 0x52, 0x33, 0x14, 0x2d, 0xf3, 0xcc, 0x68, 0x5c, 0xb4, 0x0a, 0xe9, 0xb1, 0xa7,
+	0xd0, 0xf5, 0xf7, 0x0a, 0x3d, 0x86, 0x87, 0x0d, 0xac, 0x57, 0xea, 0x86, 0x75, 0xd1, 0xac, 0xea,
+	0x2d, 0xc3, 0x7a, 0xa9, 0xd7, 0x4d, 0xf1, 0x51, 0x2d, 0x2c, 0x08, 0xef, 0xcf, 0x6e, 0xea, 0xcd,
+	0x66, 0xdd, 0x94, 0xe6, 0x85, 0x9b, 0x67, 0xb6, 0xb0, 0xf1, 0x43, 0xa3, 0x22, 0xd4, 0x62, 0x4f,
+	0x9d, 0x7c, 0xef, 0xf3, 0xd7, 0xbb, 0xda, 0x17, 0xaf, 0x77, 0xb5, 0x7f, 0xbc, 0xde, 0xd5, 0x3e,
+	0x7d, 0xb3, 0xbb, 0xf0, 0xc5, 0x9b, 0xdd, 0x85, 0xbf, 0xbe, 0xd9, 0x5d, 0xf8, 0xf8, 0xdd, 0xb8,
+	0x45, 0xab, 0x7e, 0x3d, 0x1c, 0xfd, 0xa2, 0x3c, 0xf8, 0x48, 0xfd, 0x95, 0x32, 0xf9, 0xf3, 0xa7,
+	0xbd, 0x2c, 0x0b, 0xe0, 0xa3, 0xff, 0x04, 0x00, 0x00, 0xff, 0xff, 0x16, 0x7b, 0xa6, 0xa4, 0x1d,
+	0x12, 0x00, 0x00,
 }
 
 func (m *CrossChainRoute) Marshal() (dAtA []byte, err error) {
@@ -1469,19 +1096,19 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.MaxStaleness != 0 {
 		i = encodeVarintCrossChain(dAtA, i, uint64(m.MaxStaleness))
 		i--
-		dAtA[i] = 0x50
+		dAtA[i] = 0x58
 	}
 	if len(m.OracleAddress) > 0 {
 		i -= len(m.OracleAddress)
 		copy(dAtA[i:], m.OracleAddress)
 		i = encodeVarintCrossChain(dAtA, i, uint64(len(m.OracleAddress)))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x52
 	}
 	if m.Status != 0 {
 		i = encodeVarintCrossChain(dAtA, i, uint64(m.Status))
 		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x48
 	}
 	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate):])
 	if err1 != nil {
@@ -1490,7 +1117,7 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n1
 	i = encodeVarintCrossChain(dAtA, i, uint64(n1))
 	i--
-	dAtA[i] = 0x3a
+	dAtA[i] = 0x42
 	{
 		size := m.TotalValue.Size()
 		i -= size
@@ -1500,7 +1127,7 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x32
+	dAtA[i] = 0x3a
 	{
 		size := m.SharePrice.Size()
 		i -= size
@@ -1510,7 +1137,7 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x2a
+	dAtA[i] = 0x32
 	{
 		size := m.Principal.Size()
 		i -= size
@@ -1520,7 +1147,7 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x22
+	dAtA[i] = 0x2a
 	{
 		size := m.SharesHeld.Size()
 		i -= size
@@ -1530,7 +1157,7 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
+	dAtA[i] = 0x22
 	{
 		size := m.VaultAddress.Size()
 		i -= size
@@ -1540,7 +1167,7 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x12
+	dAtA[i] = 0x1a
 	{
 		size := m.HyptokenId.Size()
 		i -= size
@@ -1550,7 +1177,12 @@ func (m *RemotePosition) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0xa
+	dAtA[i] = 0x12
+	if m.Id != 0 {
+		i = encodeVarintCrossChain(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -1574,9 +1206,9 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.ProviderTracking != nil {
+	if m.HyperlaneTrackingInfo != nil {
 		{
-			size, err := m.ProviderTracking.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.HyperlaneTrackingInfo.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -1584,7 +1216,7 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintCrossChain(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x62
+		dAtA[i] = 0x6a
 	}
 	{
 		size := m.ValueAtInitiation.Size()
@@ -1595,11 +1227,11 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x5a
+	dAtA[i] = 0x62
 	if m.Status != 0 {
 		i = encodeVarintCrossChain(dAtA, i, uint64(m.Status))
 		i--
-		dAtA[i] = 0x50
+		dAtA[i] = 0x58
 	}
 	n3, err3 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.ExpectedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpectedAt):])
 	if err3 != nil {
@@ -1608,7 +1240,7 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n3
 	i = encodeVarintCrossChain(dAtA, i, uint64(n3))
 	i--
-	dAtA[i] = 0x4a
+	dAtA[i] = 0x52
 	n4, err4 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.InitiatedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InitiatedAt):])
 	if err4 != nil {
 		return 0, err4
@@ -1616,25 +1248,7 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n4
 	i = encodeVarintCrossChain(dAtA, i, uint64(n4))
 	i--
-	dAtA[i] = 0x42
-	if m.Destination != nil {
-		{
-			size := m.Destination.Size()
-			i -= size
-			if _, err := m.Destination.MarshalTo(dAtA[i:]); err != nil {
-				return 0, err
-			}
-		}
-	}
-	if m.Origin != nil {
-		{
-			size := m.Origin.Size()
-			i -= size
-			if _, err := m.Origin.MarshalTo(dAtA[i:]); err != nil {
-				return 0, err
-			}
-		}
-	}
+	dAtA[i] = 0x4a
 	{
 		size := m.Amount.Size()
 		i -= size
@@ -1644,13 +1258,16 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCrossChain(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
-	if len(m.TransactionId) > 0 {
-		i -= len(m.TransactionId)
-		copy(dAtA[i:], m.TransactionId)
-		i = encodeVarintCrossChain(dAtA, i, uint64(len(m.TransactionId)))
+	dAtA[i] = 0x22
+	if m.Direction != 0 {
+		i = encodeVarintCrossChain(dAtA, i, uint64(m.Direction))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x18
+	}
+	if m.RemotePositionId != 0 {
+		i = encodeVarintCrossChain(dAtA, i, uint64(m.RemotePositionId))
+		i--
+		dAtA[i] = 0x10
 	}
 	if m.Id != 0 {
 		i = encodeVarintCrossChain(dAtA, i, uint64(m.Id))
@@ -1660,171 +1277,6 @@ func (m *InflightFund) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *InflightFund_NobleOrigin) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *InflightFund_NobleOrigin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.NobleOrigin != nil {
-		{
-			size, err := m.NobleOrigin.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCrossChain(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x22
-	}
-	return len(dAtA) - i, nil
-}
-func (m *InflightFund_RemoteOrigin) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *InflightFund_RemoteOrigin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.RemoteOrigin != nil {
-		{
-			size, err := m.RemoteOrigin.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCrossChain(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x2a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *InflightFund_NobleDestination) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *InflightFund_NobleDestination) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.NobleDestination != nil {
-		{
-			size, err := m.NobleDestination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCrossChain(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x32
-	}
-	return len(dAtA) - i, nil
-}
-func (m *InflightFund_RemoteDestination) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *InflightFund_RemoteDestination) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.RemoteDestination != nil {
-		{
-			size, err := m.RemoteDestination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCrossChain(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x3a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *NobleEndpoint) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *NobleEndpoint) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *NobleEndpoint) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.OperationType != 0 {
-		i = encodeVarintCrossChain(dAtA, i, uint64(m.OperationType))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ProviderTrackingInfo) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ProviderTrackingInfo) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ProviderTrackingInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.TrackingInfo != nil {
-		{
-			size := m.TrackingInfo.Size()
-			i -= size
-			if _, err := m.TrackingInfo.MarshalTo(dAtA[i:]); err != nil {
-				return 0, err
-			}
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ProviderTrackingInfo_HyperlaneTracking) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ProviderTrackingInfo_HyperlaneTracking) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.HyperlaneTracking != nil {
-		{
-			size, err := m.HyperlaneTracking.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCrossChain(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
 func (m *HyperlaneTrackingInfo) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1869,11 +1321,6 @@ func (m *HyperlaneTrackingInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x2a
 	}
-	if m.Nonce != 0 {
-		i = encodeVarintCrossChain(dAtA, i, uint64(m.Nonce))
-		i--
-		dAtA[i] = 0x20
-	}
 	if m.DestinationDomain != 0 {
 		i = encodeVarintCrossChain(dAtA, i, uint64(m.DestinationDomain))
 		i--
@@ -1894,7 +1341,7 @@ func (m *HyperlaneTrackingInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NAVOracleUpdate) Marshal() (dAtA []byte, err error) {
+func (m *AUMOracleUpdate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1904,12 +1351,12 @@ func (m *NAVOracleUpdate) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NAVOracleUpdate) MarshalTo(dAtA []byte) (int, error) {
+func (m *AUMOracleUpdate) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NAVOracleUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AUMOracleUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1933,12 +1380,12 @@ func (m *NAVOracleUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x2a
 	}
-	n10, err10 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
-	if err10 != nil {
-		return 0, err10
+	n5, err5 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
+	if err5 != nil {
+		return 0, err5
 	}
-	i -= n10
-	i = encodeVarintCrossChain(dAtA, i, uint64(n10))
+	i -= n5
+	i = encodeVarintCrossChain(dAtA, i, uint64(n5))
 	i--
 	dAtA[i] = 0x22
 	{
@@ -1961,73 +1408,6 @@ func (m *NAVOracleUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x12
-	if m.PositionId != 0 {
-		i = encodeVarintCrossChain(dAtA, i, uint64(m.PositionId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *PositionOracleConfig) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *PositionOracleConfig) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *PositionOracleConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.ProviderType != 0 {
-		i = encodeVarintCrossChain(dAtA, i, uint64(m.ProviderType))
-		i--
-		dAtA[i] = 0x38
-	}
-	n11, err11 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastUpdate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate):])
-	if err11 != nil {
-		return 0, err11
-	}
-	i -= n11
-	i = encodeVarintCrossChain(dAtA, i, uint64(n11))
-	i--
-	dAtA[i] = 0x32
-	if len(m.SourceChain) > 0 {
-		i -= len(m.SourceChain)
-		copy(dAtA[i:], m.SourceChain)
-		i = encodeVarintCrossChain(dAtA, i, uint64(len(m.SourceChain)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.OracleContract) > 0 {
-		i -= len(m.OracleContract)
-		copy(dAtA[i:], m.OracleContract)
-		i = encodeVarintCrossChain(dAtA, i, uint64(len(m.OracleContract)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if m.MaxStaleness != 0 {
-		i = encodeVarintCrossChain(dAtA, i, uint64(m.MaxStaleness))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.OriginIdentifier) > 0 {
-		i -= len(m.OriginIdentifier)
-		copy(dAtA[i:], m.OriginIdentifier)
-		i = encodeVarintCrossChain(dAtA, i, uint64(len(m.OriginIdentifier)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if m.PositionId != 0 {
 		i = encodeVarintCrossChain(dAtA, i, uint64(m.PositionId))
 		i--
@@ -2131,24 +1511,6 @@ func (m *CrossChainConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.SupportedProviders) > 0 {
-		dAtA13 := make([]byte, len(m.SupportedProviders)*10)
-		var j12 int
-		for _, num := range m.SupportedProviders {
-			for num >= 1<<7 {
-				dAtA13[j12] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j12++
-			}
-			dAtA13[j12] = uint8(num)
-			j12++
-		}
-		i -= j12
-		copy(dAtA[i:], dAtA13[:j12])
-		i = encodeVarintCrossChain(dAtA, i, uint64(j12))
-		i--
-		dAtA[i] = 0x4a
-	}
 	{
 		size := m.MaxInflightValue.Size()
 		i -= size
@@ -2236,12 +1598,12 @@ func (m *StaleInflightAlert) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	n14, err14 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
-	if err14 != nil {
-		return 0, err14
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Timestamp):])
+	if err6 != nil {
+		return 0, err6
 	}
-	i -= n14
-	i = encodeVarintCrossChain(dAtA, i, uint64(n14))
+	i -= n6
+	i = encodeVarintCrossChain(dAtA, i, uint64(n6))
 	i--
 	dAtA[i] = 0x22
 	if m.HoursOverdue != 0 {
@@ -2299,6 +1661,9 @@ func (m *RemotePosition) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.Id != 0 {
+		n += 1 + sovCrossChain(uint64(m.Id))
+	}
 	l = m.HyptokenId.Size()
 	n += 1 + l + sovCrossChain(uint64(l))
 	l = m.VaultAddress.Size()
@@ -2335,18 +1700,14 @@ func (m *InflightFund) Size() (n int) {
 	if m.Id != 0 {
 		n += 1 + sovCrossChain(uint64(m.Id))
 	}
-	l = len(m.TransactionId)
-	if l > 0 {
-		n += 1 + l + sovCrossChain(uint64(l))
+	if m.RemotePositionId != 0 {
+		n += 1 + sovCrossChain(uint64(m.RemotePositionId))
+	}
+	if m.Direction != 0 {
+		n += 1 + sovCrossChain(uint64(m.Direction))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovCrossChain(uint64(l))
-	if m.Origin != nil {
-		n += m.Origin.Size()
-	}
-	if m.Destination != nil {
-		n += m.Destination.Size()
-	}
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InitiatedAt)
 	n += 1 + l + sovCrossChain(uint64(l))
 	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpectedAt)
@@ -2356,97 +1717,13 @@ func (m *InflightFund) Size() (n int) {
 	}
 	l = m.ValueAtInitiation.Size()
 	n += 1 + l + sovCrossChain(uint64(l))
-	if m.ProviderTracking != nil {
-		l = m.ProviderTracking.Size()
+	if m.HyperlaneTrackingInfo != nil {
+		l = m.HyperlaneTrackingInfo.Size()
 		n += 1 + l + sovCrossChain(uint64(l))
 	}
 	return n
 }
 
-func (m *InflightFund_NobleOrigin) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.NobleOrigin != nil {
-		l = m.NobleOrigin.Size()
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	return n
-}
-func (m *InflightFund_RemoteOrigin) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.RemoteOrigin != nil {
-		l = m.RemoteOrigin.Size()
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	return n
-}
-func (m *InflightFund_NobleDestination) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.NobleDestination != nil {
-		l = m.NobleDestination.Size()
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	return n
-}
-func (m *InflightFund_RemoteDestination) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.RemoteDestination != nil {
-		l = m.RemoteDestination.Size()
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	return n
-}
-func (m *NobleEndpoint) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.OperationType != 0 {
-		n += 1 + sovCrossChain(uint64(m.OperationType))
-	}
-	return n
-}
-
-func (m *ProviderTrackingInfo) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.TrackingInfo != nil {
-		n += m.TrackingInfo.Size()
-	}
-	return n
-}
-
-func (m *ProviderTrackingInfo_HyperlaneTracking) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.HyperlaneTracking != nil {
-		l = m.HyperlaneTracking.Size()
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	return n
-}
 func (m *HyperlaneTrackingInfo) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2463,9 +1740,6 @@ func (m *HyperlaneTrackingInfo) Size() (n int) {
 	if m.DestinationDomain != 0 {
 		n += 1 + sovCrossChain(uint64(m.DestinationDomain))
 	}
-	if m.Nonce != 0 {
-		n += 1 + sovCrossChain(uint64(m.Nonce))
-	}
 	l = len(m.OriginTxHash)
 	if l > 0 {
 		n += 1 + l + sovCrossChain(uint64(l))
@@ -2480,7 +1754,7 @@ func (m *HyperlaneTrackingInfo) Size() (n int) {
 	return n
 }
 
-func (m *NAVOracleUpdate) Size() (n int) {
+func (m *AUMOracleUpdate) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2505,38 +1779,6 @@ func (m *NAVOracleUpdate) Size() (n int) {
 	}
 	if m.Status != 0 {
 		n += 1 + sovCrossChain(uint64(m.Status))
-	}
-	return n
-}
-
-func (m *PositionOracleConfig) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.PositionId != 0 {
-		n += 1 + sovCrossChain(uint64(m.PositionId))
-	}
-	l = len(m.OriginIdentifier)
-	if l > 0 {
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	if m.MaxStaleness != 0 {
-		n += 1 + sovCrossChain(uint64(m.MaxStaleness))
-	}
-	l = len(m.OracleContract)
-	if l > 0 {
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	l = len(m.SourceChain)
-	if l > 0 {
-		n += 1 + l + sovCrossChain(uint64(l))
-	}
-	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastUpdate)
-	n += 1 + l + sovCrossChain(uint64(l))
-	if m.ProviderType != 0 {
-		n += 1 + sovCrossChain(uint64(m.ProviderType))
 	}
 	return n
 }
@@ -2603,13 +1845,6 @@ func (m *CrossChainConfig) Size() (n int) {
 	}
 	l = m.MaxInflightValue.Size()
 	n += 1 + l + sovCrossChain(uint64(l))
-	if len(m.SupportedProviders) > 0 {
-		l = 0
-		for _, e := range m.SupportedProviders {
-			l += sovCrossChain(uint64(e))
-		}
-		n += 1 + sovCrossChain(uint64(l)) + l
-	}
 	return n
 }
 
@@ -2858,6 +2093,25 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCrossChain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field HyptokenId", wireType)
 			}
@@ -2891,7 +2145,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field VaultAddress", wireType)
 			}
@@ -2924,7 +2178,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SharesHeld", wireType)
 			}
@@ -2958,7 +2212,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Principal", wireType)
 			}
@@ -2992,7 +2246,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SharePrice", wireType)
 			}
@@ -3026,7 +2280,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TotalValue", wireType)
 			}
@@ -3060,7 +2314,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 7:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LastUpdate", wireType)
 			}
@@ -3093,7 +2347,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 8:
+		case 9:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -3112,7 +2366,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OracleAddress", wireType)
 			}
@@ -3144,7 +2398,7 @@ func (m *RemotePosition) Unmarshal(dAtA []byte) error {
 			}
 			m.OracleAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 10:
+		case 11:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MaxStaleness", wireType)
 			}
@@ -3233,10 +2487,10 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemotePositionId", wireType)
 			}
-			var stringLen uint64
+			m.RemotePositionId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCrossChain
@@ -3246,25 +2500,31 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.RemotePositionId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TransactionId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Direction", wireType)
+			}
+			m.Direction = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCrossChain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Direction |= InflightDirection(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -3298,147 +2558,7 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NobleOrigin", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			v := &NobleEndpoint{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			m.Origin = &InflightFund_NobleOrigin{v}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemoteOrigin", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			v := &RemotePosition{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			m.Origin = &InflightFund_RemoteOrigin{v}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NobleDestination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			v := &NobleEndpoint{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			m.Destination = &InflightFund_NobleDestination{v}
-			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemoteDestination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			v := &RemotePosition{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			m.Destination = &InflightFund_RemoteDestination{v}
-			iNdEx = postIndex
-		case 8:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field InitiatedAt", wireType)
 			}
@@ -3471,7 +2591,7 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 9:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ExpectedAt", wireType)
 			}
@@ -3504,7 +2624,7 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 10:
+		case 11:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -3523,7 +2643,7 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 11:
+		case 12:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ValueAtInitiation", wireType)
 			}
@@ -3557,9 +2677,9 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 12:
+		case 13:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProviderTracking", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field HyperlaneTrackingInfo", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3586,166 +2706,12 @@ func (m *InflightFund) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.ProviderTracking == nil {
-				m.ProviderTracking = &ProviderTrackingInfo{}
+			if m.HyperlaneTrackingInfo == nil {
+				m.HyperlaneTrackingInfo = &HyperlaneTrackingInfo{}
 			}
-			if err := m.ProviderTracking.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.HyperlaneTrackingInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCrossChain(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *NobleEndpoint) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCrossChain
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: NobleEndpoint: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NobleEndpoint: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OperationType", wireType)
-			}
-			m.OperationType = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.OperationType |= OperationType(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCrossChain(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ProviderTrackingInfo) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCrossChain
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ProviderTrackingInfo: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ProviderTrackingInfo: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field HyperlaneTracking", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			v := &HyperlaneTrackingInfo{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			m.TrackingInfo = &ProviderTrackingInfo_HyperlaneTracking{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3869,25 +2835,6 @@ func (m *HyperlaneTrackingInfo) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Nonce", wireType)
-			}
-			m.Nonce = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Nonce |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OriginTxHash", wireType)
@@ -3993,7 +2940,7 @@ func (m *HyperlaneTrackingInfo) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NAVOracleUpdate) Unmarshal(dAtA []byte) error {
+func (m *AUMOracleUpdate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4016,10 +2963,10 @@ func (m *NAVOracleUpdate) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NAVOracleUpdate: wiretype end group for non-group")
+			return fmt.Errorf("proto: AUMOracleUpdate: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NAVOracleUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AUMOracleUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4221,242 +3168,6 @@ func (m *NAVOracleUpdate) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Status |= OracleUpdateStatus(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCrossChain(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *PositionOracleConfig) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCrossChain
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: PositionOracleConfig: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PositionOracleConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
-			}
-			m.PositionId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.PositionId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OriginIdentifier", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.OriginIdentifier = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxStaleness", wireType)
-			}
-			m.MaxStaleness = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxStaleness |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OracleContract", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.OracleContract = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourceChain", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SourceChain = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LastUpdate", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCrossChain
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastUpdate, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 7:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProviderType", wireType)
-			}
-			m.ProviderType = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCrossChain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ProviderType |= ProviderType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4980,75 +3691,6 @@ func (m *CrossChainConfig) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 9:
-			if wireType == 0 {
-				var v ProviderType
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowCrossChain
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= ProviderType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.SupportedProviders = append(m.SupportedProviders, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowCrossChain
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthCrossChain
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthCrossChain
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				if elementCount != 0 && len(m.SupportedProviders) == 0 {
-					m.SupportedProviders = make([]ProviderType, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v ProviderType
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowCrossChain
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= ProviderType(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.SupportedProviders = append(m.SupportedProviders, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field SupportedProviders", wireType)
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipCrossChain(dAtA[iNdEx:])

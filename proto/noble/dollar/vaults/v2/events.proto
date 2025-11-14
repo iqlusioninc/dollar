@@ -171,25 +171,25 @@ message EventWithdrawalProcessed {
   ];
 }
 
-// EventNAVUpdated is emitted when NAV is updated for a vault
-message EventNAVUpdated {
-  // Previous NAV
-  string previous_nav = 1 [
+// EventAUMUpdated is emitted when AUM is updated for a vault
+message EventAUMUpdated {
+  // Previous AUM
+  string previous_aum = 1 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // New NAV
-  string new_nav = 2 [
+  // New AUM
+  string new_aum = 2 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
 
-  // NAV change percentage (basis points)
+  // AUM change percentage (basis points)
   int32 change_bps = 3;
 
   // Total deposits in vault
@@ -235,8 +235,8 @@ message EventAccountingUpdated {
   // Whether accounting is complete for this session
   bool complete = 4;
 
-  // NAV value applied in this accounting update
-  string applied_nav = 5 [
+  // AUM value applied in this accounting update
+  string applied_aum = 5 [
     (cosmos_proto.scalar) = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false,
