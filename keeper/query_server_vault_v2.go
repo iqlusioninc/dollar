@@ -590,35 +590,6 @@ func (q queryServerV2) InflightFund(ctx context.Context, req *vaultsv2.QueryInfl
 	}, nil
 }
 
-func (q queryServerV2) InflightFundsUser(ctx context.Context, req *vaultsv2.QueryInflightFundsUserRequest) (*vaultsv2.QueryInflightFundsUserResponse, error) {
-	if req == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
-	}
-
-	// Validate address
-	_, err := q.address.StringToBytes(req.Address)
-	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
-	}
-
-	var funds []vaultsv2.InflightFund
-
-	// Iterate and filter by user
-	// TODO: Add user tracking to InflightFund if needed for per-user queries
-	err = q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
-		// For now, include all funds
-		funds = append(funds, fund)
-		return false, nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate inflight funds")
-	}
-
-	return &vaultsv2.QueryInflightFundsUserResponse{
-		Funds: funds,
-	}, nil
-}
-
 func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.QueryCrossChainSnapshotRequest) (*vaultsv2.QueryCrossChainSnapshotResponse, error) {
 	if req == nil {
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")

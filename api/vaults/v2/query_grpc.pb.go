@@ -30,7 +30,6 @@ const (
 	Query_RemotePositions_FullMethodName      = "/noble.dollar.vaults.v2.Query/RemotePositions"
 	Query_VaultRemotePositions_FullMethodName = "/noble.dollar.vaults.v2.Query/VaultRemotePositions"
 	Query_InflightFund_FullMethodName         = "/noble.dollar.vaults.v2.Query/InflightFund"
-	Query_InflightFundsUser_FullMethodName    = "/noble.dollar.vaults.v2.Query/InflightFundsUser"
 	Query_CrossChainSnapshot_FullMethodName   = "/noble.dollar.vaults.v2.Query/CrossChainSnapshot"
 	Query_StaleInflightAlerts_FullMethodName  = "/noble.dollar.vaults.v2.Query/StaleInflightAlerts"
 	Query_WithdrawalQueue_FullMethodName      = "/noble.dollar.vaults.v2.Query/WithdrawalQueue"
@@ -73,8 +72,6 @@ type QueryClient interface {
 	VaultRemotePositions(ctx context.Context, in *QueryVaultRemotePositionsRequest, opts ...grpc.CallOption) (*QueryVaultRemotePositionsResponse, error)
 	// InflightFund returns information about an in-flight operation
 	InflightFund(ctx context.Context, in *QueryInflightFundRequest, opts ...grpc.CallOption) (*QueryInflightFundResponse, error)
-	// InflightFundsUser returns all in-flight operations for a user
-	InflightFundsUser(ctx context.Context, in *QueryInflightFundsUserRequest, opts ...grpc.CallOption) (*QueryInflightFundsUserResponse, error)
 	// CrossChainSnapshot returns cross-chain position snapshot for a vault
 	CrossChainSnapshot(ctx context.Context, in *QueryCrossChainSnapshotRequest, opts ...grpc.CallOption) (*QueryCrossChainSnapshotResponse, error)
 	// StaleInflightAlerts returns stale inflight alerts for a user or route
@@ -213,16 +210,6 @@ func (c *queryClient) InflightFund(ctx context.Context, in *QueryInflightFundReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryInflightFundResponse)
 	err := c.cc.Invoke(ctx, Query_InflightFund_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) InflightFundsUser(ctx context.Context, in *QueryInflightFundsUserRequest, opts ...grpc.CallOption) (*QueryInflightFundsUserResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryInflightFundsUserResponse)
-	err := c.cc.Invoke(ctx, Query_InflightFundsUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -377,8 +364,6 @@ type QueryServer interface {
 	VaultRemotePositions(context.Context, *QueryVaultRemotePositionsRequest) (*QueryVaultRemotePositionsResponse, error)
 	// InflightFund returns information about an in-flight operation
 	InflightFund(context.Context, *QueryInflightFundRequest) (*QueryInflightFundResponse, error)
-	// InflightFundsUser returns all in-flight operations for a user
-	InflightFundsUser(context.Context, *QueryInflightFundsUserRequest) (*QueryInflightFundsUserResponse, error)
 	// CrossChainSnapshot returns cross-chain position snapshot for a vault
 	CrossChainSnapshot(context.Context, *QueryCrossChainSnapshotRequest) (*QueryCrossChainSnapshotResponse, error)
 	// StaleInflightAlerts returns stale inflight alerts for a user or route
@@ -445,9 +430,6 @@ func (UnimplementedQueryServer) VaultRemotePositions(context.Context, *QueryVaul
 }
 func (UnimplementedQueryServer) InflightFund(context.Context, *QueryInflightFundRequest) (*QueryInflightFundResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InflightFund not implemented")
-}
-func (UnimplementedQueryServer) InflightFundsUser(context.Context, *QueryInflightFundsUserRequest) (*QueryInflightFundsUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InflightFundsUser not implemented")
 }
 func (UnimplementedQueryServer) CrossChainSnapshot(context.Context, *QueryCrossChainSnapshotRequest) (*QueryCrossChainSnapshotResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CrossChainSnapshot not implemented")
@@ -700,24 +682,6 @@ func _Query_InflightFund_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).InflightFund(ctx, req.(*QueryInflightFundRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_InflightFundsUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryInflightFundsUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).InflightFundsUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_InflightFundsUser_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).InflightFundsUser(ctx, req.(*QueryInflightFundsUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -988,10 +952,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InflightFund",
 			Handler:    _Query_InflightFund_Handler,
-		},
-		{
-			MethodName: "InflightFundsUser",
-			Handler:    _Query_InflightFundsUser_Handler,
 		},
 		{
 			MethodName: "CrossChainSnapshot",

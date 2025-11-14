@@ -71,11 +71,6 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/{route_id}";
   }
 
-  // InflightFundsUser returns all in-flight operations for a user
-  rpc InflightFundsUser(QueryInflightFundsUserRequest) returns (QueryInflightFundsUserResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/user/{address}";
-  }
-
   // CrossChainSnapshot returns cross-chain position snapshot for a vault
   rpc CrossChainSnapshot(QueryCrossChainSnapshotRequest) returns (QueryCrossChainSnapshotResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/snapshot";
@@ -298,18 +293,6 @@ message QueryInflightFundRequest {
 // QueryInflightFundResponse returns an in-flight operation
 message QueryInflightFundResponse {
   InflightFund fund = 1 [(gogoproto.nullable) = false];
-}
-
-// QueryInflightFundsUserRequest requests all in-flight operations for a user
-message QueryInflightFundsUserRequest {
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QueryInflightFundsUserResponse returns all in-flight operations for a user
-message QueryInflightFundsUserResponse {
-  repeated InflightFund funds = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryCrossChainSnapshotRequest requests cross-chain snapshot for a vault
