@@ -53,9 +53,6 @@ service Msg {
   // Close a remote position (spec-aligned)
   rpc CloseRemotePosition(MsgCloseRemotePosition) returns (MsgCloseRemotePositionResponse);
 
-  // Rebalance across remote positions (spec-aligned)
-  rpc Rebalance(MsgRebalance) returns (MsgRebalanceResponse);
-
   // Process in-flight position (system operation)
   rpc ProcessInFlightPosition(MsgProcessInFlightPosition) returns (MsgProcessInFlightPositionResponse);
 
@@ -515,28 +512,6 @@ message TargetAllocation {
   uint64 position_id = 1;
   // Target percentage (0-100)
   uint32 target_percentage = 2;
-}
-
-// MsgRebalance rebalances capital across remote positions
-message MsgRebalance {
-  option (cosmos.msg.v1.signer) = "manager";
-  option (amino.name) = "dollar/vaults/v2/Rebalance";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // Authorized manager address
-  string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Desired allocation targets
-  repeated TargetAllocation target_allocations = 2;
-}
-
-message MsgRebalanceResponse {
-  // Number of operations initiated
-  int32 operations_initiated = 1;
-  // Informational summary
-  string summary = 2;
 }
 
 // ========== Additional Operations ==========

@@ -163,8 +163,6 @@ enum OperationType {
   OPERATION_TYPE_DEPOSIT = 0;
   // Withdrawal operation
   OPERATION_TYPE_WITHDRAWAL = 1;
-  // Rebalance operation
-  OPERATION_TYPE_REBALANCE = 2;
 }
 
 // InflightDirection represents the direction of funds in transit

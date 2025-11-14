@@ -30,7 +30,6 @@ const (
 	Msg_DisableCrossChainRoute_FullMethodName             = "/noble.dollar.vaults.v2.Msg/DisableCrossChainRoute"
 	Msg_CreateRemotePosition_FullMethodName               = "/noble.dollar.vaults.v2.Msg/CreateRemotePosition"
 	Msg_CloseRemotePosition_FullMethodName                = "/noble.dollar.vaults.v2.Msg/CloseRemotePosition"
-	Msg_Rebalance_FullMethodName                          = "/noble.dollar.vaults.v2.Msg/Rebalance"
 	Msg_ProcessInFlightPosition_FullMethodName            = "/noble.dollar.vaults.v2.Msg/ProcessInFlightPosition"
 	Msg_RegisterOracle_FullMethodName                     = "/noble.dollar.vaults.v2.Msg/RegisterOracle"
 	Msg_UpdateOracleConfig_FullMethodName                 = "/noble.dollar.vaults.v2.Msg/UpdateOracleConfig"
@@ -75,8 +74,6 @@ type MsgClient interface {
 	CreateRemotePosition(ctx context.Context, in *MsgCreateRemotePosition, opts ...grpc.CallOption) (*MsgCreateRemotePositionResponse, error)
 	// Close a remote position (spec-aligned)
 	CloseRemotePosition(ctx context.Context, in *MsgCloseRemotePosition, opts ...grpc.CallOption) (*MsgCloseRemotePositionResponse, error)
-	// Rebalance across remote positions (spec-aligned)
-	Rebalance(ctx context.Context, in *MsgRebalance, opts ...grpc.CallOption) (*MsgRebalanceResponse, error)
 	// Process in-flight position (system operation)
 	ProcessInFlightPosition(ctx context.Context, in *MsgProcessInFlightPosition, opts ...grpc.CallOption) (*MsgProcessInFlightPositionResponse, error)
 	// Register a new oracle for a position (authority only)
@@ -219,16 +216,6 @@ func (c *msgClient) CloseRemotePosition(ctx context.Context, in *MsgCloseRemoteP
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgCloseRemotePositionResponse)
 	err := c.cc.Invoke(ctx, Msg_CloseRemotePosition_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) Rebalance(ctx context.Context, in *MsgRebalance, opts ...grpc.CallOption) (*MsgRebalanceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgRebalanceResponse)
-	err := c.cc.Invoke(ctx, Msg_Rebalance_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -403,8 +390,6 @@ type MsgServer interface {
 	CreateRemotePosition(context.Context, *MsgCreateRemotePosition) (*MsgCreateRemotePositionResponse, error)
 	// Close a remote position (spec-aligned)
 	CloseRemotePosition(context.Context, *MsgCloseRemotePosition) (*MsgCloseRemotePositionResponse, error)
-	// Rebalance across remote positions (spec-aligned)
-	Rebalance(context.Context, *MsgRebalance) (*MsgRebalanceResponse, error)
 	// Process in-flight position (system operation)
 	ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error)
 	// Register a new oracle for a position (authority only)
@@ -475,9 +460,6 @@ func (UnimplementedMsgServer) CreateRemotePosition(context.Context, *MsgCreateRe
 }
 func (UnimplementedMsgServer) CloseRemotePosition(context.Context, *MsgCloseRemotePosition) (*MsgCloseRemotePositionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CloseRemotePosition not implemented")
-}
-func (UnimplementedMsgServer) Rebalance(context.Context, *MsgRebalance) (*MsgRebalanceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Rebalance not implemented")
 }
 func (UnimplementedMsgServer) ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProcessInFlightPosition not implemented")
@@ -736,24 +718,6 @@ func _Msg_CloseRemotePosition_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).CloseRemotePosition(ctx, req.(*MsgCloseRemotePosition))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_Rebalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRebalance)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Rebalance(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_Rebalance_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Rebalance(ctx, req.(*MsgRebalance))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1060,10 +1024,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CloseRemotePosition",
 			Handler:    _Msg_CloseRemotePosition_Handler,
-		},
-		{
-			MethodName: "Rebalance",
-			Handler:    _Msg_Rebalance_Handler,
 		},
 		{
 			MethodName: "ProcessInFlightPosition",

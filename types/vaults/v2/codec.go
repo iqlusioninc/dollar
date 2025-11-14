@@ -40,8 +40,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDisableCrossChainRoute{}, "dollar/vaults/v2/DisableCrossChainRoute", nil)
 	cdc.RegisterConcrete(&MsgCreateRemotePosition{}, "dollar/vaults/v2/CreateRemotePosition", nil)
 	cdc.RegisterConcrete(&MsgCloseRemotePosition{}, "dollar/vaults/v2/CloseRemotePosition", nil)
-	cdc.RegisterConcrete(&MsgRebalance{}, "dollar/vaults/v2/Rebalance", nil)
-	// MsgRemoteDeposit, MsgRemoteWithdraw, MsgInitiateRemotePositionRedemption removed - handled by manager on remote chain
 	cdc.RegisterConcrete(&MsgProcessInFlightPosition{}, "dollar/vaults/v2/ProcessInFlightPosition", nil)
 	cdc.RegisterConcrete(&MsgHandleStaleInflight{}, "dollar/vaults/v2/HandleStaleInflight", nil)
 	cdc.RegisterConcrete(&MsgRegisterOracle{}, "dollar/vaults/v2/RegisterOracle", nil)
