@@ -1109,10 +1109,6 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 		return nil, sdkerrors.Wrap(err, "unable to persist remote position")
 	}
 
-	if err := m.AddVaultsV2PendingWithdrawalDistribution(ctx, withdrawAmount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal distribution")
-	}
-
 	if _, err := m.RecalculateVaultsV2AUM(ctx, headerInfo.Time); err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to recalculate AUM")
 	}
@@ -1212,10 +1208,6 @@ func (m msgServerV2) ProcessInFlightPosition(ctx context.Context, msg *vaultsv2.
 				}
 				position.LastUpdate = headerInfo.Time
 				_ = m.SetVaultsV2RemotePosition(ctx, fund.RemotePositionId, position)
-			}
-			// TODO: Determine if this is withdrawal - may need additional field
-			if processedAmount.IsPositive() {
-				_ = m.AddVaultsV2PendingWithdrawalDistribution(ctx, processedAmount)
 			}
 		}
 		// Else: deposit completion – nothing additional for now beyond clearing inflight totals.
@@ -2345,17 +2337,6 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 		return nil, sdkerrors.Wrap(err, "unable to update route inflight value")
 	}
 
-	// Update pending withdrawal distribution with received amount
-	if err := m.AddVaultsV2PendingWithdrawalDistribution(ctx, msg.AmountReceived); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update pending withdrawal distribution")
-	}
-
-	// Get updated pending distribution for response
-	updatedPending, err := m.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		updatedPending = sdkmath.ZeroInt()
-	}
-
 	// Update remote position if this is linked to one
 	if fund.RemotePositionId != 0 {
 		position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)
@@ -2420,12 +2401,11 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	}
 
 	return &vaultsv2.MsgProcessIncomingWarpFundsResponse{
-		TransactionId:              msg.TransactionId,
-		RouteId:                    msg.RouteId,
-		AmountCompleted:            msg.AmountReceived,
-		OriginalAmount:             originalAmount,
-		AmountMatched:              amountMatched,
-		UpdatedPendingDistribution: updatedPending,
-		InflightId:                 msg.InflightId,
+		TransactionId:   msg.TransactionId,
+		RouteId:         msg.RouteId,
+		AmountCompleted: msg.AmountReceived,
+		OriginalAmount:  originalAmount,
+		AmountMatched:   amountMatched,
+		InflightId:      msg.InflightId,
 	}, nil
 }

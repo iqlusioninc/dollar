@@ -130,11 +130,6 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, math.ZeroInt(), routeInflight)
 
-	// Verify pending withdrawal distribution was updated
-	pendingDistribution, err := keeper.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, receivedAmount, pendingDistribution)
-
 	// Verify remote position was updated
 	updatedPosition, found, err := keeper.GetVaultsV2RemotePosition(ctx, positionID)
 	require.NoError(t, err)

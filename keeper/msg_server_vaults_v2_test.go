@@ -1177,10 +1177,6 @@ func TestCloseRemotePositionPartial(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.SharesHeld)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.Principal)
 	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, position.Status)
-
-	pendingDistribution, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(100*ONE_V2), pendingDistribution)
 }
 
 func TestUpdateVaultConfig(t *testing.T) {
@@ -1434,10 +1430,6 @@ func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
 	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, createResp.RouteId)
 	require.NoError(t, err)
 	assert.True(t, routeValue.IsZero())
-
-	pendingDistribution, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(28*ONE_V2), pendingDistribution)
 }
 
 func TestRegisterOracle(t *testing.T) {

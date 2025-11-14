@@ -136,16 +136,10 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 		return nil, errors.Wrap(err, "unable to fetch local funds")
 	}
 
-	pendingWithdrawalDist, err := q.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending withdrawal distribution")
-	}
-
 	return &vaultsv2.QueryInflightFundsResponse{
-		InflightFunds:                 funds,
-		TotalInflight:                 total.String(),
-		PendingDeployment:             localFunds.String(),
-		PendingWithdrawalDistribution: pendingWithdrawalDist.String(),
+		InflightFunds:     funds,
+		TotalInflight:     total.String(),
+		PendingDeployment: localFunds.String(),
 	}, nil
 }
 

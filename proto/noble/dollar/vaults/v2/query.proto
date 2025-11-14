@@ -491,7 +491,6 @@ message QueryInflightFundsResponse {
   repeated InflightFundView inflight_funds = 1 [(gogoproto.nullable) = false];
   string total_inflight = 2;
   string pending_deployment = 3;
-  string pending_withdrawal_distribution = 4;
   map<string, string> by_route = 5;
   map<string, string> by_type = 6;
   map<string, string> by_status = 7;

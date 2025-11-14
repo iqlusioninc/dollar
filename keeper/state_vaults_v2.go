@@ -853,64 +853,6 @@ func (k *Keeper) SubtractVaultsV2PendingWithdrawalAmount(ctx context.Context, am
 	return k.VaultsV2PendingWithdrawalsAmount.Set(ctx, current)
 }
 
-// GetVaultsV2PendingWithdrawalDistribution returns the amount awaiting distribution post remote withdrawals.
-func (k *Keeper) GetVaultsV2PendingWithdrawalDistribution(ctx context.Context) (math.Int, error) {
-	amount, err := k.VaultsV2PendingWithdrawalDistribution.Get(ctx)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return amount, nil
-}
-
-// AddVaultsV2PendingWithdrawalDistribution increments the distribution balance.
-func (k *Keeper) AddVaultsV2PendingWithdrawalDistribution(ctx context.Context, amount math.Int) error {
-	if !amount.IsPositive() {
-		return nil
-	}
-
-	current, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return err
-	}
-
-	current, err = current.SafeAdd(amount)
-	if err != nil {
-		return err
-	}
-
-	return k.VaultsV2PendingWithdrawalDistribution.Set(ctx, current)
-}
-
-// SubtractVaultsV2PendingWithdrawalDistribution decrements the distribution balance.
-func (k *Keeper) SubtractVaultsV2PendingWithdrawalDistribution(ctx context.Context, amount math.Int) error {
-	if !amount.IsPositive() {
-		return nil
-	}
-
-	current, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return err
-	}
-
-	current, err = current.SafeSub(amount)
-	if err != nil {
-		return err
-	}
-
-	if !current.IsPositive() {
-		if err := k.VaultsV2PendingWithdrawalDistribution.Remove(ctx); err != nil && !errors.Is(err, collections.ErrNotFound) {
-			return err
-		}
-		return nil
-	}
-
-	return k.VaultsV2PendingWithdrawalDistribution.Set(ctx, current)
-}
-
 // IncrementVaultsV2TotalUsers increases the total user count tracked in the
 // aggregate vault state.
 func (k *Keeper) IncrementVaultsV2TotalUsers(ctx context.Context) error {

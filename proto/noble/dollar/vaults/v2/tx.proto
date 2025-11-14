@@ -880,14 +880,6 @@ message MsgProcessIncomingWarpFundsResponse {
   // Whether there was a difference between received and expected
   bool amount_matched = 5;
 
-  // Updated pending withdrawal distribution (if applicable)
-  string updated_pending_distribution = 6 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
   // ID of the inflight funds to process
   uint64 inflight_id = 7;
 }
