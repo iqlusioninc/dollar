@@ -28,6 +28,8 @@ import (
 
 const ModuleName = "dollar"
 
+const HyperlaneAppModuleID uint8 = 1
+
 var (
 	ModuleAddress = authtypes.NewModuleAddress(ModuleName)
 

@@ -35,6 +35,7 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
 	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -65,6 +66,7 @@ type Keeper struct {
 	bank     types.BankKeeper
 	channel  types.ChannelKeeper
 	transfer types.TransferKeeper
+	hyperlane *hyperlanekeeper.Keeper
 	warp     *warpkeeper.Keeper
 	wormhole portal.WormholeKeeper
 
@@ -139,6 +141,7 @@ func NewKeeper(
 	bank types.BankKeeper,
 	channel types.ChannelKeeper,
 	transfer types.TransferKeeper,
+	hyperlane *hyperlanekeeper.Keeper,
 	warp *warpkeeper.Keeper,
 	wormhole portal.WormholeKeeper,
 ) *Keeper {
@@ -172,6 +175,7 @@ func NewKeeper(
 		bank:     bank,
 		channel:  channel,
 		transfer: transfer,
+		hyperlane: hyperlane,
 		warp:     warp,
 		wormhole: wormhole,
 
