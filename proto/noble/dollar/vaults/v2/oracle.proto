@@ -125,18 +125,6 @@ message StalenessConfig {
   int64 max_staleness = 3;
 }
 
-// FallbackStrategy defines the fallback strategy for stale data
-message FallbackStrategy {
-  // Whether to use last known good value
-  bool use_last_known_good = 1;
-
-  // Maximum cache age allowed (seconds)
-  int64 max_cache_age = 2;
-
-  // Alert threshold for notifications (seconds)
-  int64 alert_threshold = 3;
-}
-
 // OracleGovernanceParams defines governance parameters for oracles
 message OracleGovernanceParams {
   // Maximum update interval allowed (seconds)
@@ -147,24 +135,6 @@ message OracleGovernanceParams {
 
   // Maximum price deviation per update (basis points)
   int32 max_price_deviation_bps = 3;
-
-  // Default staleness config
-  StalenessConfig default_staleness = 4;
-
-  // Default fallback strategy
-  FallbackStrategy default_fallback = 5;
-}
-
-// AlertConfig defines alert configuration
-message AlertConfig {
-  // Stale data threshold (seconds)
-  int64 stale_data_threshold = 1;
-
-  // Price deviation threshold (basis points)
-  int32 price_deviation_threshold = 2;
-
-  // Failed update threshold (count)
-  int32 failed_update_threshold = 3;
 }
 
 // OracleStatus represents the current status of an oracle
@@ -180,32 +150,6 @@ message OracleStatus {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-
-  // Number of consecutive failures
-  int32 consecutive_failures = 4;
-
-  // Whether oracle is healthy
-  bool is_healthy = 5;
-
-  // Current staleness level
-  StalenessLevel staleness_level = 6;
-
-  // Last error message if any
-  string last_error = 7;
-}
-
-// StalenessLevel represents the freshness of oracle data
-enum StalenessLevel {
-  option (gogoproto.goproto_enum_prefix) = false;
-
-  // Data is fresh
-  STALENESS_LEVEL_FRESH = 0;
-  // Data is stale
-  STALENESS_LEVEL_STALE = 1;
-  // Data is in warning threshold
-  STALENESS_LEVEL_WARNING = 2;
-  // Data is in critical threshold
-  STALENESS_LEVEL_CRITICAL = 3;
 }
 
 // ========== Cross-Chain Oracle Integration ==========

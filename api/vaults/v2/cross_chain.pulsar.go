@@ -4,7 +4,6 @@ package vaultsv2
 import (
 	_ "cosmossdk.io/api/amino"
 	_ "dollar.noble.xyz/v3/api/hyperlane/warp/v1"
-	binary "encoding/binary"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
@@ -14,7 +13,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
-	math "math"
 	reflect "reflect"
 	sort "sort"
 	sync "sync"
@@ -5817,658 +5815,6 @@ func (x *fastReflection_CrossChainConfig) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var (
-	md_StaleInflightAlert                protoreflect.MessageDescriptor
-	fd_StaleInflightAlert_route_id       protoreflect.FieldDescriptor
-	fd_StaleInflightAlert_transaction_id protoreflect.FieldDescriptor
-	fd_StaleInflightAlert_hours_overdue  protoreflect.FieldDescriptor
-	fd_StaleInflightAlert_timestamp      protoreflect.FieldDescriptor
-	fd_StaleInflightAlert_amount         protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_cross_chain_proto_init()
-	md_StaleInflightAlert = File_noble_dollar_vaults_v2_cross_chain_proto.Messages().ByName("StaleInflightAlert")
-	fd_StaleInflightAlert_route_id = md_StaleInflightAlert.Fields().ByName("route_id")
-	fd_StaleInflightAlert_transaction_id = md_StaleInflightAlert.Fields().ByName("transaction_id")
-	fd_StaleInflightAlert_hours_overdue = md_StaleInflightAlert.Fields().ByName("hours_overdue")
-	fd_StaleInflightAlert_timestamp = md_StaleInflightAlert.Fields().ByName("timestamp")
-	fd_StaleInflightAlert_amount = md_StaleInflightAlert.Fields().ByName("amount")
-}
-
-var _ protoreflect.Message = (*fastReflection_StaleInflightAlert)(nil)
-
-type fastReflection_StaleInflightAlert StaleInflightAlert
-
-func (x *StaleInflightAlert) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_StaleInflightAlert)(x)
-}
-
-func (x *StaleInflightAlert) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_StaleInflightAlert_messageType fastReflection_StaleInflightAlert_messageType
-var _ protoreflect.MessageType = fastReflection_StaleInflightAlert_messageType{}
-
-type fastReflection_StaleInflightAlert_messageType struct{}
-
-func (x fastReflection_StaleInflightAlert_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_StaleInflightAlert)(nil)
-}
-func (x fastReflection_StaleInflightAlert_messageType) New() protoreflect.Message {
-	return new(fastReflection_StaleInflightAlert)
-}
-func (x fastReflection_StaleInflightAlert_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_StaleInflightAlert
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_StaleInflightAlert) Descriptor() protoreflect.MessageDescriptor {
-	return md_StaleInflightAlert
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_StaleInflightAlert) Type() protoreflect.MessageType {
-	return _fastReflection_StaleInflightAlert_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_StaleInflightAlert) New() protoreflect.Message {
-	return new(fastReflection_StaleInflightAlert)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_StaleInflightAlert) Interface() protoreflect.ProtoMessage {
-	return (*StaleInflightAlert)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_StaleInflightAlert) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.RouteId != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.RouteId)
-		if !f(fd_StaleInflightAlert_route_id, value) {
-			return
-		}
-	}
-	if x.TransactionId != "" {
-		value := protoreflect.ValueOfString(x.TransactionId)
-		if !f(fd_StaleInflightAlert_transaction_id, value) {
-			return
-		}
-	}
-	if x.HoursOverdue != float64(0) || math.Signbit(x.HoursOverdue) {
-		value := protoreflect.ValueOfFloat64(x.HoursOverdue)
-		if !f(fd_StaleInflightAlert_hours_overdue, value) {
-			return
-		}
-	}
-	if x.Timestamp != nil {
-		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-		if !f(fd_StaleInflightAlert_timestamp, value) {
-			return
-		}
-	}
-	if x.Amount != "" {
-		value := protoreflect.ValueOfString(x.Amount)
-		if !f(fd_StaleInflightAlert_amount, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_StaleInflightAlert) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StaleInflightAlert.route_id":
-		return x.RouteId != uint32(0)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.transaction_id":
-		return x.TransactionId != ""
-	case "noble.dollar.vaults.v2.StaleInflightAlert.hours_overdue":
-		return x.HoursOverdue != float64(0) || math.Signbit(x.HoursOverdue)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.timestamp":
-		return x.Timestamp != nil
-	case "noble.dollar.vaults.v2.StaleInflightAlert.amount":
-		return x.Amount != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StaleInflightAlert"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StaleInflightAlert does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StaleInflightAlert) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StaleInflightAlert.route_id":
-		x.RouteId = uint32(0)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.transaction_id":
-		x.TransactionId = ""
-	case "noble.dollar.vaults.v2.StaleInflightAlert.hours_overdue":
-		x.HoursOverdue = float64(0)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.timestamp":
-		x.Timestamp = nil
-	case "noble.dollar.vaults.v2.StaleInflightAlert.amount":
-		x.Amount = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StaleInflightAlert"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StaleInflightAlert does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_StaleInflightAlert) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.StaleInflightAlert.route_id":
-		value := x.RouteId
-		return protoreflect.ValueOfUint32(value)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.transaction_id":
-		value := x.TransactionId
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.hours_overdue":
-		value := x.HoursOverdue
-		return protoreflect.ValueOfFloat64(value)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.timestamp":
-		value := x.Timestamp
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "noble.dollar.vaults.v2.StaleInflightAlert.amount":
-		value := x.Amount
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StaleInflightAlert"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StaleInflightAlert does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StaleInflightAlert) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StaleInflightAlert.route_id":
-		x.RouteId = uint32(value.Uint())
-	case "noble.dollar.vaults.v2.StaleInflightAlert.transaction_id":
-		x.TransactionId = value.Interface().(string)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.hours_overdue":
-		x.HoursOverdue = value.Float()
-	case "noble.dollar.vaults.v2.StaleInflightAlert.timestamp":
-		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
-	case "noble.dollar.vaults.v2.StaleInflightAlert.amount":
-		x.Amount = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StaleInflightAlert"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StaleInflightAlert does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StaleInflightAlert) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StaleInflightAlert.timestamp":
-		if x.Timestamp == nil {
-			x.Timestamp = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-	case "noble.dollar.vaults.v2.StaleInflightAlert.route_id":
-		panic(fmt.Errorf("field route_id of message noble.dollar.vaults.v2.StaleInflightAlert is not mutable"))
-	case "noble.dollar.vaults.v2.StaleInflightAlert.transaction_id":
-		panic(fmt.Errorf("field transaction_id of message noble.dollar.vaults.v2.StaleInflightAlert is not mutable"))
-	case "noble.dollar.vaults.v2.StaleInflightAlert.hours_overdue":
-		panic(fmt.Errorf("field hours_overdue of message noble.dollar.vaults.v2.StaleInflightAlert is not mutable"))
-	case "noble.dollar.vaults.v2.StaleInflightAlert.amount":
-		panic(fmt.Errorf("field amount of message noble.dollar.vaults.v2.StaleInflightAlert is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StaleInflightAlert"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StaleInflightAlert does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_StaleInflightAlert) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StaleInflightAlert.route_id":
-		return protoreflect.ValueOfUint32(uint32(0))
-	case "noble.dollar.vaults.v2.StaleInflightAlert.transaction_id":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.StaleInflightAlert.hours_overdue":
-		return protoreflect.ValueOfFloat64(float64(0))
-	case "noble.dollar.vaults.v2.StaleInflightAlert.timestamp":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "noble.dollar.vaults.v2.StaleInflightAlert.amount":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StaleInflightAlert"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StaleInflightAlert does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_StaleInflightAlert) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.StaleInflightAlert", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_StaleInflightAlert) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StaleInflightAlert) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_StaleInflightAlert) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_StaleInflightAlert) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*StaleInflightAlert)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.RouteId != 0 {
-			n += 1 + runtime.Sov(uint64(x.RouteId))
-		}
-		l = len(x.TransactionId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.HoursOverdue != 0 || math.Signbit(x.HoursOverdue) {
-			n += 9
-		}
-		if x.Timestamp != nil {
-			l = options.Size(x.Timestamp)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Amount)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*StaleInflightAlert)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Amount) > 0 {
-			i -= len(x.Amount)
-			copy(dAtA[i:], x.Amount)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if x.Timestamp != nil {
-			encoded, err := options.Marshal(x.Timestamp)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if x.HoursOverdue != 0 || math.Signbit(x.HoursOverdue) {
-			i -= 8
-			binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(x.HoursOverdue))))
-			i--
-			dAtA[i] = 0x19
-		}
-		if len(x.TransactionId) > 0 {
-			i -= len(x.TransactionId)
-			copy(dAtA[i:], x.TransactionId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TransactionId)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if x.RouteId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.RouteId))
-			i--
-			dAtA[i] = 0x8
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*StaleInflightAlert)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StaleInflightAlert: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StaleInflightAlert: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
-				}
-				x.RouteId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.RouteId |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TransactionId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.TransactionId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 1 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field HoursOverdue", wireType)
-				}
-				var v uint64
-				if (iNdEx + 8) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				v = uint64(binary.LittleEndian.Uint64(dAtA[iNdEx:]))
-				iNdEx += 8
-				x.HoursOverdue = float64(math.Float64frombits(v))
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Timestamp == nil {
-					x.Timestamp = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Amount = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -7406,79 +6752,6 @@ func (x *CrossChainConfig) GetMaxInflightValue() string {
 	return ""
 }
 
-// StaleInflightAlert represents an alert for inflight funds exceeding expected duration
-type StaleInflightAlert struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Route ID
-	RouteId uint32 `protobuf:"varint,1,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
-	// Transaction ID
-	TransactionId string `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
-	// Hours overdue
-	HoursOverdue float64 `protobuf:"fixed64,3,opt,name=hours_overdue,json=hoursOverdue,proto3" json:"hours_overdue,omitempty"`
-	// Alert timestamp
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	// Amount stuck in transit
-	Amount string `protobuf:"bytes,5,opt,name=amount,proto3" json:"amount,omitempty"`
-}
-
-func (x *StaleInflightAlert) Reset() {
-	*x = StaleInflightAlert{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *StaleInflightAlert) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*StaleInflightAlert) ProtoMessage() {}
-
-// Deprecated: Use StaleInflightAlert.ProtoReflect.Descriptor instead.
-func (*StaleInflightAlert) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_cross_chain_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *StaleInflightAlert) GetRouteId() uint32 {
-	if x != nil {
-		return x.RouteId
-	}
-	return 0
-}
-
-func (x *StaleInflightAlert) GetTransactionId() string {
-	if x != nil {
-		return x.TransactionId
-	}
-	return ""
-}
-
-func (x *StaleInflightAlert) GetHoursOverdue() float64 {
-	if x != nil {
-		return x.HoursOverdue
-	}
-	return 0
-}
-
-func (x *StaleInflightAlert) GetTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Timestamp
-	}
-	return nil
-}
-
-func (x *StaleInflightAlert) GetAmount() string {
-	if x != nil {
-		return x.Amount
-	}
-	return ""
-}
-
 var File_noble_dollar_vaults_v2_cross_chain_proto protoreflect.FileDescriptor
 
 var file_noble_dollar_vaults_v2_cross_chain_proto_rawDesc = []byte{
@@ -7713,74 +6986,57 @@ var file_noble_dollar_vaults_v2_cross_chain_proto_rawDesc = []byte{
 	0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
 	0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x10, 0x6d, 0x61, 0x78, 0x49, 0x6e,
-	0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x89, 0x02, 0x0a, 0x12,
-	0x53, 0x74, 0x61, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x41, 0x6c, 0x65,
-	0x72, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0d, 0x52, 0x07, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x25, 0x0a,
-	0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x68, 0x6f, 0x75, 0x72, 0x73, 0x5f, 0x6f, 0x76,
-	0x65, 0x72, 0x64, 0x75, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0c, 0x68, 0x6f, 0x75,
-	0x72, 0x73, 0x4f, 0x76, 0x65, 0x72, 0x64, 0x75, 0x65, 0x12, 0x42, 0x0a, 0x09, 0x74, 0x69, 0x6d,
-	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf,
-	0x1f, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x48, 0x0a,
-	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8,
-	0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
-	0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
-	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x2a, 0xb2, 0x01, 0x0a, 0x14, 0x52, 0x65, 0x6d, 0x6f,
-	0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x12, 0x20, 0x0a, 0x1c, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54,
-	0x49, 0x4f, 0x4e, 0x5f, 0x49, 0x4e, 0x49, 0x54, 0x49, 0x41, 0x4c, 0x49, 0x5a, 0x49, 0x4e, 0x47,
-	0x10, 0x00, 0x12, 0x1a, 0x0a, 0x16, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53,
-	0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45, 0x10, 0x01, 0x12, 0x1f,
-	0x0a, 0x1b, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49, 0x4f,
-	0x4e, 0x5f, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x12,
-	0x1a, 0x0a, 0x16, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49,
-	0x4f, 0x4e, 0x5f, 0x43, 0x4c, 0x4f, 0x53, 0x45, 0x44, 0x10, 0x03, 0x12, 0x19, 0x0a, 0x15, 0x52,
-	0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x45,
-	0x52, 0x52, 0x4f, 0x52, 0x10, 0x04, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x2a, 0x50, 0x0a, 0x0d,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a,
-	0x16, 0x4f, 0x50, 0x45, 0x52, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
-	0x44, 0x45, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x10, 0x00, 0x12, 0x1d, 0x0a, 0x19, 0x4f, 0x50, 0x45,
-	0x52, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x57, 0x49, 0x54, 0x48,
-	0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x10, 0x01, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x2a, 0x47,
-	0x0a, 0x11, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f,
-	0x4f, 0x55, 0x54, 0x47, 0x4f, 0x49, 0x4e, 0x47, 0x10, 0x00, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x4e,
-	0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x49, 0x4e, 0x43, 0x4f, 0x4d, 0x49, 0x4e, 0x47, 0x10,
-	0x01, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x2a, 0x6f, 0x0a, 0x0e, 0x49, 0x6e, 0x66, 0x6c, 0x69,
-	0x67, 0x68, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x14, 0x0a, 0x10, 0x49, 0x4e, 0x46,
-	0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47, 0x10, 0x00, 0x12,
-	0x16, 0x0a, 0x12, 0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x43, 0x4f, 0x4d, 0x50,
-	0x4c, 0x45, 0x54, 0x45, 0x44, 0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x4e, 0x46, 0x4c, 0x49,
-	0x47, 0x48, 0x54, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x02, 0x12, 0x14, 0x0a, 0x10,
-	0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x54, 0x49, 0x4d, 0x45, 0x4f, 0x55, 0x54,
-	0x10, 0x03, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x2a, 0x6e, 0x0a, 0x12, 0x4f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x1b,
-	0x0a, 0x17, 0x4f, 0x52, 0x41, 0x43, 0x4c, 0x45, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f,
-	0x56, 0x41, 0x4c, 0x49, 0x44, 0x41, 0x54, 0x45, 0x44, 0x10, 0x00, 0x12, 0x19, 0x0a, 0x15, 0x4f,
-	0x52, 0x41, 0x43, 0x4c, 0x45, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x41, 0x50, 0x50,
-	0x4c, 0x49, 0x45, 0x44, 0x10, 0x01, 0x12, 0x1a, 0x0a, 0x16, 0x4f, 0x52, 0x41, 0x43, 0x4c, 0x45,
-	0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x52, 0x45, 0x4a, 0x45, 0x43, 0x54, 0x45, 0x44,
-	0x10, 0x02, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x42, 0xe1, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d,
-	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
-	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x0f, 0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68,
-	0x61, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c,
-	0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
-	0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c,
-	0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
-	0x56, 0x32, 0xca, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61,
-	0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f,
-	0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74,
-	0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
-	0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x2a, 0xb2, 0x01, 0x0a, 0x14,
+	0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x12, 0x20, 0x0a, 0x1c, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50,
+	0x4f, 0x53, 0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x49, 0x4e, 0x49, 0x54, 0x49, 0x41, 0x4c, 0x49,
+	0x5a, 0x49, 0x4e, 0x47, 0x10, 0x00, 0x12, 0x1a, 0x0a, 0x16, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45,
+	0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45,
+	0x10, 0x01, 0x12, 0x1f, 0x0a, 0x1b, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53,
+	0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x49, 0x4e,
+	0x47, 0x10, 0x02, 0x12, 0x1a, 0x0a, 0x16, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f,
+	0x53, 0x49, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x43, 0x4c, 0x4f, 0x53, 0x45, 0x44, 0x10, 0x03, 0x12,
+	0x19, 0x0a, 0x15, 0x52, 0x45, 0x4d, 0x4f, 0x54, 0x45, 0x5f, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x49,
+	0x4f, 0x4e, 0x5f, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x10, 0x04, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00,
+	0x2a, 0x50, 0x0a, 0x0d, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70,
+	0x65, 0x12, 0x1a, 0x0a, 0x16, 0x4f, 0x50, 0x45, 0x52, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54,
+	0x59, 0x50, 0x45, 0x5f, 0x44, 0x45, 0x50, 0x4f, 0x53, 0x49, 0x54, 0x10, 0x00, 0x12, 0x1d, 0x0a,
+	0x19, 0x4f, 0x50, 0x45, 0x52, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
+	0x57, 0x49, 0x54, 0x48, 0x44, 0x52, 0x41, 0x57, 0x41, 0x4c, 0x10, 0x01, 0x1a, 0x04, 0x88, 0xa3,
+	0x1e, 0x00, 0x2a, 0x47, 0x0a, 0x11, 0x49, 0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x44, 0x69,
+	0x72, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x4e, 0x46, 0x4c, 0x49,
+	0x47, 0x48, 0x54, 0x5f, 0x4f, 0x55, 0x54, 0x47, 0x4f, 0x49, 0x4e, 0x47, 0x10, 0x00, 0x12, 0x15,
+	0x0a, 0x11, 0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x49, 0x4e, 0x43, 0x4f, 0x4d,
+	0x49, 0x4e, 0x47, 0x10, 0x01, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x2a, 0x6f, 0x0a, 0x0e, 0x49,
+	0x6e, 0x66, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x14, 0x0a,
+	0x10, 0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e,
+	0x47, 0x10, 0x00, 0x12, 0x16, 0x0a, 0x12, 0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f,
+	0x43, 0x4f, 0x4d, 0x50, 0x4c, 0x45, 0x54, 0x45, 0x44, 0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x49,
+	0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x02,
+	0x12, 0x14, 0x0a, 0x10, 0x49, 0x4e, 0x46, 0x4c, 0x49, 0x47, 0x48, 0x54, 0x5f, 0x54, 0x49, 0x4d,
+	0x45, 0x4f, 0x55, 0x54, 0x10, 0x03, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x2a, 0x6e, 0x0a, 0x12,
+	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x12, 0x1b, 0x0a, 0x17, 0x4f, 0x52, 0x41, 0x43, 0x4c, 0x45, 0x5f, 0x55, 0x50, 0x44,
+	0x41, 0x54, 0x45, 0x5f, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x41, 0x54, 0x45, 0x44, 0x10, 0x00, 0x12,
+	0x19, 0x0a, 0x15, 0x4f, 0x52, 0x41, 0x43, 0x4c, 0x45, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45,
+	0x5f, 0x41, 0x50, 0x50, 0x4c, 0x49, 0x45, 0x44, 0x10, 0x01, 0x12, 0x1a, 0x0a, 0x16, 0x4f, 0x52,
+	0x41, 0x43, 0x4c, 0x45, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x52, 0x45, 0x4a, 0x45,
+	0x43, 0x54, 0x45, 0x44, 0x10, 0x02, 0x1a, 0x04, 0x88, 0xa3, 0x1e, 0x00, 0x42, 0xe1, 0x01, 0x0a,
+	0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61,
+	0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x0f, 0x43, 0x72, 0x6f,
+	0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37,
+	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a,
+	0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f,
+	0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16,
+	0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2,
+	0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f,
+	0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7796,7 +7052,7 @@ func file_noble_dollar_vaults_v2_cross_chain_proto_rawDescGZIP() []byte {
 }
 
 var file_noble_dollar_vaults_v2_cross_chain_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_noble_dollar_vaults_v2_cross_chain_proto_goTypes = []interface{}{
 	(RemotePositionStatus)(0),          // 0: noble.dollar.vaults.v2.RemotePositionStatus
 	(OperationType)(0),                 // 1: noble.dollar.vaults.v2.OperationType
@@ -7810,27 +7066,25 @@ var file_noble_dollar_vaults_v2_cross_chain_proto_goTypes = []interface{}{
 	(*AUMOracleUpdate)(nil),            // 9: noble.dollar.vaults.v2.AUMOracleUpdate
 	(*CrossChainPositionSnapshot)(nil), // 10: noble.dollar.vaults.v2.CrossChainPositionSnapshot
 	(*CrossChainConfig)(nil),           // 11: noble.dollar.vaults.v2.CrossChainConfig
-	(*StaleInflightAlert)(nil),         // 12: noble.dollar.vaults.v2.StaleInflightAlert
-	nil,                                // 13: noble.dollar.vaults.v2.CrossChainPositionSnapshot.ValueByRouteEntry
-	(*timestamppb.Timestamp)(nil),      // 14: google.protobuf.Timestamp
+	nil,                                // 12: noble.dollar.vaults.v2.CrossChainPositionSnapshot.ValueByRouteEntry
+	(*timestamppb.Timestamp)(nil),      // 13: google.protobuf.Timestamp
 }
 var file_noble_dollar_vaults_v2_cross_chain_proto_depIdxs = []int32{
-	14, // 0: noble.dollar.vaults.v2.RemotePosition.last_update:type_name -> google.protobuf.Timestamp
+	13, // 0: noble.dollar.vaults.v2.RemotePosition.last_update:type_name -> google.protobuf.Timestamp
 	0,  // 1: noble.dollar.vaults.v2.RemotePosition.status:type_name -> noble.dollar.vaults.v2.RemotePositionStatus
 	2,  // 2: noble.dollar.vaults.v2.InflightFund.direction:type_name -> noble.dollar.vaults.v2.InflightDirection
-	14, // 3: noble.dollar.vaults.v2.InflightFund.initiated_at:type_name -> google.protobuf.Timestamp
-	14, // 4: noble.dollar.vaults.v2.InflightFund.expected_at:type_name -> google.protobuf.Timestamp
+	13, // 3: noble.dollar.vaults.v2.InflightFund.initiated_at:type_name -> google.protobuf.Timestamp
+	13, // 4: noble.dollar.vaults.v2.InflightFund.expected_at:type_name -> google.protobuf.Timestamp
 	3,  // 5: noble.dollar.vaults.v2.InflightFund.status:type_name -> noble.dollar.vaults.v2.InflightStatus
 	8,  // 6: noble.dollar.vaults.v2.InflightFund.hyperlane_tracking_info:type_name -> noble.dollar.vaults.v2.HyperlaneTrackingInfo
-	14, // 7: noble.dollar.vaults.v2.AUMOracleUpdate.timestamp:type_name -> google.protobuf.Timestamp
+	13, // 7: noble.dollar.vaults.v2.AUMOracleUpdate.timestamp:type_name -> google.protobuf.Timestamp
 	4,  // 8: noble.dollar.vaults.v2.AUMOracleUpdate.status:type_name -> noble.dollar.vaults.v2.OracleUpdateStatus
-	13, // 9: noble.dollar.vaults.v2.CrossChainPositionSnapshot.value_by_route:type_name -> noble.dollar.vaults.v2.CrossChainPositionSnapshot.ValueByRouteEntry
-	14, // 10: noble.dollar.vaults.v2.StaleInflightAlert.timestamp:type_name -> google.protobuf.Timestamp
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	12, // 9: noble.dollar.vaults.v2.CrossChainPositionSnapshot.value_by_route:type_name -> noble.dollar.vaults.v2.CrossChainPositionSnapshot.ValueByRouteEntry
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_noble_dollar_vaults_v2_cross_chain_proto_init() }
@@ -7923,18 +7177,6 @@ func file_noble_dollar_vaults_v2_cross_chain_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_cross_chain_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*StaleInflightAlert); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -7942,7 +7184,7 @@ func file_noble_dollar_vaults_v2_cross_chain_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_noble_dollar_vaults_v2_cross_chain_proto_rawDesc,
 			NumEnums:      5,
-			NumMessages:   9,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

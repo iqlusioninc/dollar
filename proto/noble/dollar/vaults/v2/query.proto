@@ -76,11 +76,6 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/snapshot";
   }
 
-  // StaleInflightAlerts returns stale inflight alerts for a user or route
-  rpc StaleInflightAlerts(QueryStaleInflightAlertsRequest) returns (QueryStaleInflightAlertsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/stale";
-  }
-
   // WithdrawalQueue returns the current withdrawal queue (spec-aligned)
   rpc WithdrawalQueue(QueryWithdrawalQueueRequest) returns (QueryWithdrawalQueueResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/withdrawal_queue";
@@ -303,26 +298,6 @@ message QueryCrossChainSnapshotRequest {
 // QueryCrossChainSnapshotResponse returns cross-chain snapshot
 message QueryCrossChainSnapshotResponse {
   CrossChainPositionSnapshot snapshot = 1 [(gogoproto.nullable) = false];
-}
-
-// QueryStaleInflightAlertsRequest requests stale inflight alerts
-message QueryStaleInflightAlertsRequest {
-  uint32 route_id = 1; // Optional: filter by route
-  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; // Optional: filter by user
-  cosmos.base.query.v1beta1.PageRequest pagination = 3;
-}
-
-// QueryStaleInflightAlertsResponse returns stale inflight alerts
-message QueryStaleInflightAlertsResponse {
-  repeated StaleInflightAlertWithDetails alerts = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// StaleInflightAlertWithDetails includes additional context with the alert
-message StaleInflightAlertWithDetails {
-  StaleInflightAlert alert = 1 [(gogoproto.nullable) = false];
-  CrossChainRoute route = 2 [(gogoproto.nullable) = false];
-  InflightFund fund = 3 [(gogoproto.nullable) = false];
 }
 
 // ========== Spec-aligned Query Messages ==========

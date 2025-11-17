@@ -31,7 +31,6 @@ const (
 	Query_VaultRemotePositions_FullMethodName = "/noble.dollar.vaults.v2.Query/VaultRemotePositions"
 	Query_InflightFund_FullMethodName         = "/noble.dollar.vaults.v2.Query/InflightFund"
 	Query_CrossChainSnapshot_FullMethodName   = "/noble.dollar.vaults.v2.Query/CrossChainSnapshot"
-	Query_StaleInflightAlerts_FullMethodName  = "/noble.dollar.vaults.v2.Query/StaleInflightAlerts"
 	Query_WithdrawalQueue_FullMethodName      = "/noble.dollar.vaults.v2.Query/WithdrawalQueue"
 	Query_UserWithdrawals_FullMethodName      = "/noble.dollar.vaults.v2.Query/UserWithdrawals"
 	Query_UserBalance_FullMethodName          = "/noble.dollar.vaults.v2.Query/UserBalance"
@@ -74,8 +73,6 @@ type QueryClient interface {
 	InflightFund(ctx context.Context, in *QueryInflightFundRequest, opts ...grpc.CallOption) (*QueryInflightFundResponse, error)
 	// CrossChainSnapshot returns cross-chain position snapshot for a vault
 	CrossChainSnapshot(ctx context.Context, in *QueryCrossChainSnapshotRequest, opts ...grpc.CallOption) (*QueryCrossChainSnapshotResponse, error)
-	// StaleInflightAlerts returns stale inflight alerts for a user or route
-	StaleInflightAlerts(ctx context.Context, in *QueryStaleInflightAlertsRequest, opts ...grpc.CallOption) (*QueryStaleInflightAlertsResponse, error)
 	// WithdrawalQueue returns the current withdrawal queue (spec-aligned)
 	WithdrawalQueue(ctx context.Context, in *QueryWithdrawalQueueRequest, opts ...grpc.CallOption) (*QueryWithdrawalQueueResponse, error)
 	// UserWithdrawals returns all withdrawal requests for a user (spec-aligned)
@@ -226,16 +223,6 @@ func (c *queryClient) CrossChainSnapshot(ctx context.Context, in *QueryCrossChai
 	return out, nil
 }
 
-func (c *queryClient) StaleInflightAlerts(ctx context.Context, in *QueryStaleInflightAlertsRequest, opts ...grpc.CallOption) (*QueryStaleInflightAlertsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryStaleInflightAlertsResponse)
-	err := c.cc.Invoke(ctx, Query_StaleInflightAlerts_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) WithdrawalQueue(ctx context.Context, in *QueryWithdrawalQueueRequest, opts ...grpc.CallOption) (*QueryWithdrawalQueueResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryWithdrawalQueueResponse)
@@ -366,8 +353,6 @@ type QueryServer interface {
 	InflightFund(context.Context, *QueryInflightFundRequest) (*QueryInflightFundResponse, error)
 	// CrossChainSnapshot returns cross-chain position snapshot for a vault
 	CrossChainSnapshot(context.Context, *QueryCrossChainSnapshotRequest) (*QueryCrossChainSnapshotResponse, error)
-	// StaleInflightAlerts returns stale inflight alerts for a user or route
-	StaleInflightAlerts(context.Context, *QueryStaleInflightAlertsRequest) (*QueryStaleInflightAlertsResponse, error)
 	// WithdrawalQueue returns the current withdrawal queue (spec-aligned)
 	WithdrawalQueue(context.Context, *QueryWithdrawalQueueRequest) (*QueryWithdrawalQueueResponse, error)
 	// UserWithdrawals returns all withdrawal requests for a user (spec-aligned)
@@ -433,9 +418,6 @@ func (UnimplementedQueryServer) InflightFund(context.Context, *QueryInflightFund
 }
 func (UnimplementedQueryServer) CrossChainSnapshot(context.Context, *QueryCrossChainSnapshotRequest) (*QueryCrossChainSnapshotResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CrossChainSnapshot not implemented")
-}
-func (UnimplementedQueryServer) StaleInflightAlerts(context.Context, *QueryStaleInflightAlertsRequest) (*QueryStaleInflightAlertsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StaleInflightAlerts not implemented")
 }
 func (UnimplementedQueryServer) WithdrawalQueue(context.Context, *QueryWithdrawalQueueRequest) (*QueryWithdrawalQueueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WithdrawalQueue not implemented")
@@ -704,24 +686,6 @@ func _Query_CrossChainSnapshot_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_StaleInflightAlerts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryStaleInflightAlertsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).StaleInflightAlerts(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_StaleInflightAlerts_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).StaleInflightAlerts(ctx, req.(*QueryStaleInflightAlertsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_WithdrawalQueue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryWithdrawalQueueRequest)
 	if err := dec(in); err != nil {
@@ -956,10 +920,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CrossChainSnapshot",
 			Handler:    _Query_CrossChainSnapshot_Handler,
-		},
-		{
-			MethodName: "StaleInflightAlerts",
-			Handler:    _Query_StaleInflightAlerts_Handler,
 		},
 		{
 			MethodName: "WithdrawalQueue",

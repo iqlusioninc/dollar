@@ -299,24 +299,3 @@ message CrossChainConfig {
   ];
 }
 
-// StaleInflightAlert represents an alert for inflight funds exceeding expected duration
-message StaleInflightAlert {
-  // Route ID
-  uint32 route_id = 1;
-  // Transaction ID
-  string transaction_id = 2;
-  // Hours overdue
-  double hours_overdue = 3;
-  // Alert timestamp
-  google.protobuf.Timestamp timestamp = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Amount stuck in transit
-  string amount = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}

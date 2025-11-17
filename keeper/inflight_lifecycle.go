@@ -22,7 +22,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"cosmossdk.io/errors"
@@ -31,103 +30,6 @@ import (
 
 	vaultsv2 "dollar.noble.xyz/v3/types/vaults/v2"
 )
-
-// DetectStaleInflightFunds identifies inflight funds that have exceeded their expected completion time.
-// Returns a list of stale fund IDs and their details.
-func (k *Keeper) DetectStaleInflightFunds(ctx context.Context, staleThresholdHours int64) ([]StaleInflightFund, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	currentTime := sdkCtx.BlockTime()
-
-	var staleFunds []StaleInflightFund
-
-	err := k.IterateVaultsV2InflightFunds(ctx, func(inflightID uint64, fund vaultsv2.InflightFund) (bool, error) {
-		// Calculate how long past the expected time
-		if currentTime.After(fund.ExpectedAt) {
-			hoursOverdue := int64(currentTime.Sub(fund.ExpectedAt).Hours())
-
-			// Only include if past the threshold
-			if hoursOverdue >= staleThresholdHours {
-				// Extract route ID
-				routeID := uint32(0)
-				if fund.HyperlaneTrackingInfo != nil {
-					routeID = fund.HyperlaneTrackingInfo.DestinationDomain
-				}
-
-				staleFunds = append(staleFunds, StaleInflightFund{
-					TransactionID: fmt.Sprintf("%d", fund.Id),
-					RouteID:       routeID,
-					Fund:          fund,
-					HoursOverdue:  hoursOverdue,
-				})
-			}
-		}
-
-		return false, nil
-	})
-
-	return staleFunds, err
-}
-
-// CleanupStaleInflightFund removes a stale inflight fund and returns its value to the vault.
-// This should be called by governance/authority after manual verification.
-func (k *Keeper) CleanupStaleInflightFund(ctx context.Context, txID uint64, reason string, authority string) error {
-	// Get the fund
-	fund, found, err := k.GetVaultsV2InflightFund(ctx, txID)
-	if err != nil {
-		return errors.Wrap(err, "unable to fetch inflight fund")
-	}
-	if !found {
-		return errors.Wrapf(vaultsv2.ErrInflightNotFound, "inflight fund %d not found", txID)
-	}
-
-	// Extract route ID for tracking
-	routeID := uint32(0)
-	if fund.HyperlaneTrackingInfo != nil {
-		routeID = fund.HyperlaneTrackingInfo.DestinationDomain
-	}
-
-	// Subtract from route's inflight value
-	if routeID != 0 {
-		currentInflight, err := k.GetVaultsV2InflightValueByRoute(ctx, routeID)
-		if err == nil {
-			newInflight := currentInflight.Sub(fund.Amount)
-			if newInflight.IsNegative() {
-				newInflight = sdkmath.ZeroInt()
-			}
-			if err := k.SubtractVaultsV2InflightValueByRoute(ctx, routeID, fund.Amount); err != nil {
-				return errors.Wrap(err, "unable to update route inflight value")
-			}
-		}
-	}
-
-	// Return funds to vault - add amount back to local funds
-	// Note: This assumes funds originated from local funds
-	// TODO: Track operation type if needed to distinguish between local funds and withdrawal distribution
-	if err := k.AddVaultsV2LocalFunds(ctx, fund.Amount); err != nil {
-		return errors.Wrap(err, "unable to return funds to local funds")
-	}
-
-	// Delete the inflight fund
-	if err := k.DeleteVaultsV2InflightFund(ctx, txID); err != nil {
-		return errors.Wrap(err, "unable to delete inflight fund")
-	}
-
-	// Emit cleanup event
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	if err := sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundCleaned{
-		TransactionId:  fmt.Sprintf("%d", fund.Id),
-		RouteId:        routeID,
-		AmountReturned: fund.Amount,
-		Reason:         reason,
-		Authority:      authority,
-		BlockHeight:    sdkCtx.BlockHeight(),
-		Timestamp:      sdkCtx.BlockTime(),
-	}); err != nil {
-		return errors.Wrap(err, "unable to emit cleanup event")
-	}
-
-	return nil
-}
 
 // EmitInflightStatusChangeEvent emits an event when an inflight fund's status changes.
 func (k *Keeper) EmitInflightStatusChangeEvent(ctx context.Context, inflightID uint64, txID string, routeID uint32, prevStatus, newStatus vaultsv2.InflightStatus, amount sdkmath.Int, reason string) error {
@@ -185,23 +87,6 @@ func (k *Keeper) EmitInflightCompletedEvent(ctx context.Context, inflightID uint
 	})
 }
 
-// EmitStaleInflightDetectedEvent emits an event when a stale inflight fund is detected.
-func (k *Keeper) EmitStaleInflightDetectedEvent(ctx context.Context, txID string, routeID uint32, amount sdkmath.Int, hoursOverdue int64, expectedAt time.Time, status vaultsv2.InflightStatus) error {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	return sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventInflightFundStale{
-		TransactionId:     txID,
-		RouteId:           routeID,
-		Amount:            amount,
-		HoursOverdue:      hoursOverdue,
-		ExpectedAt:        expectedAt,
-		CurrentStatus:     status.String(),
-		RecommendedAction: "Manual intervention required - verify cross-chain state",
-		BlockHeight:       sdkCtx.BlockHeight(),
-		Timestamp:         sdkCtx.BlockTime(),
-	})
-}
-
 // EnforceRouteCapacity checks if a route has capacity for an operation.
 // Returns error if the operation would exceed the route's max_inflight_value.
 func (k *Keeper) EnforceRouteCapacity(ctx context.Context, routeID uint32, additionalAmount sdkmath.Int) error {
@@ -245,40 +130,4 @@ func (k *Keeper) EnforceRouteCapacity(ctx context.Context, routeID uint32, addit
 	}
 
 	return nil
-}
-
-// StaleInflightFund represents a detected stale inflight fund.
-type StaleInflightFund struct {
-	TransactionID string
-	RouteID       uint32
-	Fund          vaultsv2.InflightFund
-	HoursOverdue  int64
-}
-
-// AutoDetectAndEmitStaleAlerts checks for stale inflight funds and emits alert events.
-// This can be called periodically (e.g., in BeginBlock or EndBlock).
-// staleThresholdHours: minimum hours overdue before considering stale
-func (k *Keeper) AutoDetectAndEmitStaleAlerts(ctx context.Context, staleThresholdHours int64) (int, error) {
-	staleFunds, err := k.DetectStaleInflightFunds(ctx, staleThresholdHours)
-	if err != nil {
-		return 0, err
-	}
-
-	// Emit alert for each stale fund
-	for _, stale := range staleFunds {
-		if err := k.EmitStaleInflightDetectedEvent(
-			ctx,
-			stale.TransactionID,
-			stale.RouteID,
-			stale.Fund.Amount,
-			stale.HoursOverdue,
-			stale.Fund.ExpectedAt,
-			stale.Fund.Status,
-		); err != nil {
-			// Log but don't fail - continue processing other alerts
-			continue
-		}
-	}
-
-	return len(staleFunds), nil
 }

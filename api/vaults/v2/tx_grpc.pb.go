@@ -30,7 +30,6 @@ const (
 	Msg_DisableCrossChainRoute_FullMethodName             = "/noble.dollar.vaults.v2.Msg/DisableCrossChainRoute"
 	Msg_CreateRemotePosition_FullMethodName               = "/noble.dollar.vaults.v2.Msg/CreateRemotePosition"
 	Msg_CloseRemotePosition_FullMethodName                = "/noble.dollar.vaults.v2.Msg/CloseRemotePosition"
-	Msg_ProcessInFlightPosition_FullMethodName            = "/noble.dollar.vaults.v2.Msg/ProcessInFlightPosition"
 	Msg_RegisterOracle_FullMethodName                     = "/noble.dollar.vaults.v2.Msg/RegisterOracle"
 	Msg_UpdateOracleConfig_FullMethodName                 = "/noble.dollar.vaults.v2.Msg/UpdateOracleConfig"
 	Msg_RemoveOracle_FullMethodName                       = "/noble.dollar.vaults.v2.Msg/RemoveOracle"
@@ -74,8 +73,6 @@ type MsgClient interface {
 	CreateRemotePosition(ctx context.Context, in *MsgCreateRemotePosition, opts ...grpc.CallOption) (*MsgCreateRemotePositionResponse, error)
 	// Close a remote position (spec-aligned)
 	CloseRemotePosition(ctx context.Context, in *MsgCloseRemotePosition, opts ...grpc.CallOption) (*MsgCloseRemotePositionResponse, error)
-	// Process in-flight position (system operation)
-	ProcessInFlightPosition(ctx context.Context, in *MsgProcessInFlightPosition, opts ...grpc.CallOption) (*MsgProcessInFlightPositionResponse, error)
 	// Register a new oracle for a position (authority only)
 	RegisterOracle(ctx context.Context, in *MsgRegisterOracle, opts ...grpc.CallOption) (*MsgRegisterOracleResponse, error)
 	// Update oracle configuration (authority only)
@@ -216,16 +213,6 @@ func (c *msgClient) CloseRemotePosition(ctx context.Context, in *MsgCloseRemoteP
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgCloseRemotePositionResponse)
 	err := c.cc.Invoke(ctx, Msg_CloseRemotePosition_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) ProcessInFlightPosition(ctx context.Context, in *MsgProcessInFlightPosition, opts ...grpc.CallOption) (*MsgProcessInFlightPositionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgProcessInFlightPositionResponse)
-	err := c.cc.Invoke(ctx, Msg_ProcessInFlightPosition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -390,8 +377,6 @@ type MsgServer interface {
 	CreateRemotePosition(context.Context, *MsgCreateRemotePosition) (*MsgCreateRemotePositionResponse, error)
 	// Close a remote position (spec-aligned)
 	CloseRemotePosition(context.Context, *MsgCloseRemotePosition) (*MsgCloseRemotePositionResponse, error)
-	// Process in-flight position (system operation)
-	ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error)
 	// Register a new oracle for a position (authority only)
 	RegisterOracle(context.Context, *MsgRegisterOracle) (*MsgRegisterOracleResponse, error)
 	// Update oracle configuration (authority only)
@@ -460,9 +445,6 @@ func (UnimplementedMsgServer) CreateRemotePosition(context.Context, *MsgCreateRe
 }
 func (UnimplementedMsgServer) CloseRemotePosition(context.Context, *MsgCloseRemotePosition) (*MsgCloseRemotePositionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CloseRemotePosition not implemented")
-}
-func (UnimplementedMsgServer) ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProcessInFlightPosition not implemented")
 }
 func (UnimplementedMsgServer) RegisterOracle(context.Context, *MsgRegisterOracle) (*MsgRegisterOracleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterOracle not implemented")
@@ -718,24 +700,6 @@ func _Msg_CloseRemotePosition_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).CloseRemotePosition(ctx, req.(*MsgCloseRemotePosition))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_ProcessInFlightPosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProcessInFlightPosition)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ProcessInFlightPosition(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_ProcessInFlightPosition_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProcessInFlightPosition(ctx, req.(*MsgProcessInFlightPosition))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1024,10 +988,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CloseRemotePosition",
 			Handler:    _Msg_CloseRemotePosition_Handler,
-		},
-		{
-			MethodName: "ProcessInFlightPosition",
-			Handler:    _Msg_ProcessInFlightPosition_Handler,
 		},
 		{
 			MethodName: "RegisterOracle",
