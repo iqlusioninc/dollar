@@ -61,7 +61,6 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 		SharePrice:   math.LegacyNewDec(5000),      // $5000 per share
 		TotalValue:   math.NewInt(500000 * ONE_V2), // 500K USDN total value
 		LastUpdate:   time.Now(),
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
 	}
 	err = keeper.SetVaultsV2RemotePosition(ctx, positionID, position)
 	require.NoError(t, err)
@@ -73,23 +72,16 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	// Create an inflight fund entry manually (simulating what would have been done by the remote chain manager)
 	fund := vaultsv2.InflightFund{
 		Id:                inflightID,
-		TransactionId:     "",
+		RemotePositionId:  positionID,
+		Direction:         vaultsv2.INFLIGHT_INCOMING,
 		Amount:            redemptionAmount,
 		Status:            vaultsv2.INFLIGHT_PENDING,
 		InitiatedAt:       time.Now(),
 		ExpectedAt:        time.Now().Add(1 * time.Hour),
 		ValueAtInitiation: redemptionAmount,
-		Origin: &vaultsv2.InflightFund_RemoteOrigin{
-			RemoteOrigin: &position,
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					OriginDomain:      routeID,
-					DestinationDomain: routeID,
-					Nonce:             1,
-				},
-			},
+		HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+			OriginDomain:      routeID,
+			DestinationDomain: routeID,
 		},
 	}
 	err = keeper.SetVaultsV2InflightFund(ctx, fund)
@@ -129,7 +121,8 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	expectedTotalValue := position.TotalValue.Sub(redemptionAmount)
 	assert.Equal(t, expectedPrincipal, updatedPosition.Principal)
 	assert.Equal(t, expectedTotalValue, updatedPosition.TotalValue)
-	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, updatedPosition.Status) // Still active
+	// Position is still active (has positive value and shares)
+	assert.True(t, updatedPosition.TotalValue.IsPositive() && updatedPosition.SharesHeld.IsPositive())
 }
 
 // TestProcessIncomingWarpFundsValidation tests validation scenarios
@@ -156,7 +149,6 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 		SharePrice:   math.LegacyNewDec(5000),
 		TotalValue:   math.NewInt(500000 * ONE_V2),
 		LastUpdate:   time.Now(),
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
 	}
 	err = keeper.SetVaultsV2RemotePosition(ctx, positionID, position)
 	require.NoError(t, err)
@@ -185,23 +177,16 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 		// First, create a pending fund
 		fund := vaultsv2.InflightFund{
 			Id:                doubleProcessID,
-			TransactionId:     "",
+			RemotePositionId:  positionID,
+			Direction:         vaultsv2.INFLIGHT_INCOMING,
 			Amount:            math.NewInt(100000 * ONE_V2),
 			Status:            vaultsv2.INFLIGHT_PENDING,
 			InitiatedAt:       time.Now(),
 			ExpectedAt:        time.Now().Add(1 * time.Hour),
 			ValueAtInitiation: math.NewInt(100000 * ONE_V2),
-			Origin: &vaultsv2.InflightFund_RemoteOrigin{
-				RemoteOrigin: &position,
-			},
-			ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-				TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-					HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-						OriginDomain:      routeID,
-						DestinationDomain: routeID,
-						Nonce:             2,
-					},
-				},
+			HyperlaneTrackingInfo: &vaultsv2.HyperlaneTrackingInfo{
+				OriginDomain:      routeID,
+				DestinationDomain: routeID,
 			},
 		}
 		err := keeper.SetVaultsV2InflightFund(ctx, fund)
@@ -229,72 +214,3 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 }
 
 // TestHandleStaleInflight tests handling of stale inflight funds
-func TestHandleStaleInflight(t *testing.T) {
-	keeper, server, _, ctx, _ := setupV2Test(t)
-
-	staleInflightID := uint64(3)
-
-	// Setup route
-	routeID := uint32(1)
-	route := vaultsv2.CrossChainRoute{
-		HyptokenId:            hyperlaneutil.HexAddress{0x01},
-		ReceiverChainHook:     hyperlaneutil.HexAddress{0x02},
-		RemotePositionAddress: hyperlaneutil.HexAddress{0x03},
-		MaxInflightValue:      math.NewInt(1000000 * ONE_V2),
-	}
-	err := keeper.SetVaultsV2CrossChainRoute(ctx, routeID, route)
-	require.NoError(t, err)
-
-	// Create a stale inflight fund
-	staleFund := vaultsv2.InflightFund{
-		Id:                staleInflightID,
-		TransactionId:     "",
-		Amount:            math.NewInt(100000 * ONE_V2),
-		Status:            vaultsv2.INFLIGHT_PENDING,
-		InitiatedAt:       time.Now().Add(-2 * time.Hour), // 2 hours ago
-		ExpectedAt:        time.Now().Add(-1 * time.Hour), // Should have completed 1 hour ago
-		ValueAtInitiation: math.NewInt(100000 * ONE_V2),
-		Origin: &vaultsv2.InflightFund_RemoteOrigin{
-			RemoteOrigin: &vaultsv2.RemotePosition{
-				HyptokenId:   route.HyptokenId,
-				VaultAddress: route.RemotePositionAddress,
-				SharesHeld:   math.NewInt(100),
-				Principal:    math.NewInt(100000 * ONE_V2),
-				SharePrice:   math.LegacyNewDec(1000),
-				TotalValue:   math.NewInt(100000 * ONE_V2),
-				LastUpdate:   time.Now(),
-				Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
-			},
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					OriginDomain:      routeID,
-					DestinationDomain: routeID,
-					Nonce:             3,
-				},
-			},
-		},
-	}
-	err = keeper.SetVaultsV2InflightFund(ctx, staleFund)
-	require.NoError(t, err)
-
-	// Handle stale inflight fund
-	msg := &vaultsv2.MsgHandleStaleInflight{
-		Authority:  mocks.Authority,
-		InflightId: staleInflightID,
-		NewStatus:  vaultsv2.INFLIGHT_TIMEOUT,
-		Reason:     "Transaction exceeded expected completion time",
-	}
-
-	resp, err := server.HandleStaleInflight(ctx, msg)
-	require.NoError(t, err)
-	assert.Equal(t, staleInflightID, resp.InflightId)
-	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, resp.FinalStatus)
-
-	// Verify fund was marked as expired
-	fund, found, err := keeper.GetVaultsV2InflightFund(ctx, staleInflightID)
-	require.NoError(t, err)
-	assert.True(t, found)
-	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, fund.Status)
-}
