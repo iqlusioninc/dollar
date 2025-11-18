@@ -2093,11 +2093,6 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 		return nil, sdkerrors.Wrap(err, "unable to update inflight fund")
 	}
 
-	// Remove from route inflight value tracking
-	if err := m.SubtractVaultsV2InflightValueByRoute(ctx, msg.RouteId, originalAmount); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to update route inflight value")
-	}
-
 	// Update remote position if this is linked to one
 	if fund.RemotePositionId != 0 {
 		position, foundPosition, err := m.GetVaultsV2RemotePosition(ctx, fund.RemotePositionId)

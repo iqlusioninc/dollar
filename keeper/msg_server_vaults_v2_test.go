@@ -1563,8 +1563,6 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	}
 	err = k.SetVaultsV2InflightFund(baseCtx, depositFund)
 	require.NoError(t, err)
-	err = k.AddVaultsV2InflightValueByRoute(baseCtx, routeResp.RouteId, depositFund.Amount)
-	require.NoError(t, err)
 
 	beforePending, err := k.GetVaultsV2LocalFunds(baseCtx)
 	require.NoError(t, err)
@@ -1583,10 +1581,6 @@ func TestHandleStaleInflightMarksTimeout(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, found)
 	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, fund.Status)
-
-	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, routeResp.RouteId)
-	require.NoError(t, err)
-	assert.True(t, routeValue.IsZero())
 
 	pendingDeployment, err := k.GetVaultsV2LocalFunds(ctx)
 	require.NoError(t, err)

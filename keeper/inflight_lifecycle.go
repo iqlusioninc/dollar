@@ -24,7 +24,6 @@ import (
 	"context"
 	"time"
 
-	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -87,47 +86,3 @@ func (k *Keeper) EmitInflightCompletedEvent(ctx context.Context, inflightID uint
 	})
 }
 
-// EnforceRouteCapacity checks if a route has capacity for an operation.
-// Returns error if the operation would exceed the route's max_inflight_value.
-func (k *Keeper) EnforceRouteCapacity(ctx context.Context, routeID uint32, additionalAmount sdkmath.Int) error {
-	// Get route configuration
-	route, found, err := k.GetVaultsV2CrossChainRoute(ctx, routeID)
-	if err != nil {
-		return errors.Wrap(err, "unable to fetch route")
-	}
-	if !found {
-		return errors.Wrapf(vaultsv2.ErrRouteNotFound, "route %d not found", routeID)
-	}
-
-	// If no limit set, allow
-	if !route.MaxInflightValue.IsPositive() {
-		return nil
-	}
-
-	// Get current inflight value for this route
-	currentInflight, err := k.GetVaultsV2InflightValueByRoute(ctx, routeID)
-	if err != nil {
-		currentInflight = sdkmath.ZeroInt()
-	}
-
-	// Check if adding this amount would exceed capacity
-	newInflight := currentInflight.Add(additionalAmount)
-	if newInflight.GT(route.MaxInflightValue) {
-		// Emit capacity exceeded event
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		_ = sdkCtx.EventManager().EmitTypedEvent(&vaultsv2.EventRouteCapacityExceeded{
-			RouteId:              routeID,
-			CurrentInflightValue: currentInflight,
-			CapacityLimit:        route.MaxInflightValue,
-			AttemptedAmount:      additionalAmount,
-			BlockHeight:          sdkCtx.BlockHeight(),
-			Timestamp:            sdkCtx.BlockTime(),
-		})
-
-		return errors.Wrapf(vaultsv2.ErrRouteCapacityExceeded,
-			"route %d capacity exceeded: current=%s, limit=%s, attempted=%s",
-			routeID, currentInflight.String(), route.MaxInflightValue.String(), additionalAmount.String())
-	}
-
-	return nil
-}

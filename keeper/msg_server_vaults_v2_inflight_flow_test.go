@@ -95,10 +95,6 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	err = keeper.SetVaultsV2InflightFund(ctx, fund)
 	require.NoError(t, err)
 
-	// Track the inflight value for the route
-	err = keeper.AddVaultsV2InflightValueByRoute(ctx, routeID, redemptionAmount)
-	require.NoError(t, err)
-
 	// Process incoming warp funds (simulating funds coming back from remote chain)
 	processMsg := &vaultsv2.MsgProcessIncomingWarpFunds{
 		Processor:          mocks.Authority,
@@ -124,11 +120,6 @@ func TestProcessIncomingWarpFunds(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, found)
 	assert.Equal(t, vaultsv2.INFLIGHT_COMPLETED, fund.Status)
-
-	// Verify route inflight value was decremented
-	routeInflight, err := keeper.GetVaultsV2InflightValueByRoute(ctx, routeID)
-	require.NoError(t, err)
-	assert.Equal(t, math.ZeroInt(), routeInflight)
 
 	// Verify remote position was updated
 	updatedPosition, found, err := keeper.GetVaultsV2RemotePosition(ctx, positionID)
@@ -215,8 +206,6 @@ func TestProcessIncomingWarpFundsValidation(t *testing.T) {
 		}
 		err := keeper.SetVaultsV2InflightFund(ctx, fund)
 		require.NoError(t, err)
-		err = keeper.AddVaultsV2InflightValueByRoute(ctx, routeID, fund.Amount)
-		require.NoError(t, err)
 
 		// Process it successfully
 		processMsg := &vaultsv2.MsgProcessIncomingWarpFunds{
@@ -289,8 +278,6 @@ func TestHandleStaleInflight(t *testing.T) {
 	}
 	err = keeper.SetVaultsV2InflightFund(ctx, staleFund)
 	require.NoError(t, err)
-	err = keeper.AddVaultsV2InflightValueByRoute(ctx, routeID, staleFund.Amount)
-	require.NoError(t, err)
 
 	// Handle stale inflight fund
 	msg := &vaultsv2.MsgHandleStaleInflight{
@@ -310,9 +297,4 @@ func TestHandleStaleInflight(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, found)
 	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, fund.Status)
-
-	// Verify route inflight value was cleared
-	routeInflight, err := keeper.GetVaultsV2InflightValueByRoute(ctx, routeID)
-	require.NoError(t, err)
-	assert.Equal(t, math.ZeroInt(), routeInflight)
 }
