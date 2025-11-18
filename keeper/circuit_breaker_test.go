@@ -310,6 +310,7 @@ func TestCircuitBreakerWithRealOracleFlow(t *testing.T) {
 	require.NoError(t, k.Mint(baseCtx, bob.Bytes, sdkmath.NewInt(1000*ONE_V2), nil))
 	_, err = vaultsV2Server.Deposit(baseCtx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
+		Amount:       sdkmath.NewInt(1000 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -322,6 +323,17 @@ func TestCircuitBreakerWithRealOracleFlow(t *testing.T) {
 	})
 	require.NoError(t, err)
 	positionID := createResp.PositionId
+
+	// Manually set up the remote position with 800 value
+	require.NoError(t, k.SubtractVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(800*ONE_V2)))
+	position, found, err := k.GetVaultsV2RemotePosition(baseCtx, positionID)
+	require.NoError(t, err)
+	require.True(t, found)
+	position.TotalValue = sdkmath.NewInt(800 * ONE_V2)
+	position.Principal = sdkmath.NewInt(800 * ONE_V2)
+	position.SharesHeld = sdkmath.NewInt(800 * ONE_V2)
+	position.SharePrice = sdkmath.LegacyOneDec()
+	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, positionID, position))
 
 	// Setup oracle with initial value
 	oracleAddress := hyperlaneutil.CreateMockHexAddress("oracle", 1)
