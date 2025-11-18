@@ -805,1054 +805,6 @@ func (x *fastReflection_RemotePositionOracle) ProtoMethods() *protoiface.Methods
 }
 
 var (
-	md_OracleMapping                protoreflect.MessageDescriptor
-	fd_OracleMapping_oracle_address protoreflect.FieldDescriptor
-	fd_OracleMapping_chain_id       protoreflect.FieldDescriptor
-	fd_OracleMapping_position_id    protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_OracleMapping = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("OracleMapping")
-	fd_OracleMapping_oracle_address = md_OracleMapping.Fields().ByName("oracle_address")
-	fd_OracleMapping_chain_id = md_OracleMapping.Fields().ByName("chain_id")
-	fd_OracleMapping_position_id = md_OracleMapping.Fields().ByName("position_id")
-}
-
-var _ protoreflect.Message = (*fastReflection_OracleMapping)(nil)
-
-type fastReflection_OracleMapping OracleMapping
-
-func (x *OracleMapping) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_OracleMapping)(x)
-}
-
-func (x *OracleMapping) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_OracleMapping_messageType fastReflection_OracleMapping_messageType
-var _ protoreflect.MessageType = fastReflection_OracleMapping_messageType{}
-
-type fastReflection_OracleMapping_messageType struct{}
-
-func (x fastReflection_OracleMapping_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_OracleMapping)(nil)
-}
-func (x fastReflection_OracleMapping_messageType) New() protoreflect.Message {
-	return new(fastReflection_OracleMapping)
-}
-func (x fastReflection_OracleMapping_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_OracleMapping
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_OracleMapping) Descriptor() protoreflect.MessageDescriptor {
-	return md_OracleMapping
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_OracleMapping) Type() protoreflect.MessageType {
-	return _fastReflection_OracleMapping_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_OracleMapping) New() protoreflect.Message {
-	return new(fastReflection_OracleMapping)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_OracleMapping) Interface() protoreflect.ProtoMessage {
-	return (*OracleMapping)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_OracleMapping) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.OracleAddress != "" {
-		value := protoreflect.ValueOfString(x.OracleAddress)
-		if !f(fd_OracleMapping_oracle_address, value) {
-			return
-		}
-	}
-	if x.ChainId != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.ChainId)
-		if !f(fd_OracleMapping_chain_id, value) {
-			return
-		}
-	}
-	if x.PositionId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PositionId)
-		if !f(fd_OracleMapping_position_id, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_OracleMapping) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleMapping.oracle_address":
-		return x.OracleAddress != ""
-	case "noble.dollar.vaults.v2.OracleMapping.chain_id":
-		return x.ChainId != uint32(0)
-	case "noble.dollar.vaults.v2.OracleMapping.position_id":
-		return x.PositionId != uint64(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleMapping"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleMapping does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleMapping) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleMapping.oracle_address":
-		x.OracleAddress = ""
-	case "noble.dollar.vaults.v2.OracleMapping.chain_id":
-		x.ChainId = uint32(0)
-	case "noble.dollar.vaults.v2.OracleMapping.position_id":
-		x.PositionId = uint64(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleMapping"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleMapping does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_OracleMapping) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.OracleMapping.oracle_address":
-		value := x.OracleAddress
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.OracleMapping.chain_id":
-		value := x.ChainId
-		return protoreflect.ValueOfUint32(value)
-	case "noble.dollar.vaults.v2.OracleMapping.position_id":
-		value := x.PositionId
-		return protoreflect.ValueOfUint64(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleMapping"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleMapping does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleMapping) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleMapping.oracle_address":
-		x.OracleAddress = value.Interface().(string)
-	case "noble.dollar.vaults.v2.OracleMapping.chain_id":
-		x.ChainId = uint32(value.Uint())
-	case "noble.dollar.vaults.v2.OracleMapping.position_id":
-		x.PositionId = value.Uint()
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleMapping"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleMapping does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleMapping) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleMapping.oracle_address":
-		panic(fmt.Errorf("field oracle_address of message noble.dollar.vaults.v2.OracleMapping is not mutable"))
-	case "noble.dollar.vaults.v2.OracleMapping.chain_id":
-		panic(fmt.Errorf("field chain_id of message noble.dollar.vaults.v2.OracleMapping is not mutable"))
-	case "noble.dollar.vaults.v2.OracleMapping.position_id":
-		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.OracleMapping is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleMapping"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleMapping does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_OracleMapping) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleMapping.oracle_address":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.OracleMapping.chain_id":
-		return protoreflect.ValueOfUint32(uint32(0))
-	case "noble.dollar.vaults.v2.OracleMapping.position_id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleMapping"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleMapping does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_OracleMapping) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.OracleMapping", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_OracleMapping) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleMapping) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_OracleMapping) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_OracleMapping) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*OracleMapping)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.OracleAddress)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.ChainId != 0 {
-			n += 1 + runtime.Sov(uint64(x.ChainId))
-		}
-		if x.PositionId != 0 {
-			n += 1 + runtime.Sov(uint64(x.PositionId))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*OracleMapping)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.PositionId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PositionId))
-			i--
-			dAtA[i] = 0x18
-		}
-		if x.ChainId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ChainId))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.OracleAddress) > 0 {
-			i -= len(x.OracleAddress)
-			copy(dAtA[i:], x.OracleAddress)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OracleAddress)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*OracleMapping)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OracleMapping: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OracleMapping: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OracleAddress", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.OracleAddress = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
-				}
-				x.ChainId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.ChainId |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
-				}
-				x.PositionId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.PositionId |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_EnrolledOracleRouter                protoreflect.MessageDescriptor
-	fd_EnrolledOracleRouter_position_id    protoreflect.FieldDescriptor
-	fd_EnrolledOracleRouter_source_chain   protoreflect.FieldDescriptor
-	fd_EnrolledOracleRouter_oracle_address protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_EnrolledOracleRouter = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("EnrolledOracleRouter")
-	fd_EnrolledOracleRouter_position_id = md_EnrolledOracleRouter.Fields().ByName("position_id")
-	fd_EnrolledOracleRouter_source_chain = md_EnrolledOracleRouter.Fields().ByName("source_chain")
-	fd_EnrolledOracleRouter_oracle_address = md_EnrolledOracleRouter.Fields().ByName("oracle_address")
-}
-
-var _ protoreflect.Message = (*fastReflection_EnrolledOracleRouter)(nil)
-
-type fastReflection_EnrolledOracleRouter EnrolledOracleRouter
-
-func (x *EnrolledOracleRouter) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EnrolledOracleRouter)(x)
-}
-
-func (x *EnrolledOracleRouter) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_EnrolledOracleRouter_messageType fastReflection_EnrolledOracleRouter_messageType
-var _ protoreflect.MessageType = fastReflection_EnrolledOracleRouter_messageType{}
-
-type fastReflection_EnrolledOracleRouter_messageType struct{}
-
-func (x fastReflection_EnrolledOracleRouter_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EnrolledOracleRouter)(nil)
-}
-func (x fastReflection_EnrolledOracleRouter_messageType) New() protoreflect.Message {
-	return new(fastReflection_EnrolledOracleRouter)
-}
-func (x fastReflection_EnrolledOracleRouter_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EnrolledOracleRouter
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_EnrolledOracleRouter) Descriptor() protoreflect.MessageDescriptor {
-	return md_EnrolledOracleRouter
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EnrolledOracleRouter) Type() protoreflect.MessageType {
-	return _fastReflection_EnrolledOracleRouter_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EnrolledOracleRouter) New() protoreflect.Message {
-	return new(fastReflection_EnrolledOracleRouter)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_EnrolledOracleRouter) Interface() protoreflect.ProtoMessage {
-	return (*EnrolledOracleRouter)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_EnrolledOracleRouter) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.PositionId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PositionId)
-		if !f(fd_EnrolledOracleRouter_position_id, value) {
-			return
-		}
-	}
-	if x.SourceChain != "" {
-		value := protoreflect.ValueOfString(x.SourceChain)
-		if !f(fd_EnrolledOracleRouter_source_chain, value) {
-			return
-		}
-	}
-	if x.OracleAddress != "" {
-		value := protoreflect.ValueOfString(x.OracleAddress)
-		if !f(fd_EnrolledOracleRouter_oracle_address, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_EnrolledOracleRouter) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.position_id":
-		return x.PositionId != uint64(0)
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.source_chain":
-		return x.SourceChain != ""
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.oracle_address":
-		return x.OracleAddress != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EnrolledOracleRouter"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EnrolledOracleRouter does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EnrolledOracleRouter) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.position_id":
-		x.PositionId = uint64(0)
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.source_chain":
-		x.SourceChain = ""
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.oracle_address":
-		x.OracleAddress = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EnrolledOracleRouter"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EnrolledOracleRouter does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EnrolledOracleRouter) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.position_id":
-		value := x.PositionId
-		return protoreflect.ValueOfUint64(value)
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.source_chain":
-		value := x.SourceChain
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.oracle_address":
-		value := x.OracleAddress
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EnrolledOracleRouter"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EnrolledOracleRouter does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EnrolledOracleRouter) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.position_id":
-		x.PositionId = value.Uint()
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.source_chain":
-		x.SourceChain = value.Interface().(string)
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.oracle_address":
-		x.OracleAddress = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EnrolledOracleRouter"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EnrolledOracleRouter does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EnrolledOracleRouter) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.position_id":
-		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.EnrolledOracleRouter is not mutable"))
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.source_chain":
-		panic(fmt.Errorf("field source_chain of message noble.dollar.vaults.v2.EnrolledOracleRouter is not mutable"))
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.oracle_address":
-		panic(fmt.Errorf("field oracle_address of message noble.dollar.vaults.v2.EnrolledOracleRouter is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EnrolledOracleRouter"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EnrolledOracleRouter does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EnrolledOracleRouter) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.position_id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.source_chain":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.EnrolledOracleRouter.oracle_address":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.EnrolledOracleRouter"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.EnrolledOracleRouter does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EnrolledOracleRouter) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.EnrolledOracleRouter", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EnrolledOracleRouter) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EnrolledOracleRouter) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_EnrolledOracleRouter) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_EnrolledOracleRouter) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EnrolledOracleRouter)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.PositionId != 0 {
-			n += 1 + runtime.Sov(uint64(x.PositionId))
-		}
-		l = len(x.SourceChain)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.OracleAddress)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EnrolledOracleRouter)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.OracleAddress) > 0 {
-			i -= len(x.OracleAddress)
-			copy(dAtA[i:], x.OracleAddress)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OracleAddress)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if len(x.SourceChain) > 0 {
-			i -= len(x.SourceChain)
-			copy(dAtA[i:], x.SourceChain)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceChain)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if x.PositionId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PositionId))
-			i--
-			dAtA[i] = 0x8
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EnrolledOracleRouter)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EnrolledOracleRouter: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EnrolledOracleRouter: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
-				}
-				x.PositionId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.PositionId |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceChain", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.SourceChain = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OracleAddress", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.OracleAddress = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
 	md_EnrolledOracle                protoreflect.MessageDescriptor
 	fd_EnrolledOracle_position_id    protoreflect.FieldDescriptor
 	fd_EnrolledOracle_source_chain   protoreflect.FieldDescriptor
@@ -1882,7 +834,7 @@ func (x *EnrolledOracle) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EnrolledOracle) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[3]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2566,506 +1518,6 @@ func (x *fastReflection_EnrolledOracle) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_StalenessConfig                    protoreflect.MessageDescriptor
-	fd_StalenessConfig_warning_threshold  protoreflect.FieldDescriptor
-	fd_StalenessConfig_critical_threshold protoreflect.FieldDescriptor
-	fd_StalenessConfig_max_staleness      protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_StalenessConfig = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("StalenessConfig")
-	fd_StalenessConfig_warning_threshold = md_StalenessConfig.Fields().ByName("warning_threshold")
-	fd_StalenessConfig_critical_threshold = md_StalenessConfig.Fields().ByName("critical_threshold")
-	fd_StalenessConfig_max_staleness = md_StalenessConfig.Fields().ByName("max_staleness")
-}
-
-var _ protoreflect.Message = (*fastReflection_StalenessConfig)(nil)
-
-type fastReflection_StalenessConfig StalenessConfig
-
-func (x *StalenessConfig) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_StalenessConfig)(x)
-}
-
-func (x *StalenessConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_StalenessConfig_messageType fastReflection_StalenessConfig_messageType
-var _ protoreflect.MessageType = fastReflection_StalenessConfig_messageType{}
-
-type fastReflection_StalenessConfig_messageType struct{}
-
-func (x fastReflection_StalenessConfig_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_StalenessConfig)(nil)
-}
-func (x fastReflection_StalenessConfig_messageType) New() protoreflect.Message {
-	return new(fastReflection_StalenessConfig)
-}
-func (x fastReflection_StalenessConfig_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_StalenessConfig
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_StalenessConfig) Descriptor() protoreflect.MessageDescriptor {
-	return md_StalenessConfig
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_StalenessConfig) Type() protoreflect.MessageType {
-	return _fastReflection_StalenessConfig_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_StalenessConfig) New() protoreflect.Message {
-	return new(fastReflection_StalenessConfig)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_StalenessConfig) Interface() protoreflect.ProtoMessage {
-	return (*StalenessConfig)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_StalenessConfig) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.WarningThreshold != int64(0) {
-		value := protoreflect.ValueOfInt64(x.WarningThreshold)
-		if !f(fd_StalenessConfig_warning_threshold, value) {
-			return
-		}
-	}
-	if x.CriticalThreshold != int64(0) {
-		value := protoreflect.ValueOfInt64(x.CriticalThreshold)
-		if !f(fd_StalenessConfig_critical_threshold, value) {
-			return
-		}
-	}
-	if x.MaxStaleness != int64(0) {
-		value := protoreflect.ValueOfInt64(x.MaxStaleness)
-		if !f(fd_StalenessConfig_max_staleness, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_StalenessConfig) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StalenessConfig.warning_threshold":
-		return x.WarningThreshold != int64(0)
-	case "noble.dollar.vaults.v2.StalenessConfig.critical_threshold":
-		return x.CriticalThreshold != int64(0)
-	case "noble.dollar.vaults.v2.StalenessConfig.max_staleness":
-		return x.MaxStaleness != int64(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StalenessConfig"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StalenessConfig does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StalenessConfig) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StalenessConfig.warning_threshold":
-		x.WarningThreshold = int64(0)
-	case "noble.dollar.vaults.v2.StalenessConfig.critical_threshold":
-		x.CriticalThreshold = int64(0)
-	case "noble.dollar.vaults.v2.StalenessConfig.max_staleness":
-		x.MaxStaleness = int64(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StalenessConfig"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StalenessConfig does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_StalenessConfig) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.StalenessConfig.warning_threshold":
-		value := x.WarningThreshold
-		return protoreflect.ValueOfInt64(value)
-	case "noble.dollar.vaults.v2.StalenessConfig.critical_threshold":
-		value := x.CriticalThreshold
-		return protoreflect.ValueOfInt64(value)
-	case "noble.dollar.vaults.v2.StalenessConfig.max_staleness":
-		value := x.MaxStaleness
-		return protoreflect.ValueOfInt64(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StalenessConfig"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StalenessConfig does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StalenessConfig) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StalenessConfig.warning_threshold":
-		x.WarningThreshold = value.Int()
-	case "noble.dollar.vaults.v2.StalenessConfig.critical_threshold":
-		x.CriticalThreshold = value.Int()
-	case "noble.dollar.vaults.v2.StalenessConfig.max_staleness":
-		x.MaxStaleness = value.Int()
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StalenessConfig"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StalenessConfig does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StalenessConfig) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StalenessConfig.warning_threshold":
-		panic(fmt.Errorf("field warning_threshold of message noble.dollar.vaults.v2.StalenessConfig is not mutable"))
-	case "noble.dollar.vaults.v2.StalenessConfig.critical_threshold":
-		panic(fmt.Errorf("field critical_threshold of message noble.dollar.vaults.v2.StalenessConfig is not mutable"))
-	case "noble.dollar.vaults.v2.StalenessConfig.max_staleness":
-		panic(fmt.Errorf("field max_staleness of message noble.dollar.vaults.v2.StalenessConfig is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StalenessConfig"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StalenessConfig does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_StalenessConfig) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.StalenessConfig.warning_threshold":
-		return protoreflect.ValueOfInt64(int64(0))
-	case "noble.dollar.vaults.v2.StalenessConfig.critical_threshold":
-		return protoreflect.ValueOfInt64(int64(0))
-	case "noble.dollar.vaults.v2.StalenessConfig.max_staleness":
-		return protoreflect.ValueOfInt64(int64(0))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.StalenessConfig"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.StalenessConfig does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_StalenessConfig) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.StalenessConfig", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_StalenessConfig) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_StalenessConfig) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_StalenessConfig) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_StalenessConfig) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*StalenessConfig)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.WarningThreshold != 0 {
-			n += 1 + runtime.Sov(uint64(x.WarningThreshold))
-		}
-		if x.CriticalThreshold != 0 {
-			n += 1 + runtime.Sov(uint64(x.CriticalThreshold))
-		}
-		if x.MaxStaleness != 0 {
-			n += 1 + runtime.Sov(uint64(x.MaxStaleness))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*StalenessConfig)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.MaxStaleness != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxStaleness))
-			i--
-			dAtA[i] = 0x18
-		}
-		if x.CriticalThreshold != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CriticalThreshold))
-			i--
-			dAtA[i] = 0x10
-		}
-		if x.WarningThreshold != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.WarningThreshold))
-			i--
-			dAtA[i] = 0x8
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*StalenessConfig)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StalenessConfig: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StalenessConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field WarningThreshold", wireType)
-				}
-				x.WarningThreshold = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.WarningThreshold |= int64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CriticalThreshold", wireType)
-				}
-				x.CriticalThreshold = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.CriticalThreshold |= int64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxStaleness", wireType)
-				}
-				x.MaxStaleness = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.MaxStaleness |= int64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
 	md_OracleGovernanceParams                         protoreflect.MessageDescriptor
 	fd_OracleGovernanceParams_max_update_interval     protoreflect.FieldDescriptor
 	fd_OracleGovernanceParams_min_update_interval     protoreflect.FieldDescriptor
@@ -3089,7 +1541,7 @@ func (x *OracleGovernanceParams) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OracleGovernanceParams) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3566,1976 +2018,6 @@ func (x *fastReflection_OracleGovernanceParams) ProtoMethods() *protoiface.Metho
 }
 
 var (
-	md_OracleStatus              protoreflect.MessageDescriptor
-	fd_OracleStatus_oracle_id    protoreflect.FieldDescriptor
-	fd_OracleStatus_position_id  protoreflect.FieldDescriptor
-	fd_OracleStatus_last_success protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_OracleStatus = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("OracleStatus")
-	fd_OracleStatus_oracle_id = md_OracleStatus.Fields().ByName("oracle_id")
-	fd_OracleStatus_position_id = md_OracleStatus.Fields().ByName("position_id")
-	fd_OracleStatus_last_success = md_OracleStatus.Fields().ByName("last_success")
-}
-
-var _ protoreflect.Message = (*fastReflection_OracleStatus)(nil)
-
-type fastReflection_OracleStatus OracleStatus
-
-func (x *OracleStatus) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_OracleStatus)(x)
-}
-
-func (x *OracleStatus) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_OracleStatus_messageType fastReflection_OracleStatus_messageType
-var _ protoreflect.MessageType = fastReflection_OracleStatus_messageType{}
-
-type fastReflection_OracleStatus_messageType struct{}
-
-func (x fastReflection_OracleStatus_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_OracleStatus)(nil)
-}
-func (x fastReflection_OracleStatus_messageType) New() protoreflect.Message {
-	return new(fastReflection_OracleStatus)
-}
-func (x fastReflection_OracleStatus_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_OracleStatus
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_OracleStatus) Descriptor() protoreflect.MessageDescriptor {
-	return md_OracleStatus
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_OracleStatus) Type() protoreflect.MessageType {
-	return _fastReflection_OracleStatus_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_OracleStatus) New() protoreflect.Message {
-	return new(fastReflection_OracleStatus)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_OracleStatus) Interface() protoreflect.ProtoMessage {
-	return (*OracleStatus)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_OracleStatus) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.OracleId != "" {
-		value := protoreflect.ValueOfString(x.OracleId)
-		if !f(fd_OracleStatus_oracle_id, value) {
-			return
-		}
-	}
-	if x.PositionId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PositionId)
-		if !f(fd_OracleStatus_position_id, value) {
-			return
-		}
-	}
-	if x.LastSuccess != nil {
-		value := protoreflect.ValueOfMessage(x.LastSuccess.ProtoReflect())
-		if !f(fd_OracleStatus_last_success, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_OracleStatus) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleStatus.oracle_id":
-		return x.OracleId != ""
-	case "noble.dollar.vaults.v2.OracleStatus.position_id":
-		return x.PositionId != uint64(0)
-	case "noble.dollar.vaults.v2.OracleStatus.last_success":
-		return x.LastSuccess != nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleStatus"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleStatus does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleStatus) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleStatus.oracle_id":
-		x.OracleId = ""
-	case "noble.dollar.vaults.v2.OracleStatus.position_id":
-		x.PositionId = uint64(0)
-	case "noble.dollar.vaults.v2.OracleStatus.last_success":
-		x.LastSuccess = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleStatus"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleStatus does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_OracleStatus) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.OracleStatus.oracle_id":
-		value := x.OracleId
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.OracleStatus.position_id":
-		value := x.PositionId
-		return protoreflect.ValueOfUint64(value)
-	case "noble.dollar.vaults.v2.OracleStatus.last_success":
-		value := x.LastSuccess
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleStatus"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleStatus does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleStatus) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleStatus.oracle_id":
-		x.OracleId = value.Interface().(string)
-	case "noble.dollar.vaults.v2.OracleStatus.position_id":
-		x.PositionId = value.Uint()
-	case "noble.dollar.vaults.v2.OracleStatus.last_success":
-		x.LastSuccess = value.Message().Interface().(*timestamppb.Timestamp)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleStatus"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleStatus does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleStatus) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleStatus.last_success":
-		if x.LastSuccess == nil {
-			x.LastSuccess = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.LastSuccess.ProtoReflect())
-	case "noble.dollar.vaults.v2.OracleStatus.oracle_id":
-		panic(fmt.Errorf("field oracle_id of message noble.dollar.vaults.v2.OracleStatus is not mutable"))
-	case "noble.dollar.vaults.v2.OracleStatus.position_id":
-		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.OracleStatus is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleStatus"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleStatus does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_OracleStatus) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleStatus.oracle_id":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.OracleStatus.position_id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "noble.dollar.vaults.v2.OracleStatus.last_success":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleStatus"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleStatus does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_OracleStatus) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.OracleStatus", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_OracleStatus) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleStatus) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_OracleStatus) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_OracleStatus) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*OracleStatus)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.OracleId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.PositionId != 0 {
-			n += 1 + runtime.Sov(uint64(x.PositionId))
-		}
-		if x.LastSuccess != nil {
-			l = options.Size(x.LastSuccess)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*OracleStatus)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.LastSuccess != nil {
-			encoded, err := options.Marshal(x.LastSuccess)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if x.PositionId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PositionId))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.OracleId) > 0 {
-			i -= len(x.OracleId)
-			copy(dAtA[i:], x.OracleId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.OracleId)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*OracleStatus)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OracleStatus: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OracleStatus: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OracleId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.OracleId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
-				}
-				x.PositionId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.PositionId |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LastSuccess", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.LastSuccess == nil {
-					x.LastSuccess = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.LastSuccess); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_CrossChainOracleMessage              protoreflect.MessageDescriptor
-	fd_CrossChainOracleMessage_mailbox_id   protoreflect.FieldDescriptor
-	fd_CrossChainOracleMessage_source_chain protoreflect.FieldDescriptor
-	fd_CrossChainOracleMessage_sender       protoreflect.FieldDescriptor
-	fd_CrossChainOracleMessage_metadata     protoreflect.FieldDescriptor
-	fd_CrossChainOracleMessage_payload      protoreflect.FieldDescriptor
-	fd_CrossChainOracleMessage_received_at  protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_CrossChainOracleMessage = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("CrossChainOracleMessage")
-	fd_CrossChainOracleMessage_mailbox_id = md_CrossChainOracleMessage.Fields().ByName("mailbox_id")
-	fd_CrossChainOracleMessage_source_chain = md_CrossChainOracleMessage.Fields().ByName("source_chain")
-	fd_CrossChainOracleMessage_sender = md_CrossChainOracleMessage.Fields().ByName("sender")
-	fd_CrossChainOracleMessage_metadata = md_CrossChainOracleMessage.Fields().ByName("metadata")
-	fd_CrossChainOracleMessage_payload = md_CrossChainOracleMessage.Fields().ByName("payload")
-	fd_CrossChainOracleMessage_received_at = md_CrossChainOracleMessage.Fields().ByName("received_at")
-}
-
-var _ protoreflect.Message = (*fastReflection_CrossChainOracleMessage)(nil)
-
-type fastReflection_CrossChainOracleMessage CrossChainOracleMessage
-
-func (x *CrossChainOracleMessage) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_CrossChainOracleMessage)(x)
-}
-
-func (x *CrossChainOracleMessage) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_CrossChainOracleMessage_messageType fastReflection_CrossChainOracleMessage_messageType
-var _ protoreflect.MessageType = fastReflection_CrossChainOracleMessage_messageType{}
-
-type fastReflection_CrossChainOracleMessage_messageType struct{}
-
-func (x fastReflection_CrossChainOracleMessage_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_CrossChainOracleMessage)(nil)
-}
-func (x fastReflection_CrossChainOracleMessage_messageType) New() protoreflect.Message {
-	return new(fastReflection_CrossChainOracleMessage)
-}
-func (x fastReflection_CrossChainOracleMessage_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_CrossChainOracleMessage
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_CrossChainOracleMessage) Descriptor() protoreflect.MessageDescriptor {
-	return md_CrossChainOracleMessage
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_CrossChainOracleMessage) Type() protoreflect.MessageType {
-	return _fastReflection_CrossChainOracleMessage_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_CrossChainOracleMessage) New() protoreflect.Message {
-	return new(fastReflection_CrossChainOracleMessage)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_CrossChainOracleMessage) Interface() protoreflect.ProtoMessage {
-	return (*CrossChainOracleMessage)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_CrossChainOracleMessage) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.MailboxId) != 0 {
-		value := protoreflect.ValueOfBytes(x.MailboxId)
-		if !f(fd_CrossChainOracleMessage_mailbox_id, value) {
-			return
-		}
-	}
-	if x.SourceChain != "" {
-		value := protoreflect.ValueOfString(x.SourceChain)
-		if !f(fd_CrossChainOracleMessage_source_chain, value) {
-			return
-		}
-	}
-	if len(x.Sender) != 0 {
-		value := protoreflect.ValueOfBytes(x.Sender)
-		if !f(fd_CrossChainOracleMessage_sender, value) {
-			return
-		}
-	}
-	if len(x.Metadata) != 0 {
-		value := protoreflect.ValueOfBytes(x.Metadata)
-		if !f(fd_CrossChainOracleMessage_metadata, value) {
-			return
-		}
-	}
-	if len(x.Payload) != 0 {
-		value := protoreflect.ValueOfBytes(x.Payload)
-		if !f(fd_CrossChainOracleMessage_payload, value) {
-			return
-		}
-	}
-	if x.ReceivedAt != nil {
-		value := protoreflect.ValueOfMessage(x.ReceivedAt.ProtoReflect())
-		if !f(fd_CrossChainOracleMessage_received_at, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_CrossChainOracleMessage) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.mailbox_id":
-		return len(x.MailboxId) != 0
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.source_chain":
-		return x.SourceChain != ""
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.sender":
-		return len(x.Sender) != 0
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.metadata":
-		return len(x.Metadata) != 0
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.payload":
-		return len(x.Payload) != 0
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.received_at":
-		return x.ReceivedAt != nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.CrossChainOracleMessage"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.CrossChainOracleMessage does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CrossChainOracleMessage) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.mailbox_id":
-		x.MailboxId = nil
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.source_chain":
-		x.SourceChain = ""
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.sender":
-		x.Sender = nil
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.metadata":
-		x.Metadata = nil
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.payload":
-		x.Payload = nil
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.received_at":
-		x.ReceivedAt = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.CrossChainOracleMessage"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.CrossChainOracleMessage does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_CrossChainOracleMessage) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.mailbox_id":
-		value := x.MailboxId
-		return protoreflect.ValueOfBytes(value)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.source_chain":
-		value := x.SourceChain
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.sender":
-		value := x.Sender
-		return protoreflect.ValueOfBytes(value)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.metadata":
-		value := x.Metadata
-		return protoreflect.ValueOfBytes(value)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.payload":
-		value := x.Payload
-		return protoreflect.ValueOfBytes(value)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.received_at":
-		value := x.ReceivedAt
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.CrossChainOracleMessage"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.CrossChainOracleMessage does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CrossChainOracleMessage) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.mailbox_id":
-		x.MailboxId = value.Bytes()
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.source_chain":
-		x.SourceChain = value.Interface().(string)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.sender":
-		x.Sender = value.Bytes()
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.metadata":
-		x.Metadata = value.Bytes()
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.payload":
-		x.Payload = value.Bytes()
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.received_at":
-		x.ReceivedAt = value.Message().Interface().(*timestamppb.Timestamp)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.CrossChainOracleMessage"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.CrossChainOracleMessage does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CrossChainOracleMessage) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.received_at":
-		if x.ReceivedAt == nil {
-			x.ReceivedAt = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.ReceivedAt.ProtoReflect())
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.mailbox_id":
-		panic(fmt.Errorf("field mailbox_id of message noble.dollar.vaults.v2.CrossChainOracleMessage is not mutable"))
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.source_chain":
-		panic(fmt.Errorf("field source_chain of message noble.dollar.vaults.v2.CrossChainOracleMessage is not mutable"))
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.sender":
-		panic(fmt.Errorf("field sender of message noble.dollar.vaults.v2.CrossChainOracleMessage is not mutable"))
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.metadata":
-		panic(fmt.Errorf("field metadata of message noble.dollar.vaults.v2.CrossChainOracleMessage is not mutable"))
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.payload":
-		panic(fmt.Errorf("field payload of message noble.dollar.vaults.v2.CrossChainOracleMessage is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.CrossChainOracleMessage"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.CrossChainOracleMessage does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_CrossChainOracleMessage) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.mailbox_id":
-		return protoreflect.ValueOfBytes(nil)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.source_chain":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.sender":
-		return protoreflect.ValueOfBytes(nil)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.metadata":
-		return protoreflect.ValueOfBytes(nil)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.payload":
-		return protoreflect.ValueOfBytes(nil)
-	case "noble.dollar.vaults.v2.CrossChainOracleMessage.received_at":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.CrossChainOracleMessage"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.CrossChainOracleMessage does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_CrossChainOracleMessage) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.CrossChainOracleMessage", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_CrossChainOracleMessage) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CrossChainOracleMessage) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_CrossChainOracleMessage) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_CrossChainOracleMessage) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*CrossChainOracleMessage)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.MailboxId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.SourceChain)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Sender)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Metadata)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Payload)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.ReceivedAt != nil {
-			l = options.Size(x.ReceivedAt)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*CrossChainOracleMessage)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.ReceivedAt != nil {
-			encoded, err := options.Marshal(x.ReceivedAt)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x32
-		}
-		if len(x.Payload) > 0 {
-			i -= len(x.Payload)
-			copy(dAtA[i:], x.Payload)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Payload)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if len(x.Metadata) > 0 {
-			i -= len(x.Metadata)
-			copy(dAtA[i:], x.Metadata)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Metadata)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if len(x.Sender) > 0 {
-			i -= len(x.Sender)
-			copy(dAtA[i:], x.Sender)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Sender)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if len(x.SourceChain) > 0 {
-			i -= len(x.SourceChain)
-			copy(dAtA[i:], x.SourceChain)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.SourceChain)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.MailboxId) > 0 {
-			i -= len(x.MailboxId)
-			copy(dAtA[i:], x.MailboxId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MailboxId)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*CrossChainOracleMessage)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CrossChainOracleMessage: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CrossChainOracleMessage: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MailboxId", wireType)
-				}
-				var byteLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					byteLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if byteLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + byteLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MailboxId = append(x.MailboxId[:0], dAtA[iNdEx:postIndex]...)
-				if x.MailboxId == nil {
-					x.MailboxId = []byte{}
-				}
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SourceChain", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.SourceChain = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Sender", wireType)
-				}
-				var byteLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					byteLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if byteLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + byteLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Sender = append(x.Sender[:0], dAtA[iNdEx:postIndex]...)
-				if x.Sender == nil {
-					x.Sender = []byte{}
-				}
-				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
-				}
-				var byteLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					byteLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if byteLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + byteLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Metadata = append(x.Metadata[:0], dAtA[iNdEx:postIndex]...)
-				if x.Metadata == nil {
-					x.Metadata = []byte{}
-				}
-				iNdEx = postIndex
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Payload", wireType)
-				}
-				var byteLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					byteLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if byteLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + byteLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Payload = append(x.Payload[:0], dAtA[iNdEx:postIndex]...)
-				if x.Payload == nil {
-					x.Payload = []byte{}
-				}
-				iNdEx = postIndex
-			case 6:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReceivedAt", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.ReceivedAt == nil {
-					x.ReceivedAt = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ReceivedAt); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_OracleUpdateResult                 protoreflect.MessageDescriptor
-	fd_OracleUpdateResult_position_id     protoreflect.FieldDescriptor
-	fd_OracleUpdateResult_new_share_price protoreflect.FieldDescriptor
-	fd_OracleUpdateResult_new_shares      protoreflect.FieldDescriptor
-	fd_OracleUpdateResult_position_value  protoreflect.FieldDescriptor
-	fd_OracleUpdateResult_updated_aum     protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_noble_dollar_vaults_v2_oracle_proto_init()
-	md_OracleUpdateResult = File_noble_dollar_vaults_v2_oracle_proto.Messages().ByName("OracleUpdateResult")
-	fd_OracleUpdateResult_position_id = md_OracleUpdateResult.Fields().ByName("position_id")
-	fd_OracleUpdateResult_new_share_price = md_OracleUpdateResult.Fields().ByName("new_share_price")
-	fd_OracleUpdateResult_new_shares = md_OracleUpdateResult.Fields().ByName("new_shares")
-	fd_OracleUpdateResult_position_value = md_OracleUpdateResult.Fields().ByName("position_value")
-	fd_OracleUpdateResult_updated_aum = md_OracleUpdateResult.Fields().ByName("updated_aum")
-}
-
-var _ protoreflect.Message = (*fastReflection_OracleUpdateResult)(nil)
-
-type fastReflection_OracleUpdateResult OracleUpdateResult
-
-func (x *OracleUpdateResult) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_OracleUpdateResult)(x)
-}
-
-func (x *OracleUpdateResult) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_OracleUpdateResult_messageType fastReflection_OracleUpdateResult_messageType
-var _ protoreflect.MessageType = fastReflection_OracleUpdateResult_messageType{}
-
-type fastReflection_OracleUpdateResult_messageType struct{}
-
-func (x fastReflection_OracleUpdateResult_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_OracleUpdateResult)(nil)
-}
-func (x fastReflection_OracleUpdateResult_messageType) New() protoreflect.Message {
-	return new(fastReflection_OracleUpdateResult)
-}
-func (x fastReflection_OracleUpdateResult_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_OracleUpdateResult
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_OracleUpdateResult) Descriptor() protoreflect.MessageDescriptor {
-	return md_OracleUpdateResult
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_OracleUpdateResult) Type() protoreflect.MessageType {
-	return _fastReflection_OracleUpdateResult_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_OracleUpdateResult) New() protoreflect.Message {
-	return new(fastReflection_OracleUpdateResult)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_OracleUpdateResult) Interface() protoreflect.ProtoMessage {
-	return (*OracleUpdateResult)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_OracleUpdateResult) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.PositionId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PositionId)
-		if !f(fd_OracleUpdateResult_position_id, value) {
-			return
-		}
-	}
-	if x.NewSharePrice != "" {
-		value := protoreflect.ValueOfString(x.NewSharePrice)
-		if !f(fd_OracleUpdateResult_new_share_price, value) {
-			return
-		}
-	}
-	if x.NewShares != "" {
-		value := protoreflect.ValueOfString(x.NewShares)
-		if !f(fd_OracleUpdateResult_new_shares, value) {
-			return
-		}
-	}
-	if x.PositionValue != "" {
-		value := protoreflect.ValueOfString(x.PositionValue)
-		if !f(fd_OracleUpdateResult_position_value, value) {
-			return
-		}
-	}
-	if x.UpdatedAum != "" {
-		value := protoreflect.ValueOfString(x.UpdatedAum)
-		if !f(fd_OracleUpdateResult_updated_aum, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_OracleUpdateResult) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_id":
-		return x.PositionId != uint64(0)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_share_price":
-		return x.NewSharePrice != ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_shares":
-		return x.NewShares != ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
-		return x.PositionValue != ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
-		return x.UpdatedAum != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleUpdateResult does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleUpdateResult) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_id":
-		x.PositionId = uint64(0)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_share_price":
-		x.NewSharePrice = ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_shares":
-		x.NewShares = ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
-		x.PositionValue = ""
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
-		x.UpdatedAum = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleUpdateResult does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_OracleUpdateResult) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_id":
-		value := x.PositionId
-		return protoreflect.ValueOfUint64(value)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_share_price":
-		value := x.NewSharePrice
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_shares":
-		value := x.NewShares
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
-		value := x.PositionValue
-		return protoreflect.ValueOfString(value)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
-		value := x.UpdatedAum
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleUpdateResult does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleUpdateResult) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_id":
-		x.PositionId = value.Uint()
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_share_price":
-		x.NewSharePrice = value.Interface().(string)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_shares":
-		x.NewShares = value.Interface().(string)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
-		x.PositionValue = value.Interface().(string)
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
-		x.UpdatedAum = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleUpdateResult does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleUpdateResult) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_id":
-		panic(fmt.Errorf("field position_id of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_share_price":
-		panic(fmt.Errorf("field new_share_price of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_shares":
-		panic(fmt.Errorf("field new_shares of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
-		panic(fmt.Errorf("field position_value of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
-		panic(fmt.Errorf("field updated_aum of message noble.dollar.vaults.v2.OracleUpdateResult is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleUpdateResult does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_OracleUpdateResult) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_share_price":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.OracleUpdateResult.new_shares":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.OracleUpdateResult.position_value":
-		return protoreflect.ValueOfString("")
-	case "noble.dollar.vaults.v2.OracleUpdateResult.updated_aum":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: noble.dollar.vaults.v2.OracleUpdateResult"))
-		}
-		panic(fmt.Errorf("message noble.dollar.vaults.v2.OracleUpdateResult does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_OracleUpdateResult) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in noble.dollar.vaults.v2.OracleUpdateResult", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_OracleUpdateResult) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OracleUpdateResult) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_OracleUpdateResult) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_OracleUpdateResult) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*OracleUpdateResult)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.PositionId != 0 {
-			n += 1 + runtime.Sov(uint64(x.PositionId))
-		}
-		l = len(x.NewSharePrice)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.NewShares)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.PositionValue)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.UpdatedAum)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*OracleUpdateResult)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.UpdatedAum) > 0 {
-			i -= len(x.UpdatedAum)
-			copy(dAtA[i:], x.UpdatedAum)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.UpdatedAum)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if len(x.PositionValue) > 0 {
-			i -= len(x.PositionValue)
-			copy(dAtA[i:], x.PositionValue)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PositionValue)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if len(x.NewShares) > 0 {
-			i -= len(x.NewShares)
-			copy(dAtA[i:], x.NewShares)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NewShares)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if len(x.NewSharePrice) > 0 {
-			i -= len(x.NewSharePrice)
-			copy(dAtA[i:], x.NewSharePrice)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NewSharePrice)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if x.PositionId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PositionId))
-			i--
-			dAtA[i] = 0x8
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*OracleUpdateResult)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OracleUpdateResult: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OracleUpdateResult: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionId", wireType)
-				}
-				x.PositionId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.PositionId |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewSharePrice", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.NewSharePrice = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewShares", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.NewShares = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PositionValue", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.PositionValue = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UpdatedAum", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.UpdatedAum = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
 	md_MsgRegisterOracle                   protoreflect.MessageDescriptor
 	fd_MsgRegisterOracle_authority         protoreflect.FieldDescriptor
 	fd_MsgRegisterOracle_position_id       protoreflect.FieldDescriptor
@@ -5565,7 +2047,7 @@ func (x *MsgRegisterOracle) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRegisterOracle) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[9]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6267,7 +2749,7 @@ func (x *MsgRegisterOracleResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRegisterOracleResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[10]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6816,7 +3298,7 @@ func (x *MsgUpdateOracleConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgUpdateOracleConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[11]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7398,7 +3880,7 @@ func (x *MsgUpdateOracleConfigResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgUpdateOracleConfigResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[12]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7899,7 +4381,7 @@ func (x *MsgRemoveOracle) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRemoveOracle) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[13]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8447,7 +4929,7 @@ func (x *MsgRemoveOracleResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRemoveOracleResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[14]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8992,7 +5474,7 @@ func (x *MsgUpdateOracleParams) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgUpdateOracleParams) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[15]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9491,7 +5973,7 @@ func (x *MsgUpdateOracleParamsResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgUpdateOracleParamsResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[16]
+	mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10087,119 +6569,6 @@ func (x *RemotePositionOracle) GetLastUpdate() *timestamppb.Timestamp {
 	return nil
 }
 
-// TODO (Collin): Remove this as it's unused and RemotePositionOracle
-// contains these fields already.
-// OracleMapping defines the mapping between an oracle and its position
-type OracleMapping struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Oracle contract address
-	OracleAddress string `protobuf:"bytes,1,opt,name=oracle_address,json=oracleAddress,proto3" json:"oracle_address,omitempty"`
-	// Source chain ID
-	ChainId uint32 `protobuf:"varint,2,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
-	// Position identifier this oracle reports for
-	PositionId uint64 `protobuf:"varint,3,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
-}
-
-func (x *OracleMapping) Reset() {
-	*x = OracleMapping{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *OracleMapping) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OracleMapping) ProtoMessage() {}
-
-// Deprecated: Use OracleMapping.ProtoReflect.Descriptor instead.
-func (*OracleMapping) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *OracleMapping) GetOracleAddress() string {
-	if x != nil {
-		return x.OracleAddress
-	}
-	return ""
-}
-
-func (x *OracleMapping) GetChainId() uint32 {
-	if x != nil {
-		return x.ChainId
-	}
-	return 0
-}
-
-func (x *OracleMapping) GetPositionId() uint64 {
-	if x != nil {
-		return x.PositionId
-	}
-	return 0
-}
-
-// TODO (Collin): Also remove..?
-// EnrolledOracleRouter represents an enrolled oracle router
-type EnrolledOracleRouter struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Position identifier
-	PositionId uint64 `protobuf:"varint,1,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
-	// Source chain identifier
-	SourceChain string `protobuf:"bytes,2,opt,name=source_chain,json=sourceChain,proto3" json:"source_chain,omitempty"`
-	// Oracle contract address
-	OracleAddress string `protobuf:"bytes,3,opt,name=oracle_address,json=oracleAddress,proto3" json:"oracle_address,omitempty"`
-}
-
-func (x *EnrolledOracleRouter) Reset() {
-	*x = EnrolledOracleRouter{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *EnrolledOracleRouter) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EnrolledOracleRouter) ProtoMessage() {}
-
-// Deprecated: Use EnrolledOracleRouter.ProtoReflect.Descriptor instead.
-func (*EnrolledOracleRouter) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *EnrolledOracleRouter) GetPositionId() uint64 {
-	if x != nil {
-		return x.PositionId
-	}
-	return 0
-}
-
-func (x *EnrolledOracleRouter) GetSourceChain() string {
-	if x != nil {
-		return x.SourceChain
-	}
-	return ""
-}
-
-func (x *EnrolledOracleRouter) GetOracleAddress() string {
-	if x != nil {
-		return x.OracleAddress
-	}
-	return ""
-}
-
 // EnrolledOracle represents a registered oracle
 type EnrolledOracle struct {
 	state         protoimpl.MessageState
@@ -10223,7 +6592,7 @@ type EnrolledOracle struct {
 func (x *EnrolledOracle) Reset() {
 	*x = EnrolledOracle{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[3]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10237,7 +6606,7 @@ func (*EnrolledOracle) ProtoMessage() {}
 
 // Deprecated: Use EnrolledOracle.ProtoReflect.Descriptor instead.
 func (*EnrolledOracle) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{3}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *EnrolledOracle) GetPositionId() uint64 {
@@ -10282,61 +6651,6 @@ func (x *EnrolledOracle) GetActive() bool {
 	return false
 }
 
-// StalenessConfig defines staleness thresholds
-type StalenessConfig struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Warning threshold in seconds
-	WarningThreshold int64 `protobuf:"varint,1,opt,name=warning_threshold,json=warningThreshold,proto3" json:"warning_threshold,omitempty"`
-	// Critical threshold in seconds
-	CriticalThreshold int64 `protobuf:"varint,2,opt,name=critical_threshold,json=criticalThreshold,proto3" json:"critical_threshold,omitempty"`
-	// Maximum allowed staleness before fallback
-	MaxStaleness int64 `protobuf:"varint,3,opt,name=max_staleness,json=maxStaleness,proto3" json:"max_staleness,omitempty"`
-}
-
-func (x *StalenessConfig) Reset() {
-	*x = StalenessConfig{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *StalenessConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*StalenessConfig) ProtoMessage() {}
-
-// Deprecated: Use StalenessConfig.ProtoReflect.Descriptor instead.
-func (*StalenessConfig) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *StalenessConfig) GetWarningThreshold() int64 {
-	if x != nil {
-		return x.WarningThreshold
-	}
-	return 0
-}
-
-func (x *StalenessConfig) GetCriticalThreshold() int64 {
-	if x != nil {
-		return x.CriticalThreshold
-	}
-	return 0
-}
-
-func (x *StalenessConfig) GetMaxStaleness() int64 {
-	if x != nil {
-		return x.MaxStaleness
-	}
-	return 0
-}
-
 // OracleGovernanceParams defines governance parameters for oracles
 type OracleGovernanceParams struct {
 	state         protoimpl.MessageState
@@ -10354,7 +6668,7 @@ type OracleGovernanceParams struct {
 func (x *OracleGovernanceParams) Reset() {
 	*x = OracleGovernanceParams{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10368,7 +6682,7 @@ func (*OracleGovernanceParams) ProtoMessage() {}
 
 // Deprecated: Use OracleGovernanceParams.ProtoReflect.Descriptor instead.
 func (*OracleGovernanceParams) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{5}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *OracleGovernanceParams) GetMaxUpdateInterval() int64 {
@@ -10390,217 +6704,6 @@ func (x *OracleGovernanceParams) GetMaxPriceDeviationBps() int32 {
 		return x.MaxPriceDeviationBps
 	}
 	return 0
-}
-
-// OracleStatus represents the current status of an oracle
-type OracleStatus struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Oracle identifier
-	OracleId string `protobuf:"bytes,1,opt,name=oracle_id,json=oracleId,proto3" json:"oracle_id,omitempty"`
-	// Position ID
-	PositionId uint64 `protobuf:"varint,2,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
-	// Last successful update
-	LastSuccess *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_success,json=lastSuccess,proto3" json:"last_success,omitempty"`
-}
-
-func (x *OracleStatus) Reset() {
-	*x = OracleStatus{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *OracleStatus) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OracleStatus) ProtoMessage() {}
-
-// Deprecated: Use OracleStatus.ProtoReflect.Descriptor instead.
-func (*OracleStatus) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *OracleStatus) GetOracleId() string {
-	if x != nil {
-		return x.OracleId
-	}
-	return ""
-}
-
-func (x *OracleStatus) GetPositionId() uint64 {
-	if x != nil {
-		return x.PositionId
-	}
-	return 0
-}
-
-func (x *OracleStatus) GetLastSuccess() *timestamppb.Timestamp {
-	if x != nil {
-		return x.LastSuccess
-	}
-	return nil
-}
-
-// CrossChainOracleMessage represents an oracle update delivered by cross-chain messaging
-// This is not a Msg type as it's handled internally when messages are delivered
-type CrossChainOracleMessage struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Mailbox/channel identifier
-	MailboxId []byte `protobuf:"bytes,1,opt,name=mailbox_id,json=mailboxId,proto3" json:"mailbox_id,omitempty"`
-	// Source chain identifier
-	SourceChain string `protobuf:"bytes,2,opt,name=source_chain,json=sourceChain,proto3" json:"source_chain,omitempty"`
-	// Sender address on origin chain
-	Sender []byte `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
-	// Hyperlane metadata for verification
-	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// AUM oracle update payload (105 bytes)
-	Payload []byte `protobuf:"bytes,5,opt,name=payload,proto3" json:"payload,omitempty"`
-	// Timestamp when received
-	ReceivedAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=received_at,json=receivedAt,proto3" json:"received_at,omitempty"`
-}
-
-func (x *CrossChainOracleMessage) Reset() {
-	*x = CrossChainOracleMessage{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CrossChainOracleMessage) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CrossChainOracleMessage) ProtoMessage() {}
-
-// Deprecated: Use CrossChainOracleMessage.ProtoReflect.Descriptor instead.
-func (*CrossChainOracleMessage) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *CrossChainOracleMessage) GetMailboxId() []byte {
-	if x != nil {
-		return x.MailboxId
-	}
-	return nil
-}
-
-func (x *CrossChainOracleMessage) GetSourceChain() string {
-	if x != nil {
-		return x.SourceChain
-	}
-	return ""
-}
-
-func (x *CrossChainOracleMessage) GetSender() []byte {
-	if x != nil {
-		return x.Sender
-	}
-	return nil
-}
-
-func (x *CrossChainOracleMessage) GetMetadata() []byte {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
-func (x *CrossChainOracleMessage) GetPayload() []byte {
-	if x != nil {
-		return x.Payload
-	}
-	return nil
-}
-
-func (x *CrossChainOracleMessage) GetReceivedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ReceivedAt
-	}
-	return nil
-}
-
-// OracleUpdateResult represents the result of processing an oracle update
-type OracleUpdateResult struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Position ID that was updated
-	PositionId uint64 `protobuf:"varint,1,opt,name=position_id,json=positionId,proto3" json:"position_id,omitempty"`
-	// New share price
-	NewSharePrice string `protobuf:"bytes,2,opt,name=new_share_price,json=newSharePrice,proto3" json:"new_share_price,omitempty"`
-	// New shares held
-	NewShares string `protobuf:"bytes,3,opt,name=new_shares,json=newShares,proto3" json:"new_shares,omitempty"`
-	// Calculated position value
-	PositionValue string `protobuf:"bytes,4,opt,name=position_value,json=positionValue,proto3" json:"position_value,omitempty"`
-	// Updated total AUM
-	UpdatedAum string `protobuf:"bytes,5,opt,name=updated_aum,json=updatedAum,proto3" json:"updated_aum,omitempty"`
-}
-
-func (x *OracleUpdateResult) Reset() {
-	*x = OracleUpdateResult{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *OracleUpdateResult) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OracleUpdateResult) ProtoMessage() {}
-
-// Deprecated: Use OracleUpdateResult.ProtoReflect.Descriptor instead.
-func (*OracleUpdateResult) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *OracleUpdateResult) GetPositionId() uint64 {
-	if x != nil {
-		return x.PositionId
-	}
-	return 0
-}
-
-func (x *OracleUpdateResult) GetNewSharePrice() string {
-	if x != nil {
-		return x.NewSharePrice
-	}
-	return ""
-}
-
-func (x *OracleUpdateResult) GetNewShares() string {
-	if x != nil {
-		return x.NewShares
-	}
-	return ""
-}
-
-func (x *OracleUpdateResult) GetPositionValue() string {
-	if x != nil {
-		return x.PositionValue
-	}
-	return ""
-}
-
-func (x *OracleUpdateResult) GetUpdatedAum() string {
-	if x != nil {
-		return x.UpdatedAum
-	}
-	return ""
 }
 
 // MsgRegisterOracle registers a new oracle for a position
@@ -10626,7 +6729,7 @@ type MsgRegisterOracle struct {
 func (x *MsgRegisterOracle) Reset() {
 	*x = MsgRegisterOracle{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[9]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10640,7 +6743,7 @@ func (*MsgRegisterOracle) ProtoMessage() {}
 
 // Deprecated: Use MsgRegisterOracle.ProtoReflect.Descriptor instead.
 func (*MsgRegisterOracle) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{9}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MsgRegisterOracle) GetAuthority() string {
@@ -10702,7 +6805,7 @@ type MsgRegisterOracleResponse struct {
 func (x *MsgRegisterOracleResponse) Reset() {
 	*x = MsgRegisterOracleResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[10]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10716,7 +6819,7 @@ func (*MsgRegisterOracleResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgRegisterOracleResponse.ProtoReflect.Descriptor instead.
 func (*MsgRegisterOracleResponse) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{10}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MsgRegisterOracleResponse) GetOracleId() string {
@@ -10759,7 +6862,7 @@ type MsgUpdateOracleConfig struct {
 func (x *MsgUpdateOracleConfig) Reset() {
 	*x = MsgUpdateOracleConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[11]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10773,7 +6876,7 @@ func (*MsgUpdateOracleConfig) ProtoMessage() {}
 
 // Deprecated: Use MsgUpdateOracleConfig.ProtoReflect.Descriptor instead.
 func (*MsgUpdateOracleConfig) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{11}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *MsgUpdateOracleConfig) GetAuthority() string {
@@ -10819,7 +6922,7 @@ type MsgUpdateOracleConfigResponse struct {
 func (x *MsgUpdateOracleConfigResponse) Reset() {
 	*x = MsgUpdateOracleConfigResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[12]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10833,7 +6936,7 @@ func (*MsgUpdateOracleConfigResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgUpdateOracleConfigResponse.ProtoReflect.Descriptor instead.
 func (*MsgUpdateOracleConfigResponse) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{12}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MsgUpdateOracleConfigResponse) GetOracleId() string {
@@ -10867,7 +6970,7 @@ type MsgRemoveOracle struct {
 func (x *MsgRemoveOracle) Reset() {
 	*x = MsgRemoveOracle{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[13]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10881,7 +6984,7 @@ func (*MsgRemoveOracle) ProtoMessage() {}
 
 // Deprecated: Use MsgRemoveOracle.ProtoReflect.Descriptor instead.
 func (*MsgRemoveOracle) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{13}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MsgRemoveOracle) GetAuthority() string {
@@ -10922,7 +7025,7 @@ type MsgRemoveOracleResponse struct {
 func (x *MsgRemoveOracleResponse) Reset() {
 	*x = MsgRemoveOracleResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[14]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10936,7 +7039,7 @@ func (*MsgRemoveOracleResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgRemoveOracleResponse.ProtoReflect.Descriptor instead.
 func (*MsgRemoveOracleResponse) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{14}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MsgRemoveOracleResponse) GetOracleId() string {
@@ -10975,7 +7078,7 @@ type MsgUpdateOracleParams struct {
 func (x *MsgUpdateOracleParams) Reset() {
 	*x = MsgUpdateOracleParams{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[15]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -10989,7 +7092,7 @@ func (*MsgUpdateOracleParams) ProtoMessage() {}
 
 // Deprecated: Use MsgUpdateOracleParams.ProtoReflect.Descriptor instead.
 func (*MsgUpdateOracleParams) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{15}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *MsgUpdateOracleParams) GetAuthority() string {
@@ -11021,7 +7124,7 @@ type MsgUpdateOracleParamsResponse struct {
 func (x *MsgUpdateOracleParamsResponse) Reset() {
 	*x = MsgUpdateOracleParamsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[16]
+		mi := &file_noble_dollar_vaults_v2_oracle_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -11035,7 +7138,7 @@ func (*MsgUpdateOracleParamsResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgUpdateOracleParamsResponse.ProtoReflect.Descriptor instead.
 func (*MsgUpdateOracleParamsResponse) Descriptor() ([]byte, []int) {
-	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{16}
+	return file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MsgUpdateOracleParamsResponse) GetPreviousParams() *OracleGovernanceParams {
@@ -11098,21 +7201,9 @@ var file_noble_dollar_vaults_v2_oracle_proto_rawDesc = []byte{
 	0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
 	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf,
-	0x1f, 0x01, 0x52, 0x0a, 0x6c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x22, 0xb7,
-	0x01, 0x0a, 0x0d, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x4d, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67,
-	0x12, 0x6a, 0x0a, 0x0e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x43, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde,
-	0x1f, 0x3b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x62, 0x63, 0x70,
-	0x2d, 0x69, 0x6e, 0x6e, 0x6f, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x68, 0x79, 0x70,
-	0x65, 0x72, 0x6c, 0x61, 0x6e, 0x65, 0x2d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x75, 0x74,
-	0x69, 0x6c, 0x2e, 0x48, 0x65, 0x78, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x0d, 0x6f,
-	0x72, 0x61, 0x63, 0x6c, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x19, 0x0a, 0x08,
-	0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x07,
-	0x63, 0x68, 0x61, 0x69, 0x6e, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f,
-	0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0xc6, 0x01, 0x0a, 0x14, 0x45, 0x6e, 0x72,
-	0x6f, 0x6c, 0x6c, 0x65, 0x64, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x6f, 0x75, 0x74, 0x65,
-	0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
+	0x1f, 0x01, 0x52, 0x0a, 0x6c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x22, 0xc8,
+	0x02, 0x0a, 0x0e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x64, 0x4f, 0x72, 0x61, 0x63, 0x6c,
+	0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
 	0x49, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x63, 0x68, 0x61,
 	0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
@@ -11123,220 +7214,148 @@ var file_noble_dollar_vaults_v2_oracle_proto_rawDesc = []byte{
 	0x73, 0x2f, 0x68, 0x79, 0x70, 0x65, 0x72, 0x6c, 0x61, 0x6e, 0x65, 0x2d, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x2f, 0x75, 0x74, 0x69, 0x6c, 0x2e, 0x48, 0x65, 0x78, 0x41, 0x64, 0x64, 0x72, 0x65,
 	0x73, 0x73, 0x52, 0x0d, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x22, 0xc8, 0x02, 0x0a, 0x0e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x64, 0x4f, 0x72,
-	0x61, 0x63, 0x6c, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
-	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f,
-	0x63, 0x68, 0x61, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x6a, 0x0a, 0x0e, 0x6f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x42, 0x43, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x3b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x62, 0x63, 0x70, 0x2d, 0x69, 0x6e, 0x6e, 0x6f, 0x76, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x68, 0x79, 0x70, 0x65, 0x72, 0x6c, 0x61, 0x6e, 0x65, 0x2d, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x75, 0x74, 0x69, 0x6c, 0x2e, 0x48, 0x65, 0x78, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x0d, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61, 0x6c,
-	0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78,
-	0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x12, 0x49, 0x0a, 0x0d, 0x72, 0x65, 0x67,
-	0x69, 0x73, 0x74, 0x65, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde,
-	0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0c, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
-	0x65, 0x64, 0x41, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x22, 0x92, 0x01, 0x0a,
-	0x0f, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
-	0x12, 0x2b, 0x0a, 0x11, 0x77, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x74, 0x68, 0x72, 0x65,
-	0x73, 0x68, 0x6f, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x10, 0x77, 0x61, 0x72,
-	0x6e, 0x69, 0x6e, 0x67, 0x54, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64, 0x12, 0x2d, 0x0a,
-	0x12, 0x63, 0x72, 0x69, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x5f, 0x74, 0x68, 0x72, 0x65, 0x73, 0x68,
-	0x6f, 0x6c, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x11, 0x63, 0x72, 0x69, 0x74, 0x69,
-	0x63, 0x61, 0x6c, 0x54, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64, 0x12, 0x23, 0x0a, 0x0d,
-	0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73,
-	0x73, 0x22, 0xaf, 0x01, 0x0a, 0x16, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76, 0x65,
-	0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x2e, 0x0a, 0x13,
-	0x6d, 0x61, 0x78, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72,
-	0x76, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x11, 0x6d, 0x61, 0x78, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x12, 0x2e, 0x0a, 0x13,
-	0x6d, 0x69, 0x6e, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72,
-	0x76, 0x61, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x11, 0x6d, 0x69, 0x6e, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x12, 0x35, 0x0a, 0x17,
-	0x6d, 0x61, 0x78, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x5f, 0x64, 0x65, 0x76, 0x69, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x5f, 0x62, 0x70, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x14, 0x6d,
-	0x61, 0x78, 0x50, 0x72, 0x69, 0x63, 0x65, 0x44, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x42, 0x70, 0x73, 0x22, 0x95, 0x01, 0x0a, 0x0c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x53, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49,
-	0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x47, 0x0a, 0x0c, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x73, 0x75, 0x63, 0x63, 0x65,
-	0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0b,
-	0x6c, 0x61, 0x73, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22, 0xf0, 0x01, 0x0a, 0x17,
-	0x43, 0x72, 0x6f, 0x73, 0x73, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65,
-	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x6d, 0x61, 0x69, 0x6c, 0x62,
-	0x6f, 0x78, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x09, 0x6d, 0x61, 0x69,
-	0x6c, 0x62, 0x6f, 0x78, 0x49, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6e,
-	0x64, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65,
-	0x72, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0c, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x18, 0x0a,
-	0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07,
-	0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x45, 0x0a, 0x0b, 0x72, 0x65, 0x63, 0x65, 0x69,
-	0x76, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf,
-	0x1f, 0x01, 0x52, 0x0a, 0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x41, 0x74, 0x22, 0x92,
-	0x03, 0x0a, 0x12, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52,
-	0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f,
-	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5e, 0x0a, 0x0f, 0x6e, 0x65, 0x77, 0x5f, 0x73, 0x68,
-	0x61, 0x72, 0x65, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42,
-	0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
-	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63,
-	0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44,
-	0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x6e, 0x65, 0x77, 0x53, 0x68, 0x61, 0x72,
-	0x65, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x4f, 0x0a, 0x0a, 0x6e, 0x65, 0x77, 0x5f, 0x73, 0x68,
-	0x61, 0x72, 0x65, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00,
-	0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
-	0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x09, 0x6e, 0x65,
-	0x77, 0x53, 0x68, 0x61, 0x72, 0x65, 0x73, 0x12, 0x57, 0x0a, 0x0e, 0x70, 0x6f, 0x73, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42,
-	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
-	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4,
-	0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a,
-	0x01, 0x52, 0x0d, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x75, 0x65,
-	0x12, 0x51, 0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x75, 0x6d, 0x18,
-	0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
-	0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49,
-	0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64,
-	0x41, 0x75, 0x6d, 0x22, 0x89, 0x03, 0x0a, 0x11, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73,
-	0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74,
-	0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4,
-	0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74,
-	0x79, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x6a, 0x0a, 0x0e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x61, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x43, 0xc8, 0xde, 0x1f, 0x00,
-	0xda, 0xde, 0x1f, 0x3b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x62,
-	0x63, 0x70, 0x2d, 0x69, 0x6e, 0x6e, 0x6f, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x68,
-	0x79, 0x70, 0x65, 0x72, 0x6c, 0x61, 0x6e, 0x65, 0x2d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f,
-	0x75, 0x74, 0x69, 0x6c, 0x2e, 0x48, 0x65, 0x78, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52,
-	0x0d, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x21,
-	0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x43, 0x68, 0x61, 0x69,
-	0x6e, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65,
-	0x73, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61,
-	0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x12, 0x2b, 0x0a, 0x11, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e,
-	0x5f, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66, 0x69, 0x65, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x10, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66,
-	0x69, 0x65, 0x72, 0x3a, 0x3a, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0,
-	0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x1f,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32,
-	0x2f, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x22,
-	0xa4, 0x01, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f,
-	0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1b, 0x0a,
-	0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f,
-	0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x49, 0x0a, 0x0d, 0x72,
-	0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08,
-	0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0c, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74,
-	0x65, 0x72, 0x65, 0x64, 0x41, 0x74, 0x22, 0xe9, 0x01, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
-	0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61,
-	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61,
-	0x63, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61,
-	0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61,
-	0x78, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63,
-	0x74, 0x69, 0x76, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x65, 0x3a, 0x3e, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a,
-	0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x23, 0x64,
-	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66,
-	0x69, 0x67, 0x22, 0x8b, 0x01, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49,
-	0x64, 0x12, 0x4d, 0x0a, 0x0e, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x63, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x6e, 0x6f, 0x62, 0x6c,
-	0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e,
-	0x76, 0x32, 0x2e, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x64, 0x4f, 0x72, 0x61, 0x63, 0x6c,
-	0x65, 0x52, 0x0d, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
-	0x22, 0xb8, 0x01, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72,
-	0x61, 0x63, 0x6c, 0x65, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74,
-	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
-	0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x1b, 0x0a, 0x09,
-	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61,
-	0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f,
-	0x6e, 0x3a, 0x38, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x09,
-	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x1d, 0x64, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x52,
-	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x22, 0x9c, 0x01, 0x0a, 0x17,
-	0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c,
-	0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
-	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x43, 0x0a, 0x0a, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64,
-	0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52,
-	0x09, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x41, 0x74, 0x22, 0xdd, 0x01, 0x0a, 0x15, 0x4d,
-	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74,
-	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
-	0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x4c, 0x0a, 0x06,
-	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x6e,
-	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c,
-	0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76, 0x65,
-	0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x04, 0xc8, 0xde,
-	0x1f, 0x00, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x3a, 0x3e, 0x88, 0xa0, 0x1f, 0x00,
+	0x73, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65,
+	0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61,
+	0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x12, 0x49, 0x0a, 0x0d, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x65, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90,
+	0xdf, 0x1f, 0x01, 0x52, 0x0c, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x65, 0x64, 0x41,
+	0x74, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x22, 0xaf, 0x01, 0x0a, 0x16, 0x4f, 0x72,
+	0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x12, 0x2e, 0x0a, 0x13, 0x6d, 0x61, 0x78, 0x5f, 0x75, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x11, 0x6d, 0x61, 0x78, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x74, 0x65,
+	0x72, 0x76, 0x61, 0x6c, 0x12, 0x2e, 0x0a, 0x13, 0x6d, 0x69, 0x6e, 0x5f, 0x75, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x11, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x74, 0x65,
+	0x72, 0x76, 0x61, 0x6c, 0x12, 0x35, 0x0a, 0x17, 0x6d, 0x61, 0x78, 0x5f, 0x70, 0x72, 0x69, 0x63,
+	0x65, 0x5f, 0x64, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x62, 0x70, 0x73, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x14, 0x6d, 0x61, 0x78, 0x50, 0x72, 0x69, 0x63, 0x65, 0x44,
+	0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x70, 0x73, 0x22, 0x89, 0x03, 0x0a, 0x11,
+	0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c,
+	0x65, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09,
+	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73,
+	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a,
+	0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x6a, 0x0a, 0x0e, 0x6f, 0x72,
+	0x61, 0x63, 0x6c, 0x65, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x43, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x3b, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x62, 0x63, 0x70, 0x2d, 0x69, 0x6e, 0x6e, 0x6f, 0x76,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x68, 0x79, 0x70, 0x65, 0x72, 0x6c, 0x61, 0x6e, 0x65,
+	0x2d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x75, 0x74, 0x69, 0x6c, 0x2e, 0x48, 0x65, 0x78,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x0d, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x21, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x61, 0x78,
+	0x5f, 0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x12, 0x2b,
+	0x0a, 0x11, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66,
+	0x69, 0x65, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x6f, 0x72, 0x69, 0x67, 0x69,
+	0x6e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66, 0x69, 0x65, 0x72, 0x3a, 0x3a, 0x88, 0xa0, 0x1f,
+	0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72,
+	0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x1f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76,
+	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65,
+	0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x22, 0xa4, 0x01, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f,
+	0x6e, 0x49, 0x64, 0x12, 0x49, 0x0a, 0x0d, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x65,
+	0x64, 0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01,
+	0x52, 0x0c, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x65, 0x64, 0x41, 0x74, 0x22, 0xe9,
+	0x01, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63,
+	0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68,
+	0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
+	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79,
+	0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x23, 0x0a,
+	0x0d, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65, 0x73, 0x73, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78, 0x53, 0x74, 0x61, 0x6c, 0x65, 0x6e, 0x65,
+	0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x3a, 0x3e, 0x88, 0xa0, 0x1f, 0x00,
 	0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
 	0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x23, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61,
 	0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72,
-	0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0xd3, 0x01, 0x0a, 0x1d, 0x4d,
-	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0f,
-	0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4f,
-	0x72, 0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0e, 0x70, 0x72, 0x65,
-	0x76, 0x69, 0x6f, 0x75, 0x73, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x53, 0x0a, 0x0a, 0x6e,
-	0x65, 0x77, 0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x47,
-	0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42,
-	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x6e, 0x65, 0x77, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x42, 0xdd, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64,
-	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42,
-	0x0b, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37,
-	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a,
-	0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2, 0x02, 0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16,
-	0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75,
-	0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44,
-	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2,
-	0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56,
-	0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f,
-	0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0x8b, 0x01, 0x0a, 0x1d, 0x4d,
+	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1b, 0x0a, 0x09,
+	0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x4d, 0x0a, 0x0e, 0x75, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x64, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x26, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72,
+	0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x45, 0x6e, 0x72, 0x6f, 0x6c,
+	0x6c, 0x65, 0x64, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x0d, 0x75, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x64, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0xb8, 0x01, 0x0a, 0x0f, 0x4d, 0x73, 0x67,
+	0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x12, 0x36, 0x0a, 0x09,
+	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f,
+	0x72, 0x69, 0x74, 0x79, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49,
+	0x64, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x3a, 0x38, 0x88, 0xa0, 0x1f, 0x00, 0xe8,
+	0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74,
+	0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x1d, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x4f, 0x72, 0x61,
+	0x63, 0x6c, 0x65, 0x22, 0x9c, 0x01, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76,
+	0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x1b, 0x0a, 0x09, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x08, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b,
+	0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0a, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x43, 0x0a,
+	0x0a, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8,
+	0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64,
+	0x41, 0x74, 0x22, 0xdd, 0x01, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x36, 0x0a, 0x09,
+	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f,
+	0x72, 0x69, 0x74, 0x79, 0x12, 0x4c, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c,
+	0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4f, 0x72,
+	0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61,
+	0x6d, 0x73, 0x3a, 0x3e, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a,
+	0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x23, 0x64,
+	0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61,
+	0x6d, 0x73, 0x22, 0xd3, 0x01, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0f, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73,
+	0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x2e, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76,
+	0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x04, 0xc8,
+	0xde, 0x1f, 0x00, 0x52, 0x0e, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x12, 0x53, 0x0a, 0x0a, 0x6e, 0x65, 0x77, 0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e,
+	0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32,
+	0x2e, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63,
+	0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x6e,
+	0x65, 0x77, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0xdd, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d,
+	0x2e, 0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x76, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x2e, 0x76, 0x32, 0x42, 0x0b, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x37, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x6e,
+	0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x78, 0x79, 0x7a, 0x2f, 0x76, 0x33, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x6e, 0x6f, 0x62, 0x6c, 0x65, 0x2f, 0x64, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x2f, 0x76, 0x61, 0x75,
+	0x6c, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x3b, 0x76, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x76, 0x32, 0xa2,
+	0x02, 0x03, 0x4e, 0x44, 0x56, 0xaa, 0x02, 0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x2e, 0x44, 0x6f,
+	0x6c, 0x6c, 0x61, 0x72, 0x2e, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x56, 0x32, 0xca, 0x02,
+	0x16, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32, 0xe2, 0x02, 0x22, 0x4e, 0x6f, 0x62, 0x6c, 0x65, 0x5c,
+	0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x5c, 0x56, 0x61, 0x75, 0x6c, 0x74, 0x73, 0x5c, 0x56, 0x32,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x19, 0x4e,
+	0x6f, 0x62, 0x6c, 0x65, 0x3a, 0x3a, 0x44, 0x6f, 0x6c, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x56, 0x61,
+	0x75, 0x6c, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -11351,43 +7370,35 @@ func file_noble_dollar_vaults_v2_oracle_proto_rawDescGZIP() []byte {
 	return file_noble_dollar_vaults_v2_oracle_proto_rawDescData
 }
 
-var file_noble_dollar_vaults_v2_oracle_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_noble_dollar_vaults_v2_oracle_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_noble_dollar_vaults_v2_oracle_proto_goTypes = []interface{}{
 	(*RemotePositionOracle)(nil),          // 0: noble.dollar.vaults.v2.RemotePositionOracle
-	(*OracleMapping)(nil),                 // 1: noble.dollar.vaults.v2.OracleMapping
-	(*EnrolledOracleRouter)(nil),          // 2: noble.dollar.vaults.v2.EnrolledOracleRouter
-	(*EnrolledOracle)(nil),                // 3: noble.dollar.vaults.v2.EnrolledOracle
-	(*StalenessConfig)(nil),               // 4: noble.dollar.vaults.v2.StalenessConfig
-	(*OracleGovernanceParams)(nil),        // 5: noble.dollar.vaults.v2.OracleGovernanceParams
-	(*OracleStatus)(nil),                  // 6: noble.dollar.vaults.v2.OracleStatus
-	(*CrossChainOracleMessage)(nil),       // 7: noble.dollar.vaults.v2.CrossChainOracleMessage
-	(*OracleUpdateResult)(nil),            // 8: noble.dollar.vaults.v2.OracleUpdateResult
-	(*MsgRegisterOracle)(nil),             // 9: noble.dollar.vaults.v2.MsgRegisterOracle
-	(*MsgRegisterOracleResponse)(nil),     // 10: noble.dollar.vaults.v2.MsgRegisterOracleResponse
-	(*MsgUpdateOracleConfig)(nil),         // 11: noble.dollar.vaults.v2.MsgUpdateOracleConfig
-	(*MsgUpdateOracleConfigResponse)(nil), // 12: noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse
-	(*MsgRemoveOracle)(nil),               // 13: noble.dollar.vaults.v2.MsgRemoveOracle
-	(*MsgRemoveOracleResponse)(nil),       // 14: noble.dollar.vaults.v2.MsgRemoveOracleResponse
-	(*MsgUpdateOracleParams)(nil),         // 15: noble.dollar.vaults.v2.MsgUpdateOracleParams
-	(*MsgUpdateOracleParamsResponse)(nil), // 16: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse
-	(*timestamppb.Timestamp)(nil),         // 17: google.protobuf.Timestamp
+	(*EnrolledOracle)(nil),                // 1: noble.dollar.vaults.v2.EnrolledOracle
+	(*OracleGovernanceParams)(nil),        // 2: noble.dollar.vaults.v2.OracleGovernanceParams
+	(*MsgRegisterOracle)(nil),             // 3: noble.dollar.vaults.v2.MsgRegisterOracle
+	(*MsgRegisterOracleResponse)(nil),     // 4: noble.dollar.vaults.v2.MsgRegisterOracleResponse
+	(*MsgUpdateOracleConfig)(nil),         // 5: noble.dollar.vaults.v2.MsgUpdateOracleConfig
+	(*MsgUpdateOracleConfigResponse)(nil), // 6: noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse
+	(*MsgRemoveOracle)(nil),               // 7: noble.dollar.vaults.v2.MsgRemoveOracle
+	(*MsgRemoveOracleResponse)(nil),       // 8: noble.dollar.vaults.v2.MsgRemoveOracleResponse
+	(*MsgUpdateOracleParams)(nil),         // 9: noble.dollar.vaults.v2.MsgUpdateOracleParams
+	(*MsgUpdateOracleParamsResponse)(nil), // 10: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse
+	(*timestamppb.Timestamp)(nil),         // 11: google.protobuf.Timestamp
 }
 var file_noble_dollar_vaults_v2_oracle_proto_depIdxs = []int32{
-	17, // 0: noble.dollar.vaults.v2.RemotePositionOracle.last_update:type_name -> google.protobuf.Timestamp
-	17, // 1: noble.dollar.vaults.v2.EnrolledOracle.registered_at:type_name -> google.protobuf.Timestamp
-	17, // 2: noble.dollar.vaults.v2.OracleStatus.last_success:type_name -> google.protobuf.Timestamp
-	17, // 3: noble.dollar.vaults.v2.CrossChainOracleMessage.received_at:type_name -> google.protobuf.Timestamp
-	17, // 4: noble.dollar.vaults.v2.MsgRegisterOracleResponse.registered_at:type_name -> google.protobuf.Timestamp
-	3,  // 5: noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse.updated_config:type_name -> noble.dollar.vaults.v2.EnrolledOracle
-	17, // 6: noble.dollar.vaults.v2.MsgRemoveOracleResponse.removed_at:type_name -> google.protobuf.Timestamp
-	5,  // 7: noble.dollar.vaults.v2.MsgUpdateOracleParams.params:type_name -> noble.dollar.vaults.v2.OracleGovernanceParams
-	5,  // 8: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse.previous_params:type_name -> noble.dollar.vaults.v2.OracleGovernanceParams
-	5,  // 9: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse.new_params:type_name -> noble.dollar.vaults.v2.OracleGovernanceParams
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	11, // 0: noble.dollar.vaults.v2.RemotePositionOracle.last_update:type_name -> google.protobuf.Timestamp
+	11, // 1: noble.dollar.vaults.v2.EnrolledOracle.registered_at:type_name -> google.protobuf.Timestamp
+	11, // 2: noble.dollar.vaults.v2.MsgRegisterOracleResponse.registered_at:type_name -> google.protobuf.Timestamp
+	1,  // 3: noble.dollar.vaults.v2.MsgUpdateOracleConfigResponse.updated_config:type_name -> noble.dollar.vaults.v2.EnrolledOracle
+	11, // 4: noble.dollar.vaults.v2.MsgRemoveOracleResponse.removed_at:type_name -> google.protobuf.Timestamp
+	2,  // 5: noble.dollar.vaults.v2.MsgUpdateOracleParams.params:type_name -> noble.dollar.vaults.v2.OracleGovernanceParams
+	2,  // 6: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse.previous_params:type_name -> noble.dollar.vaults.v2.OracleGovernanceParams
+	2,  // 7: noble.dollar.vaults.v2.MsgUpdateOracleParamsResponse.new_params:type_name -> noble.dollar.vaults.v2.OracleGovernanceParams
+	8,  // [8:8] is the sub-list for method output_type
+	8,  // [8:8] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_noble_dollar_vaults_v2_oracle_proto_init() }
@@ -11410,30 +7421,6 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 			}
 		}
 		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*OracleMapping); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EnrolledOracleRouter); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EnrolledOracle); i {
 			case 0:
 				return &v.state
@@ -11445,19 +7432,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*StalenessConfig); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*OracleGovernanceParams); i {
 			case 0:
 				return &v.state
@@ -11469,43 +7444,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*OracleStatus); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CrossChainOracleMessage); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*OracleUpdateResult); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRegisterOracle); i {
 			case 0:
 				return &v.state
@@ -11517,7 +7456,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRegisterOracleResponse); i {
 			case 0:
 				return &v.state
@@ -11529,7 +7468,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgUpdateOracleConfig); i {
 			case 0:
 				return &v.state
@@ -11541,7 +7480,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgUpdateOracleConfigResponse); i {
 			case 0:
 				return &v.state
@@ -11553,7 +7492,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRemoveOracle); i {
 			case 0:
 				return &v.state
@@ -11565,7 +7504,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRemoveOracleResponse); i {
 			case 0:
 				return &v.state
@@ -11577,7 +7516,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgUpdateOracleParams); i {
 			case 0:
 				return &v.state
@@ -11589,7 +7528,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 				return nil
 			}
 		}
-		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+		file_noble_dollar_vaults_v2_oracle_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgUpdateOracleParamsResponse); i {
 			case 0:
 				return &v.state
@@ -11608,7 +7547,7 @@ func file_noble_dollar_vaults_v2_oracle_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_noble_dollar_vaults_v2_oracle_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

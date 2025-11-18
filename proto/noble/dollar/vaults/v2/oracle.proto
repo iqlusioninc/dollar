@@ -53,39 +53,6 @@ message RemotePositionOracle {
   ];
 }
 
-// TODO (Collin): Remove this as it's unused and RemotePositionOracle
-// contains these fields already.
-// OracleMapping defines the mapping between an oracle and its position
-message OracleMapping {
-  // Oracle contract address
-  string oracle_address = 1 [
-    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
-    (gogoproto.nullable) = false
-  ];
-
-  // Source chain ID
-  uint32 chain_id = 2;
-
-  // Position identifier this oracle reports for
-  uint64 position_id = 3;
-}
-
-// TODO (Collin): Also remove..?
-// EnrolledOracleRouter represents an enrolled oracle router
-message EnrolledOracleRouter {
-  // Position identifier
-  uint64 position_id = 1;
-
-  // Source chain identifier
-  string source_chain = 2;
-
-  // Oracle contract address
-  string oracle_address = 3 [
-    (gogoproto.customtype) = "github.com/bcp-innovations/hyperlane-cosmos/util.HexAddress",
-    (gogoproto.nullable) = false
-  ];
-}
-
 // EnrolledOracle represents a registered oracle
 message EnrolledOracle {
   // Position identifier
@@ -113,18 +80,6 @@ message EnrolledOracle {
   bool active = 6;
 }
 
-// StalenessConfig defines staleness thresholds
-message StalenessConfig {
-  // Warning threshold in seconds
-  int64 warning_threshold = 1;
-
-  // Critical threshold in seconds
-  int64 critical_threshold = 2;
-
-  // Maximum allowed staleness before fallback
-  int64 max_staleness = 3;
-}
-
 // OracleGovernanceParams defines governance parameters for oracles
 message OracleGovernanceParams {
   // Maximum update interval allowed (seconds)
@@ -135,86 +90,6 @@ message OracleGovernanceParams {
 
   // Maximum price deviation per update (basis points)
   int32 max_price_deviation_bps = 3;
-}
-
-// OracleStatus represents the current status of an oracle
-message OracleStatus {
-  // Oracle identifier
-  string oracle_id = 1;
-
-  // Position ID
-  uint64 position_id = 2;
-
-  // Last successful update
-  google.protobuf.Timestamp last_success = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-}
-
-// ========== Cross-Chain Oracle Integration ==========
-
-// CrossChainOracleMessage represents an oracle update delivered by cross-chain messaging
-// This is not a Msg type as it's handled internally when messages are delivered
-message CrossChainOracleMessage {
-  // Mailbox/channel identifier
-  bytes mailbox_id = 1;
-
-  // Source chain identifier
-  string source_chain = 2;
-
-  // Sender address on origin chain
-  bytes sender = 3;
-
-  // Hyperlane metadata for verification
-  bytes metadata = 4;
-
-  // AUM oracle update payload (105 bytes)
-  bytes payload = 5;
-
-  // Timestamp when received
-  google.protobuf.Timestamp received_at = 6 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-}
-
-// OracleUpdateResult represents the result of processing an oracle update
-message OracleUpdateResult {
-  // Position ID that was updated
-  uint64 position_id = 1;
-
-  // New share price
-  string new_share_price = 2 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // New shares held
-  string new_shares = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Calculated position value
-  string position_value = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Updated total AUM
-  string updated_aum = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }
 
 // ========== Messages ==========

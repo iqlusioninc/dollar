@@ -369,7 +369,7 @@ func (q queryServerV2) VaultRemotePositions(ctx context.Context, req *vaultsv2.Q
 			Principal:    position.Principal.String(),
 			CurrentValue: position.TotalValue.String(),
 			Apy:          sdkmath.LegacyNewDec(0).String(), // Use global yield rate as default
-			Status:       position.Status.String(),
+			Status:       computePositionStatus(position),
 			LastUpdate:   position.LastUpdate,
 		}
 
@@ -601,7 +601,7 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 		}
 
 		// Count active vs stale positions
-		if position.Status == vaultsv2.REMOTE_POSITION_ACTIVE {
+		if position.TotalValue.IsPositive() && position.SharesHeld.IsPositive() {
 			activePositions++
 		} else {
 			stalePositions++
@@ -1087,4 +1087,15 @@ func (q queryServerV2) buildVaultStatsEntry(ctx context.Context) (vaultsv2.Vault
 		TotalYieldDistributed: state.TotalAccruedYield,
 		ActivePositions:       state.TotalUsers,
 	}, nil
+}
+
+// computePositionStatus derives the position status from its current state
+func computePositionStatus(position vaultsv2.RemotePosition) string {
+	if position.TotalValue.IsPositive() && position.SharesHeld.IsPositive() {
+		return "ACTIVE"
+	}
+	if position.TotalValue.IsZero() && position.SharesHeld.IsZero() {
+		return "CLOSED"
+	}
+	return "ERROR"
 }

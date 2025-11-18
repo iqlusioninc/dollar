@@ -973,7 +973,6 @@ func (m msgServerV2) DisableCrossChainRoute(ctx context.Context, msg *vaultsv2.M
 	for _, entry := range positions {
 		if entry.Position.VaultAddress == route.RemotePositionAddress {
 			affected++
-			entry.Position.Status = vaultsv2.REMOTE_POSITION_ERROR
 			entry.Position.LastUpdate = headerInfo.Time
 			if err := m.SetVaultsV2RemotePosition(ctx, entry.ID, entry.Position); err != nil {
 				return nil, sdkerrors.Wrapf(err, "unable to update remote position %d", entry.ID)
@@ -1025,7 +1024,6 @@ func (m msgServerV2) CreateRemotePosition(ctx context.Context, msg *vaultsv2.Msg
 		SharePrice:   sdkmath.LegacyOneDec(),
 		TotalValue:   sdkmath.ZeroInt(),
 		LastUpdate:   headerInfo.Time,
-		Status:       vaultsv2.REMOTE_POSITION_INITIALIZING,
 	}
 
 	if err := m.SetVaultsV2RemotePosition(ctx, positionID, position); err != nil {
@@ -1060,7 +1058,7 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 	if !found {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrRemotePositionNotFound, "remote position not found")
 	}
-	if position.Status == vaultsv2.REMOTE_POSITION_CLOSED {
+	if position.TotalValue.IsZero() && position.SharesHeld.IsZero() {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidVaultState, "remote position already closed")
 	}
 
@@ -1095,12 +1093,6 @@ func (m msgServerV2) CloseRemotePosition(ctx context.Context, msg *vaultsv2.MsgC
 		}
 	}
 	position.Principal = principal
-
-	if position.TotalValue.IsPositive() {
-		position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
-	} else {
-		position.Status = vaultsv2.REMOTE_POSITION_CLOSED
-	}
 
 	headerInfo := m.header.GetHeaderInfo(ctx)
 	position.LastUpdate = headerInfo.Time
@@ -2114,11 +2106,6 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 				position.TotalValue = newTotalValue
 			} else {
 				position.TotalValue = sdkmath.ZeroInt()
-			}
-
-			// Update position status if no value remaining
-			if position.TotalValue.IsZero() || position.SharesHeld.IsZero() {
-				position.Status = vaultsv2.REMOTE_POSITION_CLOSED
 			}
 
 			position.LastUpdate = headerInfo.Time
