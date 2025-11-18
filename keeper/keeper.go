@@ -101,11 +101,9 @@ type Keeper struct {
 	VaultsV2CrossChainRouteNextID         collections.Item[uint32]
 	VaultsV2InflightFunds                 collections.Map[uint64, vaultsv2.InflightFund]
 	VaultsV2InflightNextID                collections.Item[uint64]
-	VaultsV2EnrolledOracles               collections.Map[string, vaultsv2.EnrolledOracle]
-	VaultsV2OracleParams                  collections.Item[vaultsv2.OracleGovernanceParams]
-	VaultsV2InflightValueByRoute          collections.Map[uint32, math.Int]
-	VaultsV2PendingWithdrawalDistribution collections.Item[math.Int]
-	VaultsV2AUMSnapshots                  collections.Map[int64, vaultsv2.AUMSnapshot]
+	VaultsV2EnrolledOracles      collections.Map[string, vaultsv2.EnrolledOracle]
+	VaultsV2OracleParams         collections.Item[vaultsv2.OracleGovernanceParams]
+	VaultsV2AUMSnapshots         collections.Map[int64, vaultsv2.AUMSnapshot]
 	VaultsV2AUMSnapshotNextID             collections.Item[int64]
 	VaultsV2CircuitBreakerActive          collections.Item[bool]
 	VaultsV2CircuitBreakerTrips           collections.Map[uint64, vaultsv2.CircuitBreakerTrip]
@@ -210,11 +208,9 @@ func NewKeeper(
 		VaultsV2CrossChainRouteNextID:         collections.NewItem(builder, vaultsv2.CrossChainRouteNextIDKey, "vaults_v2_cross_chain_route_next_id", collections.Uint32Value),
 		VaultsV2InflightFunds:                 collections.NewMap(builder, vaultsv2.InflightFundsPrefix, "vaults_v2_inflight_funds", collections.Uint64Key, codec.CollValue[vaultsv2.InflightFund](cdc)),
 		VaultsV2InflightNextID:                collections.NewItem(builder, vaultsv2.InflightNextIDKey, "vaults_v2_inflight_next_id", collections.Uint64Value),
-		VaultsV2EnrolledOracles:               collections.NewMap(builder, vaultsv2.EnrolledOraclePrefix, "vaults_v2_enrolled_oracles", collections.StringKey, codec.CollValue[vaultsv2.EnrolledOracle](cdc)),
-		VaultsV2OracleParams:                  collections.NewItem(builder, vaultsv2.OracleParamsKey, "vaults_v2_oracle_params", codec.CollValue[vaultsv2.OracleGovernanceParams](cdc)),
-		VaultsV2InflightValueByRoute:          collections.NewMap(builder, vaultsv2.InflightValueByRoutePrefix, "vaults_v2_inflight_value_by_route", collections.Uint32Key, sdk.IntValue),
-		VaultsV2PendingWithdrawalDistribution: collections.NewItem(builder, vaultsv2.PendingWithdrawalDistributionKey, "vaults_v2_pending_withdrawal_distribution", sdk.IntValue),
-		VaultsV2AUMSnapshots:                  collections.NewMap(builder, vaultsv2.AUMSnapshotsPrefix, "vaults_v2_aum_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.AUMSnapshot](cdc)),
+		VaultsV2EnrolledOracles:      collections.NewMap(builder, vaultsv2.EnrolledOraclePrefix, "vaults_v2_enrolled_oracles", collections.StringKey, codec.CollValue[vaultsv2.EnrolledOracle](cdc)),
+		VaultsV2OracleParams:         collections.NewItem(builder, vaultsv2.OracleParamsKey, "vaults_v2_oracle_params", codec.CollValue[vaultsv2.OracleGovernanceParams](cdc)),
+		VaultsV2AUMSnapshots:         collections.NewMap(builder, vaultsv2.AUMSnapshotsPrefix, "vaults_v2_aum_snapshots", collections.Int64Key, codec.CollValue[vaultsv2.AUMSnapshot](cdc)),
 		VaultsV2AUMSnapshotNextID:             collections.NewItem(builder, vaultsv2.AUMSnapshotNextIDKey, "vaults_v2_aum_snapshot_next_id", collections.Int64Value),
 		VaultsV2CircuitBreakerActive:          collections.NewItem(builder, vaultsv2.CircuitBreakerActiveKey, "vaults_v2_circuit_breaker_active", collections.BoolValue),
 		VaultsV2CircuitBreakerTrips:           collections.NewMap(builder, vaultsv2.CircuitBreakerTripsPrefix, "vaults_v2_circuit_breaker_trips", collections.Uint64Key, codec.CollValue[vaultsv2.CircuitBreakerTrip](cdc)),

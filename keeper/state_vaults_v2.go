@@ -558,64 +558,6 @@ func (k *Keeper) SetVaultsV2OracleParams(ctx context.Context, params vaultsv2.Or
 	return k.VaultsV2OracleParams.Set(ctx, params)
 }
 
-// GetVaultsV2InflightValueByRoute returns the currently tracked inflight value for a route.
-func (k *Keeper) GetVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32) (math.Int, error) {
-	value, err := k.VaultsV2InflightValueByRoute.Get(ctx, routeID)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return value, nil
-}
-
-// AddVaultsV2InflightValueByRoute increments the inflight value tracked for the given route.
-func (k *Keeper) AddVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32, amount math.Int) error {
-	if !amount.IsPositive() {
-		return nil
-	}
-
-	current, err := k.GetVaultsV2InflightValueByRoute(ctx, routeID)
-	if err != nil {
-		return err
-	}
-
-	current, err = current.SafeAdd(amount)
-	if err != nil {
-		return err
-	}
-
-	return k.VaultsV2InflightValueByRoute.Set(ctx, routeID, current)
-}
-
-// SubtractVaultsV2InflightValueByRoute decrements the inflight value tracked for the given route.
-func (k *Keeper) SubtractVaultsV2InflightValueByRoute(ctx context.Context, routeID uint32, amount math.Int) error {
-	if !amount.IsPositive() {
-		return nil
-	}
-
-	current, err := k.GetVaultsV2InflightValueByRoute(ctx, routeID)
-	if err != nil {
-		return err
-	}
-
-	current, err = current.SafeSub(amount)
-	if err != nil {
-		return err
-	}
-
-	if !current.IsPositive() {
-		if err := k.VaultsV2InflightValueByRoute.Remove(ctx, routeID); err != nil && !errors.Is(err, collections.ErrNotFound) {
-			return err
-		}
-		return nil
-	}
-
-	return k.VaultsV2InflightValueByRoute.Set(ctx, routeID, current)
-}
-
 // GetAllVaultsV2RemotePositions returns all remote positions stored in state.
 func (k *Keeper) GetAllVaultsV2RemotePositions(ctx context.Context) ([]RemotePositionEntry, error) {
 	var positions []RemotePositionEntry
@@ -851,64 +793,6 @@ func (k *Keeper) SubtractVaultsV2PendingWithdrawalAmount(ctx context.Context, am
 	}
 
 	return k.VaultsV2PendingWithdrawalsAmount.Set(ctx, current)
-}
-
-// GetVaultsV2PendingWithdrawalDistribution returns the amount awaiting distribution post remote withdrawals.
-func (k *Keeper) GetVaultsV2PendingWithdrawalDistribution(ctx context.Context) (math.Int, error) {
-	amount, err := k.VaultsV2PendingWithdrawalDistribution.Get(ctx)
-	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return math.ZeroInt(), nil
-		}
-		return math.ZeroInt(), err
-	}
-
-	return amount, nil
-}
-
-// AddVaultsV2PendingWithdrawalDistribution increments the distribution balance.
-func (k *Keeper) AddVaultsV2PendingWithdrawalDistribution(ctx context.Context, amount math.Int) error {
-	if !amount.IsPositive() {
-		return nil
-	}
-
-	current, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return err
-	}
-
-	current, err = current.SafeAdd(amount)
-	if err != nil {
-		return err
-	}
-
-	return k.VaultsV2PendingWithdrawalDistribution.Set(ctx, current)
-}
-
-// SubtractVaultsV2PendingWithdrawalDistribution decrements the distribution balance.
-func (k *Keeper) SubtractVaultsV2PendingWithdrawalDistribution(ctx context.Context, amount math.Int) error {
-	if !amount.IsPositive() {
-		return nil
-	}
-
-	current, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return err
-	}
-
-	current, err = current.SafeSub(amount)
-	if err != nil {
-		return err
-	}
-
-	if !current.IsPositive() {
-		if err := k.VaultsV2PendingWithdrawalDistribution.Remove(ctx); err != nil && !errors.Is(err, collections.ErrNotFound) {
-			return err
-		}
-		return nil
-	}
-
-	return k.VaultsV2PendingWithdrawalDistribution.Set(ctx, current)
 }
 
 // IncrementVaultsV2TotalUsers increases the total user count tracked in the

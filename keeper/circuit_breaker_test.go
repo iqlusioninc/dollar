@@ -63,7 +63,6 @@ func TestCircuitBreakerActivation(t *testing.T) {
 		SharesHeld:   sdkmath.NewInt(1000 * ONE_V2),
 		Principal:    sdkmath.NewInt(1000 * ONE_V2),
 		TotalValue:   sdkmath.NewInt(1000 * ONE_V2),
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
 		LastUpdate:   time.Now(),
 	}
 	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, positionID, position))
@@ -311,7 +310,6 @@ func TestCircuitBreakerWithRealOracleFlow(t *testing.T) {
 	require.NoError(t, k.Mint(baseCtx, bob.Bytes, sdkmath.NewInt(1000*ONE_V2), nil))
 	_, err = vaultsV2Server.Deposit(baseCtx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       sdkmath.NewInt(1000 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -321,8 +319,6 @@ func TestCircuitBreakerWithRealOracleFlow(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: vaultAddress.String(),
 		ChainId:      8453,
-		Amount:       sdkmath.NewInt(800 * ONE_V2),
-		MinSharesOut: sdkmath.ZeroInt(),
 	})
 	require.NoError(t, err)
 	positionID := createResp.PositionId
@@ -353,7 +349,7 @@ func TestCircuitBreakerWithRealOracleFlow(t *testing.T) {
 		Body:   createMockAUMPayload(positionID, sdkmath.LegacyMustNewDecFromStr("1.2"), sdkmath.NewInt(800*ONE_V2)),
 	}
 
-	_, err = k.HandleHyperlaneAUMMessage(baseCtx, mailboxID, message)
+	err = k.Handle(baseCtx, mailboxID, message)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "circuit breaker activated")
 

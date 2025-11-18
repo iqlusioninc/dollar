@@ -30,17 +30,13 @@ const (
 	Msg_DisableCrossChainRoute_FullMethodName             = "/noble.dollar.vaults.v2.Msg/DisableCrossChainRoute"
 	Msg_CreateRemotePosition_FullMethodName               = "/noble.dollar.vaults.v2.Msg/CreateRemotePosition"
 	Msg_CloseRemotePosition_FullMethodName                = "/noble.dollar.vaults.v2.Msg/CloseRemotePosition"
-	Msg_Rebalance_FullMethodName                          = "/noble.dollar.vaults.v2.Msg/Rebalance"
-	Msg_ProcessInFlightPosition_FullMethodName            = "/noble.dollar.vaults.v2.Msg/ProcessInFlightPosition"
 	Msg_RegisterOracle_FullMethodName                     = "/noble.dollar.vaults.v2.Msg/RegisterOracle"
 	Msg_UpdateOracleConfig_FullMethodName                 = "/noble.dollar.vaults.v2.Msg/UpdateOracleConfig"
 	Msg_RemoveOracle_FullMethodName                       = "/noble.dollar.vaults.v2.Msg/RemoveOracle"
 	Msg_UpdateOracleParams_FullMethodName                 = "/noble.dollar.vaults.v2.Msg/UpdateOracleParams"
 	Msg_ClaimWithdrawal_FullMethodName                    = "/noble.dollar.vaults.v2.Msg/ClaimWithdrawal"
 	Msg_CancelWithdrawal_FullMethodName                   = "/noble.dollar.vaults.v2.Msg/CancelWithdrawal"
-	Msg_HandleStaleInflight_FullMethodName                = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
 	Msg_UpdateDepositLimits_FullMethodName                = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
-	Msg_CleanupStaleInflight_FullMethodName               = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
 	Msg_DeployFunds_FullMethodName                        = "/noble.dollar.vaults.v2.Msg/DeployFunds"
 	Msg_InitiateWithdrawFromRemotePosition_FullMethodName = "/noble.dollar.vaults.v2.Msg/InitiateWithdrawFromRemotePosition"
 	Msg_ProcessIncomingWarpFunds_FullMethodName           = "/noble.dollar.vaults.v2.Msg/ProcessIncomingWarpFunds"
@@ -75,10 +71,6 @@ type MsgClient interface {
 	CreateRemotePosition(ctx context.Context, in *MsgCreateRemotePosition, opts ...grpc.CallOption) (*MsgCreateRemotePositionResponse, error)
 	// Close a remote position (spec-aligned)
 	CloseRemotePosition(ctx context.Context, in *MsgCloseRemotePosition, opts ...grpc.CallOption) (*MsgCloseRemotePositionResponse, error)
-	// Rebalance across remote positions (spec-aligned)
-	Rebalance(ctx context.Context, in *MsgRebalance, opts ...grpc.CallOption) (*MsgRebalanceResponse, error)
-	// Process in-flight position (system operation)
-	ProcessInFlightPosition(ctx context.Context, in *MsgProcessInFlightPosition, opts ...grpc.CallOption) (*MsgProcessInFlightPositionResponse, error)
 	// Register a new oracle for a position (authority only)
 	RegisterOracle(ctx context.Context, in *MsgRegisterOracle, opts ...grpc.CallOption) (*MsgRegisterOracleResponse, error)
 	// Update oracle configuration (authority only)
@@ -91,12 +83,8 @@ type MsgClient interface {
 	ClaimWithdrawal(ctx context.Context, in *MsgClaimWithdrawal, opts ...grpc.CallOption) (*MsgClaimWithdrawalResponse, error)
 	// Cancel a pending withdrawal request
 	CancelWithdrawal(ctx context.Context, in *MsgCancelWithdrawal, opts ...grpc.CallOption) (*MsgCancelWithdrawalResponse, error)
-	// Handle stale inflight fund record (authority only)
-	HandleStaleInflight(ctx context.Context, in *MsgHandleStaleInflight, opts ...grpc.CallOption) (*MsgHandleStaleInflightResponse, error)
 	// Update deposit limits (authority only)
 	UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error)
-	// Cleanup stale inflight fund (authority only)
-	CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error)
 	// Send funds to remote position
 	DeployFunds(ctx context.Context, in *MsgDeployFunds, opts ...grpc.CallOption) (*MsgDeployFundsResponse, error)
 	// Initiate withdrawal from remote position (creates inflight fund in preparation for receiving warp funds)
@@ -225,26 +213,6 @@ func (c *msgClient) CloseRemotePosition(ctx context.Context, in *MsgCloseRemoteP
 	return out, nil
 }
 
-func (c *msgClient) Rebalance(ctx context.Context, in *MsgRebalance, opts ...grpc.CallOption) (*MsgRebalanceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgRebalanceResponse)
-	err := c.cc.Invoke(ctx, Msg_Rebalance_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) ProcessInFlightPosition(ctx context.Context, in *MsgProcessInFlightPosition, opts ...grpc.CallOption) (*MsgProcessInFlightPositionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgProcessInFlightPositionResponse)
-	err := c.cc.Invoke(ctx, Msg_ProcessInFlightPosition_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) RegisterOracle(ctx context.Context, in *MsgRegisterOracle, opts ...grpc.CallOption) (*MsgRegisterOracleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgRegisterOracleResponse)
@@ -305,30 +273,10 @@ func (c *msgClient) CancelWithdrawal(ctx context.Context, in *MsgCancelWithdrawa
 	return out, nil
 }
 
-func (c *msgClient) HandleStaleInflight(ctx context.Context, in *MsgHandleStaleInflight, opts ...grpc.CallOption) (*MsgHandleStaleInflightResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgHandleStaleInflightResponse)
-	err := c.cc.Invoke(ctx, Msg_HandleStaleInflight_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgUpdateDepositLimitsResponse)
 	err := c.cc.Invoke(ctx, Msg_UpdateDepositLimits_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgCleanupStaleInflightResponse)
-	err := c.cc.Invoke(ctx, Msg_CleanupStaleInflight_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -403,10 +351,6 @@ type MsgServer interface {
 	CreateRemotePosition(context.Context, *MsgCreateRemotePosition) (*MsgCreateRemotePositionResponse, error)
 	// Close a remote position (spec-aligned)
 	CloseRemotePosition(context.Context, *MsgCloseRemotePosition) (*MsgCloseRemotePositionResponse, error)
-	// Rebalance across remote positions (spec-aligned)
-	Rebalance(context.Context, *MsgRebalance) (*MsgRebalanceResponse, error)
-	// Process in-flight position (system operation)
-	ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error)
 	// Register a new oracle for a position (authority only)
 	RegisterOracle(context.Context, *MsgRegisterOracle) (*MsgRegisterOracleResponse, error)
 	// Update oracle configuration (authority only)
@@ -419,12 +363,8 @@ type MsgServer interface {
 	ClaimWithdrawal(context.Context, *MsgClaimWithdrawal) (*MsgClaimWithdrawalResponse, error)
 	// Cancel a pending withdrawal request
 	CancelWithdrawal(context.Context, *MsgCancelWithdrawal) (*MsgCancelWithdrawalResponse, error)
-	// Handle stale inflight fund record (authority only)
-	HandleStaleInflight(context.Context, *MsgHandleStaleInflight) (*MsgHandleStaleInflightResponse, error)
 	// Update deposit limits (authority only)
 	UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error)
-	// Cleanup stale inflight fund (authority only)
-	CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error)
 	// Send funds to remote position
 	DeployFunds(context.Context, *MsgDeployFunds) (*MsgDeployFundsResponse, error)
 	// Initiate withdrawal from remote position (creates inflight fund in preparation for receiving warp funds)
@@ -476,12 +416,6 @@ func (UnimplementedMsgServer) CreateRemotePosition(context.Context, *MsgCreateRe
 func (UnimplementedMsgServer) CloseRemotePosition(context.Context, *MsgCloseRemotePosition) (*MsgCloseRemotePositionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CloseRemotePosition not implemented")
 }
-func (UnimplementedMsgServer) Rebalance(context.Context, *MsgRebalance) (*MsgRebalanceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Rebalance not implemented")
-}
-func (UnimplementedMsgServer) ProcessInFlightPosition(context.Context, *MsgProcessInFlightPosition) (*MsgProcessInFlightPositionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProcessInFlightPosition not implemented")
-}
 func (UnimplementedMsgServer) RegisterOracle(context.Context, *MsgRegisterOracle) (*MsgRegisterOracleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterOracle not implemented")
 }
@@ -500,14 +434,8 @@ func (UnimplementedMsgServer) ClaimWithdrawal(context.Context, *MsgClaimWithdraw
 func (UnimplementedMsgServer) CancelWithdrawal(context.Context, *MsgCancelWithdrawal) (*MsgCancelWithdrawalResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelWithdrawal not implemented")
 }
-func (UnimplementedMsgServer) HandleStaleInflight(context.Context, *MsgHandleStaleInflight) (*MsgHandleStaleInflightResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HandleStaleInflight not implemented")
-}
 func (UnimplementedMsgServer) UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDepositLimits not implemented")
-}
-func (UnimplementedMsgServer) CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CleanupStaleInflight not implemented")
 }
 func (UnimplementedMsgServer) DeployFunds(context.Context, *MsgDeployFunds) (*MsgDeployFundsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployFunds not implemented")
@@ -740,42 +668,6 @@ func _Msg_CloseRemotePosition_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Rebalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRebalance)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Rebalance(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_Rebalance_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Rebalance(ctx, req.(*MsgRebalance))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_ProcessInFlightPosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProcessInFlightPosition)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ProcessInFlightPosition(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_ProcessInFlightPosition_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProcessInFlightPosition(ctx, req.(*MsgProcessInFlightPosition))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_RegisterOracle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgRegisterOracle)
 	if err := dec(in); err != nil {
@@ -884,24 +776,6 @@ func _Msg_CancelWithdrawal_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_HandleStaleInflight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgHandleStaleInflight)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).HandleStaleInflight(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_HandleStaleInflight_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).HandleStaleInflight(ctx, req.(*MsgHandleStaleInflight))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_UpdateDepositLimits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgUpdateDepositLimits)
 	if err := dec(in); err != nil {
@@ -916,24 +790,6 @@ func _Msg_UpdateDepositLimits_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).UpdateDepositLimits(ctx, req.(*MsgUpdateDepositLimits))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_CleanupStaleInflight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCleanupStaleInflight)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CleanupStaleInflight(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_CleanupStaleInflight_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CleanupStaleInflight(ctx, req.(*MsgCleanupStaleInflight))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1062,14 +918,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_CloseRemotePosition_Handler,
 		},
 		{
-			MethodName: "Rebalance",
-			Handler:    _Msg_Rebalance_Handler,
-		},
-		{
-			MethodName: "ProcessInFlightPosition",
-			Handler:    _Msg_ProcessInFlightPosition_Handler,
-		},
-		{
 			MethodName: "RegisterOracle",
 			Handler:    _Msg_RegisterOracle_Handler,
 		},
@@ -1094,16 +942,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_CancelWithdrawal_Handler,
 		},
 		{
-			MethodName: "HandleStaleInflight",
-			Handler:    _Msg_HandleStaleInflight_Handler,
-		},
-		{
 			MethodName: "UpdateDepositLimits",
 			Handler:    _Msg_UpdateDepositLimits_Handler,
-		},
-		{
-			MethodName: "CleanupStaleInflight",
-			Handler:    _Msg_CleanupStaleInflight_Handler,
 		},
 		{
 			MethodName: "DeployFunds",

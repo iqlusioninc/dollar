@@ -71,19 +71,9 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/{route_id}";
   }
 
-  // InflightFundsUser returns all in-flight operations for a user
-  rpc InflightFundsUser(QueryInflightFundsUserRequest) returns (QueryInflightFundsUserResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/inflight/user/{address}";
-  }
-
   // CrossChainSnapshot returns cross-chain position snapshot for a vault
   rpc CrossChainSnapshot(QueryCrossChainSnapshotRequest) returns (QueryCrossChainSnapshotResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/snapshot";
-  }
-
-  // StaleInflightAlerts returns stale inflight alerts for a user or route
-  rpc StaleInflightAlerts(QueryStaleInflightAlertsRequest) returns (QueryStaleInflightAlertsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/crosschain/stale";
   }
 
   // WithdrawalQueue returns the current withdrawal queue (spec-aligned)
@@ -119,11 +109,6 @@ service Query {
   // InflightFunds (spec-aligned aggregate view)
   rpc InflightFunds(QueryInflightFundsRequest) returns (QueryInflightFundsResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/inflight_funds";
-  }
-
-  // StaleInflightFunds (spec-aligned aggregate view)
-  rpc StaleInflightFunds(QueryStaleInflightFundsRequest) returns (QueryStaleInflightFundsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/stale_inflight_funds";
   }
 
   // Stats returns statistics for a vault type
@@ -300,18 +285,6 @@ message QueryInflightFundResponse {
   InflightFund fund = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryInflightFundsUserRequest requests all in-flight operations for a user
-message QueryInflightFundsUserRequest {
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QueryInflightFundsUserResponse returns all in-flight operations for a user
-message QueryInflightFundsUserResponse {
-  repeated InflightFund funds = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
 // QueryCrossChainSnapshotRequest requests cross-chain snapshot for a vault
 message QueryCrossChainSnapshotRequest {
   int64 timestamp = 1; // Optional: specific timestamp, 0 for latest
@@ -320,26 +293,6 @@ message QueryCrossChainSnapshotRequest {
 // QueryCrossChainSnapshotResponse returns cross-chain snapshot
 message QueryCrossChainSnapshotResponse {
   CrossChainPositionSnapshot snapshot = 1 [(gogoproto.nullable) = false];
-}
-
-// QueryStaleInflightAlertsRequest requests stale inflight alerts
-message QueryStaleInflightAlertsRequest {
-  uint32 route_id = 1; // Optional: filter by route
-  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; // Optional: filter by user
-  cosmos.base.query.v1beta1.PageRequest pagination = 3;
-}
-
-// QueryStaleInflightAlertsResponse returns stale inflight alerts
-message QueryStaleInflightAlertsResponse {
-  repeated StaleInflightAlertWithDetails alerts = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// StaleInflightAlertWithDetails includes additional context with the alert
-message StaleInflightAlertWithDetails {
-  StaleInflightAlert alert = 1 [(gogoproto.nullable) = false];
-  CrossChainRoute route = 2 [(gogoproto.nullable) = false];
-  InflightFund fund = 3 [(gogoproto.nullable) = false];
 }
 
 // ========== Spec-aligned Query Messages ==========
@@ -508,39 +461,9 @@ message QueryInflightFundsResponse {
   repeated InflightFundView inflight_funds = 1 [(gogoproto.nullable) = false];
   string total_inflight = 2;
   string pending_deployment = 3;
-  string pending_withdrawal_distribution = 4;
   map<string, string> by_route = 5;
   map<string, string> by_type = 6;
   map<string, string> by_status = 7;
-}
-
-message QueryStaleInflightFundsRequest {}
-
-message StaleInflightFundView {
-  uint32 route_id = 1;
-  string transaction_id = 2;
-  string amount = 3;
-  string operation_type = 4;
-  string source_chain = 5;
-  string destination_chain = 6;
-  google.protobuf.Timestamp initiated_at = 7 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  google.protobuf.Timestamp expected_at = 8 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  string hours_overdue = 9;
-  string last_known_status = 10;
-  string recommended_action = 11;
-}
-
-message QueryStaleInflightFundsResponse {
-  repeated StaleInflightFundView stale_funds = 1 [(gogoproto.nullable) = false];
-  string total_stale_value = 2;
-  uint64 total_stale_count = 3;
-  string oldest_stale_hours = 4;
 }
 
 // Vault-wide remote positions

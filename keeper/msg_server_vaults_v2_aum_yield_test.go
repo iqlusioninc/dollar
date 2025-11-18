@@ -1179,7 +1179,6 @@ func TestAccountingUndistributedYieldEventuallyDistributed(t *testing.T) {
 		SharesHeld:   sdkmath.NewInt(100 * ONE_V2),
 		Principal:    sdkmath.ZeroInt(), // Yield, not principal
 		TotalValue:   sdkmath.NewInt(100 * ONE_V2),
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
 		LastUpdate:   time.Now(),
 	}
 	require.NoError(t, k.SetVaultsV2RemotePosition(ctx, 1, remotePosition))

@@ -115,14 +115,6 @@ The `LocalFunds` field is a [`collections.Item`][item] that stores the amount of
 const LocalFundsKey = []byte("vaults/v2/local_funds")
 ```
 
-## PendingWithdrawalDistribution
-
-The `PendingWithdrawalDistribution` field is a [`collections.Item`][item] that stores the amount of $USDN returned from remote positions but not yet distributed to withdrawal claimants (`math.Int`).
-
-```go
-const PendingWithdrawalDistributionKey = []byte("vaults/v2/pending_withdrawal_dist")
-```
-
 ## WithdrawalQueue
 
 The `WithdrawalQueue` field is a mapping ([`collections.Map`][map]) between a withdrawal request ID (`uint64`) and a `vaults.v2.WithdrawalRequest` value.

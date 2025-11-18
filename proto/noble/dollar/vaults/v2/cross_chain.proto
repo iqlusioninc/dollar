@@ -86,28 +86,10 @@ message RemotePosition {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  // Position status
-  RemotePositionStatus status = 9;
   // Oracle configuration for this position
   string oracle_address = 10;
   // Maximum staleness for oracle data (seconds)
   int64 max_staleness = 11;
-}
-
-// RemotePositionStatus represents the status of a remote position
-enum RemotePositionStatus {
-  option (gogoproto.goproto_enum_prefix) = false;
-
-  // Position is waiting for initial deposit
-  REMOTE_POSITION_INITIALIZING = 0;
-  // Position is active and being tracked
-  REMOTE_POSITION_ACTIVE = 1;
-  // Position is being withdrawn from
-  REMOTE_POSITION_WITHDRAWING = 2;
-  // Position has been closed
-  REMOTE_POSITION_CLOSED = 3;
-  // Position is in error state
-  REMOTE_POSITION_ERROR = 4;
 }
 
 // InflightFund represents funds in transit between Noble and remote positions
@@ -163,8 +145,6 @@ enum OperationType {
   OPERATION_TYPE_DEPOSIT = 0;
   // Withdrawal operation
   OPERATION_TYPE_WITHDRAWAL = 1;
-  // Rebalance operation
-  OPERATION_TYPE_REBALANCE = 2;
 }
 
 // InflightDirection represents the direction of funds in transit
@@ -207,49 +187,6 @@ enum InflightStatus {
   INFLIGHT_TIMEOUT = 3;
 }
 
-// AUMOracleUpdate represents an oracle price update received via cross-chain messaging
-message AUMOracleUpdate {
-  // Position identifier this update is for
-  uint64 position_id = 1;
-  // Current share price
-  string share_price = 2 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-  // Number of shares held
-  string shares_held = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-  // Timestamp of the update
-  google.protobuf.Timestamp timestamp = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Source chain identifier
-  string source_chain = 5;
-  // Message ID (Hyperlane message ID or IBC packet)
-  string message_id = 6;
-  // Update status
-  OracleUpdateStatus status = 7;
-}
-
-// OracleUpdateStatus represents the status of an oracle update
-enum OracleUpdateStatus {
-  option (gogoproto.goproto_enum_prefix) = false;
-
-  // Update has been validated
-  ORACLE_UPDATE_VALIDATED = 0;
-  // Update has been applied to position
-  ORACLE_UPDATE_APPLIED = 1;
-  // Update was rejected (stale, invalid, etc.)
-  ORACLE_UPDATE_REJECTED = 2;
-}
-
 // CrossChainPositionSnapshot provides a snapshot of all cross-chain positions
 message CrossChainPositionSnapshot {
   // Total value of all remote positions
@@ -274,51 +211,4 @@ message CrossChainPositionSnapshot {
   int64 block_height = 5;
   // Breakdown by route
   map<uint32, string> value_by_route = 6;
-}
-
-// CrossChainConfig defines global configuration for cross-chain operations
-message CrossChainConfig {
-  // Maximum total remote position value as percentage of vault (basis points)
-  int32 max_remote_exposure = 1;
-  // Default operation timeout (seconds)
-  int64 default_timeout = 2;
-  // Position update frequency (seconds)
-  int64 update_frequency = 3;
-  // Maximum number of remote positions
-  uint32 max_remote_positions = 4;
-  // Allowed chains (can be Hyperlane domains or IBC chain IDs)
-  repeated string allowed_chains = 5;
-  // Whether cross-chain operations are enabled
-  bool enabled = 6;
-  // Maximum duration funds can be inflight (seconds)
-  int64 max_inflight_duration = 7;
-  // Maximum total value allowed inflight
-  string max_inflight_value = 8 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}
-
-// StaleInflightAlert represents an alert for inflight funds exceeding expected duration
-message StaleInflightAlert {
-  // Route ID
-  uint32 route_id = 1;
-  // Transaction ID
-  string transaction_id = 2;
-  // Hours overdue
-  double hours_overdue = 3;
-  // Alert timestamp
-  google.protobuf.Timestamp timestamp = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  // Amount stuck in transit
-  string amount = 5 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }

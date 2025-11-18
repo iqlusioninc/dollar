@@ -39,7 +39,6 @@ func TestAUMLifecycle(t *testing.T) {
 	require.NoError(t, k.SetVaultsV2Params(baseCtx, params))
 
 	inflightID := uint64(1)
-	transactionID := "123"
 
 	// Helper to check AUM invariant
 	checkAUM := func(step string, expectedPending, expectedRemote, expectedInflight, expectedTotal sdkmath.Int) {
@@ -128,8 +127,6 @@ func TestAUMLifecycle(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: vaultAddress,
 		ChainId:      8453,
-		Amount:       sdkmath.NewInt(600 * ONE_V2),
-		MinSharesOut: sdkmath.ZeroInt(),
 	})
 	require.NoError(t, err)
 	positionID := createResp.PositionId
@@ -172,26 +169,13 @@ func TestAUMLifecycle(t *testing.T) {
 	// === STEP 5: Create inflight fund (simulating cross-chain transfer) ===
 	inflightFund := vaultsv2.InflightFund{
 		Id:                inflightID,
-		TransactionId:     transactionID,
+		RemotePositionId:  positionID,
+		Direction:         vaultsv2.INFLIGHT_OUTGOING,
 		Amount:            sdkmath.NewInt(200 * ONE_V2),
 		Status:            vaultsv2.INFLIGHT_PENDING,
 		InitiatedAt:       time.Now(),
 		ExpectedAt:        time.Now().Add(5 * time.Minute),
 		ValueAtInitiation: sdkmath.NewInt(200 * ONE_V2),
-		Origin: &vaultsv2.InflightFund_NobleOrigin{
-			NobleOrigin: &vaultsv2.NobleEndpoint{
-				OperationType: vaultsv2.OPERATION_TYPE_DEPOSIT,
-			},
-		},
-		Destination: &vaultsv2.InflightFund_RemoteDestination{
-			RemoteDestination: &vaultsv2.RemotePosition{
-				VaultAddress: hyperlaneutil.CreateMockHexAddress("vault", 2),
-				SharesHeld:   sdkmath.ZeroInt(),
-				Principal:    sdkmath.NewInt(200 * ONE_V2),
-				SharePrice:   sdkmath.LegacyOneDec(),
-				TotalValue:   sdkmath.ZeroInt(),
-			},
-		},
 	}
 	require.NoError(t, k.SetVaultsV2InflightFund(baseCtx, inflightFund))
 
@@ -233,7 +217,6 @@ func TestAUMLifecycle(t *testing.T) {
 		SharePrice:   sdkmath.LegacyOneDec(),
 		TotalValue:   sdkmath.NewInt(200 * ONE_V2),
 		LastUpdate:   time.Now(),
-		Status:       vaultsv2.REMOTE_POSITION_ACTIVE,
 	}
 	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, 2, newPosition))
 
@@ -374,8 +357,6 @@ func TestAUMCalculationWithOracleMessage(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: vaultAddress.String(),
 		ChainId:      8453,
-		Amount:       sdkmath.NewInt(800 * ONE_V2),
-		MinSharesOut: sdkmath.ZeroInt(),
 	})
 	require.NoError(t, err)
 	positionID := createResp.PositionId
@@ -433,13 +414,8 @@ func TestAUMCalculationWithOracleMessage(t *testing.T) {
 	}
 
 	// Handle the oracle message - this should call recalculateVaultsV2AUM internally
-	result, err := k.HandleHyperlaneAUMMessage(baseCtx, mailboxID, message)
+	err = k.Handle(baseCtx, mailboxID, message)
 	require.NoError(t, err)
-	require.NotNil(t, result)
-
-	// Verify AUM was updated: should be 1080 (200 pending + 880 remote)
-	assert.Equal(t, sdkmath.NewInt(1080*ONE_V2).String(), result.UpdatedAum.String(),
-		"AUM should increase from 1000 to 1080 after oracle update")
 
 	// Verify it's persisted
 	aumInfo, err := k.GetVaultsV2AUMInfo(baseCtx)

@@ -86,11 +86,6 @@ func (k *Keeper) Handle(ctx context.Context, mailboxID hyperlaneutil.HexAddress,
 		position.SharesHeld = payload.SharesHeld
 		position.TotalValue = payload.SharePrice.MulInt(payload.SharesHeld).TruncateInt()
 		position.LastUpdate = payload.Timestamp
-		if position.TotalValue.IsPositive() {
-			position.Status = vaultsv2.REMOTE_POSITION_ACTIVE
-		} else {
-			position.Status = vaultsv2.REMOTE_POSITION_CLOSED
-		}
 
 		if err := k.SetVaultsV2RemotePosition(ctx, payload.PositionID, position); err != nil {
 			return errors.Wrap(err, "unable to persist remote position")

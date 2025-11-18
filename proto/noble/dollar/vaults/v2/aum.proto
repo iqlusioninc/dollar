@@ -9,28 +9,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "dollar.noble.xyz/v3/types/vaults/v2";
 
-// AUMBand defines the pricing bands for deposits and withdrawals
-message AUMBand {
-  // Lower bound of the band (basis points above/below AUM)
-  int32 lower_bound = 1;
-  // Upper bound of the band (basis points above/below AUM)
-  int32 upper_bound = 2;
-}
-
-// AUMConfig defines the configuration for AUM-based pricing
-message AUMConfig {
-  // Base AUM bands for deposits
-  repeated AUMBand deposit_bands = 1;
-  // Base AUM bands for withdrawals
-  repeated AUMBand withdrawal_bands = 2;
-  // Minimum AUM update interval (seconds)
-  int64 min_aum_update_interval = 3;
-  // Maximum allowed AUM deviation before emergency controls (basis points)
-  int32 max_aum_deviation = 4;
-  // Emergency circuit breaker threshold (basis points)
-  int32 circuit_breaker_threshold = 5;
-}
-
 // AUMInfo represents current AUM information for a vault
 message AUMInfo {
   // Current AUM value
@@ -105,54 +83,4 @@ message AUMUpdate {
 
   // Block height
   int64 block_height = 3;
-}
-
-// PricingInfo provides pricing information for deposits/withdrawals
-message PricingInfo {
-  // Current yield rate (APY)
-  string yield_rate = 1 [
-    (cosmos_proto.scalar) = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Applied AUM band
-  AUMBand applied_band = 2;
-
-  // Effective fee rate
-  int32 effective_fee_rate = 3;
-}
-
-// LossEvent represents a loss in vault value
-message LossEvent {
-  // Amount of loss
-  string loss_amount = 1 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Previous AUM before loss
-  string previous_aum = 2 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // New AUM after loss
-  string new_aum = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Timestamp of loss
-  google.protobuf.Timestamp timestamp = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
 }

@@ -136,16 +136,10 @@ func (q queryServerV2) InflightFunds(ctx context.Context, req *vaultsv2.QueryInf
 		return nil, errors.Wrap(err, "unable to fetch local funds")
 	}
 
-	pendingWithdrawalDist, err := q.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch pending withdrawal distribution")
-	}
-
 	return &vaultsv2.QueryInflightFundsResponse{
-		InflightFunds:                 funds,
-		TotalInflight:                 total.String(),
-		PendingDeployment:             localFunds.String(),
-		PendingWithdrawalDistribution: pendingWithdrawalDist.String(),
+		InflightFunds:     funds,
+		TotalInflight:     total.String(),
+		PendingDeployment: localFunds.String(),
 	}, nil
 }
 
@@ -375,7 +369,7 @@ func (q queryServerV2) VaultRemotePositions(ctx context.Context, req *vaultsv2.Q
 			Principal:    position.Principal.String(),
 			CurrentValue: position.TotalValue.String(),
 			Apy:          sdkmath.LegacyNewDec(0).String(), // Use global yield rate as default
-			Status:       position.Status.String(),
+			Status:       computePositionStatus(position),
 			LastUpdate:   position.LastUpdate,
 		}
 
@@ -590,35 +584,6 @@ func (q queryServerV2) InflightFund(ctx context.Context, req *vaultsv2.QueryInfl
 	}, nil
 }
 
-func (q queryServerV2) InflightFundsUser(ctx context.Context, req *vaultsv2.QueryInflightFundsUserRequest) (*vaultsv2.QueryInflightFundsUserResponse, error) {
-	if req == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
-	}
-
-	// Validate address
-	_, err := q.address.StringToBytes(req.Address)
-	if err != nil {
-		return nil, errors.Wrapf(types.ErrInvalidRequest, "invalid address: %s", req.Address)
-	}
-
-	var funds []vaultsv2.InflightFund
-
-	// Iterate and filter by user
-	// TODO: Add user tracking to InflightFund if needed for per-user queries
-	err = q.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
-		// For now, include all funds
-		funds = append(funds, fund)
-		return false, nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate inflight funds")
-	}
-
-	return &vaultsv2.QueryInflightFundsUserResponse{
-		Funds: funds,
-	}, nil
-}
-
 func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.QueryCrossChainSnapshotRequest) (*vaultsv2.QueryCrossChainSnapshotResponse, error) {
 	if req == nil {
 		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
@@ -636,7 +601,7 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 		}
 
 		// Count active vs stale positions
-		if position.Status == vaultsv2.REMOTE_POSITION_ACTIVE {
+		if position.TotalValue.IsPositive() && position.SharesHeld.IsPositive() {
 			activePositions++
 		} else {
 			stalePositions++
@@ -678,80 +643,6 @@ func (q queryServerV2) CrossChainSnapshot(ctx context.Context, req *vaultsv2.Que
 
 	return &vaultsv2.QueryCrossChainSnapshotResponse{
 		Snapshot: snapshot,
-	}, nil
-}
-
-func (q queryServerV2) StaleInflightAlerts(ctx context.Context, req *vaultsv2.QueryStaleInflightAlertsRequest) (*vaultsv2.QueryStaleInflightAlertsResponse, error) {
-	if req == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
-	}
-
-	// Get params for stale timeout threshold
-	_, err := q.GetVaultsV2Params(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch params")
-	}
-
-	// Get current block time from SDK context
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	currentTime := sdkCtx.BlockTime()
-
-	var alerts []vaultsv2.StaleInflightAlertWithDetails
-
-	// Iterate inflight funds to find stale ones
-	err = q.IterateVaultsV2InflightFunds(ctx, func(txID uint64, fund vaultsv2.InflightFund) (bool, error) {
-		// Check if fund is stale (past expected time)
-		if currentTime.After(fund.ExpectedAt) {
-			// Get route details if filtering by route
-			if req.RouteId != 0 {
-				if tracking := fund.HyperlaneTrackingInfo; tracking != nil {
-					if hyperlane := tracking; hyperlane != nil {
-						if hyperlane.DestinationDomain != req.RouteId {
-							return false, nil // Skip, doesn't match filter
-						}
-					}
-				}
-			}
-
-			// Filter by address if provided
-			// TODO: Add user tracking to InflightFund if needed for user filtering
-			// For now, cannot filter by user address
-
-			// Get route details
-			var route vaultsv2.CrossChainRoute
-			if tracking := fund.HyperlaneTrackingInfo; tracking != nil {
-				if hyperlane := tracking; hyperlane != nil {
-					foundRoute, found, err := q.GetVaultsV2CrossChainRoute(ctx, hyperlane.DestinationDomain)
-					if err == nil && found {
-						route = foundRoute
-					}
-				}
-			}
-
-			alert := vaultsv2.StaleInflightAlert{
-				TransactionId: fmt.Sprintf("%d", fund.Id),
-				RouteId:       0, // Will be set from tracking
-				Amount:        fund.Amount,
-				Timestamp:     fund.InitiatedAt,
-			}
-
-			alertWithDetails := vaultsv2.StaleInflightAlertWithDetails{
-				Alert: alert,
-				Route: route,
-				Fund:  fund,
-			}
-
-			alerts = append(alerts, alertWithDetails)
-		}
-
-		return false, nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate inflight funds")
-	}
-
-	return &vaultsv2.QueryStaleInflightAlertsResponse{
-		Alerts: alerts,
 	}, nil
 }
 
@@ -1182,80 +1073,6 @@ func (q queryServerV2) SimulateWithdrawal(ctx context.Context, req *vaultsv2.Que
 	}, nil
 }
 
-func (q queryServerV2) StaleInflightFunds(ctx context.Context, req *vaultsv2.QueryStaleInflightFundsRequest) (*vaultsv2.QueryStaleInflightFundsResponse, error) {
-	if req == nil {
-		return nil, errors.Wrap(types.ErrInvalidRequest, "request cannot be nil")
-	}
-
-	// Get current block time
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	currentTime := sdkCtx.BlockTime()
-
-	var (
-		staleFunds       []vaultsv2.StaleInflightFundView
-		totalStaleValue  = sdkmath.ZeroInt()
-		oldestStaleHours = int64(0)
-	)
-
-	// Iterate all inflight funds
-	err := q.IterateVaultsV2InflightFunds(ctx, func(txID uint64, fund vaultsv2.InflightFund) (bool, error) {
-		// Check if stale
-		if currentTime.After(fund.ExpectedAt) {
-			hoursOverdue := currentTime.Sub(fund.ExpectedAt).Hours()
-
-			// Extract routing info
-			var sourceChain, destChain string
-			var routeID uint32
-			if tracking := fund.HyperlaneTrackingInfo; tracking != nil {
-				if hyperlane := tracking; hyperlane != nil {
-					sourceChain = strconv.FormatUint(uint64(hyperlane.OriginDomain), 10)
-					destChain = strconv.FormatUint(uint64(hyperlane.DestinationDomain), 10)
-					routeID = hyperlane.DestinationDomain
-				}
-			}
-
-			// TODO: Track operation type if needed
-			opType := "DEPOSIT"
-
-			staleFund := vaultsv2.StaleInflightFundView{
-				RouteId:           routeID,
-				TransactionId:     fmt.Sprintf("%d", fund.Id),
-				Amount:            fund.Amount.String(),
-				OperationType:     opType,
-				SourceChain:       sourceChain,
-				DestinationChain:  destChain,
-				HoursOverdue:      strconv.FormatInt(int64(hoursOverdue), 10),
-				LastKnownStatus:   fund.Status.String(),
-				RecommendedAction: "Manual intervention required",
-			}
-
-			staleFunds = append(staleFunds, staleFund)
-
-			var err error
-			totalStaleValue, err = totalStaleValue.SafeAdd(fund.Amount)
-			if err != nil {
-				return true, errors.Wrap(err, "unable to accumulate stale value")
-			}
-
-			if int64(hoursOverdue) > oldestStaleHours {
-				oldestStaleHours = int64(hoursOverdue)
-			}
-		}
-
-		return false, nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to iterate inflight funds")
-	}
-
-	return &vaultsv2.QueryStaleInflightFundsResponse{
-		StaleFunds:       staleFunds,
-		TotalStaleValue:  totalStaleValue.String(),
-		TotalStaleCount:  uint64(len(staleFunds)),
-		OldestStaleHours: strconv.FormatInt(oldestStaleHours, 10),
-	}, nil
-}
-
 func (q queryServerV2) buildVaultStatsEntry(ctx context.Context) (vaultsv2.VaultStatsEntry, error) {
 	state, err := q.GetVaultsV2VaultState(ctx)
 	if err != nil {
@@ -1270,4 +1087,15 @@ func (q queryServerV2) buildVaultStatsEntry(ctx context.Context) (vaultsv2.Vault
 		TotalYieldDistributed: state.TotalAccruedYield,
 		ActivePositions:       state.TotalUsers,
 	}, nil
+}
+
+// computePositionStatus derives the position status from its current state
+func computePositionStatus(position vaultsv2.RemotePosition) string {
+	if position.TotalValue.IsPositive() && position.SharesHeld.IsPositive() {
+		return "ACTIVE"
+	}
+	if position.TotalValue.IsZero() && position.SharesHeld.IsZero() {
+		return "CLOSED"
+	}
+	return "ERROR"
 }

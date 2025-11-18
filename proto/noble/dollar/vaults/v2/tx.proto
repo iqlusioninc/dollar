@@ -53,12 +53,6 @@ service Msg {
   // Close a remote position (spec-aligned)
   rpc CloseRemotePosition(MsgCloseRemotePosition) returns (MsgCloseRemotePositionResponse);
 
-  // Rebalance across remote positions (spec-aligned)
-  rpc Rebalance(MsgRebalance) returns (MsgRebalanceResponse);
-
-  // Process in-flight position (system operation)
-  rpc ProcessInFlightPosition(MsgProcessInFlightPosition) returns (MsgProcessInFlightPositionResponse);
-
   // Oracle operations
 
   // Register a new oracle for a position (authority only)
@@ -78,15 +72,9 @@ service Msg {
 
   // Cancel a pending withdrawal request
   rpc CancelWithdrawal(MsgCancelWithdrawal) returns (MsgCancelWithdrawalResponse);
-
-  // Handle stale inflight fund record (authority only)
-  rpc HandleStaleInflight(MsgHandleStaleInflight) returns (MsgHandleStaleInflightResponse);
-
+ 
   // Update deposit limits (authority only)
   rpc UpdateDepositLimits(MsgUpdateDepositLimits) returns (MsgUpdateDepositLimitsResponse);
-
-  // Cleanup stale inflight fund (authority only)
-  rpc CleanupStaleInflight(MsgCleanupStaleInflight) returns (MsgCleanupStaleInflightResponse);
 
   // Send funds to remote position
   rpc DeployFunds(MsgDeployFunds) returns (MsgDeployFundsResponse);
@@ -296,60 +284,6 @@ message MsgDisableCrossChainRouteResponse {
   int64 affected_positions = 2;
 }
 
-// MsgProcessInFlightPosition processes an in-flight position
-message MsgProcessInFlightPosition {
-  option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "dollar/vaults/v2/ProcessInFlightPosition";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // Authority processing the position
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Operation nonce
-  uint64 nonce = 2;
-
-  // Operation result
-  noble.dollar.vaults.v2.InflightStatus result_status = 3;
-
-  // Result amount (for successful operations)
-  string result_amount = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Error message (for failed operations)
-  string error_message = 5;
-}
-
-// MsgProcessInFlightPositionResponse confirms processing
-message MsgProcessInFlightPositionResponse {
-  // Operation nonce
-  uint64 nonce = 1;
-
-  // Final status
-  noble.dollar.vaults.v2.InflightStatus final_status = 2;
-
-  // Amount processed
-  string amount_processed = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Shares affected
-  string shares_affected = 4 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}
-
 // ========== Spec-aligned Withdrawal Queue ==========
 
 // MsgRequestWithdrawal allows users to enter the withdrawal queue
@@ -517,28 +451,6 @@ message TargetAllocation {
   uint32 target_percentage = 2;
 }
 
-// MsgRebalance rebalances capital across remote positions
-message MsgRebalance {
-  option (cosmos.msg.v1.signer) = "manager";
-  option (amino.name) = "dollar/vaults/v2/Rebalance";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // Authorized manager address
-  string manager = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Desired allocation targets
-  repeated TargetAllocation target_allocations = 2;
-}
-
-message MsgRebalanceResponse {
-  // Number of operations initiated
-  int32 operations_initiated = 1;
-  // Informational summary
-  string summary = 2;
-}
-
 // ========== Additional Operations ==========
 
 // MsgClaimWithdrawal allows a user to claim a completed withdrawal request
@@ -614,37 +526,6 @@ message MsgCancelWithdrawalResponse {
   uint64 position_id = 2;
 }
 
-// MsgHandleStaleInflight marks or updates a stale inflight fund record
-message MsgHandleStaleInflight {
-  option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "dollar/vaults/v2/HandleStaleInflight";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // Authority performing the action
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // Inflight fund ID
-  uint64 inflight_id = 2;
-  // New status to apply (e.g., TIMEOUT, FAILED)
-  noble.dollar.vaults.v2.InflightStatus new_status = 3;
-  // Reason / notes
-  string reason = 4;
-}
-
-// MsgHandleStaleInflightResponse returns updated status info
-message MsgHandleStaleInflightResponse {
-  // Inflight fund ID
-  uint64 inflight_id = 1;
-  // Final status
-  noble.dollar.vaults.v2.InflightStatus final_status = 2;
-  // Time handled
-  google.protobuf.Timestamp handled_at = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-}
-
 // MsgUpdateDepositLimits updates deposit limits and risk controls
 message MsgUpdateDepositLimits {
   option (cosmos.msg.v1.signer) = "authority";
@@ -670,50 +551,6 @@ message MsgUpdateDepositLimitsResponse {
 
   // New limits configuration (JSON)
   string new_limits = 2;
-}
-
-// MsgCleanupStaleInflight removes a stale inflight fund and returns value to vault
-message MsgCleanupStaleInflight {
-  option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "noble/dollar/vaults/v2/CleanupStaleInflight";
-
-  // Authority address (must match module authority)
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // Inflight fund ID
-  uint64 inflight_id = 2;
-
-  // Transaction ID of the stale inflight fund
-  string transaction_id = 3;
-
-  // Reason for cleanup (for audit trail)
-  string reason = 4;
-}
-
-// MsgCleanupStaleInflightResponse returns details of the cleanup
-message MsgCleanupStaleInflightResponse {
-  // Inflight fund ID that was cleaned up
-  uint64 inflight_id = 1;
-
-  // Transaction ID that was cleaned up
-  string transaction_id = 2;
-
-  // Amount returned to vault
-  string amount_returned = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Route ID
-  uint32 route_id = 4;
-
-  // Timestamp of cleanup
-  google.protobuf.Timestamp cleaned_at = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
 }
 
 // MsgUpdateVaultAccounting triggers vault accounting for yield distribution
@@ -904,14 +741,6 @@ message MsgProcessIncomingWarpFundsResponse {
 
   // Whether there was a difference between received and expected
   bool amount_matched = 5;
-
-  // Updated pending withdrawal distribution (if applicable)
-  string updated_pending_distribution = 6 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 
   // ID of the inflight funds to process
   uint64 inflight_id = 7;

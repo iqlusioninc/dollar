@@ -22,8 +22,6 @@ package keeper_test
 
 import (
 	"encoding/json"
-	"fmt"
-	"strconv"
 	"testing"
 	"time"
 
@@ -64,8 +62,6 @@ func setupV2Test(t *testing.T) (*keeper.Keeper, vaultsv2.MsgServer, *mocks.BankK
 	// Set up default params
 	params := vaultsv2.Params{
 		Authority:                "address",
-		MinDepositAmount:         math.NewInt(ONE_V2),
-		MinWithdrawalAmount:      math.NewInt(ONE_V2),
 		MaxAumChangeBps:          1000,  // 10%
 		WithdrawalRequestTimeout: 86400, // 1 day
 		VaultEnabled:             true,
@@ -93,7 +89,6 @@ func TestDepositBasic(t *testing.T) {
 	// ACT: Bob deposits 50 USDN
 	resp, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(50 * ONE_V2),
 		ReceiveYield: true,
 	})
 
@@ -144,7 +139,6 @@ func TestDepositBelowMinimum(t *testing.T) {
 	// ACT: Attempt deposit below minimum
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(ONE_V2 - 1),
 		ReceiveYield: true,
 	})
 
@@ -159,7 +153,6 @@ func TestDepositInsufficientBalance(t *testing.T) {
 	// ACT: Attempt deposit without sufficient balance
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 
@@ -182,7 +175,6 @@ func TestDepositVaultDisabled(t *testing.T) {
 	// ACT: Attempt deposit
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(50 * ONE_V2),
 		ReceiveYield: true,
 	})
 
@@ -200,7 +192,6 @@ func TestDepositMultipleDeposits(t *testing.T) {
 	// ACT: First deposit of 30 USDN
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(30 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -208,7 +199,6 @@ func TestDepositMultipleDeposits(t *testing.T) {
 	// ACT: Second deposit of 20 USDN
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(20 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -243,7 +233,6 @@ func TestDepositYieldPreference(t *testing.T) {
 	// ACT: First deposit with ReceiveYield = false
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(30 * ONE_V2),
 		ReceiveYield: false,
 	})
 	require.NoError(t, err)
@@ -257,7 +246,6 @@ func TestDepositYieldPreference(t *testing.T) {
 	// ACT: Second deposit with ReceiveYield = true
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(20 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -270,7 +258,6 @@ func TestDepositYieldPreference(t *testing.T) {
 	// ACT: Third deposit with ReceiveYield = true
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(10 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -288,7 +275,6 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -296,7 +282,6 @@ func TestRequestWithdrawalBasic(t *testing.T) {
 	// ACT: Request withdrawal of 50 USDN
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 
@@ -339,7 +324,6 @@ func TestRequestWithdrawalInvalidAmount(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -362,7 +346,6 @@ func TestRequestWithdrawalInsufficientBalance(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(50*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(50 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -370,7 +353,6 @@ func TestRequestWithdrawalInsufficientBalance(t *testing.T) {
 	// ACT: Request withdrawal of more than deposited
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(100 * ONE_V2),
 		PositionId: 1,
 	})
 
@@ -385,7 +367,6 @@ func TestRequestWithdrawalNoPosition(t *testing.T) {
 	// ACT: Request withdrawal without any position
 	_, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 
@@ -401,7 +382,6 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -409,7 +389,6 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	// ACT: First withdrawal request for 30 USDN
 	resp1, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(30 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -417,7 +396,6 @@ func TestRequestWithdrawalMultipleRequests(t *testing.T) {
 	// ACT: Second withdrawal request for 20 USDN
 	resp2, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(20 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -440,14 +418,12 @@ func TestProcessWithdrawalQueueBasic(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -482,14 +458,12 @@ func TestProcessWithdrawalQueueUnauthorized(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -512,14 +486,12 @@ func TestProcessWithdrawalQueueNotUnlocked(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -553,13 +525,11 @@ func TestProcessWithdrawalQueueWithLimit(t *testing.T) {
 	// Bob deposits and requests withdrawal
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -567,13 +537,11 @@ func TestProcessWithdrawalQueueWithLimit(t *testing.T) {
 	// Alice deposits and requests withdrawal
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    alice.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 	_, err = vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  alice.Address,
-		Amount:     math.NewInt(30 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -600,7 +568,6 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -608,7 +575,6 @@ func TestClaimWithdrawalBasic(t *testing.T) {
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
 		PositionId: 1,
-		Amount:     math.NewInt(50 * ONE_V2),
 	})
 	require.NoError(t, err)
 
@@ -668,14 +634,12 @@ func TestClaimWithdrawalNotReady(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -699,14 +663,12 @@ func TestClaimWithdrawalWrongClaimer(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -750,7 +712,6 @@ func TestClaimWithdrawalInsufficientLocalFunds(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -758,7 +719,6 @@ func TestClaimWithdrawalInsufficientLocalFunds(t *testing.T) {
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
 		PositionId: 1,
-		Amount:     math.NewInt(50 * ONE_V2),
 	})
 	require.NoError(t, err)
 
@@ -843,7 +803,6 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 	// ACT: Bob deposits 100 USDN
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -854,7 +813,6 @@ func TestFullDepositWithdrawalCycle(t *testing.T) {
 	// ACT: Bob requests withdrawal of 60 USDN
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(60 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -899,7 +857,6 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	// ACT: Bob deposits 100 USDN
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -907,7 +864,6 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	// ACT: Alice deposits 150 USDN
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    alice.Address,
-		Amount:       math.NewInt(150 * ONE_V2),
 		ReceiveYield: false,
 	})
 	require.NoError(t, err)
@@ -925,7 +881,6 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	// ACT: Bob requests withdrawal of 50 USDN
 	bobResp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(50 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -933,7 +888,6 @@ func TestMultiUserDepositWithdrawal(t *testing.T) {
 	// ACT: Alice requests withdrawal of 100 USDN
 	aliceResp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  alice.Address,
-		Amount:     math.NewInt(100 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -981,7 +935,6 @@ func TestCompleteWithdrawalRemovesPosition(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(100*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -989,7 +942,6 @@ func TestCompleteWithdrawalRemovesPosition(t *testing.T) {
 	// ACT: Request complete withdrawal
 	resp, err := vaultsV2Server.RequestWithdrawal(ctx, &vaultsv2.MsgRequestWithdrawal{
 		Requester:  bob.Address,
-		Amount:     math.NewInt(100 * ONE_V2),
 		PositionId: 1,
 	})
 	require.NoError(t, err)
@@ -1037,7 +989,6 @@ func TestCreateRemotePosition(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -1052,8 +1003,6 @@ func TestCreateRemotePosition(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: vaultAddress,
 		ChainId:      8453,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -1083,7 +1032,6 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(100 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -1097,7 +1045,6 @@ func TestDepositRespectsSharePrice(t *testing.T) {
 	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC)})
 	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(40 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -1118,7 +1065,6 @@ func TestSetYieldPreferenceUpdatesPosition(t *testing.T) {
 	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)})
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -1147,7 +1093,6 @@ func TestCloseRemotePositionPartial(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -1157,15 +1102,12 @@ func TestCloseRemotePositionPartial(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: vaultAddress,
 		ChainId:      998,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
 	resp, err := vaultsV2Server.CloseRemotePosition(ctx, &vaultsv2.MsgCloseRemotePosition{
 		Manager:       "authority",
 		PositionId:    createResp.PositionId,
-		PartialAmount: math.NewInt(100 * ONE_V2),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -1177,215 +1119,8 @@ func TestCloseRemotePositionPartial(t *testing.T) {
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.TotalValue)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.SharesHeld)
 	assert.Equal(t, math.NewInt(50*ONE_V2), position.Principal)
-	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, position.Status)
-
-	pendingDistribution, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(100*ONE_V2), pendingDistribution)
-}
-
-func TestRebalanceAdjustsPositions(t *testing.T) {
-	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-
-	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(300*ONE_V2), nil))
-	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:    bob.Address,
-		Amount:       math.NewInt(300 * ONE_V2),
-		ReceiveYield: true,
-	})
-	require.NoError(t, err)
-
-	pos1Addr := hyperlaneutil.CreateMockHexAddress("vault", 3).String()
-	pos2Addr := hyperlaneutil.CreateMockHexAddress("vault", 4).String()
-
-	pos1Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: pos1Addr,
-		ChainId:      8453,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	pos2Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: pos2Addr,
-		ChainId:      998,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	ctx = ctx.WithHeaderInfo(header.Info{Time: time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC)})
-
-	resp, err := vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: pos1Resp.PositionId, TargetPercentage: 40},
-			{PositionId: pos2Resp.PositionId, TargetPercentage: 30},
-		},
-	})
-	require.NoError(t, err)
-	require.NotNil(t, resp)
-	assert.Equal(t, int32(2), resp.OperationsInitiated)
-	assert.Contains(t, resp.Summary, "pending deployment 90000000")
-
-	pos1, found, err := k.GetVaultsV2RemotePosition(ctx, pos1Resp.PositionId)
-	require.NoError(t, err)
-	require.True(t, found)
-	assert.Equal(t, math.NewInt(120*ONE_V2), pos1.TotalValue)
-
-	pos2, found, err := k.GetVaultsV2RemotePosition(ctx, pos2Resp.PositionId)
-	require.NoError(t, err)
-	require.True(t, found)
-	assert.Equal(t, math.NewInt(50*ONE_V2), pos2.TotalValue)
-
-	pending, err := k.GetVaultsV2LocalFunds(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(90*ONE_V2), pending)
-
-	var inflight []vaultsv2.InflightFund
-	err = k.IterateVaultsV2InflightFunds(ctx, func(_ uint64, fund vaultsv2.InflightFund) (bool, error) {
-		inflight = append(inflight, fund)
-		return false, nil
-	})
-	require.NoError(t, err)
-	require.Len(t, inflight, 1)
-	assert.Equal(t, fmt.Sprintf("rebalance:%d", pos2Resp.PositionId), inflight[0].TransactionId)
-	assert.Equal(t, math.NewInt(40*ONE_V2), inflight[0].Amount)
-	assert.Equal(t, vaultsv2.INFLIGHT_PENDING, inflight[0].Status)
-}
-
-func TestRebalanceInsufficientLiquidity(t *testing.T) {
-	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-
-	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
-	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
-		ReceiveYield: true,
-	})
-	require.NoError(t, err)
-
-	pos1Addr := hyperlaneutil.CreateMockHexAddress("vault", 5).String()
-	pos2Addr := hyperlaneutil.CreateMockHexAddress("vault", 6).String()
-
-	pos1Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: pos1Addr,
-		ChainId:      8453,
-		Amount:       math.NewInt(150 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	_, err = vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: pos2Addr,
-		ChainId:      998,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: pos1Resp.PositionId, TargetPercentage: 100},
-		},
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "insufficient liquidity")
-}
-
-func TestRebalanceInvalidAuthority(t *testing.T) {
-	_, vaultsV2Server, _, ctx, _ := setupV2Test(t)
-
-	_, err := vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "noble1unauthorised",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: 1, TargetPercentage: 50},
-		},
-	})
-
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid authority")
-}
-
-func TestRebalanceInvalidTargets(t *testing.T) {
-	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-
-	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
-	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
-		ReceiveYield: true,
-	})
-	require.NoError(t, err)
-
-	posAddr := hyperlaneutil.CreateMockHexAddress("vault", 7).String()
-	resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: posAddr,
-		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "at least one target allocation")
-
-	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: 0, TargetPercentage: 10},
-		},
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "greater than zero")
-
-	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: resp.PositionId, TargetPercentage: 0},
-		},
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "greater than zero")
-
-	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: resp.PositionId, TargetPercentage: 60},
-			{PositionId: resp.PositionId, TargetPercentage: 20},
-		},
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "duplicate target allocation")
-
-	pos2Addr := hyperlaneutil.CreateMockHexAddress("vault", 8).String()
-	pos2Resp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: pos2Addr,
-		ChainId:      998,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	_, err = vaultsV2Server.Rebalance(ctx, &vaultsv2.MsgRebalance{
-		Manager: "authority",
-		TargetAllocations: []*vaultsv2.TargetAllocation{
-			{PositionId: resp.PositionId, TargetPercentage: 60},
-			{PositionId: pos2Resp.PositionId, TargetPercentage: 50},
-		},
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "exceed 100 percent")
+	// Position is active (has positive value and shares)
+	assert.True(t, position.TotalValue.IsPositive() && position.SharesHeld.IsPositive())
 }
 
 func TestUpdateVaultConfig(t *testing.T) {
@@ -1434,8 +1169,6 @@ func TestUpdateParams(t *testing.T) {
 	}))
 
 	params := vaultsv2.Params{
-		MinDepositAmount:              math.NewInt(10 * ONE_V2),
-		MinWithdrawalAmount:           math.NewInt(5 * ONE_V2),
 		MaxAumChangeBps:               250,
 		WithdrawalRequestTimeout:      3600,
 		MaxWithdrawalRequestsPerBlock: 25,
@@ -1538,131 +1271,21 @@ func TestUpdateCrossChainRoute(t *testing.T) {
 // TestRemoteWithdrawCreatesInflight has been removed
 // RemoteWithdraw is now handled by the manager on the remote chain
 
-func TestProcessInFlightWithdrawalCompletion(t *testing.T) {
-	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
-
-	route := vaultsv2.CrossChainRoute{
-		HyptokenId:            hyperlaneutil.CreateMockHexAddress("route", 6),
-		ReceiverChainHook:     hyperlaneutil.CreateMockHexAddress("hook", 6),
-		RemotePositionAddress: hyperlaneutil.CreateMockHexAddress("remote", 6),
-		MaxInflightValue:      math.NewInt(1_000 * ONE_V2),
-	}
-
-	createResp, err := vaultsV2Server.CreateCrossChainRoute(ctx, &vaultsv2.MsgCreateCrossChainRoute{
-		Authority: "authority",
-		Route:     route,
-	})
-	require.NoError(t, err)
-
-	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
-	_, err = vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
-		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
-		ReceiveYield: true,
-	})
-	require.NoError(t, err)
-
-	targetAddr := route.RemotePositionAddress.String()
-	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      "authority",
-		VaultAddress: targetAddr,
-		ChainId:      8453,
-		Amount:       math.NewInt(120 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	// Simulate a withdrawal initiated by the remote chain manager
-	// Create an inflight fund entry manually (simulating remote chain manager)
-	withdrawNonce := uint64(12345)
-	// Get the remote position to use as origin
-	pos, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
-	require.NoError(t, err)
-	require.True(t, found)
-
-	fund := vaultsv2.InflightFund{
-		Id:                withdrawNonce,
-		TransactionId:     strconv.FormatUint(withdrawNonce, 10),
-		Amount:            math.NewInt(25 * ONE_V2),
-		ValueAtInitiation: math.NewInt(30 * ONE_V2),
-		Status:            vaultsv2.INFLIGHT_PENDING,
-		InitiatedAt:       time.Now(),
-		ExpectedAt:        time.Now().Add(1 * time.Hour),
-		Origin: &vaultsv2.InflightFund_RemoteOrigin{
-			RemoteOrigin: &pos,
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					OriginDomain:      createResp.RouteId,
-					DestinationDomain: createResp.RouteId,
-					Nonce:             withdrawNonce,
-				},
-			},
-		},
-	}
-	err = k.SetVaultsV2InflightFund(ctx, fund)
-	require.NoError(t, err)
-	err = k.AddVaultsV2InflightValueByRoute(ctx, createResp.RouteId, fund.Amount)
-	require.NoError(t, err)
-
-	// Update remote position status to withdrawing
-	position, found, err := k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
-	require.NoError(t, err)
-	require.True(t, found)
-	position.Status = vaultsv2.REMOTE_POSITION_WITHDRAWING
-	position.SharesHeld = position.SharesHeld.Sub(math.NewInt(30 * ONE_V2))
-	err = k.SetVaultsV2RemotePosition(ctx, posResp.PositionId, position)
-	require.NoError(t, err)
-
-	_, err = vaultsV2Server.ProcessInFlightPosition(ctx, &vaultsv2.MsgProcessInFlightPosition{
-		Authority:    "authority",
-		Nonce:        withdrawNonce,
-		ResultStatus: vaultsv2.INFLIGHT_COMPLETED,
-		ResultAmount: math.NewInt(28 * ONE_V2),
-		ErrorMessage: "",
-	})
-	require.NoError(t, err)
-
-	position, found, err = k.GetVaultsV2RemotePosition(ctx, posResp.PositionId)
-	require.NoError(t, err)
-	require.True(t, found)
-	assert.Equal(t, vaultsv2.REMOTE_POSITION_ACTIVE, position.Status)
-	assert.Equal(t, math.NewInt(60*ONE_V2), position.SharesHeld)
-	assert.Equal(t, math.NewInt(92*ONE_V2), position.TotalValue)
-
-	fund, foundFund, err := k.GetVaultsV2InflightFund(ctx, withdrawNonce)
-	require.NoError(t, err)
-	require.True(t, foundFund)
-	assert.Equal(t, vaultsv2.INFLIGHT_COMPLETED, fund.Status)
-
-	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, createResp.RouteId)
-	require.NoError(t, err)
-	assert.True(t, routeValue.IsZero())
-
-	pendingDistribution, err := k.GetVaultsV2PendingWithdrawalDistribution(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, math.NewInt(28*ONE_V2), pendingDistribution)
-}
-
 func TestRegisterOracle(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
 
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(150*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(150 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
-	remoteAddr := hyperlaneutil.CreateMockHexAddress("remote", 7)
+	remoteAddr := hyperlaneutil.CreateMockHexAddress("vault", 1)
 	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
 		Manager:      "authority",
 		VaultAddress: remoteAddr.String(),
 		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1672,7 +1295,6 @@ func TestRegisterOracle(t *testing.T) {
 		OracleAddress:    hyperlaneutil.CreateMockHexAddress("oracle", 1),
 		SourceChain:      "8453",
 		MaxStaleness:     3600,
-		ProviderType:     vaultsv2.PROVIDER_TYPE_HYPERLANE,
 		OriginIdentifier: "mailbox",
 	})
 	require.NoError(t, err)
@@ -1697,18 +1319,12 @@ func TestUpdateOracleConfig(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(150*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(150 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
-	remoteAddr := hyperlaneutil.CreateMockHexAddress("remote", 8)
 	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
 		Manager:      "authority",
-		VaultAddress: remoteAddr.String(),
-		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1718,7 +1334,6 @@ func TestUpdateOracleConfig(t *testing.T) {
 		OracleAddress:    hyperlaneutil.CreateMockHexAddress("oracle", 2),
 		SourceChain:      "8453",
 		MaxStaleness:     1800,
-		ProviderType:     vaultsv2.PROVIDER_TYPE_HYPERLANE,
 		OriginIdentifier: "mailbox",
 	})
 	require.NoError(t, err)
@@ -1747,18 +1362,15 @@ func TestRemoveOracle(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(150*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(150 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
 
-	remoteAddr := hyperlaneutil.CreateMockHexAddress("remote", 9)
+	remoteAddr := hyperlaneutil.CreateMockHexAddress("vault", 1)
 	posResp, err := vaultsV2Server.CreateRemotePosition(ctx, &vaultsv2.MsgCreateRemotePosition{
 		Manager:      "authority",
 		VaultAddress: remoteAddr.String(),
 		ChainId:      8453,
-		Amount:       math.NewInt(100 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1768,7 +1380,6 @@ func TestRemoveOracle(t *testing.T) {
 		OracleAddress:    hyperlaneutil.CreateMockHexAddress("oracle", 3),
 		SourceChain:      "8453",
 		MaxStaleness:     1200,
-		ProviderType:     vaultsv2.PROVIDER_TYPE_HYPERLANE,
 		OriginIdentifier: "mailbox",
 	})
 	require.NoError(t, err)
@@ -1797,11 +1408,6 @@ func TestUpdateOracleParams(t *testing.T) {
 		MaxUpdateInterval:    600,
 		MinUpdateInterval:    60,
 		MaxPriceDeviationBps: 50,
-		DefaultStaleness: &vaultsv2.StalenessConfig{
-			WarningThreshold:  1800,
-			CriticalThreshold: 3600,
-			MaxStaleness:      5400,
-		},
 	}
 
 	resp, err := vaultsV2Server.UpdateOracleParams(ctx, &vaultsv2.MsgUpdateOracleParams{
@@ -1817,97 +1423,6 @@ func TestUpdateOracleParams(t *testing.T) {
 	assert.Equal(t, params, stored)
 }
 
-func TestHandleStaleInflightMarksTimeout(t *testing.T) {
-	k, vaultsV2Server, _, baseCtx, bob := setupV2Test(t)
-
-	route := vaultsv2.CrossChainRoute{
-		HyptokenId:            hyperlaneutil.CreateMockHexAddress("route", 10),
-		ReceiverChainHook:     hyperlaneutil.CreateMockHexAddress("hook", 10),
-		RemotePositionAddress: hyperlaneutil.CreateMockHexAddress("remote", 10),
-		MaxInflightValue:      math.NewInt(1_000 * ONE_V2),
-	}
-
-	routeResp, err := vaultsV2Server.CreateCrossChainRoute(baseCtx, &vaultsv2.MsgCreateCrossChainRoute{
-		Authority: "authority",
-		Route:     route,
-	})
-	require.NoError(t, err)
-
-	require.NoError(t, k.Mint(baseCtx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
-	_, err = vaultsV2Server.Deposit(baseCtx, &vaultsv2.MsgDeposit{
-		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
-		ReceiveYield: true,
-	})
-	require.NoError(t, err)
-
-	targetAddr := route.RemotePositionAddress.String()
-	_, err = vaultsV2Server.CreateRemotePosition(baseCtx, &vaultsv2.MsgCreateRemotePosition{
-		Manager:      mocks.Authority,
-		VaultAddress: targetAddr,
-		ChainId:      8453,
-		Amount:       math.NewInt(120 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
-	})
-	require.NoError(t, err)
-
-	// Simulate a deposit operation initiated by the remote chain manager
-	// Create an inflight fund entry manually
-	depositNonce := uint64(67890)
-	depositFund := vaultsv2.InflightFund{
-		Id:                depositNonce,
-		TransactionId:     strconv.FormatUint(depositNonce, 10),
-		Amount:            math.NewInt(30 * ONE_V2),
-		Status:            vaultsv2.INFLIGHT_PENDING,
-		InitiatedAt:       time.Now().Add(-25 * time.Hour), // Very old
-		ExpectedAt:        time.Now().Add(-24 * time.Hour), // Should have completed yesterday
-		ValueAtInitiation: math.NewInt(30 * ONE_V2),
-		Origin: &vaultsv2.InflightFund_NobleOrigin{
-			NobleOrigin: &vaultsv2.NobleEndpoint{
-				OperationType: vaultsv2.OPERATION_TYPE_DEPOSIT,
-			},
-		},
-		ProviderTracking: &vaultsv2.ProviderTrackingInfo{
-			TrackingInfo: &vaultsv2.ProviderTrackingInfo_HyperlaneTracking{
-				HyperlaneTracking: &vaultsv2.HyperlaneTrackingInfo{
-					OriginDomain:      routeResp.RouteId,
-					DestinationDomain: routeResp.RouteId,
-					Nonce:             depositNonce,
-				},
-			},
-		},
-	}
-	err = k.SetVaultsV2InflightFund(baseCtx, depositFund)
-	require.NoError(t, err)
-	err = k.AddVaultsV2InflightValueByRoute(baseCtx, routeResp.RouteId, depositFund.Amount)
-	require.NoError(t, err)
-
-	beforePending, err := k.GetVaultsV2LocalFunds(baseCtx)
-	require.NoError(t, err)
-
-	ctx := baseCtx.WithHeaderInfo(header.Info{Time: time.Date(2024, 5, 5, 0, 0, 0, 0, time.UTC)})
-	handleResp, err := vaultsV2Server.HandleStaleInflight(ctx, &vaultsv2.MsgHandleStaleInflight{
-		Authority:  "authority",
-		InflightId: depositNonce,
-		NewStatus:  vaultsv2.INFLIGHT_TIMEOUT,
-		Reason:     "manual timeout",
-	})
-	require.NoError(t, err)
-	require.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, handleResp.FinalStatus)
-
-	fund, found, err := k.GetVaultsV2InflightFund(ctx, handleResp.InflightId)
-	require.NoError(t, err)
-	require.True(t, found)
-	assert.Equal(t, vaultsv2.INFLIGHT_TIMEOUT, fund.Status)
-
-	routeValue, err := k.GetVaultsV2InflightValueByRoute(ctx, routeResp.RouteId)
-	require.NoError(t, err)
-	assert.True(t, routeValue.IsZero())
-
-	pendingDeployment, err := k.GetVaultsV2LocalFunds(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, beforePending, pendingDeployment)
-}
 
 func TestDisableCrossChainRoute(t *testing.T) {
 	k, vaultsV2Server, _, ctx, bob := setupV2Test(t)
@@ -1915,7 +1430,6 @@ func TestDisableCrossChainRoute(t *testing.T) {
 	require.NoError(t, k.Mint(ctx, bob.Bytes, math.NewInt(200*ONE_V2), nil))
 	_, err := vaultsV2Server.Deposit(ctx, &vaultsv2.MsgDeposit{
 		Depositor:    bob.Address,
-		Amount:       math.NewInt(200 * ONE_V2),
 		ReceiveYield: true,
 	})
 	require.NoError(t, err)
@@ -1939,8 +1453,6 @@ func TestDisableCrossChainRoute(t *testing.T) {
 		Manager:      "authority",
 		VaultAddress: targetAddr,
 		ChainId:      8453,
-		Amount:       math.NewInt(50 * ONE_V2),
-		MinSharesOut: math.ZeroInt(),
 	})
 	require.NoError(t, err)
 
@@ -1958,12 +1470,14 @@ func TestDisableCrossChainRoute(t *testing.T) {
 
 	positions, err := k.GetAllVaultsV2RemotePositions(ctx)
 	require.NoError(t, err)
-	var statusMarked bool
+	var positionFound bool
 	for _, entry := range positions {
 		if entry.Position.VaultAddress == remoteAddress {
-			statusMarked = entry.Position.Status == vaultsv2.REMOTE_POSITION_ERROR
+			positionFound = true
+			// After route disable, position should still exist and its timestamp updated
+			assert.NotNil(t, entry.Position.LastUpdate)
 			break
 		}
 	}
-	assert.True(t, statusMarked)
+	assert.True(t, positionFound, "Position should still exist after route disable")
 }

@@ -477,50 +477,6 @@ message EventInflightFundCompleted {
   uint64 inflight_id = 9;
 }
 
-// EventInflightFundStale is emitted when an inflight fund is detected as stale
-message EventInflightFundStale {
-  // Transaction ID
-  string transaction_id = 1;
-
-  // Route ID
-  uint32 route_id = 2;
-
-  // Amount
-  string amount = 3 [
-    (cosmos_proto.scalar) = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-
-  // Hours overdue
-  int64 hours_overdue = 4;
-
-  // Expected completion time
-  google.protobuf.Timestamp expected_at = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
-  // Current status
-  string current_status = 6;
-
-  // Recommended action
-  string recommended_action = 7;
-
-  // Block height
-  int64 block_height = 8;
-
-  // Timestamp
-  google.protobuf.Timestamp timestamp = 9 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-
-  // ID of the inflight funds
-  uint64 inflight_id = 10;
-}
-
 // EventInflightFundCleaned is emitted when a stale inflight fund is cleaned up
 message EventInflightFundCleaned {
   // Transaction ID
