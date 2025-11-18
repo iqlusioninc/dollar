@@ -131,6 +131,19 @@ func TestAUMLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	positionID := createResp.PositionId
 
+	// Manually simulate deployment: subtract from local funds and update remote position
+	// (In practice, this would happen via DeployFunds + eventual settlement, but this test
+	// focuses on AUM calculation invariants rather than message handler flows)
+	require.NoError(t, k.SubtractVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(600*ONE_V2)))
+	position, found, err := k.GetVaultsV2RemotePosition(baseCtx, positionID)
+	require.NoError(t, err)
+	require.True(t, found)
+	position.TotalValue = sdkmath.NewInt(600 * ONE_V2)
+	position.Principal = sdkmath.NewInt(600 * ONE_V2)
+	position.SharesHeld = sdkmath.NewInt(600 * ONE_V2)
+	position.SharePrice = sdkmath.LegacyOneDec()
+	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, positionID, position))
+
 	// AUM should stay same: pending decreased, remote increased
 	checkAUM("3-after-create-position",
 		sdkmath.NewInt(400*ONE_V2),  // pending -600 = 400
@@ -139,7 +152,7 @@ func TestAUMLifecycle(t *testing.T) {
 		sdkmath.NewInt(1000*ONE_V2)) // total AUM still 1000
 
 	// === STEP 4: Simulate oracle update - remote position value increases to 660 ===
-	position, found, err := k.GetVaultsV2RemotePosition(baseCtx, positionID)
+	position, found, err = k.GetVaultsV2RemotePosition(baseCtx, positionID)
 	require.NoError(t, err)
 	require.True(t, found)
 
@@ -360,6 +373,17 @@ func TestAUMCalculationWithOracleMessage(t *testing.T) {
 	})
 	require.NoError(t, err)
 	positionID := createResp.PositionId
+
+	// Manually set up the remote position with 800 value
+	require.NoError(t, k.SubtractVaultsV2LocalFunds(baseCtx, sdkmath.NewInt(800*ONE_V2)))
+	position, found, err := k.GetVaultsV2RemotePosition(baseCtx, positionID)
+	require.NoError(t, err)
+	require.True(t, found)
+	position.TotalValue = sdkmath.NewInt(800 * ONE_V2)
+	position.Principal = sdkmath.NewInt(800 * ONE_V2)
+	position.SharesHeld = sdkmath.NewInt(800 * ONE_V2)
+	position.SharePrice = sdkmath.LegacyOneDec()
+	require.NoError(t, k.SetVaultsV2RemotePosition(baseCtx, positionID, position))
 
 	// Setup oracle
 	oracleAddress := hyperlaneutil.CreateMockHexAddress("oracle", 1)
