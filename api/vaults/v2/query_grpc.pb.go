@@ -38,7 +38,6 @@ const (
 	Query_SimulateDeposit_FullMethodName      = "/noble.dollar.vaults.v2.Query/SimulateDeposit"
 	Query_SimulateWithdrawal_FullMethodName   = "/noble.dollar.vaults.v2.Query/SimulateWithdrawal"
 	Query_InflightFunds_FullMethodName        = "/noble.dollar.vaults.v2.Query/InflightFunds"
-	Query_StaleInflightFunds_FullMethodName   = "/noble.dollar.vaults.v2.Query/StaleInflightFunds"
 	Query_Stats_FullMethodName                = "/noble.dollar.vaults.v2.Query/Stats"
 	Query_Params_FullMethodName               = "/noble.dollar.vaults.v2.Query/Params"
 )
@@ -87,8 +86,6 @@ type QueryClient interface {
 	SimulateWithdrawal(ctx context.Context, in *QuerySimulateWithdrawalRequest, opts ...grpc.CallOption) (*QuerySimulateWithdrawalResponse, error)
 	// InflightFunds (spec-aligned aggregate view)
 	InflightFunds(ctx context.Context, in *QueryInflightFundsRequest, opts ...grpc.CallOption) (*QueryInflightFundsResponse, error)
-	// StaleInflightFunds (spec-aligned aggregate view)
-	StaleInflightFunds(ctx context.Context, in *QueryStaleInflightFundsRequest, opts ...grpc.CallOption) (*QueryStaleInflightFundsResponse, error)
 	// Stats returns statistics for a vault type
 	Stats(ctx context.Context, in *QueryStatsRequest, opts ...grpc.CallOption) (*QueryStatsResponse, error)
 	// Params returns the module parameters
@@ -293,16 +290,6 @@ func (c *queryClient) InflightFunds(ctx context.Context, in *QueryInflightFundsR
 	return out, nil
 }
 
-func (c *queryClient) StaleInflightFunds(ctx context.Context, in *QueryStaleInflightFundsRequest, opts ...grpc.CallOption) (*QueryStaleInflightFundsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryStaleInflightFundsResponse)
-	err := c.cc.Invoke(ctx, Query_StaleInflightFunds_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) Stats(ctx context.Context, in *QueryStatsRequest, opts ...grpc.CallOption) (*QueryStatsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryStatsResponse)
@@ -367,8 +354,6 @@ type QueryServer interface {
 	SimulateWithdrawal(context.Context, *QuerySimulateWithdrawalRequest) (*QuerySimulateWithdrawalResponse, error)
 	// InflightFunds (spec-aligned aggregate view)
 	InflightFunds(context.Context, *QueryInflightFundsRequest) (*QueryInflightFundsResponse, error)
-	// StaleInflightFunds (spec-aligned aggregate view)
-	StaleInflightFunds(context.Context, *QueryStaleInflightFundsRequest) (*QueryStaleInflightFundsResponse, error)
 	// Stats returns statistics for a vault type
 	Stats(context.Context, *QueryStatsRequest) (*QueryStatsResponse, error)
 	// Params returns the module parameters
@@ -439,9 +424,6 @@ func (UnimplementedQueryServer) SimulateWithdrawal(context.Context, *QuerySimula
 }
 func (UnimplementedQueryServer) InflightFunds(context.Context, *QueryInflightFundsRequest) (*QueryInflightFundsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InflightFunds not implemented")
-}
-func (UnimplementedQueryServer) StaleInflightFunds(context.Context, *QueryStaleInflightFundsRequest) (*QueryStaleInflightFundsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StaleInflightFunds not implemented")
 }
 func (UnimplementedQueryServer) Stats(context.Context, *QueryStatsRequest) (*QueryStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Stats not implemented")
@@ -812,24 +794,6 @@ func _Query_InflightFunds_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_StaleInflightFunds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryStaleInflightFundsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).StaleInflightFunds(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_StaleInflightFunds_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).StaleInflightFunds(ctx, req.(*QueryStaleInflightFundsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_Stats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryStatsRequest)
 	if err := dec(in); err != nil {
@@ -948,10 +912,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InflightFunds",
 			Handler:    _Query_InflightFunds_Handler,
-		},
-		{
-			MethodName: "StaleInflightFunds",
-			Handler:    _Query_StaleInflightFunds_Handler,
 		},
 		{
 			MethodName: "Stats",

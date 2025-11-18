@@ -36,9 +36,7 @@ const (
 	Msg_UpdateOracleParams_FullMethodName                 = "/noble.dollar.vaults.v2.Msg/UpdateOracleParams"
 	Msg_ClaimWithdrawal_FullMethodName                    = "/noble.dollar.vaults.v2.Msg/ClaimWithdrawal"
 	Msg_CancelWithdrawal_FullMethodName                   = "/noble.dollar.vaults.v2.Msg/CancelWithdrawal"
-	Msg_HandleStaleInflight_FullMethodName                = "/noble.dollar.vaults.v2.Msg/HandleStaleInflight"
 	Msg_UpdateDepositLimits_FullMethodName                = "/noble.dollar.vaults.v2.Msg/UpdateDepositLimits"
-	Msg_CleanupStaleInflight_FullMethodName               = "/noble.dollar.vaults.v2.Msg/CleanupStaleInflight"
 	Msg_DeployFunds_FullMethodName                        = "/noble.dollar.vaults.v2.Msg/DeployFunds"
 	Msg_InitiateWithdrawFromRemotePosition_FullMethodName = "/noble.dollar.vaults.v2.Msg/InitiateWithdrawFromRemotePosition"
 	Msg_ProcessIncomingWarpFunds_FullMethodName           = "/noble.dollar.vaults.v2.Msg/ProcessIncomingWarpFunds"
@@ -85,12 +83,8 @@ type MsgClient interface {
 	ClaimWithdrawal(ctx context.Context, in *MsgClaimWithdrawal, opts ...grpc.CallOption) (*MsgClaimWithdrawalResponse, error)
 	// Cancel a pending withdrawal request
 	CancelWithdrawal(ctx context.Context, in *MsgCancelWithdrawal, opts ...grpc.CallOption) (*MsgCancelWithdrawalResponse, error)
-	// Handle stale inflight fund record (authority only)
-	HandleStaleInflight(ctx context.Context, in *MsgHandleStaleInflight, opts ...grpc.CallOption) (*MsgHandleStaleInflightResponse, error)
 	// Update deposit limits (authority only)
 	UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error)
-	// Cleanup stale inflight fund (authority only)
-	CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error)
 	// Send funds to remote position
 	DeployFunds(ctx context.Context, in *MsgDeployFunds, opts ...grpc.CallOption) (*MsgDeployFundsResponse, error)
 	// Initiate withdrawal from remote position (creates inflight fund in preparation for receiving warp funds)
@@ -279,30 +273,10 @@ func (c *msgClient) CancelWithdrawal(ctx context.Context, in *MsgCancelWithdrawa
 	return out, nil
 }
 
-func (c *msgClient) HandleStaleInflight(ctx context.Context, in *MsgHandleStaleInflight, opts ...grpc.CallOption) (*MsgHandleStaleInflightResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgHandleStaleInflightResponse)
-	err := c.cc.Invoke(ctx, Msg_HandleStaleInflight_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) UpdateDepositLimits(ctx context.Context, in *MsgUpdateDepositLimits, opts ...grpc.CallOption) (*MsgUpdateDepositLimitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgUpdateDepositLimitsResponse)
 	err := c.cc.Invoke(ctx, Msg_UpdateDepositLimits_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) CleanupStaleInflight(ctx context.Context, in *MsgCleanupStaleInflight, opts ...grpc.CallOption) (*MsgCleanupStaleInflightResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgCleanupStaleInflightResponse)
-	err := c.cc.Invoke(ctx, Msg_CleanupStaleInflight_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -389,12 +363,8 @@ type MsgServer interface {
 	ClaimWithdrawal(context.Context, *MsgClaimWithdrawal) (*MsgClaimWithdrawalResponse, error)
 	// Cancel a pending withdrawal request
 	CancelWithdrawal(context.Context, *MsgCancelWithdrawal) (*MsgCancelWithdrawalResponse, error)
-	// Handle stale inflight fund record (authority only)
-	HandleStaleInflight(context.Context, *MsgHandleStaleInflight) (*MsgHandleStaleInflightResponse, error)
 	// Update deposit limits (authority only)
 	UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error)
-	// Cleanup stale inflight fund (authority only)
-	CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error)
 	// Send funds to remote position
 	DeployFunds(context.Context, *MsgDeployFunds) (*MsgDeployFundsResponse, error)
 	// Initiate withdrawal from remote position (creates inflight fund in preparation for receiving warp funds)
@@ -464,14 +434,8 @@ func (UnimplementedMsgServer) ClaimWithdrawal(context.Context, *MsgClaimWithdraw
 func (UnimplementedMsgServer) CancelWithdrawal(context.Context, *MsgCancelWithdrawal) (*MsgCancelWithdrawalResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelWithdrawal not implemented")
 }
-func (UnimplementedMsgServer) HandleStaleInflight(context.Context, *MsgHandleStaleInflight) (*MsgHandleStaleInflightResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HandleStaleInflight not implemented")
-}
 func (UnimplementedMsgServer) UpdateDepositLimits(context.Context, *MsgUpdateDepositLimits) (*MsgUpdateDepositLimitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDepositLimits not implemented")
-}
-func (UnimplementedMsgServer) CleanupStaleInflight(context.Context, *MsgCleanupStaleInflight) (*MsgCleanupStaleInflightResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CleanupStaleInflight not implemented")
 }
 func (UnimplementedMsgServer) DeployFunds(context.Context, *MsgDeployFunds) (*MsgDeployFundsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployFunds not implemented")
@@ -812,24 +776,6 @@ func _Msg_CancelWithdrawal_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_HandleStaleInflight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgHandleStaleInflight)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).HandleStaleInflight(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_HandleStaleInflight_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).HandleStaleInflight(ctx, req.(*MsgHandleStaleInflight))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_UpdateDepositLimits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgUpdateDepositLimits)
 	if err := dec(in); err != nil {
@@ -844,24 +790,6 @@ func _Msg_UpdateDepositLimits_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).UpdateDepositLimits(ctx, req.(*MsgUpdateDepositLimits))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_CleanupStaleInflight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCleanupStaleInflight)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CleanupStaleInflight(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_CleanupStaleInflight_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CleanupStaleInflight(ctx, req.(*MsgCleanupStaleInflight))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1014,16 +942,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_CancelWithdrawal_Handler,
 		},
 		{
-			MethodName: "HandleStaleInflight",
-			Handler:    _Msg_HandleStaleInflight_Handler,
-		},
-		{
 			MethodName: "UpdateDepositLimits",
 			Handler:    _Msg_UpdateDepositLimits_Handler,
-		},
-		{
-			MethodName: "CleanupStaleInflight",
-			Handler:    _Msg_CleanupStaleInflight_Handler,
 		},
 		{
 			MethodName: "DeployFunds",

@@ -111,11 +111,6 @@ service Query {
     option (google.api.http).get = "/noble/dollar/vaults/v2/inflight_funds";
   }
 
-  // StaleInflightFunds (spec-aligned aggregate view)
-  rpc StaleInflightFunds(QueryStaleInflightFundsRequest) returns (QueryStaleInflightFundsResponse) {
-    option (google.api.http).get = "/noble/dollar/vaults/v2/stale_inflight_funds";
-  }
-
   // Stats returns statistics for a vault type
   rpc Stats(QueryStatsRequest) returns (QueryStatsResponse) {
     option (google.api.http).get = "/noble/dollar/vaults/v2/stats";
@@ -469,35 +464,6 @@ message QueryInflightFundsResponse {
   map<string, string> by_route = 5;
   map<string, string> by_type = 6;
   map<string, string> by_status = 7;
-}
-
-message QueryStaleInflightFundsRequest {}
-
-message StaleInflightFundView {
-  uint32 route_id = 1;
-  string transaction_id = 2;
-  string amount = 3;
-  string operation_type = 4;
-  string source_chain = 5;
-  string destination_chain = 6;
-  google.protobuf.Timestamp initiated_at = 7 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  google.protobuf.Timestamp expected_at = 8 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  string hours_overdue = 9;
-  string last_known_status = 10;
-  string recommended_action = 11;
-}
-
-message QueryStaleInflightFundsResponse {
-  repeated StaleInflightFundView stale_funds = 1 [(gogoproto.nullable) = false];
-  string total_stale_value = 2;
-  uint64 total_stale_count = 3;
-  string oldest_stale_hours = 4;
 }
 
 // Vault-wide remote positions

@@ -40,7 +40,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDisableCrossChainRoute{}, "dollar/vaults/v2/DisableCrossChainRoute", nil)
 	cdc.RegisterConcrete(&MsgCreateRemotePosition{}, "dollar/vaults/v2/CreateRemotePosition", nil)
 	cdc.RegisterConcrete(&MsgCloseRemotePosition{}, "dollar/vaults/v2/CloseRemotePosition", nil)
-	cdc.RegisterConcrete(&MsgHandleStaleInflight{}, "dollar/vaults/v2/HandleStaleInflight", nil)
 	cdc.RegisterConcrete(&MsgRegisterOracle{}, "dollar/vaults/v2/RegisterOracle", nil)
 	cdc.RegisterConcrete(&MsgUpdateOracleConfig{}, "dollar/vaults/v2/UpdateOracleConfig", nil)
 	cdc.RegisterConcrete(&MsgRemoveOracle{}, "dollar/vaults/v2/RemoveOracle", nil)
