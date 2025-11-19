@@ -44,6 +44,10 @@ func (k *Keeper) Handle(ctx context.Context, mailboxID hyperlaneutil.HexAddress,
 		return errors.Wrap(vaultsv2.ErrOperationNotPermitted, "mailbox identifier must be provided")
 	}
 
+	if err := k.checkAccountingNotInProgress(ctx); err != nil {
+		return err
+	}
+
 	payload, err := vaultsv2.ParseAUMPayload(message.Body)
 	if err != nil {
 		return errors.Wrap(err, "unable to parse AUM payload")

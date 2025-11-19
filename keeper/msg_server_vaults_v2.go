@@ -1676,6 +1676,10 @@ func (m msgServerV2) DeployFunds(ctx context.Context, msg *vaultsv2.MsgDeployFun
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
 	}
 
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
+	}
+
 	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.RemotePositionId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "unable to fetch remote position")
@@ -1775,6 +1779,10 @@ func (m msgServerV2) InitiateWithdrawFromRemotePosition(ctx context.Context, msg
 	}
 	if msg.Amount.IsNil() || !msg.Amount.IsPositive() {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount must be positive")
+	}
+
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
 	}
 
 	position, found, err := m.GetVaultsV2RemotePosition(ctx, msg.RemotePositionId)
@@ -2034,6 +2042,10 @@ func (m msgServerV2) ProcessIncomingWarpFunds(ctx context.Context, msg *vaultsv2
 	// Validate amount received
 	if msg.AmountReceived.IsNil() || !msg.AmountReceived.IsPositive() {
 		return nil, sdkerrors.Wrap(vaultsv2.ErrInvalidAmount, "amount received must be positive")
+	}
+
+	if err := m.checkAccountingNotInProgress(ctx); err != nil {
+		return nil, err
 	}
 
 	// Get the inflight fund record
