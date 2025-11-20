@@ -32,11 +32,15 @@ Remote Positions represent funds deposited into an [ERC-4626](https://eips.ether
 
 ### User Positions
 
-A User Position represents a single tranch from a user deposit, and is a liability from the perspective of accounting. It is used to track the user's original deposit principle, the portion of that principle eligible to receive yield, and the accrued yield to the user. Users do not receive negative yield; if an oracle update results in a reduction in AUM, the next accounting update will short-circuit.
+A User Position represents a single tranch from a user deposit, and is a liability from the perspective of accounting. It is used to track the user's original deposit principle, the portion of that principle eligible to receive yield, and the accrued yield to the user. Users do not receive negative yield; if an oracle update results in a reduction in AUM, the next accounting update will short-circuit. A `UserPosition` may be configured to not receive yield.
+
+### Yield accrual
+
+Yield accrues to User Positions when the manager triggers an accounting update. When the `Σ(Remote Position Values)` portion of AUM has increased since the last accounting update, a proportion of the increase is applied to `UserPostition.AccruedYield` for each eligible position.
 
 ### Withdrawal Queue
 
-Withdrawals are serviced in a two-phase manner where a user submits a withdrawal request for a particular `UserPosition` and later claims that withdrawal. Once funds are available on chain to service a request, the manager may mark the request as ready to be claimed, at which point a user may claim their withdrawal.
+Withdrawals are serviced in two phases. First, a user submits a withdrawal request for a particular `UserPosition`, and second, claims that withdrawal after a period of time. Once funds are available on chain to service a request, the manager may mark the request as ready to be claimed, at which point a user may claim their withdrawal.
 
 ### Oracles
 
@@ -64,7 +68,7 @@ Withdrawal Request
     ↓
 Record amount pending withdrawal in `UserPosition`
     ↓
-Wait for Liquidity
+Wait for request to be marked claimable
 
    ...
 
@@ -79,87 +83,71 @@ User Claims (After Delay)
 Transfer $USDN to user from module account
 ```
 
+### Capital Deployment to Remote Position Flow
+
+```
+Manager initiates fund deployment to a new or existing RemotePosition
+    ↓
+InflightFunds created
+    ↓
+LocalFunds decreases
+    ↓
+Warp message created
+    ↓
+Wait for oracle update
+
+   ...
+
+Hyperlane confirmation received
+    ↓
+RemotePosition updated (shares, total value, principle)
+    ↓
+InflightFunds completed
+```
+
 ### Remote Position Capital Return Flow
 
 ```
-Initiate Vault Share Redemption
+Manager signals a withdrawal from remote position ahead of time
     ↓
-Redeem Shares for $USDN
+`InflightFunds` created
     ↓
-Mark Expected $USDN as Inflight
+`RemotePosition` amount reduced ahead of time (so that net AUM change == 0)
     ↓
-NAV Includes Inflight $USDN Value
-    ↓
+Wait oracle update
+
+   ...
+
 Hyperlane Confirmation Received
     ↓
-Mark Transaction as Completed
+Update `RemotePosition` shares
     ↓
-Mark as PENDING_WITHDRAWAL_DISTRIBUTION
+Wait for funds to arrive in module account
+
+   ...
+
+Manager initiates processing of received funds 
     ↓
-Update Vault Liquidity
+Mark `InflightFunds` as completed
     ↓
-Process Withdrawal Queue
+`LocalFunds` increases
 ```
 
-## Economic Model
+### Yield Distribution Flow
 
-### Fee Structure
+```
+Oracle message updates one or more RemotePositions
+    ↓
+AUM recalculated 
 
-- **Management Fee**: Annual percentage on total AUM
-- **Performance Fee**: Percentage of profits above hurdle rate
-- **No Deposit/Withdrawal Fees**: Encourages participation
-- **Fee Distribution**: To protocol treasury and/or stakers
+   ...
 
-### Yield Distribution
-
-- **Automatic Compounding**: Yields increase NAV per share
-- **No Manual Claims**: Value accrues to share price
-- **Fair Distribution**: Proportional to share ownership
-- **Tax Efficiency**: Unrealized gains until withdrawal
-
-## Advantages Over V1
-
-### Enhanced Capital Efficiency
-
-- **Multi-Strategy**: Higher yields through diversification
-- **Dynamic Allocation**: Respond to market opportunities
-- **Cross-Chain Reach**: Access best yields anywhere
-- **Professional Management**: Expert strategy selection
-
-### Improved Security
-
-- **Queue System**: Eliminates many attack vectors
-- **Velocity Controls**: Prevents rapid manipulation
-- **NAV Snapshots**: Fair value for all users
-- **Oracle Redundancy**: Multiple verification sources
-
-### Better User Experience
-
-- **Single Token**: Users hold shares in the single Noble vault, complexity abstracted
-- **Automatic Optimization**: No manual strategy switching
-- **Transparent NAV**: Clear value per share
-- **Predictable Withdrawals**: Queue provides certainty
-
-## Emergency Procedures
-
-### Pause Mechanisms
-
-- **Deposit Pause**: Stop new deposits, allow withdrawals
-- **Withdrawal Pause**: Emergency only, requires governance
-- **Position Pause**: Halt specific remote positions
-- **Global Pause**: Complete system halt (extreme cases)
-
-### Recovery Procedures
-
-- **Position Recovery**: Retrieve funds from failed positions
-- **Inflight Recovery**: Manual intervention for stuck bridge transactions
-- **Oracle Fallback**: Manual NAV updates if oracles fail
-- **Transaction Override**: Force-complete stale inflight funds
-- **Emergency Withdrawal**: Direct redemption at last known NAV
-- **Governance Override**: Multi-sig can intervene if needed
-
-## Conclusion
-
-The Noble Dollar Vault V2 system represents a sophisticated approach to decentralized yield optimization, balancing the need for high returns with robust security mechanisms. Through innovations like the withdrawal queue, the single vault's ability to manage multiple remote positions, and comprehensive anti-manipulation controls, the system provides users with professional-grade yield strategies while maintaining the security and fairness expected in DeFi.
-
-The architecture's flexibility allows for future enhancements and new strategy additions without requiring user migration, ensuring the system can evolve with the rapidly changing DeFi landscape while protecting user value.
+Manager initiates yield distribution
+    ↓
+Check new AUM > previous distribution AUM (remote portion only) 
+    ↓
+Calculate total yield increase since previous distribution
+    ↓
+Apply proportional increase to each eligible UserPosition
+```
+ 
