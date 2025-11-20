@@ -1,123 +1,46 @@
-# Managed Vault Overview
+# V2 Vault Overview
 
 ## Introduction
 
-This system features a single vault on the Noble chain that enables $USDN holders to participate in diversified yield opportunities by managing multiple remote positions across different protocols and chains through a professionally managed structure.
+This system features a single managed vault on the Noble chain that enables $USDN holders to participate in diversified yield opportunities.
 
-## Core Architecture
+## Core Concepts
 
-### Single Vault, Multiple Remote Positions
+### AUM Accounting
 
-Remote positions are [ERC-4626](https://eips.ethereum.org/EIPS/eip-4626) compatible vaults. This architecture provides:
-
-- **Diversification**: Risk is spread across multiple yield sources managed by the single vault
-- **Optimization**: The vault can dynamically allocate capital to the highest-performing strategies
-- **Resilience**: Issues with one protocol don't compromise the entire vault
-- **Flexibility**: New opportunities can be added without system migration
-
-The Noble vault can configure:
-- Maximum number of remote positions (e.g., 5-10)
-- Allowed protocols (e.g., Hyperliquid, Base lending protocols, Noble AppLayer vaults)
-- Allowed chains (via Hyperlane Domain IDs: 998 for Hyperliquid, 8453 for Base, 1313817164 for Noble)
-- Rebalancing thresholds and strategies
-
-### Net Asset Value (NAV) System
-
-The NAV system provides accurate, real-time valuation of the Noble vault's assets including all its remote positions and inflight funds:
+Assets Under Management (AUM) are tracked as virtual USDN in three components: `LocalFunds`, `RemotePosition` funds, and `InflightFunds`.
 
 ```
-Total NAV = Local Assets
+Total AUM = Local Funds
           + Σ(Remote Position Values)
           + Σ(Inflight Funds Values)
-          - Pending Liabilities
-
-NAV per Share = Total NAV / Total Outstanding Shares
 ```
 
-Key features:
-- **Push-Based Oracle Integration**: Remote chains actively push position values to Noble via Hyperlane using fixed-length byte encoding
-- **Automatic NAV Updates**: Noble receives and processes byte-encoded price updates as they arrive from remote chains
-- **Inflight Tracking**: $USDN marked as inflight per Hyperlane route ID during bridge transit
-- **Staleness Protection**: Maximum age limits prevent using outdated values when pushes stop arriving
-- **Multi-Source Verification**: Critical updates require multiple oracle confirmations
-- **Time-Weighted Averaging**: Reduces impact of temporary price spikes
-- **Bridge Completion**: Tracking of completed bridge transactions
+This value, together with a TWAP of Remote Position shares (unimplemented), serves as the core accounting mechanism for tracking the movement of funds through the system, accruing yield to user positions, and servicing withdrawals.
 
-### Withdrawal Queue Mechanism
+### Local Funds
 
-The withdrawal queue is a critical innovation that prevents value extraction attacks while ensuring fair redemptions:
+Local Funds are the portion of the AUM accounting that are present on the Noble chain and available for deployment or for servicing user withdrawals.
 
-#### Queue Processing Flow
+### Inflight Funds
 
-1. **Request Phase**: Users submit withdrawal requests, locking their shares
-2. **Queue Entry**: Requests enter FIFO queue with NAV snapshot
-3. **Liquidity Monitoring**: System tracks available liquidity from:
-   - Local vault reserves
-   - Maturing positions
-   - Incoming deposits
-4. **Fulfillment**: When liquidity available, requests are marked CLAIMABLE
-5. **Claim Phase**: Users claim their $USDN after withdrawal delay period
+Inflight Funds are the portion of the AUM accounting that represent funds in transit between Noble and a Remote Position in either direction.
 
-#### Fair Value Protection
+### Remote Positions
 
-- Each request uses the NAV at time of request, not fulfillment
-- Prevents front-running of NAV updates
-- Eliminates sandwich attacks around large deposits/withdrawals
-- Ensures all users receive fair value regardless of queue position
+Remote Positions represent funds deposited into an [ERC-4626](https://eips.ethereum.org/EIPS/eip-4626) compatible vault on a remote chain with their own shares and share prices.
 
-## Security Mechanisms
+### User Positions
 
-### Anti-Manipulation Framework
+A User Position represents a single tranch from a user deposit, and is a liability from the perspective of accounting. It is used to track the user's original deposit principle, the portion of that principle eligible to receive yield, and the accrued yield to the user. Users do not receive negative yield; if an oracle update results in a reduction in AUM, the next accounting update will short-circuit.
 
-The system implements multiple layers of defense against malicious behavior:
+### Withdrawal Queue
 
-#### 1. Deposit Velocity Controls
+Withdrawals are serviced in a two-phase manner where a user submits a withdrawal request for a particular `UserPosition` and later claims that withdrawal. Once funds are available on chain to service a request, the manager may mark the request as ready to be claimed, at which point a user may claim their withdrawal.
 
-```
-Velocity Score = (Recent Volume / Time Window) × (Deposit Count / Expected Count)
-```
+### Oracles
 
-- Tracks deposit patterns over rolling time windows
-- Flags suspicious rapid deposits that could indicate attacks
-- Enforces cooldown periods for high-velocity users
-
-#### 2. Deposit Limits
-
-Multiple limit types work in concert:
-
-- **Per-User Limits**: Maximum total deposit per address
-- **Per-Block Limits**: Maximum deposits in single block
-- **Per-Transaction Limits**: Maximum single deposit amount
-- **Minimum Amounts**: Prevents dust attacks and griefing
-
-#### 3. Share Price Manipulation Defense
-
-- **Entry/Exit Delays**: Withdrawal queue prevents immediate round-trips
-- **NAV Snapshots**: Lock in values at request time
-- **Slippage Protection**: Maximum acceptable NAV deviation checks
-- **Fee Structure**: Management and performance fees discourage short-term speculation
-
-#### 4. Oracle Security
-
-Remote position values are protected through:
-
-- **Staleness Checks**: Reject updates older than configured threshold
-- **Deviation Limits**: Flag suspicious large value changes
-- **Message Verification**: Hyperlane message authentication for cross-chain values
-- **Fallback Values**: Use last known good values on oracle issues
-
-### Withdrawal Security
-
-The withdrawal queue provides multiple security benefits:
-
-- **No Instant Liquidity**: Prevents bank run scenarios
-- **Orderly Unwinding**: Allows time to close remote positions
-- **Fair Ordering**: FIFO processing prevents preferential treatment
-- **Partial Fulfillment**: Can process withdrawals as liquidity arrives
-
-### Emergency Mode
-
-Emergency mode should be enabled in the event the vault is at risk of a substantial loss of user principal. Deposits should be halted. The strategist will need to utilize vault management operations or potentially upgrade the vaults-v2 module to enable functioning again, whether through socialized losses or a claim process.
+Oracles are proxy smart contracts deployed for each remote vault that submit information about their corresponding `RemotePosition` to Noble via Hyperlane. Oracle messages are essential to accurately track AUM accounting through deposit and withdrawal lifecycles, yield accrual, and fresh share prices.
 
 ## Remote Position Management
 
@@ -283,32 +206,6 @@ Mark as PENDING_WITHDRAWAL_DISTRIBUTION
 Update Vault Liquidity
     ↓
 Process Withdrawal Queue
-```
-
-### Rebalancing Between Positions Flow
-
-```
-Initiate Rebalance Strategy
-    ↓
-Redeem Shares from Source Vault
-    ↓
-Mark as WITHDRAWAL_FROM_POSITION Inflight (Route A)
-    ↓
-Track via Hyperlane Route ID (e.g., 998_4000260)
-    ↓
-$USDN Arrives at Noble
-    ↓
-Mark as PENDING_DEPLOYMENT
-    ↓
-Deploy to Target Vault
-    ↓
-Mark as DEPOSIT_TO_POSITION Inflight (Route B)
-    ↓
-Track via Hyperlane Route ID (e.g., 4000260_8453)
-    ↓
-Deposit into Target Vault & Receive Shares
-    ↓
-Update Share Balances & Clear Route Tracking
 ```
 
 ## Economic Model
