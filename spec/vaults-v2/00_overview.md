@@ -42,148 +42,41 @@ Withdrawals are serviced in a two-phase manner where a user submits a withdrawal
 
 Oracles are proxy smart contracts deployed for each remote vault that submit information about their corresponding `RemotePosition` to Noble via Hyperlane. Oracle messages are essential to accurately track AUM accounting through deposit and withdrawal lifecycles, yield accrual, and fresh share prices.
 
-## Remote Position Management
-
-### Position Lifecycle
-
-1. **Creation**: Deploy $USDN to approved ERC-4626 compatible vault on target chain
-2. **Share Tracking**: Receive and track vault shares representing the position
-3. **Price Reception**: Remote chains push share price updates to Noble via Hyperlane
-4. **Automatic NAV Updates**: Noble processes pushed price data to maintain current valuations
-5. **Rebalancing**: Redeem shares from one vault and deposit to another
-6. **Harvesting**: Yields compound within remote vaults
-7. **Closure**: Redeem vault shares for $USDN and withdraw to Noble
-
-### Cross-Chain Coordination
-
-Remote positions leverage Hyperlane for secure cross-chain operations:
-
-- **Deployment**: $USDN bridged via specific Hyperlane routes to deposit into ERC-4626 compatible vaults
-- **Share Management**: Vault shares received and tracked for each remote position
-- **Inflight Tracking**: $USDN marked as inflight per Hyperlane route ID during bridge transit
-- **Route Management**: Each Hyperlane route (e.g., Noble→Hyperliquid, Base→Noble) tracked separately
-- **Push-Based Price Updates**: Remote chains proactively push share prices to Noble via Hyperlane using fixed-length byte encoding for efficiency
-- **Automatic Value Updates**: Noble continuously receives and applies byte-encoded price data directly from the Hyperlane Mailbox
-- **Redemptions**: Vault shares redeemed for $USDN and bridged back to Noble via specific return routes
-- **Completion Tracking**: Monitoring of bridge transaction completions per route
-- **Emergency Recovery**: Most bridge failures will be temporary. They may be cause by something like a chain halt or relayer in the ISM going offline. In this case, it should be possible to just
-
-### Risk Management
-
-Each remote position is subject to:
-
-- **Concentration Limits**: No single position > X% of total vault
-- **Chain Limits**: Maximum exposure per blockchain
-- **Approved Vaults Only**: Only deploy to pre-approved vault addresses
-- **Push-Based Price Monitoring**: Receive continuous share price updates pushed from remote chains
-- **Health Monitoring**: Automatic alerts when price pushes stop arriving or show degradation
-
-## Inflight Funds Management
-
-### Overview
-
-Inflight funds represent capital that is temporarily in transit between the Noble vault and its remote positions, or between positions during rebalancing. Each inflight transaction is tracked by its specific Hyperlane route identifier, allowing precise monitoring of capital flows across different bridge paths. This capital remains fully accounted for in the NAV to ensure accurate vault valuation at all times.
-
-### Inflight Fund Types
-
-1. **Deposit to Position**: $USDN being deployed from the Noble vault to a remote ERC-4626 compatible vault
-2. **Withdrawal from Position**: $USDN returning from redeemed vault shares to the Noble vault
-3. **Rebalance Between Positions**: $USDN moving between remote vaults (via Noble after share redemption)
-4. **Pending Deployment**: $USDN from deposits awaiting allocation to remote vaults
-5. **Pending Withdrawal Distribution**: $USDN from redeemed shares awaiting distribution to withdrawal queue
-6. **Yield Collection**: Automatic compounding within remote vaults
-
-### Tracking Mechanism
-
-Each inflight transaction maintains:
-- **Hyperlane Route ID**: Unique route identifier
-- **Transaction ID**: Hyperlane message ID for the specific transfer
-- **Source/Destination Domains**: Hyperlane domain IDs for the route endpoints (1313817164 for Noble, 998 for Hyperliquid, 8453 for Base)
-- **Expected Value**: $USDN amount sent including estimated bridge fees
-- **Current Value**: Last known $USDN value for NAV calculation
-- **Time Bounds**: Expected arrival time and maximum duration per route
-- **Status Updates**: PENDING → CONFIRMED → COMPLETED lifecycle per route
-- **Route-Specific Limits**: Maximum exposure allowed per Hyperlane route
-
-### NAV Impact
-
-Inflight funds are included in NAV calculations to prevent artificial value fluctuations:
-
-```
-During Transit:
-- $USDN leaves source → Marked as inflight. WITHDRAWL_FROM_POSITION and DEPOSIT_TO_POSITION states are inflight.
-- NAV unchanged ($USDN still counted)
-- Hyperlane confirms → Status: CONFIRMED
-- $USDN arrives → Status: COMPLETED
-
-Special States:
-- New deposits → PENDING_DEPLOYMENT until allocated
-- Returned funds → PENDING_WITHDRAWAL_DISTRIBUTION until claimed
-- Rebalancing → WITHDRAWAL then PENDING_DEPLOYMENT then DEPOSIT
-```
-
-### Transaction Completion
-
-1. **Status Tracking**: Bridge transactions monitored for completion
-2. **Timeout Management**: Stale transactions flagged for investigation
-3. **Manual Intervention**: Failed transactions requiring intervention from the authority module.
-
-### Risk Mitigation
-
-- **Maximum Duration Limits**: Funds cannot remain inflight indefinitely on any route
-- **Per-Route Value Caps**: Limits on inflight exposure for each Hyperlane route
-- **Message Authentication**: Verification of Hyperlane message origin and integrity
 
 ## Operational Flows
 
-### Deposit Flow with Security Checks
+### Deposit Flow
 
 ```
 User Deposit Request
     ↓
-Velocity Check → [Fail: Reject]
-    ↓ Pass
-Limit Checks → [Fail: Reject]
-    ↓ Pass
-Cooldown Check → [Fail: Reject]
-    ↓ Pass
-Calculate Shares (Current NAV)
+Funds transferred from user to module account
     ↓
-Mint Shares to User
+`UserPosition` Created
     ↓
-Update Velocity Metrics
-    ↓
-Mark Funds as Inflight
-    ↓
-Deploy Capital via Bridge
-    ↓
-Monitor Bridge Confirmation
-    ↓
-Deposit into Remote Vault
-    ↓
-Receive and Track Vault Shares
+`LocalFunds` Increases
 ```
 
-### Withdrawal Flow with Queue
+### Withdrawal Flow
 
 ```
 Withdrawal Request
     ↓
-Lock User Shares
-    ↓
-Enter Queue (FIFO)
-    ↓
-Record NAV Snapshot
+Record amount pending withdrawal in `UserPosition`
     ↓
 Wait for Liquidity
-    ↓
-Process Queue (Keeper/Auto)
-    ↓
-Mark as CLAIMABLE
+
+   ...
+
+Manager marks `WithdrawalRequest` as CLAIMABLE 
     ↓
 User Claims (After Delay)
     ↓
-Burn Shares & Transfer $USDN
+`LocalFunds` decreases
+    ↓
+`UserPosition` amount decreases (yield first, then principle)
+    ↓
+Transfer $USDN to user from module account
 ```
 
 ### Remote Position Capital Return Flow
